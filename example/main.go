@@ -145,7 +145,9 @@ func main() {
 		for {
 			select {
 			case <-t.C:
+			case newState := <-vm.StateChangedNotify():
 				log.Println(
+					"newState:", newState,
 					"state:", vm.State(),
 					"canStart:", vm.CanStart(),
 					"canResume:", vm.CanResume(),

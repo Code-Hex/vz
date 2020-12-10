@@ -58,7 +58,7 @@ void *newVZVirtioSocketDeviceConfiguration();
 
 /* VirtualMachine */
 void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, const char *vmid);
-bool requestStopVirtualMachine(void *machine, void **error);
+bool requestStopVirtualMachine(void *machine, void *queue, void **error);
 void startWithCompletionHandler(void *machine, void *queue, const char *vmid);
 void pauseWithCompletionHandler(void *machine, void *queue, const char *vmid);
 void resumeWithCompletionHandler(void *machine, void *queue, const char *vmid);

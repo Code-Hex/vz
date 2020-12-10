@@ -259,7 +259,7 @@ func (v *VirtualMachine) Resume(fn func(error)) {
 func (v *VirtualMachine) RequestStop() (bool, error) {
 	nserr := newNSErrorAsNil()
 	nserrPtr := nserr.Ptr()
-	ret := (bool)(C.requestStopVirtualMachine(v.Ptr(), &nserrPtr))
+	ret := (bool)(C.requestStopVirtualMachine(v.Ptr(), v.dispatchQueue, &nserrPtr))
 	if err := newNSError(nserrPtr); err != nil {
 		return ret, err
 	}

@@ -424,9 +424,13 @@ void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, const char
  @param error If not nil, assigned with the error if the request failed.
  @return YES if the request was made successfully.
  */
-bool requestStopVirtualMachine(void *machine, void **error)
+bool requestStopVirtualMachine(void *machine, void *queue, void **error)
 {
-    return (bool)[(VZVirtualMachine *)machine requestStopWithError:(NSError * _Nullable *_Nullable)error];
+    __block BOOL ret;
+    dispatch_sync((dispatch_queue_t)queue, ^{
+        ret = [(VZVirtualMachine *)machine requestStopWithError:(NSError * _Nullable *_Nullable)error];
+    });
+    return (bool)ret;
 }
 
 void *makeDispatchQueue(const char *label)

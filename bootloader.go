@@ -15,7 +15,13 @@ import (
 // see: LinuxBootLoader
 type BootLoader interface {
 	NSObject
+
+	bootLoader()
 }
+
+type baseBootLoader struct{}
+
+func (*baseBootLoader) bootLoader() {}
 
 var _ BootLoader = (*LinuxBootLoader)(nil)
 
@@ -25,6 +31,8 @@ type LinuxBootLoader struct {
 	initrdPath  string
 	cmdLine     string
 	pointer
+
+	*baseBootLoader
 }
 
 func (b *LinuxBootLoader) String() string {

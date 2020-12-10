@@ -40,6 +40,8 @@ type BridgedNetwork interface {
 // see: https://developer.apple.com/documentation/virtualization/vznatnetworkdeviceattachment?language=objc
 type NATNetworkDeviceAttachment struct {
 	pointer
+
+	*baseNetworkDeviceAttachment
 }
 
 var _ NetworkDeviceAttachment = (*NATNetworkDeviceAttachment)(nil)
@@ -69,6 +71,8 @@ func NewNATNetworkDeviceAttachment() *NATNetworkDeviceAttachment {
 // see: https://developer.apple.com/documentation/virtualization/vzbridgednetworkdeviceattachment?language=objc
 type BridgedNetworkDeviceAttachment struct {
 	pointer
+
+	*baseNetworkDeviceAttachment
 }
 
 var _ NetworkDeviceAttachment = (*BridgedNetworkDeviceAttachment)(nil)
@@ -95,6 +99,8 @@ func NewBridgedNetworkDeviceAttachment(networkInterface BridgedNetwork) *Bridged
 // see: https://developer.apple.com/documentation/virtualization/vzfilehandlenetworkdeviceattachment?language=objc
 type FileHandleNetworkDeviceAttachment struct {
 	pointer
+
+	*baseNetworkDeviceAttachment
 }
 
 var _ NetworkDeviceAttachment = (*FileHandleNetworkDeviceAttachment)(nil)
@@ -120,7 +126,13 @@ func NewFileHandleNetworkDeviceAttachment(file *os.File) *FileHandleNetworkDevic
 // see: https://developer.apple.com/documentation/virtualization/vznetworkdeviceattachment?language=objc
 type NetworkDeviceAttachment interface {
 	NSObject
+
+	networkDeviceAttachment()
 }
+
+type baseNetworkDeviceAttachment struct{}
+
+func (*baseNetworkDeviceAttachment) networkDeviceAttachment() {}
 
 // VirtioNetworkDeviceConfiguration is configuration of a paravirtualized network device of type Virtio Network Device.
 //

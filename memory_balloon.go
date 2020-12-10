@@ -11,7 +11,13 @@ import "runtime"
 // MemoryBalloonDeviceConfiguration for a memory balloon device configuration.
 type MemoryBalloonDeviceConfiguration interface {
 	NSObject
+
+	memoryBalloonDeviceConfiguration()
 }
+
+type baseMemoryBalloonDeviceConfiguration struct{}
+
+func (*baseMemoryBalloonDeviceConfiguration) memoryBalloonDeviceConfiguration() {}
 
 var _ MemoryBalloonDeviceConfiguration = (*VirtioTraditionalMemoryBalloonDeviceConfiguration)(nil)
 
@@ -20,6 +26,8 @@ var _ MemoryBalloonDeviceConfiguration = (*VirtioTraditionalMemoryBalloonDeviceC
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiotraditionalmemoryballoondeviceconfiguration?language=objc
 type VirtioTraditionalMemoryBalloonDeviceConfiguration struct {
 	pointer
+
+	*baseMemoryBalloonDeviceConfiguration
 }
 
 // NewVirtioTraditionalMemoryBalloonDeviceConfiguration creates a new VirtioTraditionalMemoryBalloonDeviceConfiguration.

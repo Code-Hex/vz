@@ -8,12 +8,18 @@ package vz
 import "C"
 import "runtime"
 
+type baseStorageDeviceAttachment struct{}
+
+func (*baseStorageDeviceAttachment) storageDeviceAttachment() {}
+
 // StorageDeviceAttachment for a storage device attachment.
 //
 // A storage device attachment defines how a virtual machine storage device interfaces with the host system.
 // see: https://developer.apple.com/documentation/virtualization/vzstoragedeviceattachment?language=objc
 type StorageDeviceAttachment interface {
 	NSObject
+
+	storageDeviceAttachment()
 }
 
 var _ StorageDeviceAttachment = (*DiskImageStorageDeviceAttachment)(nil)
@@ -25,6 +31,8 @@ var _ StorageDeviceAttachment = (*DiskImageStorageDeviceAttachment)(nil)
 // see: https://developer.apple.com/documentation/virtualization/vzdiskimagestoragedeviceattachment?language=objc
 type DiskImageStorageDeviceAttachment struct {
 	pointer
+
+	*baseStorageDeviceAttachment
 }
 
 // NewDiskImageStorageDeviceAttachment initialize the attachment from a local file path.
@@ -59,7 +67,13 @@ func NewDiskImageStorageDeviceAttachment(diskPath string, readOnly bool) (*DiskI
 // StorageDeviceConfiguration for a storage device configuration.
 type StorageDeviceConfiguration interface {
 	NSObject
+
+	storageDeviceConfiguration()
 }
+
+type baseStorageDeviceConfiguration struct{}
+
+func (*baseStorageDeviceConfiguration) storageDeviceConfiguration() {}
 
 var _ StorageDeviceConfiguration = (*VirtioBlockDeviceConfiguration)(nil)
 
@@ -73,6 +87,8 @@ var _ StorageDeviceConfiguration = (*VirtioBlockDeviceConfiguration)(nil)
 // see: https://developer.apple.com/documentation/virtualization/vzvirtioblockdeviceconfiguration?language=objc
 type VirtioBlockDeviceConfiguration struct {
 	pointer
+
+	*baseStorageDeviceConfiguration
 }
 
 // NewVirtioBlockDeviceConfiguration initialize a VZVirtioBlockDeviceConfiguration with a device attachment.

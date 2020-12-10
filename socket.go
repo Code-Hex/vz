@@ -11,7 +11,13 @@ import "runtime"
 // SocketDeviceConfiguration for a socket device configuration.
 type SocketDeviceConfiguration interface {
 	NSObject
+
+	socketDeviceConfiguration()
 }
+
+type baseSocketDeviceConfiguration struct{}
+
+func (*baseSocketDeviceConfiguration) socketDeviceConfiguration() {}
 
 var _ SocketDeviceConfiguration = (*VirtioSocketDeviceConfiguration)(nil)
 
@@ -22,6 +28,8 @@ var _ SocketDeviceConfiguration = (*VirtioSocketDeviceConfiguration)(nil)
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdeviceconfiguration?language=objc
 type VirtioSocketDeviceConfiguration struct {
 	pointer
+
+	*baseSocketDeviceConfiguration
 }
 
 // NewVirtioSocketDeviceConfiguration creates a new VirtioSocketDeviceConfiguration.

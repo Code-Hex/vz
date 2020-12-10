@@ -12,7 +12,7 @@ Please see the example directory.
 ## REQUIREMENTS
 
 - Higher or equal to macOS Big Sur (11.0.0)
-- Higher or equal to Go 1.16 in Apple M1 Users
+- If you're M1 Mac User need higher or equal to Go 1.16
 
 ## IMPORTANT
 

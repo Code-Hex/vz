@@ -16,7 +16,13 @@ import (
 // A serial port attachment defines how the virtual machine's serial port interfaces with the host system.
 type SerialPortAttachment interface {
 	NSObject
+
+	serialPortAttachment()
 }
+
+type baseSerialPortAttachment struct{}
+
+func (*baseSerialPortAttachment) serialPortAttachment() {}
 
 var _ SerialPortAttachment = (*FileHandleSerialPortAttachment)(nil)
 
@@ -26,6 +32,8 @@ var _ SerialPortAttachment = (*FileHandleSerialPortAttachment)(nil)
 // see: https://developer.apple.com/documentation/virtualization/vzfilehandleserialportattachment?language=objc
 type FileHandleSerialPortAttachment struct {
 	pointer
+
+	*baseSerialPortAttachment
 }
 
 // NewFileHandleSerialPortAttachment intialize the FileHandleSerialPortAttachment from file handles.
@@ -56,6 +64,8 @@ var _ SerialPortAttachment = (*FileSerialPortAttachment)(nil)
 // see: https://developer.apple.com/documentation/virtualization/vzfileserialportattachment?language=objc
 type FileSerialPortAttachment struct {
 	pointer
+
+	*baseSerialPortAttachment
 }
 
 // NewFileSerialPortAttachment initialize the FileSerialPortAttachment from a path of a file.

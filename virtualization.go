@@ -1,7 +1,7 @@
 package vz
 
 /*
-#cgo darwin CFLAGS: -x objective-c -fno-objc-arc
+#cgo darwin CFLAGS: -x objective-c -fno-objc-arc -Werror=unguarded-availability-new
 #cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
 # include "virtualization.h"
 */

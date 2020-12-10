@@ -76,7 +76,8 @@ type VirtualMachine struct {
 
 type (
 	machineStatus struct {
-		state VirtualMachineState
+		state       VirtualMachineState
+		stateNotify chan VirtualMachineState
 
 		mu sync.RWMutex
 	}
@@ -104,7 +105,8 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) *VirtualMachine {
 	cs := charWithGoString(id)
 	defer cs.Free()
 	statuses[id] = &machineStatus{
-		state: VirtualMachineState(0),
+		state:       VirtualMachineState(0),
+		stateNotify: make(chan VirtualMachineState),
 	}
 	handlers[id] = &machineHandlers{
 		start:  func(error) {},
@@ -137,7 +139,10 @@ func changeStateOnObserver(state C.int, cID *C.char) {
 	// if caused panic, that's unexpected behavior.
 	v, _ := statuses[id.String()]
 	v.mu.Lock()
-	v.state = VirtualMachineState(state)
+	newState := VirtualMachineState(state)
+	v.state = newState
+	// for non-blocking
+	go func() { v.stateNotify <- newState }()
 	statuses[id.String()] = v
 	v.mu.Unlock()
 }
@@ -150,6 +155,16 @@ func (v *VirtualMachine) State() VirtualMachineState {
 	val.mu.RLock()
 	defer val.mu.RUnlock()
 	return val.state
+}
+
+// StateChangedNotify gets notification is changed execution state of the virtual machine.
+func (v *VirtualMachine) StateChangedNotify() <-chan VirtualMachineState {
+	// I expected it will not cause panic.
+	// if caused panic, that's unexpected behavior.
+	val, _ := statuses[v.id]
+	val.mu.RLock()
+	defer val.mu.RUnlock()
+	return val.stateNotify
 }
 
 // CanStart returns true if the machine is in a state that can be started.

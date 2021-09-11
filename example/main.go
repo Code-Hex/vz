@@ -1,29 +1,30 @@
 package main
 
 import (
-	"io"
 	l "log"
 	"os"
-	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
 	"github.com/Code-Hex/vz"
-	"github.com/kr/pty"
 	"github.com/pkg/term/termios"
 	"golang.org/x/sys/unix"
 )
 
 var log *l.Logger
 
-func setNonCanonicalMode(f *os.File) {
+// https://developer.apple.com/documentation/virtualization/running_linux_in_a_virtual_machine?language=objc#:~:text=Configure%20the%20Serial%20Port%20Device%20for%20Standard%20In%20and%20Out
+func setRawMode(f *os.File) {
 	var attr unix.Termios
 
 	// Get settings for terminal
 	termios.Tcgetattr(f.Fd(), &attr)
 
-	// Disable cannonical mode （&^ AND NOT)
-	attr.Lflag &^= syscall.ICANON
+	// Put stdin into raw mode, disabling local echo, input canonicalization,
+	// and CR-NL mapping.
+	attr.Iflag &^= syscall.ICRNL
+	attr.Lflag &^= syscall.ICANON | syscall.ECHO
 
 	// Set minimum characters when reading = 1 char
 	attr.Cc[syscall.VMIN] = 1
@@ -36,15 +37,6 @@ func setNonCanonicalMode(f *os.File) {
 }
 
 func main() {
-
-	// 238 57
-	// width, height, err := terminal.GetSize(int(os.Stdout.Fd()))
-	// if err != nil {
-	// 	log.Fatalln(err)
-	// }
-	// fmt.Println(width, height)
-	// return
-
 	file, err := os.Create("./log.log")
 	if err != nil {
 		panic(err)
@@ -52,9 +44,17 @@ func main() {
 	defer file.Close()
 	log = l.New(file, "", l.LstdFlags)
 
+	kernelCommandLineArguments := []string{
+		// Use the first virtio console device as system console.
+		"console=hvc0",
+		// Stop in the initial ramdisk before attempting to transition to
+		// the root file system.
+		"rd.break=initqueue",
+	}
+
 	bootLoader := vz.NewLinuxBootLoader(
-		"/Users/codehex/Desktop/vmlinuz",
-		vz.WithCommandLine("console=hvc0 console=ttyS0,115200 nosplash debug"),
+		"/Users/codehex/Desktop/vmlinux",
+		vz.WithCommandLine(strings.Join(kernelCommandLineArguments, " ")),
 		vz.WithInitrd("/Users/codehex/Desktop/initrd"),
 	)
 	log.Println("bootLoader:", bootLoader)
@@ -65,37 +65,10 @@ func main() {
 		1*1024*1024*1024,
 	)
 
-	setNonCanonicalMode(os.Stdin)
-
-	ptmx, tty, err := pty.Open()
-	if err != nil {
-		panic(err)
-	}
-	defer ptmx.Close()
-	defer tty.Close()
-
-	ch := make(chan os.Signal, 1)
-	signal.Notify(ch, syscall.SIGWINCH)
-	go func() {
-		for range ch {
-			if err := pty.InheritSize(os.Stdout, ptmx); err != nil {
-				log.Printf("error resizing pty: %s", err)
-			}
-		}
-	}()
-	ch <- syscall.SIGWINCH // Initial resize.
-
-	go func() {
-		_, err := io.Copy(os.Stdout, ptmx)
-		if err != nil {
-			log.Println("pty stdout err", err)
-		}
-	}()
-
-	log.Println("pty: ", tty.Name())
+	setRawMode(os.Stdin)
 
 	// console
-	serialPortAttachment := vz.NewFileHandleSerialPortAttachment(os.Stdin, tty)
+	serialPortAttachment := vz.NewFileHandleSerialPortAttachment(os.Stdin, os.Stdout)
 	consoleConfig := vz.NewVirtioConsoleDeviceSerialPortConfiguration(serialPortAttachment)
 	config.SetSerialPortsVirtualMachineConfiguration([]*vz.VirtioConsoleDeviceSerialPortConfiguration{
 		consoleConfig,
@@ -115,7 +88,7 @@ func main() {
 	})
 
 	diskImageAttachment, err := vz.NewDiskImageStorageDeviceAttachment(
-		"/Users/codehex/Desktop/ubuntu-20.04.1-live-server-arm64.iso",
+		"/Users/codehex/Desktop/focal-server-cloudimg-arm64.img",
 		false,
 	)
 	if err != nil {
@@ -135,10 +108,12 @@ func main() {
 	config.SetSocketDevicesVirtualMachineConfiguration([]vz.SocketDeviceConfiguration{
 		vz.NewVirtioSocketDeviceConfiguration(),
 	})
-	log.Println(config.Validate())
+	validated, err := config.Validate()
+	if !validated || err != nil {
+		log.Fatal("validation failed", err)
+	}
 
 	vm := vz.NewVirtualMachine(config)
-	_ = vm
 	go func(vm *vz.VirtualMachine) {
 		t := time.NewTicker(time.Second)
 		defer t.Stop()
@@ -158,11 +133,19 @@ func main() {
 		}
 	}(vm)
 
+	errCh := make(chan error, 1)
+
 	vm.Start(func(err error) {
-		log.Println("in start:", err)
+		if err != nil {
+			errCh <- err
+		}
 	})
 
-	<-time.After(3 * time.Minute)
+	select {
+	case err := <-errCh:
+		log.Println("in start:", err)
+	case <-time.After(3 * time.Minute):
+	}
 
 	// vm.Resume(func(err error) {
 	// 	fmt.Println("in resume:", err)

@@ -58,6 +58,7 @@ void *newVZVirtioTraditionalMemoryBalloonDeviceConfiguration();
 void *newVZVirtioSocketDeviceConfiguration();
 void *newVZMACAddress(const char *macAddress);
 void *newRandomLocallyAdministeredVZMACAddress();
+const char *getVZMACAddressString(void *macAddress);
 
 /* VirtualMachine */
 void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, const char *vmid);

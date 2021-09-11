@@ -199,3 +199,13 @@ func NewRandomLocallyAdministeredMACAddress() *MACAddress {
 	})
 	return ma
 }
+
+func (m *MACAddress) String() string {
+	cstring := (*char)(C.getVZMACAddressString(m.Ptr()))
+	return cstring.String()
+}
+
+func (m *MACAddress) HardwareAddr() net.HardwareAddr {
+	hw, _ := net.ParseMAC(m.String())
+	return hw
+}

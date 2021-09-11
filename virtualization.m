@@ -456,6 +456,19 @@ void setNetworkDevicesVZMACAddress(void *config, void *macAddress)
 }
 
 /*!
+ @abstract The address represented as a string.
+ @discussion
+    The 6 bytes are represented in hexadecimal form, separated by a colon character.
+    Alphabetical characters are lowercase.
+
+    The address is compatible with the parameter of -[VZMACAddress initWithString:].
+ */
+const char *getVZMACAddressString(void *macAddress)
+{
+    return [[(VZMACAddress *)macAddress string] UTF8String];
+}
+
+/*!
  @abstract Request that the guest turns itself off.
  @param error If not nil, assigned with the error if the request failed.
  @return YES if the request was made successfully.

@@ -188,21 +188,37 @@ func (v *VirtualMachine) CanRequestStop() bool {
 }
 
 //export startHandler
-func startHandler(err unsafe.Pointer, cid *C.char) {
+func startHandler(errPtr unsafe.Pointer, cid *C.char) {
 	id := (*char)(cid).String()
-	handlers[id].start(newNSError(err))
+	// If returns nil in the cgo world, the nil will not be treated as nil in the Go world
+	// so this is temporarily handled (Go 1.17)
+	if err := newNSError(errPtr); err != nil {
+		handlers[id].start(err)
+	} else {
+		handlers[id].start(nil)
+	}
 }
 
 //export pauseHandler
-func pauseHandler(err unsafe.Pointer, cid *C.char) {
+func pauseHandler(errPtr unsafe.Pointer, cid *C.char) {
 	id := (*char)(cid).String()
-	handlers[id].pause(newNSError(err))
+	// see: startHandler
+	if err := newNSError(errPtr); err != nil {
+		handlers[id].pause(err)
+	} else {
+		handlers[id].pause(nil)
+	}
 }
 
 //export resumeHandler
-func resumeHandler(err unsafe.Pointer, cid *C.char) {
+func resumeHandler(errPtr unsafe.Pointer, cid *C.char) {
 	id := (*char)(cid).String()
-	handlers[id].resume(newNSError(err))
+	// see: startHandler
+	if err := newNSError(errPtr); err != nil {
+		handlers[id].resume(err)
+	} else {
+		handlers[id].resume(nil)
+	}
 }
 
 func makeHandler(fn func(error)) (func(error), chan struct{}) {

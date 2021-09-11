@@ -50,11 +50,14 @@ void *newVZBridgedNetworkDeviceAttachment(void *networkInterface);
 void *newVZNATNetworkDeviceAttachment(void);
 void *newVZFileHandleNetworkDeviceAttachment(int fileDescriptor);
 void *newVZVirtioNetworkDeviceConfiguration(void *attachment);
+void setNetworkDevicesVZMACAddress(void *config, void *macAddress);
 void *newVZVirtioEntropyDeviceConfiguration(void);
 void *newVZVirtioBlockDeviceConfiguration(void *attachment);
 void *newVZDiskImageStorageDeviceAttachment(const char *diskPath, bool readOnly, void **error);
 void *newVZVirtioTraditionalMemoryBalloonDeviceConfiguration();
 void *newVZVirtioSocketDeviceConfiguration();
+void *newVZMACAddress(const char *macAddress);
+void *newRandomLocallyAdministeredVZMACAddress();
 
 /* VirtualMachine */
 void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, const char *vmid);

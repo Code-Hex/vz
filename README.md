@@ -46,7 +46,6 @@ If you want to use [`VZBridgedNetworkDeviceAttachment`](https://developer.apple.
 
 - [x] [VZMACAddress](https://developer.apple.com/documentation/virtualization/vzmacaddress?language=objc)
 - [ ] [VZVirtioSocketDeviceConfiguration](https://developer.apple.com/documentation/virtualization/sockets?language=objc)
-  - Is this really needed? I wanna know how to use this API.
 
 ## LICENSE
 

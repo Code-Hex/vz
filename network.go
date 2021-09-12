@@ -7,6 +7,7 @@ package vz
 */
 import "C"
 import (
+	"net"
 	"os"
 	"runtime"
 )
@@ -159,4 +160,52 @@ func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) *Vi
 		self.Release()
 	})
 	return config
+}
+
+func (v *VirtioNetworkDeviceConfiguration) SetMacAddress(macAddress *MACAddress) {
+	C.setNetworkDevicesVZMACAddress(v.Ptr(), macAddress.Ptr())
+}
+
+// MACAddress represents a media access control address (MAC address), the 48-bit ethernet address.
+// see: https://developer.apple.com/documentation/virtualization/vzmacaddress?language=objc
+type MACAddress struct {
+	pointer
+}
+
+// NewMACAddress creates a new MACAddress with net.HardwareAddr (MAC address).
+func NewMACAddress(macAddr net.HardwareAddr) *MACAddress {
+	macAddrChar := charWithGoString(macAddr.String())
+	defer macAddrChar.Free()
+	ma := &MACAddress{
+		pointer: pointer{
+			ptr: C.newVZMACAddress(macAddrChar.CString()),
+		},
+	}
+	runtime.SetFinalizer(ma, func(self *MACAddress) {
+		self.Release()
+	})
+	return ma
+}
+
+// NewRandomLocallyAdministeredMACAddress creates a valid, random, unicast, locally administered address.
+func NewRandomLocallyAdministeredMACAddress() *MACAddress {
+	ma := &MACAddress{
+		pointer: pointer{
+			ptr: C.newRandomLocallyAdministeredVZMACAddress(),
+		},
+	}
+	runtime.SetFinalizer(ma, func(self *MACAddress) {
+		self.Release()
+	})
+	return ma
+}
+
+func (m *MACAddress) String() string {
+	cstring := (*char)(C.getVZMACAddressString(m.Ptr()))
+	return cstring.String()
+}
+
+func (m *MACAddress) HardwareAddr() net.HardwareAddr {
+	hw, _ := net.ParseMAC(m.String())
+	return hw
 }

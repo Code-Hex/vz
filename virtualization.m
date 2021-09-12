@@ -420,6 +420,55 @@ void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, const char
 }
 
 /*!
+ @abstract Initialize the VZMACAddress from a string representation of a MAC address.
+ @param string
+    The string should be formatted representing the 6 bytes in hexadecimal separated by a colon character.
+        e.g. "01:23:45:ab:cd:ef"
+
+    The alphabetical characters can appear lowercase or uppercase.
+ @return A VZMACAddress or nil if the string is not formatted correctly.
+ */
+void *newVZMACAddress(const char *macAddress)
+{
+    VZMACAddress *ret;
+    @autoreleasepool {
+        NSString *str = [NSString stringWithUTF8String:macAddress];
+        ret = [[VZMACAddress alloc] initWithString:str];
+    }
+    return ret;
+}
+
+/*!
+ @abstract Create a valid, random, unicast, locally administered address.
+ @discussion The generated address is not guaranteed to be unique.
+ */
+void *newRandomLocallyAdministeredVZMACAddress()
+{
+    return [VZMACAddress randomLocallyAdministeredAddress];
+}
+
+/*!
+ @abstract Sets the media access control address of the device.
+ */
+void setNetworkDevicesVZMACAddress(void *config, void *macAddress)
+{
+    [(VZNetworkDeviceConfiguration *)config setMACAddress:[(VZMACAddress *)macAddress copy]];
+}
+
+/*!
+ @abstract The address represented as a string.
+ @discussion
+    The 6 bytes are represented in hexadecimal form, separated by a colon character.
+    Alphabetical characters are lowercase.
+
+    The address is compatible with the parameter of -[VZMACAddress initWithString:].
+ */
+const char *getVZMACAddressString(void *macAddress)
+{
+    return [[(VZMACAddress *)macAddress string] UTF8String];
+}
+
+/*!
  @abstract Request that the guest turns itself off.
  @param error If not nil, assigned with the error if the request failed.
  @return YES if the request was made successfully.

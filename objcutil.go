@@ -33,6 +33,24 @@ NSInteger getNSErrorCode(void *err)
 	return (NSInteger)[(NSError *)err code];
 }
 
+typedef struct NSErrorFlat {
+	const char *domain;
+    const char *localizedDescription;
+	const char *userinfo;
+    int code;
+} NSErrorFlat;
+
+NSErrorFlat convertNSError2Flat(void *err)
+{
+	NSErrorFlat ret;
+	ret.domain = getNSErrorDomain(err);
+	ret.localizedDescription = getNSErrorLocalizedDescription(err);
+	ret.userinfo = getNSErrorUserInfo(err);
+	ret.code = (int)getNSErrorCode(err);
+
+	return ret;
+}
+
 void *makeNSMutableArray(unsigned long cap)
 {
 	return [[NSMutableArray alloc] initWithCapacity:(NSUInteger)cap];
@@ -175,19 +193,16 @@ func (n *NSError) Error() string {
 	)
 }
 
-// TODO(codehex): improvement (3 times called C functions now)
 func newNSError(p unsafe.Pointer) *NSError {
 	if !hasNSError(p) {
 		return nil
 	}
-	domain := (*char)(C.getNSErrorDomain(p))
-	description := (*char)(C.getNSErrorLocalizedDescription(p))
-	userInfo := (*char)(C.getNSErrorUserInfo(p))
+	nsError := C.convertNSError2Flat(p)
 	return &NSError{
-		Domain:               domain.String(),
-		Code:                 int(C.getNSErrorCode(p)),
-		LocalizedDescription: description.String(),
-		UserInfo:             userInfo.String(), // NOTE(codehex): maybe we can convert to map[string]interface{}
+		Domain:               (*char)(nsError.domain).String(),
+		Code:                 int((nsError.code)),
+		LocalizedDescription: (*char)(nsError.localizedDescription).String(),
+		UserInfo:             (*char)(nsError.userinfo).String(), // NOTE(codehex): maybe we can convert to map[string]interface{}
 	}
 }
 

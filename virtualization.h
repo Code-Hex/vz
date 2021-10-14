@@ -13,11 +13,18 @@
 void startHandler(void *err, char *id);
 void pauseHandler(void *err, char *id);
 void resumeHandler(void *err, char *id);
+void connectionHandler(void *connection, void *err, char *id);
 void changeStateOnObserver(int state, char *id);
 
 @interface Observer : NSObject
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
 @end
+
+/* VZVirtioSocketListener */
+@interface VZVirtioSocketListenerDelegateImpl : NSObject <VZVirtioSocketListenerDelegate>
+- (BOOL)listener:(VZVirtioSocketListener *)listener shouldAcceptNewConnection:(VZVirtioSocketConnection *)connection fromSocketDevice:(VZVirtioSocketDevice *)socketDevice;
+@end
+
 
 /* BootLoader */
 void *newVZLinuxBootLoader(const char *kernelPath);
@@ -59,6 +66,11 @@ void *newVZVirtioSocketDeviceConfiguration();
 void *newVZMACAddress(const char *macAddress);
 void *newRandomLocallyAdministeredVZMACAddress();
 const char *getVZMACAddressString(void *macAddress);
+void *newVZVirtioSocketListener();
+void *VZVirtualMachine_socketDevices(void *machine);
+void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *listener, uint32_t port);
+void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, uint32_t port);
+void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *queue, uint32_t port, const char *socketDeviceID);
 
 /* VirtualMachine */
 void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, const char *vmid);
@@ -72,3 +84,13 @@ bool vmCanResume(void *machine, void *queue);
 bool vmCanRequestStop(void *machine, void *queue);
 
 void *makeDispatchQueue(const char *label);
+
+/* VZVirtioSocketConnection */
+typedef struct VZVirtioSocketConnectionFlat {
+    uint32_t destinationPort;
+    uint32_t sourcePort;
+    int fileDescriptor;
+} VZVirtioSocketConnectionFlat;
+
+VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connection);
+void VZVirtioSocketConnection_close(void *connection);

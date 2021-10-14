@@ -36,6 +36,14 @@ char *copyCString(NSString *nss)
 }
 @end
 
+@implementation VZVirtioSocketListenerDelegateImpl
+- (BOOL)listener:(VZVirtioSocketListener *)listener shouldAcceptNewConnection:(VZVirtioSocketConnection *)connection fromSocketDevice:(VZVirtioSocketDevice *)socketDevice;
+{
+    // TODO(codehex): implement callback
+    return TRUE;
+}
+@end
+
 /*!
  @abstract Create a VZLinuxBootLoader with the Linux kernel passed as URL.
  @param kernelPath  Path of Linux kernel on the local file system.
@@ -392,6 +400,94 @@ void *newVZVirtioSocketDeviceConfiguration()
 }
 
 /*!
+ @abstract The VZVirtioSocketListener object represents a listener for the Virtio socket device.
+ @discussion
+    The listener encompasses a VZVirtioSocketListenerDelegate object.
+    VZVirtioSocketListener is used with VZVirtioSocketDevice to listen to a particular port.
+    The delegate is used when a guest connects to a port associated with the listener.
+ @see VZVirtioSocketDevice
+ @see VZVirtioSocketListenerDelegate
+ */
+void *newVZVirtioSocketListener()
+{
+    VZVirtioSocketListener *ret = [[VZVirtioSocketListener alloc] init];
+    [ret setDelegate:[[VZVirtioSocketListenerDelegateImpl alloc] init]];
+    return ret;
+}
+
+/*!
+ @abstract Sets a listener at a specified port.
+ @discussion
+    There is only one listener per port, any existing listener will be removed, and the specified listener here will be set instead.
+    The same listener can be registered on multiple ports.
+    The listener's delegate will be called whenever the guest connects to that port.
+ @param listener The VZVirtioSocketListener object to be set.
+ @param port The port number to set the listener at.
+ */
+void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *listener, uint32_t port)
+{
+    [(VZVirtioSocketDevice *)socketDevice setSocketListener:(VZVirtioSocketListener *)listener forPort:port];
+}
+
+/*!
+ @abstract Removes the listener at a specfied port.
+ @discussion Does nothing if the port had no listener.
+ @param port The port number at which the listener is to be removed.
+ */
+void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, uint32_t port)
+{
+    [(VZVirtioSocketDevice *)socketDevice removeSocketListenerForPort:port];
+}
+
+typedef void (^connection_handler_t)(VZVirtioSocketConnection *, NSError *);
+
+connection_handler_t generateConnectionHandler(const char *socketDeviceID, void handler(void *, void *, char *))
+{
+    connection_handler_t ret;
+    @autoreleasepool {
+        NSString *str = [NSString stringWithUTF8String:socketDeviceID];
+        ret = Block_copy(^(VZVirtioSocketConnection *connection, NSError *err){
+            handler(connection, err, copyCString(str));
+        });
+    }
+    return ret;
+}
+
+/*!
+ @abstract Connects to a specified port.
+ @discussion Does nothing if the guest does not listen on that port.
+ @param port The port number to connect to.
+ @param completionHandler Block called after the connection has been successfully established or on error.
+    The error parameter passed to the block is nil if the connection was successful.
+ */
+void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *queue, uint32_t port, const char *socketDeviceID)
+{
+    connection_handler_t handler = generateConnectionHandler(socketDeviceID, connectionHandler);
+    dispatch_sync((dispatch_queue_t)queue, ^{
+        [(VZVirtioSocketDevice *)socketDevice connectToPort:port completionHandler:handler];
+    });
+    Block_release(handler);
+}
+
+
+VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connection)
+{
+	VZVirtioSocketConnectionFlat ret;
+    ret.sourcePort = [(VZVirtioSocketConnection *)connection sourcePort];
+    ret.destinationPort = [(VZVirtioSocketConnection *)connection destinationPort];
+    ret.fileDescriptor = [(VZVirtioSocketConnection *)connection fileDescriptor];
+	return ret;
+}
+
+/*!
+ @abstract Close the file descriptor that's associated with the socket.
+ */
+void VZVirtioSocketConnection_close(void *connection)
+{
+    [(VZVirtioSocketConnection *)connection close];
+}
+
+/*!
  @abstract Initialize the virtual machine.
  @param config The configuration of the virtual machine.
     The configuration must be valid. Validation can be performed at runtime with [VZVirtualMachineConfiguration validateWithError:].
@@ -413,6 +509,16 @@ void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, const char
                 context:[str copy]];
     }
     return vm;
+}
+
+/*!
+ @abstract Return the list of socket devices configured on this virtual machine. Return an empty array if no socket device is configured.
+ @see VZVirtioSocketDeviceConfiguration
+ @see VZVirtualMachineConfiguration
+ */
+void *VZVirtualMachine_socketDevices(void *machine)
+{
+    return [(VZVirtualMachine *)machine socketDevices]; // NSArray<VZSocketDevice *>
 }
 
 /*!

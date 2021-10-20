@@ -476,11 +476,11 @@ void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint3
 
 VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connection)
 {
-	VZVirtioSocketConnectionFlat ret;
+    VZVirtioSocketConnectionFlat ret;
     ret.sourcePort = [(VZVirtioSocketConnection *)connection sourcePort];
     ret.destinationPort = [(VZVirtioSocketConnection *)connection destinationPort];
     ret.fileDescriptor = [(VZVirtioSocketConnection *)connection fileDescriptor];
-	return ret;
+    return ret;
 }
 
 /*!

@@ -147,7 +147,7 @@ func (v *VirtualMachine) SocketDevices() []*VirtioSocketDevice {
 	ptrs := nsArray.ToPointerSlice()
 	socketDevices := make([]*VirtioSocketDevice, len(ptrs))
 	for i, ptr := range ptrs {
-		socketDevices[i] = newVirtioSocketDevice(ptr)
+		socketDevices[i] = newVirtioSocketDevice(ptr, v.dispatchQueue)
 	}
 	return socketDevices
 }

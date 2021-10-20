@@ -424,9 +424,11 @@ void *newVZVirtioSocketListener()
  @param listener The VZVirtioSocketListener object to be set.
  @param port The port number to set the listener at.
  */
-void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *listener, uint32_t port)
+void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQueue, void *listener, uint32_t port)
 {
-    [(VZVirtioSocketDevice *)socketDevice setSocketListener:(VZVirtioSocketListener *)listener forPort:port];
+    dispatch_sync((dispatch_queue_t)vmQueue, ^{
+        [(VZVirtioSocketDevice *)socketDevice setSocketListener:(VZVirtioSocketListener *)listener forPort:port];
+    });
 }
 
 /*!
@@ -434,9 +436,11 @@ void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *lis
  @discussion Does nothing if the port had no listener.
  @param port The port number at which the listener is to be removed.
  */
-void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, uint32_t port)
+void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *vmQueue, uint32_t port)
 {
-    [(VZVirtioSocketDevice *)socketDevice removeSocketListenerForPort:port];
+    dispatch_sync((dispatch_queue_t)vmQueue, ^{
+        [(VZVirtioSocketDevice *)socketDevice removeSocketListenerForPort:port];
+    });
 }
 
 typedef void (^connection_handler_t)(VZVirtioSocketConnection *, NSError *);
@@ -460,10 +464,10 @@ connection_handler_t generateConnectionHandler(const char *socketDeviceID, void 
  @param completionHandler Block called after the connection has been successfully established or on error.
     The error parameter passed to the block is nil if the connection was successful.
  */
-void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *queue, uint32_t port, const char *socketDeviceID)
+void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, const char *socketDeviceID)
 {
     connection_handler_t handler = generateConnectionHandler(socketDeviceID, connectionHandler);
-    dispatch_sync((dispatch_queue_t)queue, ^{
+    dispatch_sync((dispatch_queue_t)vmQueue, ^{
         [(VZVirtioSocketDevice *)socketDevice connectToPort:port completionHandler:handler];
     });
     Block_release(handler);

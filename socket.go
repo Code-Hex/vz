@@ -65,12 +65,8 @@ type VirtioSocketDevice struct {
 
 var connectionHandlers = map[string]func(conn *VirtioSocketConnection, err error){}
 
-func newVirtioSocketDevice(ptr unsafe.Pointer) *VirtioSocketDevice {
+func newVirtioSocketDevice(ptr, dispatchQueue unsafe.Pointer) *VirtioSocketDevice {
 	id := xid.New().String()
-	cs := charWithGoString(id)
-	defer cs.Free()
-
-	dispatchQueue := C.makeDispatchQueue(cs.CString())
 	socketDevice := &VirtioSocketDevice{
 		id:            id,
 		dispatchQueue: dispatchQueue,
@@ -81,7 +77,6 @@ func newVirtioSocketDevice(ptr unsafe.Pointer) *VirtioSocketDevice {
 	connectionHandlers[id] = func(*VirtioSocketConnection, error) {}
 
 	runtime.SetFinalizer(socketDevice, func(self *VirtioSocketDevice) {
-		releaseDispatch(self.dispatchQueue)
 		self.Release()
 	})
 	return socketDevice
@@ -91,14 +86,14 @@ func newVirtioSocketDevice(ptr unsafe.Pointer) *VirtioSocketDevice {
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdevice/3656679-setsocketlistener?language=objc
 func (v *VirtioSocketDevice) SetSocketListenerForPort(listener *VirtioSocketListener, port uint32) {
-	C.VZVirtioSocketDevice_setSocketListenerForPort(v.Ptr(), listener.Ptr(), C.uint32_t(port))
+	C.VZVirtioSocketDevice_setSocketListenerForPort(v.Ptr(), v.dispatchQueue, listener.Ptr(), C.uint32_t(port))
 }
 
 // RemoveSocketListenerForPort removes the listener object from the specfied port.
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdevice/3656678-removesocketlistenerforport?language=objc
 func (v *VirtioSocketDevice) RemoveSocketListenerForPort(listener *VirtioSocketListener, port uint32) {
-	C.VZVirtioSocketDevice_removeSocketListenerForPort(v.Ptr(), C.uint32_t(port))
+	C.VZVirtioSocketDevice_removeSocketListenerForPort(v.Ptr(), v.dispatchQueue, C.uint32_t(port))
 }
 
 //export connectionHandler

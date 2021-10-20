@@ -68,8 +68,8 @@ void *newRandomLocallyAdministeredVZMACAddress();
 const char *getVZMACAddressString(void *macAddress);
 void *newVZVirtioSocketListener();
 void *VZVirtualMachine_socketDevices(void *machine);
-void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *listener, uint32_t port);
-void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, uint32_t port);
+void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQueue, void *listener, uint32_t port);
+void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *vmQueue, uint32_t port);
 void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *queue, uint32_t port, const char *socketDeviceID);
 
 /* VirtualMachine */

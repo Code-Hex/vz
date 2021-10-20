@@ -70,7 +70,7 @@ void *newVZVirtioSocketListener();
 void *VZVirtualMachine_socketDevices(void *machine);
 void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQueue, void *listener, uint32_t port);
 void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *vmQueue, uint32_t port);
-void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *queue, uint32_t port, const char *socketDeviceID);
+void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, const char *socketDeviceID);
 
 /* VirtualMachine */
 void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, const char *vmid);

@@ -82,7 +82,7 @@ func newVirtioSocketDevice(ptr, dispatchQueue unsafe.Pointer) *VirtioSocketDevic
 	return socketDevice
 }
 
-// SetSocketListener configures an object to monitor the specified port for new connections.
+// SetSocketListenerForPort configures an object to monitor the specified port for new connections.
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdevice/3656679-setsocketlistener?language=objc
 func (v *VirtioSocketDevice) SetSocketListenerForPort(listener *VirtioSocketListener, port uint32) {

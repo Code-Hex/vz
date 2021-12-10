@@ -39,8 +39,7 @@ char *copyCString(NSString *nss)
 @implementation VZVirtioSocketListenerDelegateImpl
 - (BOOL)listener:(VZVirtioSocketListener *)listener shouldAcceptNewConnection:(VZVirtioSocketConnection *)connection fromSocketDevice:(VZVirtioSocketDevice *)socketDevice;
 {
-    // TODO(codehex): implement callback
-    return TRUE;
+    return shouldAcceptNewConnectionHandler(listener, connection, socketDevice);
 }
 @end
 

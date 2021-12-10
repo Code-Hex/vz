@@ -133,17 +133,62 @@ type VirtioSocketListener struct {
 	pointer
 }
 
+type virtioSocketListenerOption struct {
+	shouldAcceptNewConnection func(conn *VirtioSocketConnection) bool
+}
+
+var shouldAcceptNewConnectionHandlers = map[unsafe.Pointer]func(conn *VirtioSocketConnection) bool{}
+
+// VirtioSocketListenerOption is an option.
+type VirtioSocketListenerOption func(o *virtioSocketListenerOption)
+
+// WithShouldAcceptNewConnection sets callback function to return a Boolean value that indicates
+// whether to accept a new connection from the guest operating system.
+//
+// true to establish the connection, or false to reject it.
+//
+// The object that contains information about the proposed connection. Use this object to fetch port information.
+func WithShouldAcceptNewConnection(f func(conn *VirtioSocketConnection) bool) VirtioSocketListenerOption {
+	return func(o *virtioSocketListenerOption) {
+		if f != nil {
+			o.shouldAcceptNewConnection = f
+		}
+	}
+}
+
 // NewVirtioSocketListener creates a new VirtioSocketListener.
-func NewVirtioSocketListener() *VirtioSocketListener {
-	listener := &VirtioSocketListener{
-		pointer: pointer{
-			ptr: C.newVZVirtioSocketListener(),
+func NewVirtioSocketListener(opts ...VirtioSocketListenerOption) *VirtioSocketListener {
+	options := &virtioSocketListenerOption{
+		shouldAcceptNewConnection: func(conn *VirtioSocketConnection) bool {
+			// https://developer.apple.com/documentation/virtualization/vzvirtiosocketlistenerdelegate/3656685-listener?language=objc#:~:text=to%20reject%20it.-,Discussion,-Use%20your%20method%E2%80%99s
+			return false // default is rejected.
 		},
 	}
+	for _, optFunc := range opts {
+		optFunc(options)
+	}
+	ptr := C.newVZVirtioSocketListener()
+	listener := &VirtioSocketListener{
+		pointer: pointer{
+			ptr: ptr,
+		},
+	}
+	shouldAcceptNewConnectionHandlers[ptr] = options.shouldAcceptNewConnection
+
 	runtime.SetFinalizer(listener, func(self *VirtioSocketListener) {
 		self.Release()
+		delete(shouldAcceptNewConnectionHandlers, ptr)
 	})
 	return listener
+}
+
+//export shouldAcceptNewConnectionHandler
+func shouldAcceptNewConnectionHandler(listenerPtr, connPtr, devicePtr unsafe.Pointer) C.BOOL {
+	_ = devicePtr // NOTO(codehex): Is this really required? How to use?
+
+	// see: startHandler
+	conn := newVirtioSocketConnection(connPtr)
+	return (C.BOOL)(shouldAcceptNewConnectionHandlers[listenerPtr](conn))
 }
 
 // VirtioSocketConnection is a port-based connection between the guest operating system and the host computer.

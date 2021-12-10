@@ -112,7 +112,7 @@ func connectionHandler(connPtr, errPtr unsafe.Pointer, cid *C.char) {
 	}
 }
 
-// Initiates a connection to the specified port of the guest operating system.
+// ConnectToPort Initiates a connection to the specified port of the guest operating system.
 //
 // This method initiates the connection asynchronously, and executes the completion handler when the results are available.
 // If the guest operating system doesn’t listen for connections to the specifed port, this method does nothing.

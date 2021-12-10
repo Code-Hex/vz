@@ -155,6 +155,7 @@ func NewVirtioSocketListener() *VirtioSocketListener {
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketconnection?language=objc
 type VirtioSocketConnection struct {
+	id              string
 	sourcePort      uint32
 	destinationPort uint32
 	fileDescriptor  uintptr
@@ -166,6 +167,33 @@ type VirtioSocketConnection struct {
 }
 
 var _ net.Conn = (*VirtioSocketConnection)(nil)
+
+func newVirtioSocketConnection(ptr unsafe.Pointer) *VirtioSocketConnection {
+	id := xid.New().String()
+	vzVirtioSocketConnection := C.convertVZVirtioSocketConnection2Flat(ptr)
+	conn := &VirtioSocketConnection{
+		id:              id,
+		sourcePort:      (uint32)(vzVirtioSocketConnection.sourcePort),
+		destinationPort: (uint32)(vzVirtioSocketConnection.destinationPort),
+		fileDescriptor:  (uintptr)(vzVirtioSocketConnection.fileDescriptor),
+		file:            os.NewFile((uintptr)(vzVirtioSocketConnection.fileDescriptor), id),
+		laddr: &Addr{
+			CID:  unix.VMADDR_CID_HOST,
+			Port: (uint32)(vzVirtioSocketConnection.destinationPort),
+		},
+		raddr: &Addr{
+			CID:  unix.VMADDR_CID_HYPERVISOR,
+			Port: (uint32)(vzVirtioSocketConnection.sourcePort),
+		},
+		pointer: pointer{
+			ptr: ptr,
+		},
+	}
+	runtime.SetFinalizer(conn, func(self *VirtioSocketConnection) {
+		self.Release()
+	})
+	return conn
+}
 
 // Read reads data from connection of the vsock protocol.
 func (v *VirtioSocketConnection) Read(b []byte) (n int, err error) { return v.file.Read(b) }
@@ -205,30 +233,8 @@ func (v *VirtioSocketConnection) SetWriteDeadline(t time.Time) error {
 	return v.file.SetWriteDeadline(t)
 }
 
-func newVirtioSocketConnection(ptr unsafe.Pointer) *VirtioSocketConnection {
-	vzVirtioSocketConnection := C.convertVZVirtioSocketConnection2Flat(ptr)
-	conn := &VirtioSocketConnection{
-		sourcePort:      (uint32)(vzVirtioSocketConnection.sourcePort),
-		destinationPort: (uint32)(vzVirtioSocketConnection.destinationPort),
-		fileDescriptor:  (uintptr)(vzVirtioSocketConnection.fileDescriptor),
-		file:            os.NewFile((uintptr)(vzVirtioSocketConnection.fileDescriptor), "socket"),
-		laddr: &Addr{
-			CID:  unix.VMADDR_CID_HOST,
-			Port: (uint32)(vzVirtioSocketConnection.destinationPort),
-		},
-		raddr: &Addr{
-			CID:  unix.VMADDR_CID_HYPERVISOR,
-			Port: (uint32)(vzVirtioSocketConnection.sourcePort),
-		},
-		pointer: pointer{
-			ptr: ptr,
-		},
-	}
-	runtime.SetFinalizer(conn, func(self *VirtioSocketConnection) {
-		self.Release()
-	})
-	return conn
-}
+// ID returns connection ID. this ID is used as filename of the vsock protocol connection.
+func (v *VirtioSocketConnection) ID() string { return v.id }
 
 // DestinationPort returns the destination port number of the connection.
 func (v *VirtioSocketConnection) DestinationPort() uint32 {

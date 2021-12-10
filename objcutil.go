@@ -93,6 +93,17 @@ static inline void releaseDispatch(void *queue)
 {
 	dispatch_release((dispatch_queue_t)queue);
 }
+
+int getNSArrayCount(void *ptr)
+{
+	return (int)[(NSArray*)ptr count];
+}
+
+void* getNSArrayItem(void *ptr, int i)
+{
+	NSArray *arr = (NSArray *)ptr;
+	return [arr objectAtIndex:i];
+}
 */
 import "C"
 import (
@@ -156,6 +167,21 @@ func (o *pointer) Ptr() unsafe.Pointer {
 // NSObject indicates NSObject
 type NSObject interface {
 	Ptr() unsafe.Pointer
+}
+
+// NSArray indicates NSArray
+type NSArray struct {
+	pointer
+}
+
+// ToPointerSlice method returns slice of the obj-c object as unsafe.Pointer.
+func (n *NSArray) ToPointerSlice() []unsafe.Pointer {
+	count := int(C.getNSArrayCount(n.Ptr()))
+	ret := make([]unsafe.Pointer, count)
+	for i := 0; i < count; i++ {
+		ret[i] = C.getNSArrayItem(n.Ptr(), C.int(i))
+	}
+	return ret
 }
 
 // NSError indicates NSError.

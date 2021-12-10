@@ -132,6 +132,26 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) *VirtualMachine {
 	return v
 }
 
+// SocketDevices return the list of socket devices configured on this virtual machine.
+// Return an empty array if no socket device is configured.
+//
+// Since only NewVirtioSocketDeviceConfiguration is available in vz package,
+// it will always return VirtioSocketDevice.
+// see: https://developer.apple.com/documentation/virtualization/vzvirtualmachine/3656702-socketdevices?language=objc
+func (v *VirtualMachine) SocketDevices() []*VirtioSocketDevice {
+	nsArray := &NSArray{
+		pointer: pointer{
+			ptr: C.VZVirtualMachine_socketDevices(v.Ptr()),
+		},
+	}
+	ptrs := nsArray.ToPointerSlice()
+	socketDevices := make([]*VirtioSocketDevice, len(ptrs))
+	for i, ptr := range ptrs {
+		socketDevices[i] = newVirtioSocketDevice(ptr, v.dispatchQueue)
+	}
+	return socketDevices
+}
+
 //export changeStateOnObserver
 func changeStateOnObserver(state C.int, cID *C.char) {
 	id := (*char)(cID)

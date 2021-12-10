@@ -175,9 +175,7 @@ func (v *VirtioSocketConnection) Write(b []byte) (n int, err error) { return v.f
 
 // Close will be called when caused something error in socket.
 func (v *VirtioSocketConnection) Close() error {
-	defer v.file.Close()
-	C.VZVirtioSocketConnection_close(v.Ptr()) // probably unnecessary
-	return nil
+	return v.file.Close()
 }
 
 // LocalAddr returns the local network address.

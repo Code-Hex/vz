@@ -484,14 +484,6 @@ VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connecti
 }
 
 /*!
- @abstract Close the file descriptor that's associated with the socket.
- */
-void VZVirtioSocketConnection_close(void *connection)
-{
-    [(VZVirtioSocketConnection *)connection close];
-}
-
-/*!
  @abstract Initialize the virtual machine.
  @param config The configuration of the virtual machine.
     The configuration must be valid. Validation can be performed at runtime with [VZVirtualMachineConfiguration validateWithError:].

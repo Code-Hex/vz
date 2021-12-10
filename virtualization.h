@@ -93,4 +93,3 @@ typedef struct VZVirtioSocketConnectionFlat {
 } VZVirtioSocketConnectionFlat;
 
 VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connection);
-void VZVirtioSocketConnection_close(void *connection);

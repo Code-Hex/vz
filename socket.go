@@ -7,11 +7,15 @@ package vz
 */
 import "C"
 import (
-	"io"
+	"fmt"
+	"net"
+	"os"
 	"runtime"
+	"time"
 	"unsafe"
 
 	"github.com/rs/xid"
+	"golang.org/x/sys/unix"
 )
 
 // SocketDeviceConfiguration for a socket device configuration.
@@ -147,17 +151,61 @@ func NewVirtioSocketListener() *VirtioSocketListener {
 // You don’t create connection objects directly. When the guest operating system initiates a connection, the virtual machine creates
 // the connection object and passes it to the appropriate VirtioSocketListener struct, which forwards the object to its delegate.
 //
+// This is implemented net.Conn interface.
+//
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketconnection?language=objc
 type VirtioSocketConnection struct {
 	sourcePort      uint32
 	destinationPort uint32
 	fileDescriptor  uintptr
+	file            *os.File
+	laddr           net.Addr // local
+	raddr           net.Addr // remote
 
 	pointer
 }
 
-// TODO(codehex): should implement net.Conn?
-var _ io.Closer = (*VirtioSocketConnection)(nil)
+var _ net.Conn = (*VirtioSocketConnection)(nil)
+
+// Read reads data from connection of the vsock protocol.
+func (v *VirtioSocketConnection) Read(b []byte) (n int, err error) { return v.file.Read(b) }
+
+// Write writes data to the connection of the vsock protocol.
+func (v *VirtioSocketConnection) Write(b []byte) (n int, err error) { return v.file.Write(b) }
+
+// Close will be called when caused something error in socket.
+func (v *VirtioSocketConnection) Close() error {
+	defer v.file.Close()
+	C.VZVirtioSocketConnection_close(v.Ptr()) // probably unnecessary
+	return nil
+}
+
+// LocalAddr returns the local network address.
+func (v *VirtioSocketConnection) LocalAddr() net.Addr { return v.laddr }
+
+// RemoteAddr returns the remote network address.
+func (v *VirtioSocketConnection) RemoteAddr() net.Addr { return v.raddr }
+
+// SetDeadline sets the read and write deadlines associated
+// with the connection. It is equivalent to calling both
+// SetReadDeadline and SetWriteDeadline.
+func (v *VirtioSocketConnection) SetDeadline(t time.Time) error { return v.file.SetDeadline(t) }
+
+// SetReadDeadline sets the deadline for future Read calls
+// and any currently-blocked Read call.
+// A zero value for t means Read will not time out.
+func (v *VirtioSocketConnection) SetReadDeadline(t time.Time) error {
+	return v.file.SetReadDeadline(t)
+}
+
+// SetWriteDeadline sets the deadline for future Write calls
+// and any currently-blocked Write call.
+// Even if write times out, it may return n > 0, indicating that
+// some of the data was successfully written.
+// A zero value for t means Write will not time out.
+func (v *VirtioSocketConnection) SetWriteDeadline(t time.Time) error {
+	return v.file.SetWriteDeadline(t)
+}
 
 func newVirtioSocketConnection(ptr unsafe.Pointer) *VirtioSocketConnection {
 	vzVirtioSocketConnection := C.convertVZVirtioSocketConnection2Flat(ptr)
@@ -165,6 +213,15 @@ func newVirtioSocketConnection(ptr unsafe.Pointer) *VirtioSocketConnection {
 		sourcePort:      (uint32)(vzVirtioSocketConnection.sourcePort),
 		destinationPort: (uint32)(vzVirtioSocketConnection.destinationPort),
 		fileDescriptor:  (uintptr)(vzVirtioSocketConnection.fileDescriptor),
+		file:            os.NewFile((uintptr)(vzVirtioSocketConnection.fileDescriptor), "socket"),
+		laddr: &Addr{
+			CID:  unix.VMADDR_CID_HOST,
+			Port: (uint32)(vzVirtioSocketConnection.destinationPort),
+		},
+		raddr: &Addr{
+			CID:  unix.VMADDR_CID_HYPERVISOR,
+			Port: (uint32)(vzVirtioSocketConnection.sourcePort),
+		},
 		pointer: pointer{
 			ptr: ptr,
 		},
@@ -194,7 +251,16 @@ func (v *VirtioSocketConnection) FileDescriptor() uintptr {
 	return v.fileDescriptor
 }
 
-func (v *VirtioSocketConnection) Close() error {
-	C.VZVirtioSocketConnection_close(v.Ptr())
-	return nil
+// Addr represents a network end point address for the vsock protocol.
+type Addr struct {
+	CID  uint32
+	Port uint32
 }
+
+var _ net.Addr = (*Addr)(nil)
+
+// Network returns "vsock".
+func (a *Addr) Network() string { return "vsock" }
+
+// String returns string of "<cid>:<port>"
+func (a *Addr) String() string { return fmt.Sprintf("%d:%d", a.CID, a.Port) }

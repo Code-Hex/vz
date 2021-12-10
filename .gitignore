@@ -1,2 +1,4 @@
 virtualization
 *.log
+.envrc
+.env

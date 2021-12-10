@@ -3,9 +3,9 @@ package main
 import (
 	l "log"
 	"os"
+	"os/signal"
 	"strings"
 	"syscall"
-	"time"
 
 	"github.com/Code-Hex/vz"
 	"github.com/pkg/term/termios"
@@ -49,20 +49,24 @@ func main() {
 		"console=hvc0",
 		// Stop in the initial ramdisk before attempting to transition to
 		// the root file system.
-		"rd.break=initqueue",
+		"root=/dev/vda",
 	}
 
+	vmlinuz := os.Getenv("VMLINUZ_PATH")
+	initrd := os.Getenv("INITRD_PATH")
+	diskPath := os.Getenv("DISKIMG_PATH")
+
 	bootLoader := vz.NewLinuxBootLoader(
-		"/Users/codehex/Desktop/vmlinux",
+		vmlinuz,
 		vz.WithCommandLine(strings.Join(kernelCommandLineArguments, " ")),
-		vz.WithInitrd("/Users/codehex/Desktop/initrd"),
+		vz.WithInitrd(initrd),
 	)
 	log.Println("bootLoader:", bootLoader)
 
 	config := vz.NewVirtualMachineConfiguration(
 		bootLoader,
 		1,
-		1*1024*1024*1024,
+		2*1024*1024*1024,
 	)
 
 	setRawMode(os.Stdin)
@@ -89,7 +93,7 @@ func main() {
 	})
 
 	diskImageAttachment, err := vz.NewDiskImageStorageDeviceAttachment(
-		"/Users/codehex/Desktop/focal-server-cloudimg-arm64.img",
+		diskPath,
 		false,
 	)
 	if err != nil {
@@ -115,24 +119,9 @@ func main() {
 	}
 
 	vm := vz.NewVirtualMachine(config)
-	go func(vm *vz.VirtualMachine) {
-		t := time.NewTicker(time.Second)
-		defer t.Stop()
-		for {
-			select {
-			case <-t.C:
-			case newState := <-vm.StateChangedNotify():
-				log.Println(
-					"newState:", newState,
-					"state:", vm.State(),
-					"canStart:", vm.CanStart(),
-					"canResume:", vm.CanResume(),
-					"canPause:", vm.CanPause(),
-					"canStopRequest:", vm.CanRequestStop(),
-				)
-			}
-		}
-	}(vm)
+
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh, syscall.SIGTERM)
 
 	errCh := make(chan error, 1)
 
@@ -142,10 +131,26 @@ func main() {
 		}
 	})
 
-	select {
-	case err := <-errCh:
-		log.Println("in start:", err)
-	case <-time.After(3 * time.Minute):
+	for {
+		select {
+		case <-signalCh:
+			result, err := vm.RequestStop()
+			if err != nil {
+				log.Println("request stop error:", err)
+				return
+			}
+			log.Println("recieved signal", result)
+		case newState := <-vm.StateChangedNotify():
+			if newState == vz.VirtualMachineStateRunning {
+				log.Println("start VM is running")
+			}
+			if newState == vz.VirtualMachineStateStopped {
+				log.Println("stopped successfully")
+				return
+			}
+		case err := <-errCh:
+			log.Println("in start:", err)
+		}
 	}
 
 	// vm.Resume(func(err error) {

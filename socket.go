@@ -11,6 +11,7 @@ import (
 	"net"
 	"os"
 	"runtime"
+	"syscall"
 	"time"
 	"unsafe"
 
@@ -133,51 +134,42 @@ type VirtioSocketListener struct {
 	pointer
 }
 
-type virtioSocketListenerOption struct {
-	shouldAcceptNewConnection func(conn *VirtioSocketConnection) bool
+type dup struct {
+	conn *VirtioSocketConnection
+	err  error
 }
 
 var shouldAcceptNewConnectionHandlers = map[unsafe.Pointer]func(conn *VirtioSocketConnection) bool{}
 
-// VirtioSocketListenerOption is an option.
-type VirtioSocketListenerOption func(o *virtioSocketListenerOption)
-
-// WithShouldAcceptNewConnection sets callback function to return a Boolean value that indicates
-// whether to accept a new connection from the guest operating system.
+// NewVirtioSocketListener creates a new VirtioSocketListener with connection handler.
 //
-// true to establish the connection, or false to reject it.
-//
-// The object that contains information about the proposed connection. Use this object to fetch port information.
-func WithShouldAcceptNewConnection(f func(conn *VirtioSocketConnection) bool) VirtioSocketListenerOption {
-	return func(o *virtioSocketListenerOption) {
-		if f != nil {
-			o.shouldAcceptNewConnection = f
-		}
-	}
-}
-
-// NewVirtioSocketListener creates a new VirtioSocketListener.
-func NewVirtioSocketListener(opts ...VirtioSocketListenerOption) *VirtioSocketListener {
-	options := &virtioSocketListenerOption{
-		shouldAcceptNewConnection: func(conn *VirtioSocketConnection) bool {
-			// https://developer.apple.com/documentation/virtualization/vzvirtiosocketlistenerdelegate/3656685-listener?language=objc#:~:text=to%20reject%20it.-,Discussion,-Use%20your%20method%E2%80%99s
-			return false // default is rejected.
-		},
-	}
-	for _, optFunc := range opts {
-		optFunc(options)
-	}
+// The handler is executed asynchronously. Be sure to close the connection used in the handler by calling `conn.Close`.
+// This is to prevent connection leaks.
+func NewVirtioSocketListener(handler func(conn *VirtioSocketConnection, err error)) *VirtioSocketListener {
 	ptr := C.newVZVirtioSocketListener()
 	listener := &VirtioSocketListener{
 		pointer: pointer{
 			ptr: ptr,
 		},
 	}
-	shouldAcceptNewConnectionHandlers[ptr] = options.shouldAcceptNewConnection
+
+	dupCh := make(chan dup, 1)
+	go func() {
+		for dup := range dupCh {
+			go handler(dup.conn, dup.err)
+		}
+	}()
+	shouldAcceptNewConnectionHandlers[ptr] = func(conn *VirtioSocketConnection) bool {
+		dupConn, err := conn.dup()
+		dupCh <- dup{
+			conn: dupConn,
+			err:  err,
+		}
+		return true // must be connected
+	}
 
 	runtime.SetFinalizer(listener, func(self *VirtioSocketListener) {
 		self.Release()
-		delete(shouldAcceptNewConnectionHandlers, ptr)
 	})
 	return listener
 }
@@ -198,6 +190,10 @@ func shouldAcceptNewConnectionHandler(listenerPtr, connPtr, devicePtr unsafe.Poi
 //
 // This is implemented net.Conn interface.
 //
+// This struct does not have any pointers for objects of the Objective-C. Because the various values
+// of the VZVirtioSocketConnection object handled by Objective-C are no longer needed after the conversion
+// to the Go struct.
+//
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketconnection?language=objc
 type VirtioSocketConnection struct {
 	id              string
@@ -207,8 +203,6 @@ type VirtioSocketConnection struct {
 	file            *os.File
 	laddr           net.Addr // local
 	raddr           net.Addr // remote
-
-	pointer
 }
 
 var _ net.Conn = (*VirtioSocketConnection)(nil)
@@ -230,14 +224,30 @@ func newVirtioSocketConnection(ptr unsafe.Pointer) *VirtioSocketConnection {
 			CID:  unix.VMADDR_CID_HYPERVISOR,
 			Port: (uint32)(vzVirtioSocketConnection.sourcePort),
 		},
-		pointer: pointer{
-			ptr: ptr,
-		},
 	}
-	runtime.SetFinalizer(conn, func(self *VirtioSocketConnection) {
-		self.Release()
-	})
 	return conn
+}
+
+func (v *VirtioSocketConnection) dup() (*VirtioSocketConnection, error) {
+	nfd, err := syscall.Dup(int(v.fileDescriptor))
+	if err != nil {
+		return nil, &net.OpError{
+			Op:     "dup",
+			Net:    "vsock",
+			Source: v.laddr,
+			Addr:   v.raddr,
+			Err:    err,
+		}
+	}
+
+	dupConn := new(VirtioSocketConnection)
+	*dupConn = *v
+	dupConn.fileDescriptor = uintptr(nfd)
+	dupConn.file = os.NewFile(uintptr(nfd), v.file.Name())
+	dupConn.laddr = v.laddr
+	dupConn.raddr = v.raddr
+
+	return dupConn, nil
 }
 
 // Read reads data from connection of the vsock protocol.

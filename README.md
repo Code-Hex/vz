@@ -1,6 +1,8 @@
 vz - Go binding with Apple [Virtualization.framework](https://developer.apple.com/documentation/virtualization?language=objc)
 =======
 
+[![Build](https://github.com/Code-Hex/vz/actions/workflows/compile.yml/badge.svg)](https://github.com/Code-Hex/vz/actions/workflows/compile.yml)
+
 vz provides the power of the Apple Virtualization.framework in Go. Put here is block quote of overreview which is written what is Virtualization.framework from the document.
 
 > The Virtualization framework provides high-level APIs for creating and managing virtual machines on Apple silicon and Intel-based Mac computers. Use this framework to boot and run a Linux-based operating system in a custom environment that you define. The framework supports the Virtio specification, which defines standard interfaces for many device types, including network, socket, serial port, storage, entropy, and memory-balloon devices.

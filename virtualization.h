@@ -15,7 +15,7 @@ void pauseHandler(void *err, char *id);
 void resumeHandler(void *err, char *id);
 void connectionHandler(void *connection, void *err, char *id);
 void changeStateOnObserver(int state, char *id);
-BOOL shouldAcceptNewConnectionHandler(void *listener, void *connection, void *socketDevice);
+bool shouldAcceptNewConnectionHandler(void *listener, void *connection, void *socketDevice);
 
 @interface Observer : NSObject
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;

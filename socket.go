@@ -11,6 +11,7 @@ import (
 	"net"
 	"os"
 	"runtime"
+	"syscall"
 	"time"
 	"unsafe"
 
@@ -133,17 +134,53 @@ type VirtioSocketListener struct {
 	pointer
 }
 
-// NewVirtioSocketListener creates a new VirtioSocketListener.
-func NewVirtioSocketListener() *VirtioSocketListener {
+type dup struct {
+	conn *VirtioSocketConnection
+	err  error
+}
+
+var shouldAcceptNewConnectionHandlers = map[unsafe.Pointer]func(conn *VirtioSocketConnection) bool{}
+
+// NewVirtioSocketListener creates a new VirtioSocketListener with connection handler.
+//
+// The handler is executed asynchronously. Be sure to close the connection used in the handler by calling `conn.Close`.
+// This is to prevent connection leaks.
+func NewVirtioSocketListener(handler func(conn *VirtioSocketConnection, err error)) *VirtioSocketListener {
+	ptr := C.newVZVirtioSocketListener()
 	listener := &VirtioSocketListener{
 		pointer: pointer{
-			ptr: C.newVZVirtioSocketListener(),
+			ptr: ptr,
 		},
 	}
+
+	dupCh := make(chan dup, 1)
+	go func() {
+		for dup := range dupCh {
+			go handler(dup.conn, dup.err)
+		}
+	}()
+	shouldAcceptNewConnectionHandlers[ptr] = func(conn *VirtioSocketConnection) bool {
+		dupConn, err := conn.dup()
+		dupCh <- dup{
+			conn: dupConn,
+			err:  err,
+		}
+		return true // must be connected
+	}
+
 	runtime.SetFinalizer(listener, func(self *VirtioSocketListener) {
 		self.Release()
 	})
 	return listener
+}
+
+//export shouldAcceptNewConnectionHandler
+func shouldAcceptNewConnectionHandler(listenerPtr, connPtr, devicePtr unsafe.Pointer) C.BOOL {
+	_ = devicePtr // NOTO(codehex): Is this really required? How to use?
+
+	// see: startHandler
+	conn := newVirtioSocketConnection(connPtr)
+	return (C.BOOL)(shouldAcceptNewConnectionHandlers[listenerPtr](conn))
 }
 
 // VirtioSocketConnection is a port-based connection between the guest operating system and the host computer.
@@ -152,6 +189,10 @@ func NewVirtioSocketListener() *VirtioSocketListener {
 // the connection object and passes it to the appropriate VirtioSocketListener struct, which forwards the object to its delegate.
 //
 // This is implemented net.Conn interface.
+//
+// This struct does not have any pointers for objects of the Objective-C. Because the various values
+// of the VZVirtioSocketConnection object handled by Objective-C are no longer needed after the conversion
+// to the Go struct.
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketconnection?language=objc
 type VirtioSocketConnection struct {
@@ -162,8 +203,6 @@ type VirtioSocketConnection struct {
 	file            *os.File
 	laddr           net.Addr // local
 	raddr           net.Addr // remote
-
-	pointer
 }
 
 var _ net.Conn = (*VirtioSocketConnection)(nil)
@@ -185,14 +224,30 @@ func newVirtioSocketConnection(ptr unsafe.Pointer) *VirtioSocketConnection {
 			CID:  unix.VMADDR_CID_HYPERVISOR,
 			Port: (uint32)(vzVirtioSocketConnection.sourcePort),
 		},
-		pointer: pointer{
-			ptr: ptr,
-		},
 	}
-	runtime.SetFinalizer(conn, func(self *VirtioSocketConnection) {
-		self.Release()
-	})
 	return conn
+}
+
+func (v *VirtioSocketConnection) dup() (*VirtioSocketConnection, error) {
+	nfd, err := syscall.Dup(int(v.fileDescriptor))
+	if err != nil {
+		return nil, &net.OpError{
+			Op:     "dup",
+			Net:    "vsock",
+			Source: v.laddr,
+			Addr:   v.raddr,
+			Err:    err,
+		}
+	}
+
+	dupConn := new(VirtioSocketConnection)
+	*dupConn = *v
+	dupConn.fileDescriptor = uintptr(nfd)
+	dupConn.file = os.NewFile(uintptr(nfd), v.file.Name())
+	dupConn.laddr = v.laddr
+	dupConn.raddr = v.raddr
+
+	return dupConn, nil
 }
 
 // Read reads data from connection of the vsock protocol.

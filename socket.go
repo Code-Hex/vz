@@ -176,11 +176,13 @@ func NewVirtioSocketListener(handler func(conn *VirtioSocketConnection, err erro
 
 //export shouldAcceptNewConnectionHandler
 func shouldAcceptNewConnectionHandler(listenerPtr, connPtr, devicePtr unsafe.Pointer) C.BOOL {
-	_ = devicePtr // NOTO(codehex): Is this really required? How to use?
-
 	// see: startHandler
 	conn := newVirtioSocketConnection(connPtr)
-	return (C.BOOL)(shouldAcceptNewConnectionHandlers[listenerPtr](conn))
+	if shouldAcceptNewConnectionHandlers[listenerPtr](conn) {
+		return 1
+	}
+
+	return 0
 }
 
 // VirtioSocketConnection is a port-based connection between the guest operating system and the host computer.

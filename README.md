@@ -44,11 +44,6 @@ $ codesign --entitlements vz.entitlements -s - <YOUR BINARY PATH>
 
 If you want to use [`VZBridgedNetworkDeviceAttachment`](https://developer.apple.com/documentation/virtualization/vzbridgednetworkdeviceattachment?language=objc), you need to add also `com.apple.vm.networking` entitlement.
 
-## TODO
-
-- [x] [VZMACAddress](https://developer.apple.com/documentation/virtualization/vzmacaddress?language=objc)
-- [ ] [VZVirtioSocketDeviceConfiguration](https://developer.apple.com/documentation/virtualization/sockets?language=objc)
-
 ## LICENSE
 
 MIT License

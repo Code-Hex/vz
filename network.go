@@ -12,6 +12,30 @@ import (
 	"runtime"
 )
 
+type BridgeNetworkImp struct {
+	pointer
+	name string
+}
+
+func NewBridgeNetwork(name string) *BridgeNetworkImp {
+
+	return &BridgeNetworkImp{name: name}
+}
+
+// NetworkInterfaces returns the list of network interfaces available for bridging.
+func (b *BridgeNetworkImp) NetworkInterfaces() []BridgedNetwork {
+
+	return []BridgedNetwork{b}
+}
+
+// Identifier returns the unique identifier for this interface.
+// The identifier is the BSD name associated with the interface (e.g. "en0").
+func (b *BridgeNetworkImp)  Identifier() string { return b.name}
+
+// LocalizedDisplayName returns a display name if available (e.g. "Ethernet").
+func (b *BridgeNetworkImp)  LocalizedDisplayName() string { return b.name}
+
+
 // BridgedNetwork defines a network interface that bridges a physical interface with a virtual machine.
 //
 // A bridged interface is shared between the virtual machine and the host system. Both host and

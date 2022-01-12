@@ -162,7 +162,7 @@ func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) *Vi
 	return config
 }
 
-func (v *VirtioNetworkDeviceConfiguration) SetMacAddress(macAddress *MACAddress) {
+func (v *VirtioNetworkDeviceConfiguration) SetMACAddress(macAddress *MACAddress) {
 	C.setNetworkDevicesVZMACAddress(v.Ptr(), macAddress.Ptr())
 }
 

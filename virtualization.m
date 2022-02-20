@@ -197,6 +197,11 @@ void setStorageDevicesVZVirtualMachineConfiguration(void *config,
     [(VZVirtualMachineConfiguration *)config setStorageDevices:[(NSMutableArray *)storageDevices copy]];
 }
 
+void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void *directorySharingDevices)
+{
+    [(VZVirtualMachineConfiguration *)config setDirectorySharingDevices:[(NSMutableArray *)directorySharingDevices copy]];
+}
+
 /*!
  @abstract Intialize the VZFileHandleSerialPortAttachment from file descriptors.
  @param readFileDescriptor File descriptor for reading from the file.
@@ -563,6 +568,37 @@ void setNetworkDevicesVZMACAddress(void *config, void *macAddress)
 const char *getVZMACAddressString(void *macAddress)
 {
     return [[(VZMACAddress *)macAddress string] UTF8String];
+}
+
+void* newVZSharedDirectory(const char *dirPath, bool readOnly)
+{
+    VZSharedDirectory *ret;
+    @autoreleasepool {
+        NSString *dirPathNSString = [NSString stringWithUTF8String:dirPath];
+        NSURL *dirURL = [NSURL fileURLWithPath:dirPathNSString];
+        ret = [[VZSharedDirectory alloc] initWithURL:dirURL readOnly:(BOOL)readOnly];
+    }
+    return ret;
+}
+
+void* newVZSingleDirectoryShare(void *sharedDirectory)
+{
+    return [[VZSingleDirectoryShare alloc] initWithDirectory:(VZSharedDirectory *)sharedDirectory];
+}
+
+void* newVZVirtioFileSystemDeviceConfiguration(const char *tag)
+{
+    VZVirtioFileSystemDeviceConfiguration *ret;
+    @autoreleasepool {
+        NSString *tagNSString = [NSString stringWithUTF8String:tag];
+        ret = [[VZVirtioFileSystemDeviceConfiguration alloc] initWithTag:tagNSString];
+    }
+    return ret;
+}
+
+void setVZVirtioFileSystemDeviceConfigurationShare(void *config, void *share)
+{
+    [(VZVirtioFileSystemDeviceConfiguration *)config setShare:[(VZDirectoryShare *)share copy]];
 }
 
 /*!

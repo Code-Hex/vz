@@ -26,7 +26,6 @@ bool shouldAcceptNewConnectionHandler(void *listener, void *connection, void *so
 - (BOOL)listener:(VZVirtioSocketListener *)listener shouldAcceptNewConnection:(VZVirtioSocketConnection *)connection fromSocketDevice:(VZVirtioSocketDevice *)socketDevice;
 @end
 
-
 /* BootLoader */
 void *newVZLinuxBootLoader(const char *kernelPath);
 void setCommandLineVZLinuxBootLoader(void *bootLoaderPtr, const char *commandLine);
@@ -35,8 +34,8 @@ void setInitialRamdiskURLVZLinuxBootLoader(void *bootLoaderPtr, const char *ramd
 /* VirtualMachineConfiguration */
 bool validateVZVirtualMachineConfiguration(void *config, void **error);
 void *newVZVirtualMachineConfiguration(void *bootLoader,
-                                    unsigned int CPUCount,
-                                    unsigned long long memorySize);
+                                       unsigned int CPUCount,
+                                       unsigned long long memorySize);
 void setEntropyDevicesVZVirtualMachineConfiguration(void *config,
                                                     void *entropyDevices);
 void setMemoryBalloonDevicesVZVirtualMachineConfiguration(void *config,
@@ -49,6 +48,7 @@ void setSocketDevicesVZVirtualMachineConfiguration(void *config,
                                                    void *socketDevices);
 void setStorageDevicesVZVirtualMachineConfiguration(void *config,
                                                     void *storageDevices);
+void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void *directorySharingDevices);
 
 /* Configurations */
 void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileDescriptor);
@@ -68,6 +68,10 @@ void *newVZMACAddress(const char *macAddress);
 void *newRandomLocallyAdministeredVZMACAddress();
 const char *getVZMACAddressString(void *macAddress);
 void *newVZVirtioSocketListener();
+void *newVZSharedDirectory(const char *dirPath, bool readOnly);
+void *newVZSingleDirectoryShare(void *sharedDirectory);
+void *newVZVirtioFileSystemDeviceConfiguration(const char *tag);
+void setVZVirtioFileSystemDeviceConfigurationShare(void *config, void *share);
 void *VZVirtualMachine_socketDevices(void *machine);
 void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQueue, void *listener, uint32_t port);
 void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *vmQueue, uint32_t port);
@@ -87,7 +91,8 @@ bool vmCanRequestStop(void *machine, void *queue);
 void *makeDispatchQueue(const char *label);
 
 /* VZVirtioSocketConnection */
-typedef struct VZVirtioSocketConnectionFlat {
+typedef struct VZVirtioSocketConnectionFlat
+{
     uint32_t destinationPort;
     uint32_t sourcePort;
     int fileDescriptor;

@@ -196,7 +196,10 @@ void setStorageDevicesVZVirtualMachineConfiguration(void *config,
 {
     [(VZVirtualMachineConfiguration *)config setStorageDevices:[(NSMutableArray *)storageDevices copy]];
 }
-
+/*!
+ @abstract List of directory sharing devices. Empty by default.
+ @see VZDirectorySharingDeviceConfiguration
+ */
 void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void *directorySharingDevices)
 {
     [(VZVirtualMachineConfiguration *)config setDirectorySharingDevices:[(NSMutableArray *)directorySharingDevices copy]];
@@ -570,6 +573,14 @@ const char *getVZMACAddressString(void *macAddress)
     return [[(VZMACAddress *)macAddress string] UTF8String];
 }
 
+/*!
+ @abstract Initialize the VZSharedDirectory from the directory path and read only option.
+ @param dirPath
+    The directory path that will be share.
+ @param readOnly
+    If the directory should be mounted read only.
+ @return A VZSharedDirectory
+ */
 void* newVZSharedDirectory(const char *dirPath, bool readOnly)
 {
     VZSharedDirectory *ret;
@@ -581,11 +592,23 @@ void* newVZSharedDirectory(const char *dirPath, bool readOnly)
     return ret;
 }
 
+/*!
+ @abstract Initialize the VZSingleDirectoryShare from the shared directory.
+ @param sharedDirectory
+    The shared directory to use.
+ @return A VZSingleDirectoryShare
+ */
 void* newVZSingleDirectoryShare(void *sharedDirectory)
 {
     return [[VZSingleDirectoryShare alloc] initWithDirectory:(VZSharedDirectory *)sharedDirectory];
 }
 
+/*!
+ @abstract Initialize the VZVirtioFileSystemDeviceConfiguration from the fs tag.
+ @param tag
+    The tag to use for this device configuration.
+ @return A VZVirtioFileSystemDeviceConfiguration
+ */
 void* newVZVirtioFileSystemDeviceConfiguration(const char *tag)
 {
     VZVirtioFileSystemDeviceConfiguration *ret;
@@ -596,6 +619,9 @@ void* newVZVirtioFileSystemDeviceConfiguration(const char *tag)
     return ret;
 }
 
+/*!
+ @abstract Sets share associated with this configuration.
+ */
 void setVZVirtioFileSystemDeviceConfigurationShare(void *config, void *share)
 {
     [(VZVirtioFileSystemDeviceConfiguration *)config setShare:(VZDirectoryShare *)share];

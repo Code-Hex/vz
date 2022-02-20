@@ -44,18 +44,6 @@ func (c *VirtioFileSystemDeviceConfiguration) SetDirectoryShare(share DirectoryS
 	C.setVZVirtioFileSystemDeviceConfigurationShare(c.Ptr(), share.Ptr())
 }
 
-type DirectoryShare interface {
-	NSObject
-
-	directoryShare()
-}
-
-type baseDirectoryShare struct{}
-
-func (*baseDirectoryShare) directoryShare() {}
-
-var _ DirectoryShare = (*SingleDirectoryShare)(nil)
-
 type SharedDirectory struct {
 	pointer
 }
@@ -73,6 +61,18 @@ func NewSharedDirectory(dirPath string, readOnly bool) *SharedDirectory {
 	})
 	return sd
 }
+
+type DirectoryShare interface {
+	NSObject
+
+	directoryShare()
+}
+
+type baseDirectoryShare struct{}
+
+func (*baseDirectoryShare) directoryShare() {}
+
+var _ DirectoryShare = (*SingleDirectoryShare)(nil)
 
 type SingleDirectoryShare struct {
 	pointer

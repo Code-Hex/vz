@@ -598,7 +598,7 @@ void* newVZVirtioFileSystemDeviceConfiguration(const char *tag)
 
 void setVZVirtioFileSystemDeviceConfigurationShare(void *config, void *share)
 {
-    [(VZVirtioFileSystemDeviceConfiguration *)config setShare:[(VZDirectoryShare *)share copy]];
+    [(VZVirtioFileSystemDeviceConfiguration *)config setShare:(VZDirectoryShare *)share];
 }
 
 /*!

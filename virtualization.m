@@ -59,6 +59,21 @@ void *newVZLinuxBootLoader(const char *kernelPath)
 }
 
 /*!
+ @abstract Create a VZLinuxBootLoader with the Linux kernel passed as base64-encoded dataURL string.
+ @param kernel  kernel contents as base64-encoded string.
+*/
+void *newVZLinuxBootLoaderMemory(const char *kernel)
+{
+    VZLinuxBootLoader *ret;
+    @autoreleasepool {
+        NSString *kernelDataString = [NSString stringWithUTF8String:kernel];
+        NSURL *kernelURL = [NSURL URLWithString:kernelDataString];
+        ret = [[VZLinuxBootLoader alloc] initWithKernelURL:kernelURL];
+    }
+    return ret;
+}
+
+/*!
  @abstract Set the command-line parameters.
  @param bootLoader VZLinuxBootLoader
  @param commandLine The command-line parameters passed to the kernel on boot.

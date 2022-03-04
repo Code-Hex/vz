@@ -29,6 +29,7 @@ bool shouldAcceptNewConnectionHandler(void *listener, void *connection, void *so
 
 /* BootLoader */
 void *newVZLinuxBootLoader(const char *kernelPath);
+void *newVZLinuxBootLoaderMemory(const char *kernel);
 void setCommandLineVZLinuxBootLoader(void *bootLoaderPtr, const char *commandLine);
 void setInitialRamdiskURLVZLinuxBootLoader(void *bootLoaderPtr, const char *ramdiskPath);
 

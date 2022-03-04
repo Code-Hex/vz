@@ -7,6 +7,7 @@ package vz
 */
 import "C"
 import (
+	"encoding/base64"
 	"fmt"
 	"runtime"
 )
@@ -76,6 +77,28 @@ func NewLinuxBootLoader(vmlinuz string, opts ...LinuxBootLoaderOption) *LinuxBoo
 		pointer: pointer{
 			ptr: C.newVZLinuxBootLoader(
 				vmlinuzPath.CString(),
+			),
+		},
+	}
+	runtime.SetFinalizer(bootLoader, func(self *LinuxBootLoader) {
+		self.Release()
+	})
+	for _, opt := range opts {
+		opt(bootLoader)
+	}
+	return bootLoader
+}
+
+// NewLinuxBootLoaderMemory creates a LinuxBootLoader with the Linux kernel passed as a byte slice.
+func NewLinuxBootLoaderMemory(vmlinuz []byte, opts ...LinuxBootLoaderOption) *LinuxBootLoader {
+	// turn the vmlinuz into a base64-encoded string
+	vmlinuzB64 := charWithGoString(fmt.Sprintf("data:application/octet-stream;base64,%s", base64.StdEncoding.EncodeToString(vmlinuz)))
+	defer vmlinuzB64.Free()
+	bootLoader := &LinuxBootLoader{
+		vmlinuzPath: "",
+		pointer: pointer{
+			ptr: C.newVZLinuxBootLoaderMemory(
+				vmlinuzB64.CString(),
 			),
 		},
 	}

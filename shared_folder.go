@@ -8,6 +8,7 @@ package vz
 import "C"
 import "runtime"
 
+// DirectorySharingDeviceConfiguration for a directory sharing device configuration.
 type DirectorySharingDeviceConfiguration interface {
 	NSObject
 
@@ -20,12 +21,16 @@ func (*baseDirectorySharingDeviceConfiguration) directorySharingDeviceConfigurat
 
 var _ DirectorySharingDeviceConfiguration = (*VirtioFileSystemDeviceConfiguration)(nil)
 
+// VirtioFileSystemDeviceConfiguration is a configuration of a Virtio file system device.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzvirtiofilesystemdeviceconfiguration?language=objc
 type VirtioFileSystemDeviceConfiguration struct {
 	pointer
 
 	*baseDirectorySharingDeviceConfiguration
 }
 
+// NewVirtioFileSystemDeviceConfiguration create a new VirtioFileSystemDeviceConfiguration.
 func NewVirtioFileSystemDeviceConfiguration(tag string) *VirtioFileSystemDeviceConfiguration {
 	tagChar := charWithGoString(tag)
 	defer tagChar.Free()
@@ -40,14 +45,17 @@ func NewVirtioFileSystemDeviceConfiguration(tag string) *VirtioFileSystemDeviceC
 	return fsdConfig
 }
 
+// SetDirectoryShare sets the directory share associated with this configuration.
 func (c *VirtioFileSystemDeviceConfiguration) SetDirectoryShare(share DirectoryShare) {
 	C.setVZVirtioFileSystemDeviceConfigurationShare(c.Ptr(), share.Ptr())
 }
 
+// SharedDirectory is a shared directory.
 type SharedDirectory struct {
 	pointer
 }
 
+// NewSharedDirectory creates a new shared directory.
 func NewSharedDirectory(dirPath string, readOnly bool) *SharedDirectory {
 	dirPathChar := charWithGoString(dirPath)
 	defer dirPathChar.Free()

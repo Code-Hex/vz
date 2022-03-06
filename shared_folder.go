@@ -70,6 +70,7 @@ func NewSharedDirectory(dirPath string, readOnly bool) *SharedDirectory {
 	return sd
 }
 
+// DirectoryShare is the base interface for a directory share.
 type DirectoryShare interface {
 	NSObject
 
@@ -82,12 +83,14 @@ func (*baseDirectoryShare) directoryShare() {}
 
 var _ DirectoryShare = (*SingleDirectoryShare)(nil)
 
+// SingleDirectoryShare defines the directory share for a single directory.
 type SingleDirectoryShare struct {
 	pointer
 
 	*baseDirectoryShare
 }
 
+// NewSingleDirectoryShare creates a new single directory share.
 func NewSingleDirectoryShare(share *SharedDirectory) *SingleDirectoryShare {
 	config := &SingleDirectoryShare{
 		pointer: pointer{

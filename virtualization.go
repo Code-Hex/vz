@@ -62,16 +62,8 @@ type VirtualMachine struct {
 	// id for this struct.
 	id string
 
-	// Indicate whether or not virtualization is available.
-	//
-	// If virtualization is unavailable, no VirtualMachineConfiguration will validate.
-	// The validation error of the VirtualMachineConfiguration provides more information about why virtualization is unavailable.
-	supported bool
-
 	pointer
 	dispatchQueue unsafe.Pointer
-
-	mu sync.Mutex
 }
 
 type (

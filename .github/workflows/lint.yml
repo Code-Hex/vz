@@ -1,0 +1,29 @@
+name: Lint
+on:
+  push
+jobs:
+  go-vet:
+    runs-on: macOS-11
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+      - name: vet
+        run: go vet ./...
+
+  golangci-lint:
+    runs-on: macOS-11
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          args: --timeout 10m0s

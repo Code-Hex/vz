@@ -24,5 +24,3 @@ jobs:
           go-version: ${{ matrix.go }}
       - name: Build
         run: cd example && make
-      - name: vet
-        run: go vet ./...

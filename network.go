@@ -34,7 +34,7 @@ type BridgedNetwork interface {
 	LocalizedDisplayName() string
 }
 
-// Network device attachment using network address translation (NAT) with outside networks.
+// NATNetworkDeviceAttachment defines a network device attachment using network address translation (NAT) with outside networks.
 //
 // Using the NAT attachment type, the host serves as router and performs network address translation
 // for accesses to outside networks.
@@ -162,6 +162,7 @@ func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) *Vi
 	return config
 }
 
+// SetMACAddress sets the mac address for this configuration.
 func (v *VirtioNetworkDeviceConfiguration) SetMACAddress(macAddress *MACAddress) {
 	C.setNetworkDevicesVZMACAddress(v.Ptr(), macAddress.Ptr())
 }
@@ -205,6 +206,7 @@ func (m *MACAddress) String() string {
 	return cstring.String()
 }
 
+// HardwareAddr returns the hardware address underlying this MAC address.
 func (m *MACAddress) HardwareAddr() net.HardwareAddr {
 	hw, _ := net.ParseMAC(m.String())
 	return hw

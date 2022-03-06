@@ -157,11 +157,11 @@ func (p *pointer) Release() {
 }
 
 // Ptr returns raw pointer.
-func (o *pointer) Ptr() unsafe.Pointer {
-	if o == nil {
+func (p *pointer) Ptr() unsafe.Pointer {
+	if p == nil {
 		return nil
 	}
-	return o.ptr
+	return p.ptr
 }
 
 // NSObject indicates NSObject

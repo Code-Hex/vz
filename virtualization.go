@@ -149,7 +149,7 @@ func changeStateOnObserver(state C.int, cID *C.char) {
 	id := (*char)(cID)
 	// I expected it will not cause panic.
 	// if caused panic, that's unexpected behavior.
-	v, _ := statuses[id.String()]
+	v := statuses[id.String()]
 	v.mu.Lock()
 	newState := VirtualMachineState(state)
 	v.state = newState
@@ -163,7 +163,7 @@ func changeStateOnObserver(state C.int, cID *C.char) {
 func (v *VirtualMachine) State() VirtualMachineState {
 	// I expected it will not cause panic.
 	// if caused panic, that's unexpected behavior.
-	val, _ := statuses[v.id]
+	val := statuses[v.id]
 	val.mu.RLock()
 	defer val.mu.RUnlock()
 	return val.state
@@ -173,7 +173,7 @@ func (v *VirtualMachine) State() VirtualMachineState {
 func (v *VirtualMachine) StateChangedNotify() <-chan VirtualMachineState {
 	// I expected it will not cause panic.
 	// if caused panic, that's unexpected behavior.
-	val, _ := statuses[v.id]
+	val := statuses[v.id]
 	val.mu.RLock()
 	defer val.mu.RUnlock()
 	return val.stateNotify

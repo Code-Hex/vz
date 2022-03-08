@@ -70,6 +70,7 @@ const char *getVZMACAddressString(void *macAddress);
 void *newVZVirtioSocketListener();
 void *newVZSharedDirectory(const char *dirPath, bool readOnly);
 void *newVZSingleDirectoryShare(void *sharedDirectory);
+void *newVZMultipleDirectoryShare(void *sharedDirectories);
 void *newVZVirtioFileSystemDeviceConfiguration(const char *tag);
 void setVZVirtioFileSystemDeviceConfigurationShare(void *config, void *share);
 void *VZVirtualMachine_socketDevices(void *machine);

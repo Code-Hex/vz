@@ -102,3 +102,28 @@ func NewSingleDirectoryShare(share *SharedDirectory) *SingleDirectoryShare {
 	})
 	return config
 }
+
+type MultipleDirectoryShare struct {
+	pointer
+
+	*baseDirectoryShare
+}
+
+func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) *MultipleDirectoryShare {
+	directories := make(map[string]NSObject)
+	for k, v := range shares {
+		directories[k] = v
+	}
+
+	dict := convertToNSMutableDictionary(directories)
+
+	config := &MultipleDirectoryShare{
+		pointer: pointer{
+			ptr: C.newVZMultipleDirectoryShare(dict.Ptr()),
+		},
+	}
+	runtime.SetFinalizer(config, func(self *SingleDirectoryShare) {
+		self.Release()
+	})
+	return config
+}

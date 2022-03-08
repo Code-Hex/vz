@@ -604,6 +604,17 @@ void* newVZSingleDirectoryShare(void *sharedDirectory)
 }
 
 /*!
+ @abstract Initialize the VZMultipleDirectoryShare from the shared directories.
+ @param sharedDirectories
+    NSDictionary mapping names to shared directories.
+ @return A VZMultipleDirectoryShare
+ */
+void* newVZMultipleDirectoryShare(void *sharedDirectories)
+{
+    return [[VZMultipleDirectoryShare alloc] initWithDirectories:(NSDictionary<NSString *,VZSharedDirectory *> *)sharedDirectories];
+}
+
+/*!
  @abstract Initialize the VZVirtioFileSystemDeviceConfiguration from the fs tag.
  @param tag
     The tag to use for this device configuration.

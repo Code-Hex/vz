@@ -103,12 +103,14 @@ func NewSingleDirectoryShare(share *SharedDirectory) *SingleDirectoryShare {
 	return config
 }
 
+// MultipleDirectoryShare defines the directory share for multiple directories.
 type MultipleDirectoryShare struct {
 	pointer
 
 	*baseDirectoryShare
 }
 
+// NewMultipleDirectoryShare creates a new multiple directories share.
 func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) *MultipleDirectoryShare {
 	directories := make(map[string]NSObject)
 	for k, v := range shares {

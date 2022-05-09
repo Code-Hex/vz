@@ -78,9 +78,7 @@ func newVirtioSocketDevice(ptr, dispatchQueue unsafe.Pointer) *VirtioSocketDevic
 			ptr: ptr,
 		},
 	}
-	runtime.SetFinalizer(socketDevice, func(self *VirtioSocketDevice) {
-		self.Release()
-	})
+
 	return socketDevice
 }
 
@@ -157,9 +155,6 @@ func NewVirtioSocketListener(handler func(conn *VirtioSocketConnection, err erro
 		return true // must be connected
 	}
 
-	runtime.SetFinalizer(listener, func(self *VirtioSocketListener) {
-		self.Release()
-	})
 	return listener, nil
 }
 

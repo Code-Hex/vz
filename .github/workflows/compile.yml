@@ -1,9 +1,15 @@
 name: Build
 on:
   push:
+    paths-ignore:
+      - example/**
+      - README.md
     branches:
-    - "master"
-  pull_request: {}
+      - "master"
+  pull_request:
+    paths-ignore:
+      - example/**
+      - README.md
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -13,8 +19,9 @@ jobs:
         os:
         - macOS-11
         go:
-        - 1.16
         - 1.17
+        - 1.18
+        - 1.19
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2

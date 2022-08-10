@@ -19,8 +19,9 @@ jobs:
         os:
         - macOS-11
         go:
-        - 1.16
         - 1.17
+        - 1.18
+        - 1.19
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2

@@ -1,9 +1,15 @@
 name: Build
 on:
   push:
+    paths-ignore:
+      - example/**
+      - README.md
     branches:
-    - "master"
-  pull_request: {}
+      - "master"
+  pull_request:
+    paths-ignore:
+      - example/**
+      - README.md
 jobs:
   build:
     runs-on: ${{ matrix.os }}

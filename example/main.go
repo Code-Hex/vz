@@ -7,7 +7,7 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/Code-Hex/vz"
+	"github.com/Code-Hex/vz/v2"
 	"github.com/pkg/term/termios"
 	"golang.org/x/sys/unix"
 )

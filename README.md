@@ -14,7 +14,9 @@ Please see the example directory.
 ## REQUIREMENTS
 
 - Higher or equal to macOS Big Sur (11.0.0)
-- If you're M1 Mac User need higher or equal to Go 1.16
+  - For macOS Big Sur user, please install with `go get github.com/Code-Hex/vz`
+  - For the latest of macOS user, please install with `go get github.com/Code-Hex/vz/v2`
+- If you're Apple Silicon User need higher or equal to Go 1.16
 
 ## IMPORTANT
 

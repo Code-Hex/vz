@@ -61,6 +61,19 @@ void addNSMutableArrayVal(void *ary, void *val)
 	[(NSMutableArray *)ary addObject:(NSObject *)val];
 }
 
+void *makeNSMutableDictionary()
+{
+	return [[NSMutableDictionary alloc] init];
+}
+
+void insertNSMutableDictionary(void *dict, char *key, void *val)
+{
+	@autoreleasepool {
+		NSString *nskey = [NSString stringWithUTF8String: key];
+		[(NSMutableDictionary *)dict setValue:(NSObject *)val forKey:nskey];
+	}
+}
+
 void *newNSError()
 {
 	NSError *err = nil;
@@ -240,6 +253,20 @@ func convertToNSMutableArray(s []NSObject) *pointer {
 		C.addNSMutableArrayVal(ary, v.Ptr())
 	}
 	p := &pointer{ptr: ary}
+	runtime.SetFinalizer(p, func(self *pointer) {
+		self.Release()
+	})
+	return p
+}
+
+func convertToNSMutableDictionary(d map[string]NSObject) *pointer {
+	dict := C.makeNSMutableDictionary()
+	for key, value := range d {
+		cs := charWithGoString(key)
+		C.insertNSMutableDictionary(dict, cs.CString(), value.Ptr())
+		cs.Free()
+	}
+	p := &pointer{ptr: dict}
 	runtime.SetFinalizer(p, func(self *pointer) {
 		self.Release()
 	})

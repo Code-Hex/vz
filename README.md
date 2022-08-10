@@ -13,10 +13,21 @@ Please see the example directory.
 
 ## REQUIREMENTS
 
-- Higher or equal to macOS Big Sur (11.0.0)
-  - For macOS Big Sur user, please install with `go get github.com/Code-Hex/vz`
-  - For the latest of macOS user, please install with `go get github.com/Code-Hex/vz/v2`
-- If you're Apple Silicon User need higher or equal to Go 1.16
+Higher or equal to Go 1.17.
+
+### macOS Monterey (v12.x.x)
+
+For the latest macOS version is developed on the [master](https://github.com/Code-Hex/vz) branch and released as `v2.x.x`.
+
+You can install by `go get github.com/Code-Hex/vz/v2`
+
+### macOS Big Sur (v11.x.x)
+
+Some methods of this framework are available and some are not, depending on the version of macOS. Therefore, Go language side also needs to control which methods are available depending on the macOS version.
+
+From now on, those available in Big Sur (11.0.0) will be developed on the [v1](https://github.com/Code-Hex/vz/tree/v1) branch and released as `v1.x.x`.
+
+You can install by `go get github.com/Code-Hex/vz`
 
 ## IMPORTANT
 

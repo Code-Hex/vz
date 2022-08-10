@@ -112,7 +112,7 @@ type MultipleDirectoryShare struct {
 
 // NewMultipleDirectoryShare creates a new multiple directories share.
 func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) *MultipleDirectoryShare {
-	directories := make(map[string]NSObject)
+	directories := make(map[string]NSObject, len(shares))
 	for k, v := range shares {
 		directories[k] = v
 	}

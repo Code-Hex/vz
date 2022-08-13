@@ -145,3 +145,27 @@ func (v *VirtualMachineConfiguration) SetDirectorySharingDevicesVirtualMachineCo
 	array := convertToNSMutableArray(ptrs)
 	C.setDirectorySharingDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
 }
+
+// void setPlatformVZVirtualMachineConfiguration(void *config,
+// 	void *platform);
+// void setGraphicsDevicesVZVirtualMachineConfiguration(void *config,
+// 		   void *graphicsDevices);
+// void setPointingDevicesVZVirtualMachineConfiguration(void *config,
+// 		   void *pointingDevices);
+// void setKeyboardsVZVirtualMachineConfiguration(void *config,
+// 	 void *keyboards);
+// void setAudioDevicesVZVirtualMachineConfiguration(void *config,
+// 		void *audioDevices);
+
+func (v *VirtualMachineConfiguration) SetPlatformVZVirtualMachineConfiguration() {
+
+}
+
+func (v *VirtualMachineConfiguration) SetGraphicsDevicesVZVirtualMachineConfiguration(cs []DirectorySharingDeviceConfiguration) {
+	ptrs := make([]NSObject, len(cs))
+	for i, val := range cs {
+		ptrs[i] = val
+	}
+	array := convertToNSMutableArray(ptrs)
+	C.setDirectorySharingDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+}

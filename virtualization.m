@@ -206,6 +206,115 @@ void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void 
 }
 
 /*!
+ @abstract The hardware platform to use.
+ @discussion
+    Can be an instance of a VZGenericPlatformConfiguration or VZMacPlatformConfiguration. Defaults to VZGenericPlatformConfiguration.
+ */
+void setPlatformVZVirtualMachineConfiguration(void *config, void *platform)
+{
+    [(VZVirtualMachineConfiguration *)config setPlatform:(VZPlatformConfiguration *)platform];
+}
+
+/*!
+ @abstract List of graphics devices. Empty by default.
+ @see VZMacGraphicsDeviceConfiguration
+ */
+void setGraphicsDevicesVZVirtualMachineConfiguration(void *config, void *graphicsDevices)
+{
+    [(VZVirtualMachineConfiguration *)config setGraphicsDevices:[(NSMutableArray *)graphicsDevices copy]];
+}
+
+/*!
+ @abstract List of pointing devices. Empty by default.
+ @see VZUSBScreenCoordinatePointingDeviceConfiguration
+ */
+void setPointingDevicesVZVirtualMachineConfiguration(void *config, void *pointingDevices)
+{
+    [(VZVirtualMachineConfiguration *)config setPointingDevices:[(NSMutableArray *)pointingDevices copy]];
+}
+
+/*!
+ @abstract List of keyboards. Empty by default.
+ @see VZUSBKeyboardConfiguration
+ */
+void setKeyboardsVZVirtualMachineConfiguration(void *config, void *keyboards)
+{
+    [(VZVirtualMachineConfiguration *)config setKeyboards:[(NSMutableArray *)keyboards copy]];
+}
+
+/*!
+ @abstract List of audio devices. Empty by default.
+ @see VZVirtioSoundDeviceConfiguration
+ */
+void setAudioDevicesVZVirtualMachineConfiguration(void *config, void *audioDevices)
+{
+    [(VZVirtualMachineConfiguration *)config setAudioDevices:[(NSMutableArray *)audioDevices copy]];
+}
+
+/*!
+ @abstract Initialize a new Virtio Sound Device Configuration.
+ @discussion The device exposes a source or destination of sound.
+ */
+void *newVZVirtioSoundDeviceConfiguration()
+{
+    return [[VZVirtioSoundDeviceConfiguration alloc] init];
+}
+
+/*!
+ @abstract Set the list of audio streams exposed by this device. Empty by default.
+*/
+void setStreamsVZVirtioSoundDeviceConfiguration(void *audioDeviceConfiguration, void *streams)
+{
+    [(VZVirtioSoundDeviceConfiguration *)audioDeviceConfiguration setStreams:[(NSMutableArray *)streams copy]];
+}
+
+/*!
+ @abstract Initialize a new Virtio Sound Device Input Stream Configuration.
+ @discussion A PCM stream of input audio data, such as from a microphone.
+ */
+void *newVZVirtioSoundDeviceInputStreamConfiguration()
+{
+    return [[VZVirtioSoundDeviceInputStreamConfiguration alloc] init];
+}
+
+/*!
+ @abstract Initialize a new Virtio Sound Device Host Audio Input Stream Configuration.
+ */
+void *newVZVirtioSoundDeviceHostInputStreamConfiguration()
+{
+    VZVirtioSoundDeviceInputStreamConfiguration *inputStream = (VZVirtioSoundDeviceInputStreamConfiguration *)newVZVirtioSoundDeviceInputStreamConfiguration();
+    [inputStream setSource:[[VZHostAudioInputStreamSource alloc] init]];
+    return inputStream;
+}
+
+/*!
+ @abstract Initialize a new Virtio Sound Device Output Stream Configuration.
+ @discussion A PCM stream of output audio data, such as to a speaker.
+ */
+void *newVZVirtioSoundDeviceOutputStreamConfiguration()
+{
+    return [[VZVirtioSoundDeviceOutputStreamConfiguration alloc] init];
+}
+
+/*!
+ @abstract Initialize a new Virtio Sound Device Host Audio Output Stream Configuration.
+ */
+void *newVZVirtioSoundDeviceHostOutputStreamConfiguration()
+{
+    VZVirtioSoundDeviceOutputStreamConfiguration *outputStream = (VZVirtioSoundDeviceOutputStreamConfiguration *)newVZVirtioSoundDeviceOutputStreamConfiguration();
+    [outputStream setSink:[[VZHostAudioOutputStreamSink alloc] init]];
+    return outputStream;
+}
+
+/*!
+ @abstract The platform configuration for a generic Intel or ARM virtual machine.
+*/
+void *newVZGenericPlatformConfiguration()
+{
+    return [[VZGenericPlatformConfiguration alloc] init];
+}
+
+/*!
  @abstract Intialize the VZFileHandleSerialPortAttachment from file descriptors.
  @param readFileDescriptor File descriptor for reading from the file.
  @param writeFileDescriptor File descriptor for writing to the file.
@@ -636,6 +745,24 @@ void* newVZVirtioFileSystemDeviceConfiguration(const char *tag)
 void setVZVirtioFileSystemDeviceConfigurationShare(void *config, void *share)
 {
     [(VZVirtioFileSystemDeviceConfiguration *)config setShare:(VZDirectoryShare *)share];
+}
+
+/*!
+ @abstract Initialize a new configuration for a USB pointing device that reports absolute coordinates.
+ @discussion This device can be used by VZVirtualMachineView to send pointer events to the virtual machine.
+ */
+void *newVZUSBScreenCoordinatePointingDeviceConfiguration()
+{
+    return [[VZUSBScreenCoordinatePointingDeviceConfiguration alloc] init];
+}
+
+/*!
+ @abstract Initialize a new configuration for a USB keyboard.
+ @discussion This device can be used by VZVirtualMachineView to send key events to the virtual machine.
+ */
+void *newVZUSBKeyboardConfiguration()
+{
+    return [[VZUSBKeyboardConfiguration alloc] init];
 }
 
 /*!

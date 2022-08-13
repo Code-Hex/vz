@@ -15,7 +15,7 @@ import (
 )
 
 func init() {
-	startNSThread()
+	// startNSThread()
 }
 
 // VirtualMachineState represents execution state of the virtual machine.

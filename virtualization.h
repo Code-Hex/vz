@@ -49,6 +49,16 @@ void setSocketDevicesVZVirtualMachineConfiguration(void *config,
 void setStorageDevicesVZVirtualMachineConfiguration(void *config,
                                                     void *storageDevices);
 void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void *directorySharingDevices);
+void setPlatformVZVirtualMachineConfiguration(void *config,
+                                              void *platform);
+void setGraphicsDevicesVZVirtualMachineConfiguration(void *config,
+                                                     void *graphicsDevices);
+void setPointingDevicesVZVirtualMachineConfiguration(void *config,
+                                                     void *pointingDevices);
+void setKeyboardsVZVirtualMachineConfiguration(void *config,
+                                               void *keyboards);
+void setAudioDevicesVZVirtualMachineConfiguration(void *config,
+                                                  void *audioDevices);
 
 /* Configurations */
 void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileDescriptor);
@@ -77,6 +87,15 @@ void *VZVirtualMachine_socketDevices(void *machine);
 void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQueue, void *listener, uint32_t port);
 void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *vmQueue, uint32_t port);
 void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, const char *socketDeviceID);
+void *newVZUSBScreenCoordinatePointingDeviceConfiguration();
+void *newVZUSBKeyboardConfiguration();
+void *newVZVirtioSoundDeviceConfiguration();
+void setStreamsVZVirtioSoundDeviceConfiguration(void *audioDeviceConfiguration, void *streams);
+void *newVZVirtioSoundDeviceInputStreamConfiguration();
+void *newVZVirtioSoundDeviceHostInputStreamConfiguration(); // use in Go
+void *newVZVirtioSoundDeviceOutputStreamConfiguration();
+void *newVZVirtioSoundDeviceHostOutputStreamConfiguration(); // use in Go
+void *newVZGenericPlatformConfiguration();
 
 /* VirtualMachine */
 void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, const char *vmid);

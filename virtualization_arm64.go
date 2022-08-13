@@ -1,0 +1,330 @@
+//go:build darwin && arm64
+// +build darwin,arm64
+
+package vz
+
+/*
+#cgo darwin CFLAGS: -x objective-c -fno-objc-arc
+#cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
+# include "virtualization.h"
+# include "virtualization_arm64.h"
+*/
+import "C"
+import (
+	"context"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
+	"runtime/cgo"
+	"sync"
+	"sync/atomic"
+	"unsafe"
+)
+
+// GetVMBundlePath gets macOS VM bundle path.
+func GetVMBundlePath() (string, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(home, "/VM.bundle/"), nil
+}
+
+// CreateVMBundle creates macOS VM bundle path if not exists.
+func CreateVMBundle() error {
+	bundlePath, err := GetVMBundlePath()
+	if err != nil {
+		return err
+	}
+	return os.MkdirAll(bundlePath, 0777)
+}
+
+type MacHardwareModel struct {
+	pointer
+}
+
+type MacAuxiliaryStorage struct {
+	pointer
+
+	storagePath string
+}
+
+// NewMacAuxiliaryStorageOption is an option type to initialize a new Mac auxiliary storage
+type NewMacAuxiliaryStorageOption func(*MacAuxiliaryStorage) error
+
+// WithCreating is an option when initialize a new Mac auxiliary storage with data creation
+// to you specified storage path.
+func WithCreating(hardwareModel *MacHardwareModel) NewMacAuxiliaryStorageOption {
+	return func(mas *MacAuxiliaryStorage) error {
+		cpath := charWithGoString(mas.storagePath)
+		defer cpath.Free()
+
+		nserr := newNSErrorAsNil()
+		nserrPtr := nserr.Ptr()
+		mas.pointer = pointer{
+			ptr: C.newVZMacAuxiliaryStorageWithCreating(
+				cpath.CString(),
+				hardwareModel.Ptr(),
+				&nserrPtr,
+			),
+		}
+		if err := newNSError(nserrPtr); err != nil {
+			return err
+		}
+		return nil
+	}
+}
+
+// NewMacAuxiliaryStorage creates a new MacAuxiliaryStorage is based Mac auxiliary storage data from the storagePath
+// of an existing file by default.
+func NewMacAuxiliaryStorage(storagePath string, opts ...NewMacAuxiliaryStorageOption) (*MacAuxiliaryStorage, error) {
+	storage := &MacAuxiliaryStorage{storagePath: storagePath}
+	for _, opt := range opts {
+		if err := opt(storage); err != nil {
+			return nil, err
+		}
+	}
+	if storage.pointer.ptr == nil {
+		cpath := charWithGoString(storagePath)
+		defer cpath.Free()
+		storage.pointer = pointer{
+			ptr: C.newVZMacAuxiliaryStorage(cpath.CString()),
+		}
+	}
+	return storage, nil
+}
+
+type MacOSRestoreImage struct {
+	url                                  string
+	buildVersion                         string
+	operatingSystemVersion               OperatingSystemVersion
+	mostFeaturefulSupportedConfiguration *MacOSConfigurationRequirements
+}
+
+// URL returns URL of this restore image.
+// the value of this property will be a file URL.
+// the value of this property will be a network URL referring to an installation media file.
+func (m *MacOSRestoreImage) URL() string {
+	return m.url
+}
+
+// BuildVersion returns the build version this restore image contains.
+func (m *MacOSRestoreImage) BuildVersion() string {
+	return m.buildVersion
+}
+
+type OperatingSystemVersion struct {
+	MajorVersion int64
+	MinorVersion int64
+	PatchVersion int64
+}
+
+func (osv OperatingSystemVersion) String() string {
+	return fmt.Sprintf("%d.%d.%d", osv.MajorVersion, osv.MinorVersion, osv.PatchVersion)
+}
+
+// OperatingSystemVersion returns the operating system version this restore image contains.
+func (m *MacOSRestoreImage) OperatingSystemVersion() OperatingSystemVersion {
+	return m.operatingSystemVersion
+}
+
+// MostFeaturefulSupportedConfiguration returns the configuration requirements for the most featureful
+// configuration supported by the current host and by this restore image.
+//
+// A MacOSRestoreImage can contain installation media for multiple Mac hardware models (MacHardwareModel). Some of these
+// hardware models may not be supported by the current host. This method can be used to determine the hardware model and
+// configuration requirements that will provide the most complete feature set on the current host.
+// If none of the hardware models are supported on the current host, this property is nil.
+func (m *MacOSRestoreImage) MostFeaturefulSupportedConfiguration() *MacOSConfigurationRequirements {
+	return m.mostFeaturefulSupportedConfiguration
+}
+
+// MacOSConfigurationRequirements describes the parameter constraints required by a specific configuration of macOS.
+//
+//  When a VZMacOSRestoreImage is loaded, it can be inspected to determine the configurations supported by that restore image.
+type MacOSConfigurationRequirements struct {
+	pointer
+}
+
+// HardwareModel returns the hardware model for this configuration.
+//
+// The hardware model can be used to configure a new virtual machine that meets the requirements.
+// Use VZMacPlatformConfiguration.hardwareModel to configure the Mac platform, and
+// -[VZMacAuxiliaryStorage initCreatingStorageAtURL:hardwareModel:options:error:] to create its auxiliary storage.
+func (m *MacOSConfigurationRequirements) HardwareModel() *MacHardwareModel {
+	return &MacHardwareModel{}
+}
+
+// MinimumSupportedCPUCount returns the minimum supported number of CPUs for this configuration.
+func (m *MacOSConfigurationRequirements) MinimumSupportedCPUCount() uint64 {
+	return 0
+}
+
+// MinimumSupportedMemorySize returns the minimum supported memory size for this configuration.
+func (m *MacOSConfigurationRequirements) MinimumSupportedMemorySize() uint64 {
+	return 0
+}
+
+type MacOSRestoreImageHandler func(restoreImage *MacOSRestoreImage, err error)
+
+//export macOSRestoreImageCompletionHandler
+func macOSRestoreImageCompletionHandler(cgoHandlerPtr, restoreImagePtr, errPtr unsafe.Pointer) {
+	cgoHandler := *(*cgo.Handle)(cgoHandlerPtr)
+
+	handler := cgoHandler.Value().(MacOSRestoreImageHandler)
+	defer cgoHandler.Delete()
+
+	restoreImageStruct := (*C.VZMacOSRestoreImageStruct)(restoreImagePtr)
+
+	restoreImage := &MacOSRestoreImage{
+		url:          (*char)(restoreImageStruct.url).String(),
+		buildVersion: (*char)(restoreImageStruct.buildVersion).String(),
+		operatingSystemVersion: OperatingSystemVersion{
+			MajorVersion: int64(restoreImageStruct.operatingSystemVersion.majorVersion),
+			MinorVersion: int64(restoreImageStruct.operatingSystemVersion.minorVersion),
+			PatchVersion: int64(restoreImageStruct.operatingSystemVersion.patchVersion),
+		},
+		mostFeaturefulSupportedConfiguration: &MacOSConfigurationRequirements{
+			pointer: pointer{
+				ptr: restoreImageStruct.mostFeaturefulSupportedConfiguration,
+			},
+		},
+	}
+
+	if err := newNSError(errPtr); err != nil {
+		handler(restoreImage, err)
+	} else {
+		handler(restoreImage, nil)
+	}
+}
+
+func downloadRestoreImage(ctx context.Context, url string, destPath string) (*ProgressReader, error) {
+	// open or create
+	f, err := os.OpenFile(destPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		return nil, err
+	}
+
+	fileInfo, err := f.Stat()
+	if err != nil {
+		f.Close()
+		return nil, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	if err != nil {
+		f.Close()
+		return nil, err
+	}
+
+	req.Header.Add("User-Agent", "github.com/Code-Hex/vz")
+	req.Header.Add("Range", fmt.Sprintf("bytes=%d-", fileInfo.Size()))
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		f.Close()
+		return nil, err
+	}
+
+	if 200 > resp.StatusCode || resp.StatusCode >= 300 {
+		f.Close()
+		resp.Body.Close()
+		return nil, fmt.Errorf("unexpected http status code: %d", resp.StatusCode)
+	}
+
+	reader := &ProgressReader{
+		reader:  resp.Body,
+		total:   resp.ContentLength,
+		current: fileInfo.Size(),
+		finish:  make(chan struct{}),
+	}
+
+	go func() {
+		defer f.Close()
+		defer resp.Body.Close()
+		_, err := io.Copy(f, reader)
+		reader.Finish(err)
+	}()
+
+	return reader, nil
+}
+
+type ProgressReader struct {
+	once sync.Once
+
+	reader  io.Reader
+	total   int64
+	current int64
+	finish  chan struct{}
+	err     error
+}
+
+var _ io.Reader = (*ProgressReader)(nil)
+
+func (pr *ProgressReader) Finish(err error) {
+	pr.once.Do(func() {
+		pr.err = err
+		close(pr.finish)
+	})
+}
+
+func (pr *ProgressReader) Err() error                { return pr.err }
+func (pr *ProgressReader) Finished() <-chan struct{} { return pr.finish }
+
+func (pr *ProgressReader) FractionCompleted() float64 {
+	return float64(pr.Current()) / float64(pr.total)
+}
+
+func (pr *ProgressReader) Current() int64 {
+	return atomic.LoadInt64(&pr.current)
+}
+
+func (pr *ProgressReader) Read(p []byte) (n int, err error) {
+	n, err = pr.reader.Read(p)
+	atomic.AddInt64(&pr.current, int64(n))
+	return
+}
+
+func FetchLatestSupportedMacOSRestoreImage(ctx context.Context, destPath string) (*ProgressReader, error) {
+	waitCh := make(chan struct{})
+	var (
+		url      string
+		fetchErr error
+	)
+	handler := MacOSRestoreImageHandler(func(restoreImage *MacOSRestoreImage, err error) {
+		url = restoreImage.URL()
+		fetchErr = err
+		defer close(waitCh)
+	})
+	cgoHandler := cgo.NewHandle(handler)
+	C.fetchLatestSupportedMacOSRestoreImageWithCompletionHandler(
+		unsafe.Pointer(&cgoHandler),
+	)
+	<-waitCh
+	if fetchErr != nil {
+		return nil, fetchErr
+	}
+	progressReader, err := downloadRestoreImage(ctx, url, destPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to download from %q: %w", url, err)
+	}
+	return progressReader, nil
+}
+
+func LoadMacOSRestoreImagePath(imagePath string) (retImage *MacOSRestoreImage, retErr error) {
+	waitCh := make(chan struct{})
+	handler := MacOSRestoreImageHandler(func(restoreImage *MacOSRestoreImage, err error) {
+		retImage = restoreImage
+		retErr = err
+		close(waitCh)
+	})
+	cgoHandler := cgo.NewHandle(handler)
+
+	cs := charWithGoString(imagePath)
+	defer cs.Free()
+	C.loadMacOSRestoreImageFile(cs.CString(), unsafe.Pointer(&cgoHandler))
+	<-waitCh
+	return
+}

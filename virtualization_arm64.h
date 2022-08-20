@@ -12,12 +12,28 @@
 
 #ifdef __arm64__
 
+typedef struct nbyteslice {
+	void *ptr;
+	int len;
+} nbyteslice;
+
 typedef struct VZMacOSRestoreImageStruct {
 	const char *url;
     const char *buildVersion;
 	NSOperatingSystemVersion operatingSystemVersion;
     void *mostFeaturefulSupportedConfiguration; // (VZMacOSConfigurationRequirements *)
 } VZMacOSRestoreImageStruct;
+
+typedef struct VZMacOSConfigurationRequirementsStruct {
+    uint64_t minimumSupportedCPUCount;
+	uint64_t minimumSupportedMemorySize;
+    void *hardwareModel; // (VZMacHardwareModel *)
+} VZMacOSConfigurationRequirementsStruct;
+
+typedef struct VZMacHardwareModelStruct {
+    bool supported;
+	nbyteslice dataRepresentation;
+} VZMacHardwareModelStruct;
 
 /* exported from cgo */
 void macOSRestoreImageCompletionHandler(void *cgoHandler, void *restoreImage, void *errPtr);
@@ -44,5 +60,7 @@ VZMacOSRestoreImageStruct convertVZMacOSRestoreImage2Struct(VZMacOSRestoreImage 
 void fetchLatestSupportedMacOSRestoreImageWithCompletionHandler(void *cgoHandler);
 void loadMacOSRestoreImageFile(const char *ipswPath, void *cgoHandler);
 
+VZMacOSConfigurationRequirementsStruct convertVZMacOSConfigurationRequirements2Struct(void *requirementsPtr);
+VZMacHardwareModelStruct convertVZMacHardwareModel2Struct(void *hardwareModelPtr);
 
 #endif

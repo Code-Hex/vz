@@ -18,9 +18,9 @@ import (
 	"os"
 	"path/filepath"
 	"runtime/cgo"
-	"sync"
-	"sync/atomic"
 	"unsafe"
+
+	"github.com/Code-Hex/vz/v2/internal/progress"
 )
 
 // GetVMBundlePath gets macOS VM bundle path.
@@ -43,7 +43,27 @@ func CreateVMBundle() error {
 
 type MacHardwareModel struct {
 	pointer
+
+	supported          bool
+	dataRepresentation []byte
 }
+
+func newMacHardwareModel(ptr unsafe.Pointer) *MacHardwareModel {
+	ret := C.convertVZMacHardwareModel2Struct(ptr)
+	dataRepresentation := ret.dataRepresentation
+	bytePointer := (*byte)(unsafe.Pointer(dataRepresentation.ptr))
+	return &MacHardwareModel{
+		pointer: pointer{
+			ptr: ptr,
+		},
+		supported: bool(ret.supported),
+		// https://github.com/golang/go/wiki/cgo#turning-c-arrays-into-go-slices
+		dataRepresentation: unsafe.Slice(bytePointer, dataRepresentation.len),
+	}
+}
+
+func (m *MacHardwareModel) Supported() bool            { return m.supported }
+func (m *MacHardwareModel) DataRepresentation() []byte { return m.dataRepresentation }
 
 type MacAuxiliaryStorage struct {
 	pointer
@@ -97,10 +117,10 @@ func NewMacAuxiliaryStorage(storagePath string, opts ...NewMacAuxiliaryStorageOp
 }
 
 type MacOSRestoreImage struct {
-	url                                  string
-	buildVersion                         string
-	operatingSystemVersion               OperatingSystemVersion
-	mostFeaturefulSupportedConfiguration *MacOSConfigurationRequirements
+	url                                     string
+	buildVersion                            string
+	operatingSystemVersion                  OperatingSystemVersion
+	mostFeaturefulSupportedConfigurationPtr unsafe.Pointer
 }
 
 // URL returns URL of this restore image.
@@ -138,14 +158,25 @@ func (m *MacOSRestoreImage) OperatingSystemVersion() OperatingSystemVersion {
 // configuration requirements that will provide the most complete feature set on the current host.
 // If none of the hardware models are supported on the current host, this property is nil.
 func (m *MacOSRestoreImage) MostFeaturefulSupportedConfiguration() *MacOSConfigurationRequirements {
-	return m.mostFeaturefulSupportedConfiguration
+	return newMacOSConfigurationRequirements(m.mostFeaturefulSupportedConfigurationPtr)
 }
 
 // MacOSConfigurationRequirements describes the parameter constraints required by a specific configuration of macOS.
 //
 //  When a VZMacOSRestoreImage is loaded, it can be inspected to determine the configurations supported by that restore image.
 type MacOSConfigurationRequirements struct {
-	pointer
+	minimumSupportedCPUCount   uint64
+	minimumSupportedMemorySize uint64
+	hardwareModelPtr           unsafe.Pointer
+}
+
+func newMacOSConfigurationRequirements(ptr unsafe.Pointer) *MacOSConfigurationRequirements {
+	ret := C.convertVZMacOSConfigurationRequirements2Struct(ptr)
+	return &MacOSConfigurationRequirements{
+		minimumSupportedCPUCount:   uint64(ret.minimumSupportedCPUCount),
+		minimumSupportedMemorySize: uint64(ret.minimumSupportedMemorySize),
+		hardwareModelPtr:           ret.hardwareModel,
+	}
 }
 
 // HardwareModel returns the hardware model for this configuration.
@@ -154,17 +185,17 @@ type MacOSConfigurationRequirements struct {
 // Use VZMacPlatformConfiguration.hardwareModel to configure the Mac platform, and
 // -[VZMacAuxiliaryStorage initCreatingStorageAtURL:hardwareModel:options:error:] to create its auxiliary storage.
 func (m *MacOSConfigurationRequirements) HardwareModel() *MacHardwareModel {
-	return &MacHardwareModel{}
+	return newMacHardwareModel(m.hardwareModelPtr)
 }
 
 // MinimumSupportedCPUCount returns the minimum supported number of CPUs for this configuration.
 func (m *MacOSConfigurationRequirements) MinimumSupportedCPUCount() uint64 {
-	return 0
+	return m.minimumSupportedCPUCount
 }
 
 // MinimumSupportedMemorySize returns the minimum supported memory size for this configuration.
 func (m *MacOSConfigurationRequirements) MinimumSupportedMemorySize() uint64 {
-	return 0
+	return m.minimumSupportedMemorySize
 }
 
 type MacOSRestoreImageHandler func(restoreImage *MacOSRestoreImage, err error)
@@ -186,11 +217,7 @@ func macOSRestoreImageCompletionHandler(cgoHandlerPtr, restoreImagePtr, errPtr u
 			MinorVersion: int64(restoreImageStruct.operatingSystemVersion.minorVersion),
 			PatchVersion: int64(restoreImageStruct.operatingSystemVersion.patchVersion),
 		},
-		mostFeaturefulSupportedConfiguration: &MacOSConfigurationRequirements{
-			pointer: pointer{
-				ptr: restoreImageStruct.mostFeaturefulSupportedConfiguration,
-			},
-		},
+		mostFeaturefulSupportedConfigurationPtr: restoreImageStruct.mostFeaturefulSupportedConfiguration,
 	}
 
 	if err := newNSError(errPtr); err != nil {
@@ -200,7 +227,8 @@ func macOSRestoreImageCompletionHandler(cgoHandlerPtr, restoreImagePtr, errPtr u
 	}
 }
 
-func downloadRestoreImage(ctx context.Context, url string, destPath string) (*ProgressReader, error) {
+// downloadRestoreImage resumable downloads macOS restore image (ipsw) file.
+func downloadRestoreImage(ctx context.Context, url string, destPath string) (*progress.Reader, error) {
 	// open or create
 	f, err := os.OpenFile(destPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
@@ -234,12 +262,7 @@ func downloadRestoreImage(ctx context.Context, url string, destPath string) (*Pr
 		return nil, fmt.Errorf("unexpected http status code: %d", resp.StatusCode)
 	}
 
-	reader := &ProgressReader{
-		reader:  resp.Body,
-		total:   resp.ContentLength,
-		current: fileInfo.Size(),
-		finish:  make(chan struct{}),
-	}
+	reader := progress.NewReader(resp.Body, resp.ContentLength, fileInfo.Size())
 
 	go func() {
 		defer f.Close()
@@ -251,43 +274,7 @@ func downloadRestoreImage(ctx context.Context, url string, destPath string) (*Pr
 	return reader, nil
 }
 
-type ProgressReader struct {
-	once sync.Once
-
-	reader  io.Reader
-	total   int64
-	current int64
-	finish  chan struct{}
-	err     error
-}
-
-var _ io.Reader = (*ProgressReader)(nil)
-
-func (pr *ProgressReader) Finish(err error) {
-	pr.once.Do(func() {
-		pr.err = err
-		close(pr.finish)
-	})
-}
-
-func (pr *ProgressReader) Err() error                { return pr.err }
-func (pr *ProgressReader) Finished() <-chan struct{} { return pr.finish }
-
-func (pr *ProgressReader) FractionCompleted() float64 {
-	return float64(pr.Current()) / float64(pr.total)
-}
-
-func (pr *ProgressReader) Current() int64 {
-	return atomic.LoadInt64(&pr.current)
-}
-
-func (pr *ProgressReader) Read(p []byte) (n int, err error) {
-	n, err = pr.reader.Read(p)
-	atomic.AddInt64(&pr.current, int64(n))
-	return
-}
-
-func FetchLatestSupportedMacOSRestoreImage(ctx context.Context, destPath string) (*ProgressReader, error) {
+func FetchLatestSupportedMacOSRestoreImage(ctx context.Context, destPath string) (*progress.Reader, error) {
 	waitCh := make(chan struct{})
 	var (
 		url      string

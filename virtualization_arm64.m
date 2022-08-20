@@ -224,4 +224,29 @@ void loadMacOSRestoreImageFile(const char *ipswPath, void *cgoHandler)
     }
 }
 
+VZMacOSConfigurationRequirementsStruct convertVZMacOSConfigurationRequirements2Struct(void *requirementsPtr)
+{
+    VZMacOSConfigurationRequirements *requirements = (VZMacOSConfigurationRequirements *)requirementsPtr;
+    VZMacOSConfigurationRequirementsStruct ret;
+    ret.minimumSupportedCPUCount = (uint64_t)[requirements minimumSupportedCPUCount];
+    ret.minimumSupportedMemorySize = (uint64_t)[requirements minimumSupportedMemorySize];
+    // maybe unnecessary CFBridgingRetain. if use CFBridgingRetain, should use CFRelease.
+    ret.hardwareModel = (void *)CFBridgingRetain([requirements hardwareModel]);
+    return ret;
+}
+
+VZMacHardwareModelStruct convertVZMacHardwareModel2Struct(void *hardwareModelPtr)
+{
+    VZMacHardwareModel *hardwareModel = (VZMacHardwareModel *)hardwareModelPtr;
+    VZMacHardwareModelStruct ret;
+    ret.supported = (bool)[hardwareModel isSupported];
+    NSData *data = [hardwareModel dataRepresentation];
+    nbyteslice retByteSlice = {
+        .ptr = (void *)[data bytes],
+        .len = (int)[data length],
+    };
+    ret.dataRepresentation = retByteSlice;
+    return ret;
+}
+
 #endif

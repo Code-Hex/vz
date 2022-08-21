@@ -103,6 +103,42 @@ bool validateVZVirtualMachineConfiguration(void *config, void **error)
 }
 
 /*!
+ @abstract: Minimum amount of memory required by virtual machines.
+ @see VZVirtualMachineConfiguration.memorySize
+ */
+unsigned long long minimumAllowedMemorySizeVZVirtualMachineConfiguration()
+{
+    return (unsigned long long)[VZVirtualMachineConfiguration minimumAllowedMemorySize];
+}
+
+/*!
+ @abstract: Maximum amount of memory allowed for a virtual machine.
+ @see VZVirtualMachineConfiguration.memorySize
+ */
+unsigned long long maximumAllowedMemorySizeVZVirtualMachineConfiguration()
+{
+    return (unsigned long long)[VZVirtualMachineConfiguration maximumAllowedMemorySize];
+}
+
+/*!
+ @abstract: Minimum number of CPUs for a virtual machine.
+ @see VZVirtualMachineConfiguration.CPUCount
+ */
+unsigned int minimumAllowedCPUCountVZVirtualMachineConfiguration()
+{
+    return (unsigned int)[VZVirtualMachineConfiguration minimumAllowedCPUCount];
+}
+
+/*!
+ @abstract: Maximum number of CPUs for a virtual machine.
+ @see VZVirtualMachineConfiguration.CPUCount
+ */
+unsigned int maximumAllowedCPUCountVZVirtualMachineConfiguration()
+{
+    return (unsigned int)[VZVirtualMachineConfiguration maximumAllowedCPUCount];
+}
+
+/*!
  @abstract Create a new Virtual machine configuration.
  @param bootLoader Boot loader used when the virtual machine starts.
  

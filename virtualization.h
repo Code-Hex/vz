@@ -33,6 +33,10 @@ void setInitialRamdiskURLVZLinuxBootLoader(void *bootLoaderPtr, const char *ramd
 
 /* VirtualMachineConfiguration */
 bool validateVZVirtualMachineConfiguration(void *config, void **error);
+unsigned long long minimumAllowedMemorySizeVZVirtualMachineConfiguration();
+unsigned long long maximumAllowedMemorySizeVZVirtualMachineConfiguration();
+unsigned int minimumAllowedCPUCountVZVirtualMachineConfiguration();
+unsigned int maximumAllowedCPUCountVZVirtualMachineConfiguration();
 void *newVZVirtualMachineConfiguration(void *bootLoader,
                                        unsigned int CPUCount,
                                        unsigned long long memorySize);

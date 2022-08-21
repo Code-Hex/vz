@@ -16,30 +16,11 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"path/filepath"
 	"runtime/cgo"
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v2/internal/progress"
 )
-
-// GetVMBundlePath gets macOS VM bundle path.
-func GetVMBundlePath() (string, error) {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return "", err
-	}
-	return filepath.Join(home, "/VM.bundle/"), nil
-}
-
-// CreateVMBundle creates macOS VM bundle path if not exists.
-func CreateVMBundle() error {
-	bundlePath, err := GetVMBundlePath()
-	if err != nil {
-		return err
-	}
-	return os.MkdirAll(bundlePath, 0777)
-}
 
 type MacHardwareModel struct {
 	pointer
@@ -300,7 +281,7 @@ func FetchLatestSupportedMacOSRestoreImage(ctx context.Context, destPath string)
 	return progressReader, nil
 }
 
-func LoadMacOSRestoreImagePath(imagePath string) (retImage *MacOSRestoreImage, retErr error) {
+func LoadMacOSRestoreImageFromPath(imagePath string) (retImage *MacOSRestoreImage, retErr error) {
 	waitCh := make(chan struct{})
 	handler := MacOSRestoreImageHandler(func(restoreImage *MacOSRestoreImage, err error) {
 		retImage = restoreImage
@@ -315,3 +296,51 @@ func LoadMacOSRestoreImagePath(imagePath string) (retImage *MacOSRestoreImage, r
 	<-waitCh
 	return
 }
+
+type MacMachineIdentifier struct {
+	pointer
+
+	dataRepresentation []byte
+}
+
+type (
+	MacMachineIdentifierOption func(*macMachineIdentifierOption)
+	macMachineIdentifierOption struct {
+		pointer unsafe.Pointer
+	}
+)
+
+func WithBytes(b []byte) MacMachineIdentifierOption {
+	return func(mmio *macMachineIdentifierOption) {
+		mmio.pointer = C.newVZMacMachineIdentifierWithBytes(
+			unsafe.Pointer(&b[0]),
+			C.int(len(b)),
+		)
+	}
+}
+
+func NewMacMachineIdentifier(opts ...MacMachineIdentifierOption) *MacMachineIdentifier {
+	opt := new(macMachineIdentifierOption)
+	for _, optFunc := range opts {
+		optFunc(opt)
+	}
+	if opt.pointer == nil {
+		opt.pointer = C.newVZMacMachineIdentifier()
+	}
+
+	return newMacMachineIdentifier(opt.pointer)
+}
+
+func newMacMachineIdentifier(ptr unsafe.Pointer) *MacMachineIdentifier {
+	dataRepresentation := C.getVZMacMachineIdentifierDataRepresentation(ptr)
+	bytePointer := (*byte)(unsafe.Pointer(dataRepresentation.ptr))
+	return &MacMachineIdentifier{
+		pointer: pointer{
+			ptr: ptr,
+		},
+		// https://github.com/golang/go/wiki/cgo#turning-c-arrays-into-go-slices
+		dataRepresentation: unsafe.Slice(bytePointer, dataRepresentation.len),
+	}
+}
+
+func (m *MacMachineIdentifier) DataRepresentation() []byte { return m.dataRepresentation }

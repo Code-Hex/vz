@@ -53,8 +53,10 @@ void *newVZMacGraphicsDeviceConfiguration();
 void setDisplaysVZMacGraphicsDeviceConfiguration(void *graphicsConfiguration, void *displays);
 void *newVZMacGraphicsDisplayConfiguration(NSInteger widthInPixels, NSInteger heightInPixels, NSInteger pixelsPerInch);
 void *newVZMacHardwareModelWithPath(const char *hardwareModelPath);
+void *newVZMacMachineIdentifier();
 void *newVZMacMachineIdentifierWithPath(const char *machineIdentifierPath);
-
+void *newVZMacMachineIdentifierWithBytes(void *machineIdentifierBytes, int len);
+nbyteslice getVZMacMachineIdentifierDataRepresentation(void *machineIdentifierPtr);
 
 VZMacOSRestoreImageStruct convertVZMacOSRestoreImage2Struct(VZMacOSRestoreImage *restoreImage);
 void fetchLatestSupportedMacOSRestoreImageWithCompletionHandler(void *cgoHandler);

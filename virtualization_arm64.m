@@ -176,6 +176,14 @@ void *newVZMacHardwareModelWithPath(const char *hardwareModelPath)
 }
 
 /*!
+ @abstract Create a new unique machine identifier.
+ */
+void *newVZMacMachineIdentifier()
+{
+    return [[VZMacMachineIdentifier alloc] init];
+}
+
+/*!
  @abstract Get the machine identifier described by the specified data representation.
  @param dataRepresentation The opaque data representation of the machine identifier to be obtained.
  @return A unique identifier identical to the one that generated the dataRepresentation, or nil if the data is invalid.
@@ -191,6 +199,27 @@ void *newVZMacMachineIdentifierWithPath(const char *machineIdentifierPath)
         machineIdentifier = [[VZMacMachineIdentifier alloc] initWithDataRepresentation:machineIdentifierData];
     }
     return machineIdentifier;
+}
+
+void *newVZMacMachineIdentifierWithBytes(void *machineIdentifierBytes, int len)
+{
+    VZMacMachineIdentifier *machineIdentifier;
+    @autoreleasepool {
+        NSData *machineIdentifierData = [[NSData alloc] initWithBytes:machineIdentifierBytes length:(NSUInteger)len];
+        machineIdentifier = [[VZMacMachineIdentifier alloc] initWithDataRepresentation:machineIdentifierData];
+    }
+    return machineIdentifier;
+}
+
+nbyteslice getVZMacMachineIdentifierDataRepresentation(void *machineIdentifierPtr)
+{
+    VZMacMachineIdentifier *machineIdentifier = (VZMacMachineIdentifier *)machineIdentifierPtr;
+    NSData *data = [machineIdentifier dataRepresentation];
+    nbyteslice ret = {
+        .ptr = (void *)[data bytes],
+        .len = (int)[data length],
+    };
+    return ret;
 }
 
 VZMacOSRestoreImageStruct convertVZMacOSRestoreImage2Struct(VZMacOSRestoreImage *restoreImage)

@@ -16,7 +16,10 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"runtime"
 	"runtime/cgo"
+	"sync"
+	"sync/atomic"
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v2/internal/progress"
@@ -105,8 +108,8 @@ type MacOSRestoreImage struct {
 }
 
 // URL returns URL of this restore image.
-// the value of this property will be a file URL.
-// the value of this property will be a network URL referring to an installation media file.
+// the value of this property will be a file URL. (https://~)
+// the value of this property will be a network URL referring to an installation media file. (file:///~)
 func (m *MacOSRestoreImage) URL() string {
 	return m.url
 }
@@ -344,3 +347,106 @@ func newMacMachineIdentifier(ptr unsafe.Pointer) *MacMachineIdentifier {
 }
 
 func (m *MacMachineIdentifier) DataRepresentation() []byte { return m.dataRepresentation }
+
+type MacOSInstaller struct {
+	pointer
+	observerPointer pointer
+
+	vm       *VirtualMachine
+	progress atomic.Value
+	doneCh   chan struct{}
+	once     sync.Once
+	err      error
+}
+
+// NewMacOSInstaller creates a new MacOSInstaller struct.
+//
+// A param vm is the virtual machine that the operating system will be installed onto.
+// A param restoreImageIpsw is a file path indicating the macOS restore image to install.
+func NewMacOSInstaller(vm *VirtualMachine, restoreImageIpsw string) *MacOSInstaller {
+	cs := charWithGoString(restoreImageIpsw)
+	defer cs.Free()
+	ret := &MacOSInstaller{
+		pointer: pointer{
+			ptr: C.newVZMacOSInstaller(vm.Ptr(), vm.dispatchQueue, cs.CString()),
+		},
+		observerPointer: pointer{
+			ptr: C.newProgressObserverVZMacOSInstaller(),
+		},
+		vm:     vm,
+		doneCh: make(chan struct{}),
+	}
+	ret.setFractionCompleted(0)
+	runtime.SetFinalizer(ret, func(self *MacOSInstaller) {
+		self.observerPointer.Release()
+		self.Release()
+	})
+	return ret
+}
+
+//export macOSInstallCompletionHandler
+func macOSInstallCompletionHandler(cgoHandlerPtr, errPtr unsafe.Pointer) {
+	cgoHandler := *(*cgo.Handle)(cgoHandlerPtr)
+
+	handler := cgoHandler.Value().(func(error))
+	defer cgoHandler.Delete()
+
+	if err := newNSError(errPtr); err != nil {
+		handler(err)
+	} else {
+		handler(nil)
+	}
+}
+
+//export macOSInstallFractionCompletedHandler
+func macOSInstallFractionCompletedHandler(cgoHandlerPtr unsafe.Pointer, completed C.double) {
+	cgoHandler := *(*cgo.Handle)(cgoHandlerPtr)
+
+	handler := cgoHandler.Value().(func(float64))
+	handler(float64(completed))
+}
+
+func (m *MacOSInstaller) Install(ctx context.Context) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	default:
+	}
+
+	m.once.Do(func() {
+		completionHandler := cgo.NewHandle(func(err error) {
+			m.err = err
+			close(m.doneCh)
+		})
+		fractionCompletedHandler := cgo.NewHandle(func(v float64) {
+			m.setFractionCompleted(v)
+		})
+
+		C.installByVZMacOSInstaller(
+			m.Ptr(),
+			m.vm.dispatchQueue,
+			m.observerPointer.Ptr(),
+			unsafe.Pointer(&completionHandler),
+			unsafe.Pointer(&fractionCompletedHandler),
+		)
+	})
+
+	select {
+	case <-ctx.Done():
+		C.cancelInstallVZMacOSInstaller(m.Ptr())
+		return ctx.Err()
+	case <-m.doneCh:
+	}
+
+	return m.err
+}
+
+func (m *MacOSInstaller) setFractionCompleted(completed float64) {
+	m.progress.Store(completed)
+}
+
+func (m *MacOSInstaller) FractionCompleted() float64 {
+	return m.progress.Load().(float64)
+}
+
+func (m *MacOSInstaller) Done() <-chan struct{} { return m.doneCh }

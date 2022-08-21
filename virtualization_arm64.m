@@ -1,6 +1,19 @@
 #ifdef __arm64__
 #import "virtualization_arm64.h"
 
+@implementation ProgressObserver
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
+{
+    if ([keyPath isEqualToString:@"fractionCompleted"] && [object isKindOfClass:[NSProgress class]]) {
+        NSProgress *progress = (NSProgress *)object;
+        macOSInstallFractionCompletedHandler(context, progress.fractionCompleted);
+        if (progress.finished) {
+            [progress removeObserver:self forKeyPath:@"fractionCompleted"];
+        }
+    }
+}
+@end
+
 /*!
  @abstract Write an initialized VZMacAuxiliaryStorage to a storagePath on a file system.
  @param storagePath The storagePath to write the auxiliary storage to on the local file system.
@@ -276,6 +289,56 @@ VZMacHardwareModelStruct convertVZMacHardwareModel2Struct(void *hardwareModelPtr
     };
     ret.dataRepresentation = retByteSlice;
     return ret;
+}
+
+/*!
+ @abstract Initialize a VZMacOSInstaller object.
+ @param virtualMachine The virtual machine that the operating system will be installed onto.
+ @param restoreImageFileURL A file URL indicating the macOS restore image to install.
+ @discussion
+    The virtual machine platform must be macOS and the restore image URL must be a file URL referring to a file on disk or an exception will be raised.
+    This method must be called on the virtual machine's queue.
+ */
+void *newVZMacOSInstaller(void *virtualMachine, void *vmQueue, const char *restoreImageFilePath)
+{
+    __block VZMacOSInstaller *ret;
+    @autoreleasepool {
+        NSString *restoreImageFilePathNSString = [NSString stringWithUTF8String:restoreImageFilePath];
+        NSURL *restoreImageFileURL = [[NSURL alloc] initFileURLWithPath:restoreImageFilePathNSString];
+        dispatch_sync((dispatch_queue_t)vmQueue, ^{
+            ret = [[VZMacOSInstaller alloc] initWithVirtualMachine:(VZVirtualMachine *)virtualMachine restoreImageURL:restoreImageFileURL];
+        });
+    }
+    return ret;
+}
+
+void *newProgressObserverVZMacOSInstaller()
+{
+    return [[ProgressObserver alloc] init];
+}
+
+void installByVZMacOSInstaller(void *installerPtr, void *vmQueue, void *progressObserverPtr, void *completionHandler, void *fractionCompletedHandler)
+{
+    VZMacOSInstaller *installer = (VZMacOSInstaller *)installerPtr;
+    dispatch_sync((dispatch_queue_t)vmQueue, ^{
+        [installer installWithCompletionHandler:^(NSError *error) {
+            macOSInstallCompletionHandler(completionHandler, error);
+        }];
+        [installer.progress
+            addObserver:(ProgressObserver *)progressObserverPtr
+            forKeyPath:@"fractionCompleted"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:fractionCompletedHandler
+        ];
+    });
+}
+
+void cancelInstallVZMacOSInstaller(void *installerPtr)
+{
+    VZMacOSInstaller *installer = (VZMacOSInstaller *)installerPtr;
+    if (installer.progress.cancellable) {
+        [installer.progress cancel];
+    }
 }
 
 #endif

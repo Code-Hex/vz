@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
+	"os"
 	"runtime"
+	"time"
 
 	"github.com/Code-Hex/vz/v2"
 )
@@ -27,20 +28,20 @@ func main() {
 	// 	}
 	// }
 
-	restoreImage, err := vz.LoadMacOSRestoreImageFromPath(GetRestoreImagePath())
-
-	log.Println(restoreImage.BuildVersion())
-	log.Println(restoreImage.URL())
-	log.Println(restoreImage.OperatingSystemVersion())
-	config := restoreImage.MostFeaturefulSupportedConfiguration()
-	hardwareModel := config.HardwareModel()
-	log.Println(hardwareModel.Supported(), string(hardwareModel.DataRepresentation()))
-	log.Println(err, "err == nil", err == nil)
-
+	if err := run(context.Background()); err != nil {
+		fmt.Fprintf(os.Stderr, "failed to run: %v", err)
+		os.Exit(1)
+	}
 }
 
 func run(ctx context.Context) error {
-	restoreImage, err := vz.LoadMacOSRestoreImageFromPath(GetRestoreImagePath())
+	defer time.Sleep(time.Second)
+	return installMacOS(ctx)
+}
+
+func installMacOS(ctx context.Context) error {
+	restoreImagePath := GetRestoreImagePath()
+	restoreImage, err := vz.LoadMacOSRestoreImageFromPath(restoreImagePath)
 	if err != nil {
 		return fmt.Errorf("failed to load restore image: %w", err)
 	}
@@ -52,9 +53,30 @@ func run(ctx context.Context) error {
 		return fmt.Errorf("failed to setup config: %w", err)
 	}
 	vm := vz.NewVirtualMachine(config)
-	var _ = vm
 
-	return nil
+	installer := vz.NewMacOSInstaller(vm, restoreImagePath)
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
+	go func() {
+		ticker := time.NewTicker(500 * time.Millisecond)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ctx.Done():
+				fmt.Println("install has been cancelled")
+				return
+			case <-installer.Done():
+				fmt.Println("install has been completed")
+				return
+			case <-ticker.C:
+				fmt.Printf("install: %d\r", int(installer.FractionCompleted()*100))
+			}
+		}
+	}()
+
+	return installer.Install(ctx)
 }
 
 func setupVirtualMachineWithMacOSConfigurationRequirements(macOSConfiguration *vz.MacOSConfigurationRequirements) (*vz.VirtualMachineConfiguration, error) {

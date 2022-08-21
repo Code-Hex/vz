@@ -12,6 +12,10 @@
 
 #ifdef __arm64__
 
+@interface ProgressObserver : NSObject
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
+@end
+
 typedef struct nbyteslice {
 	void *ptr;
 	int len;
@@ -37,6 +41,8 @@ typedef struct VZMacHardwareModelStruct {
 
 /* exported from cgo */
 void macOSRestoreImageCompletionHandler(void *cgoHandler, void *restoreImage, void *errPtr);
+void macOSInstallCompletionHandler(void *cgoHandler, void *errPtr);
+void macOSInstallFractionCompletedHandler(void *cgoHandlerPtr, double completed);
 
 /* Mac Configurations */
 void *newVZMacPlatformConfiguration();
@@ -64,5 +70,10 @@ void loadMacOSRestoreImageFile(const char *ipswPath, void *cgoHandler);
 
 VZMacOSConfigurationRequirementsStruct convertVZMacOSConfigurationRequirements2Struct(void *requirementsPtr);
 VZMacHardwareModelStruct convertVZMacHardwareModel2Struct(void *hardwareModelPtr);
+
+void *newVZMacOSInstaller(void *virtualMachine, void *vmQueue, const char *restoreImageFilePath);
+void *newProgressObserverVZMacOSInstaller();
+void installByVZMacOSInstaller(void *installerPtr, void *vmQueue, void *progressObserverPtr, void *completionHandler, void *fractionCompletedHandler);
+void cancelInstallVZMacOSInstaller(void *installerPtr);
 
 #endif

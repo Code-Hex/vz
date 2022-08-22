@@ -59,6 +59,7 @@ void *newVZMacGraphicsDeviceConfiguration();
 void setDisplaysVZMacGraphicsDeviceConfiguration(void *graphicsConfiguration, void *displays);
 void *newVZMacGraphicsDisplayConfiguration(NSInteger widthInPixels, NSInteger heightInPixels, NSInteger pixelsPerInch);
 void *newVZMacHardwareModelWithPath(const char *hardwareModelPath);
+void *newVZMacHardwareModelWithBytes(void *hardwareModelBytes, int len);
 void *newVZMacMachineIdentifier();
 void *newVZMacMachineIdentifierWithPath(const char *machineIdentifierPath);
 void *newVZMacMachineIdentifierWithBytes(void *machineIdentifierBytes, int len);

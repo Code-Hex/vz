@@ -3,8 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
+	"os/signal"
 	"runtime"
+	"syscall"
 	"time"
 
 	"github.com/Code-Hex/vz/v2"
@@ -35,95 +38,55 @@ func main() {
 }
 
 func run(ctx context.Context) error {
-	defer time.Sleep(time.Second)
-	return installMacOS(ctx)
+	if false {
+		defer time.Sleep(time.Second)
+		return installMacOS(ctx)
+	}
+	return runVM(ctx)
 }
 
-func installMacOS(ctx context.Context) error {
-	restoreImagePath := GetRestoreImagePath()
-	restoreImage, err := vz.LoadMacOSRestoreImageFromPath(restoreImagePath)
+func runVM(ctx context.Context) error {
+	platformConfig, err := createMacPlatformConfiguration()
 	if err != nil {
-		return fmt.Errorf("failed to load restore image: %w", err)
+		return err
 	}
-	configurationRequirements := restoreImage.MostFeaturefulSupportedConfiguration()
-	config, err := setupVirtualMachineWithMacOSConfigurationRequirements(
-		configurationRequirements,
-	)
+	config, err := setupVMConfiguration(platformConfig)
 	if err != nil {
-		return fmt.Errorf("failed to setup config: %w", err)
+		return err
 	}
 	vm := vz.NewVirtualMachine(config)
 
-	installer := vz.NewMacOSInstaller(vm, restoreImagePath)
+	signalCh := make(chan os.Signal, 1)
+	signal.Notify(signalCh, syscall.SIGTERM)
 
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
+	errCh := make(chan error, 1)
 
-	go func() {
-		ticker := time.NewTicker(500 * time.Millisecond)
-		defer ticker.Stop()
-		for {
-			select {
-			case <-ctx.Done():
-				fmt.Println("install has been cancelled")
-				return
-			case <-installer.Done():
-				fmt.Println("install has been completed")
-				return
-			case <-ticker.C:
-				fmt.Printf("install: %d\r", int(installer.FractionCompleted()*100))
-			}
+	vm.Start(func(err error) {
+		if err != nil {
+			errCh <- err
 		}
-	}()
+	})
 
-	return installer.Install(ctx)
-}
-
-func setupVirtualMachineWithMacOSConfigurationRequirements(macOSConfiguration *vz.MacOSConfigurationRequirements) (*vz.VirtualMachineConfiguration, error) {
-	config := vz.NewVirtualMachineConfiguration(
-		vz.NewMacOSBootLoader(),
-		computeCPUCount(),
-		computeMemorySize(),
-	)
-	platformConfig, err := createMacPlatformConfiguration(macOSConfiguration)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create mac platform config: %w", err)
+	for {
+		select {
+		case <-signalCh:
+			result, err := vm.RequestStop()
+			if err != nil {
+				return err
+			}
+			log.Println("recieved signal", result)
+		case newState := <-vm.StateChangedNotify():
+			if newState == vz.VirtualMachineStateRunning {
+				log.Println("start VM is running")
+			}
+			if newState == vz.VirtualMachineStateStopped {
+				log.Println("stopped successfully")
+				return nil
+			}
+		case err := <-errCh:
+			return fmt.Errorf("failed to start vm: %w", err)
+		}
 	}
-	config.SetPlatformVirtualMachineConfiguration(platformConfig)
-	config.SetGraphicsDevicesVirtualMachineConfiguration([]vz.GraphicsDeviceConfiguration{
-		createGraphicsDeviceConfiguration(),
-	})
-	blockDeviceConfig, err := createBlockDeviceConfiguration(GetDiskImagePath())
-	if err != nil {
-		return nil, fmt.Errorf("failed to create block device configuration: %w", err)
-	}
-	config.SetStorageDevicesVirtualMachineConfiguration([]vz.StorageDeviceConfiguration{blockDeviceConfig})
-
-	config.SetNetworkDevicesVirtualMachineConfiguration([]*vz.VirtioNetworkDeviceConfiguration{
-		createNetworkDeviceConfiguration(),
-	})
-
-	config.SetPointingDevicesVirtualMachineConfiguration([]vz.PointingDeviceConfiguration{
-		createPointingDeviceConfiguration(),
-	})
-
-	config.SetKeyboardsVirtualMachineConfiguration([]vz.KeyboardConfiguration{
-		createKeyboardConfiguration(),
-	})
-
-	config.SetAudioDevicesVirtualMachineConfiguration([]vz.AudioDeviceConfiguration{
-		createAudioDeviceConfiguration(),
-	})
-
-	validated, err := config.Validate()
-	if err != nil {
-		return nil, fmt.Errorf("failed to validate configuration: %w", err)
-	}
-	if !validated {
-		return nil, fmt.Errorf("invalid configuration")
-	}
-
-	return config, nil
 }
 
 func computeCPUCount() uint {
@@ -161,8 +124,11 @@ func computeMemorySize() uint64 {
 func createBlockDeviceConfiguration(diskPath string) (*vz.VirtioBlockDeviceConfiguration, error) {
 	// create disk image with 64 GiB
 	if err := vz.CreateDiskImage(diskPath, 64*1024*1024*1024); err != nil {
-		return nil, fmt.Errorf("failed to create disk image: %w", err)
+		if !os.IsExist(err) {
+			return nil, fmt.Errorf("failed to create disk image: %w", err)
+		}
 	}
+
 	diskImageAttachment, err := vz.NewDiskImageStorageDeviceAttachment(
 		diskPath,
 		false,
@@ -172,37 +138,6 @@ func createBlockDeviceConfiguration(diskPath string) (*vz.VirtioBlockDeviceConfi
 	}
 	storageDeviceConfig := vz.NewVirtioBlockDeviceConfiguration(diskImageAttachment)
 	return storageDeviceConfig, nil
-}
-
-func createMacPlatformConfiguration(macOSConfiguration *vz.MacOSConfigurationRequirements) (*vz.MacPlatformConfiguration, error) {
-	hardwareModel := macOSConfiguration.HardwareModel()
-	if err := CreateFileAndWriteTo(
-		hardwareModel.DataRepresentation(),
-		GetHardwareModelPath(),
-	); err != nil {
-		return nil, fmt.Errorf("failed to write hardware model data: %w", err)
-	}
-
-	machineIdentifier := vz.NewMacMachineIdentifier()
-	if err := CreateFileAndWriteTo(
-		machineIdentifier.DataRepresentation(),
-		GetMachineIdentifierPath(),
-	); err != nil {
-		return nil, fmt.Errorf("failed to write machine identifier data: %w", err)
-	}
-
-	auxiliaryStorage, err := vz.NewMacAuxiliaryStorage(
-		GetAuxiliaryStoragePath(),
-		vz.WithCreating(hardwareModel),
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create a new mac auxiliary storage: %w", err)
-	}
-	return vz.NewMacPlatformConfiguration(
-		vz.WithAuxiliaryStorage(auxiliaryStorage),
-		vz.WithHardwareModel(hardwareModel),
-		vz.WithMachineIdentifier(machineIdentifier),
-	), nil
 }
 
 func createGraphicsDeviceConfiguration() *vz.MacGraphicsDeviceConfiguration {
@@ -236,4 +171,71 @@ func createAudioDeviceConfiguration() *vz.VirtioSoundDeviceConfiguration {
 		outputStream,
 	)
 	return audioConfig
+}
+
+func createMacPlatformConfiguration() (*vz.MacPlatformConfiguration, error) {
+	auxiliaryStorage, err := vz.NewMacAuxiliaryStorage(GetAuxiliaryStoragePath())
+	if err != nil {
+		return nil, fmt.Errorf("failed to create a new mac auxiliary storage: %w", err)
+	}
+	hardwareModel, err := vz.NewMacHardwareModelWithDataPath(
+		GetHardwareModelPath(),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create a new hardware model: %w", err)
+	}
+	machineIdentifier, err := vz.NewMacMachineIdentifierWithDataPath(
+		GetMachineIdentifierPath(),
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create a new machine identifier: %w", err)
+	}
+	return vz.NewMacPlatformConfiguration(
+		vz.WithAuxiliaryStorage(auxiliaryStorage),
+		vz.WithHardwareModel(hardwareModel),
+		vz.WithMachineIdentifier(machineIdentifier),
+	), nil
+}
+
+func setupVMConfiguration(platformConfig vz.PlatformConfiguration) (*vz.VirtualMachineConfiguration, error) {
+	config := vz.NewVirtualMachineConfiguration(
+		vz.NewMacOSBootLoader(),
+		computeCPUCount(),
+		computeMemorySize(),
+	)
+	config.SetPlatformVirtualMachineConfiguration(platformConfig)
+	config.SetGraphicsDevicesVirtualMachineConfiguration([]vz.GraphicsDeviceConfiguration{
+		createGraphicsDeviceConfiguration(),
+	})
+	blockDeviceConfig, err := createBlockDeviceConfiguration(GetDiskImagePath())
+	if err != nil {
+		return nil, fmt.Errorf("failed to create block device configuration: %w", err)
+	}
+	config.SetStorageDevicesVirtualMachineConfiguration([]vz.StorageDeviceConfiguration{blockDeviceConfig})
+
+	config.SetNetworkDevicesVirtualMachineConfiguration([]*vz.VirtioNetworkDeviceConfiguration{
+		createNetworkDeviceConfiguration(),
+	})
+
+	config.SetPointingDevicesVirtualMachineConfiguration([]vz.PointingDeviceConfiguration{
+		createPointingDeviceConfiguration(),
+	})
+
+	config.SetKeyboardsVirtualMachineConfiguration([]vz.KeyboardConfiguration{
+		createKeyboardConfiguration(),
+	})
+
+	config.SetAudioDevicesVirtualMachineConfiguration([]vz.AudioDeviceConfiguration{
+		createAudioDeviceConfiguration(),
+	})
+
+	validated, err := config.Validate()
+	if err != nil {
+		return nil, fmt.Errorf("failed to validate configuration: %w", err)
+	}
+	if !validated {
+		return nil, fmt.Errorf("invalid configuration")
+	}
+
+	return config, nil
 }

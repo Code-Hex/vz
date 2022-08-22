@@ -25,11 +25,34 @@ import (
 	"github.com/Code-Hex/vz/v2/internal/progress"
 )
 
+// MacHardwareModel describes a specific virtual Mac hardware model.
 type MacHardwareModel struct {
 	pointer
 
 	supported          bool
 	dataRepresentation []byte
+}
+
+// NewMacHardwareModelWithDataPath initialize a new hardware model described by the specified pathname.
+func NewMacHardwareModelWithDataPath(pathname string) (*MacHardwareModel, error) {
+	b, err := os.ReadFile(pathname)
+	if err != nil {
+		return nil, err
+	}
+	return NewMacHardwareModelWithData(b), nil
+}
+
+// NewMacHardwareModelWithData initialize a new hardware model described by the specified data representation.
+func NewMacHardwareModelWithData(b []byte) *MacHardwareModel {
+	ptr := C.newVZMacHardwareModelWithBytes(
+		unsafe.Pointer(&b[0]),
+		C.int(len(b)),
+	)
+	ret := newMacHardwareModel(ptr)
+	runtime.SetFinalizer(ret, func(self *MacHardwareModel) {
+		self.Release()
+	})
+	return ret
 }
 
 func newMacHardwareModel(ptr unsafe.Pointer) *MacHardwareModel {
@@ -46,8 +69,65 @@ func newMacHardwareModel(ptr unsafe.Pointer) *MacHardwareModel {
 	}
 }
 
-func (m *MacHardwareModel) Supported() bool            { return m.supported }
+// Supported indicate whether this hardware model is supported by the host.
+func (m *MacHardwareModel) Supported() bool { return m.supported }
+
+// DataRepresentation opaque data representation of the hardware model.
+// This can be used to recreate the same hardware model with NewMacHardwareModelWithData function.
 func (m *MacHardwareModel) DataRepresentation() []byte { return m.dataRepresentation }
+
+// MacMachineIdentifier an identifier to make a virtual machine unique.
+type MacMachineIdentifier struct {
+	pointer
+
+	dataRepresentation []byte
+}
+
+// NewMacMachineIdentifierWithDataPath initialize a new machine identifier described by the specified pathname.
+func NewMacMachineIdentifierWithDataPath(pathname string) (*MacMachineIdentifier, error) {
+	b, err := os.ReadFile(pathname)
+	if err != nil {
+		return nil, err
+	}
+	return NewMacMachineIdentifierWithData(b), nil
+}
+
+// NewMacMachineIdentifierWithData initialize a new machine identifier described by the specified data representation.
+func NewMacMachineIdentifierWithData(b []byte) *MacMachineIdentifier {
+	ptr := C.newVZMacMachineIdentifierWithBytes(
+		unsafe.Pointer(&b[0]),
+		C.int(len(b)),
+	)
+	return newMacMachineIdentifier(ptr)
+}
+
+// NewMacMachineIdentifier initialize a new Mac machine identifier is used by macOS guests to uniquely
+// identify the virtual hardware.
+//
+// Two virtual machines running concurrently should not use the same identifier.
+//
+// If the virtual machine is serialized to disk, the identifier can be preserved in a binary representation through
+// DataRepresentation method.
+// The identifier can then be recreated with NewMacMachineIdentifierWithData function from the binary representation.
+func NewMacMachineIdentifier() *MacMachineIdentifier {
+	return newMacMachineIdentifier(C.newVZMacMachineIdentifier())
+}
+
+func newMacMachineIdentifier(ptr unsafe.Pointer) *MacMachineIdentifier {
+	dataRepresentation := C.getVZMacMachineIdentifierDataRepresentation(ptr)
+	bytePointer := (*byte)(unsafe.Pointer(dataRepresentation.ptr))
+	return &MacMachineIdentifier{
+		pointer: pointer{
+			ptr: ptr,
+		},
+		// https://github.com/golang/go/wiki/cgo#turning-c-arrays-into-go-slices
+		dataRepresentation: unsafe.Slice(bytePointer, dataRepresentation.len),
+	}
+}
+
+// DataRepresentation opaque data representation of the machine identifier.
+// This can be used to recreate the same machine identifier with NewMacMachineIdentifierWithData function.
+func (m *MacMachineIdentifier) DataRepresentation() []byte { return m.dataRepresentation }
 
 type MacAuxiliaryStorage struct {
 	pointer
@@ -58,9 +138,9 @@ type MacAuxiliaryStorage struct {
 // NewMacAuxiliaryStorageOption is an option type to initialize a new Mac auxiliary storage
 type NewMacAuxiliaryStorageOption func(*MacAuxiliaryStorage) error
 
-// WithCreating is an option when initialize a new Mac auxiliary storage with data creation
+// WithCreatingStorage is an option when initialize a new Mac auxiliary storage with data creation
 // to you specified storage path.
-func WithCreating(hardwareModel *MacHardwareModel) NewMacAuxiliaryStorageOption {
+func WithCreatingStorage(hardwareModel *MacHardwareModel) NewMacAuxiliaryStorageOption {
 	return func(mas *MacAuxiliaryStorage) error {
 		cpath := charWithGoString(mas.storagePath)
 		defer cpath.Free()
@@ -299,54 +379,6 @@ func LoadMacOSRestoreImageFromPath(imagePath string) (retImage *MacOSRestoreImag
 	<-waitCh
 	return
 }
-
-type MacMachineIdentifier struct {
-	pointer
-
-	dataRepresentation []byte
-}
-
-type (
-	MacMachineIdentifierOption func(*macMachineIdentifierOption)
-	macMachineIdentifierOption struct {
-		pointer unsafe.Pointer
-	}
-)
-
-func WithBytes(b []byte) MacMachineIdentifierOption {
-	return func(mmio *macMachineIdentifierOption) {
-		mmio.pointer = C.newVZMacMachineIdentifierWithBytes(
-			unsafe.Pointer(&b[0]),
-			C.int(len(b)),
-		)
-	}
-}
-
-func NewMacMachineIdentifier(opts ...MacMachineIdentifierOption) *MacMachineIdentifier {
-	opt := new(macMachineIdentifierOption)
-	for _, optFunc := range opts {
-		optFunc(opt)
-	}
-	if opt.pointer == nil {
-		opt.pointer = C.newVZMacMachineIdentifier()
-	}
-
-	return newMacMachineIdentifier(opt.pointer)
-}
-
-func newMacMachineIdentifier(ptr unsafe.Pointer) *MacMachineIdentifier {
-	dataRepresentation := C.getVZMacMachineIdentifierDataRepresentation(ptr)
-	bytePointer := (*byte)(unsafe.Pointer(dataRepresentation.ptr))
-	return &MacMachineIdentifier{
-		pointer: pointer{
-			ptr: ptr,
-		},
-		// https://github.com/golang/go/wiki/cgo#turning-c-arrays-into-go-slices
-		dataRepresentation: unsafe.Slice(bytePointer, dataRepresentation.len),
-	}
-}
-
-func (m *MacMachineIdentifier) DataRepresentation() []byte { return m.dataRepresentation }
 
 type MacOSInstaller struct {
 	pointer

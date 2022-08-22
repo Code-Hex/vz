@@ -188,6 +188,16 @@ void *newVZMacHardwareModelWithPath(const char *hardwareModelPath)
     return hardwareModel;
 }
 
+void *newVZMacHardwareModelWithBytes(void *hardwareModelBytes, int len)
+{
+    VZMacHardwareModel *hardwareModel;
+    @autoreleasepool {
+        NSData *hardwareModelData = [[NSData alloc] initWithBytes:hardwareModelBytes length:(NSUInteger)len];
+        hardwareModel = [[VZMacHardwareModel alloc] initWithDataRepresentation:hardwareModelData];
+    }
+    return hardwareModel;
+}
+
 /*!
  @abstract Create a new unique machine identifier.
  */

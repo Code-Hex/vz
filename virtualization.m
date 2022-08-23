@@ -5,6 +5,7 @@
 //
 
 #import "virtualization.h"
+#import "virtualization_view.h"
 
 char *copyCString(NSString *nss)
 {
@@ -901,3 +902,20 @@ bool vmCanRequestStop(void *machine, void *queue)
     return (bool)result;
 }
 // --- TODO end
+
+void startVirtualMachineWindow(void *machine, double width, double height)
+{
+    @autoreleasepool {
+        AppDelegate *appDelegate = [[[AppDelegate alloc]
+                                        initWithVirtualMachine:(VZVirtualMachine *)machine
+                                        windowWidth:(CGFloat)width
+                                        windowHeight:(CGFloat)height] autorelease];
+
+        // Create a shared app instance.
+        // This will initialize the global variable
+	    // 'NSApp' with the application instance.
+        [NSApplication sharedApplication];
+        NSApp.delegate = appDelegate;
+        [NSApp run];
+    }
+}

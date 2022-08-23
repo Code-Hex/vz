@@ -123,3 +123,5 @@ typedef struct VZVirtioSocketConnectionFlat
 } VZVirtioSocketConnectionFlat;
 
 VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connection);
+
+void startVirtualMachineWindow(void *machine, double width, double height);

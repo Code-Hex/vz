@@ -2,7 +2,7 @@ package vz
 
 /*
 #cgo darwin CFLAGS: -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
+#cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization -framework Cocoa
 # include "virtualization.h"
 */
 import "C"
@@ -300,4 +300,8 @@ func (v *VirtualMachine) RequestStop() (bool, error) {
 		return ret, err
 	}
 	return ret, nil
+}
+
+func (v *VirtualMachine) StartGraphicApplication(width, height float64) {
+	C.startVirtualMachineWindow(v.Ptr(), C.double(width), C.double(height))
 }

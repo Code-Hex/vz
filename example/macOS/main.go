@@ -46,6 +46,9 @@ func run(ctx context.Context) error {
 }
 
 func runVM(ctx context.Context) error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+
 	platformConfig, err := createMacPlatformConfiguration()
 	if err != nil {
 		return err
@@ -66,6 +69,8 @@ func runVM(ctx context.Context) error {
 			errCh <- err
 		}
 	})
+
+	vm.StartGraphicApplication(960, 600)
 
 	for {
 		select {

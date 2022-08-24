@@ -182,6 +182,7 @@
     NSWindow *window = [[[NSWindow alloc] initWithContentRect:rect
                             styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable//|NSTexturedBackgroundWindowMask
                             backing:NSBackingStoreBuffered defer:NO] autorelease];
+
     [window setOpaque:NO];
     [window setContentView:_virtualMachineView];
     // [window setDelegate:self];
@@ -189,6 +190,10 @@
     [window center];
 
     [window makeKeyAndOrderFront:nil];
+
+    // This code to prevent crash when called applicationShouldTerminateAfterLastWindowClosed.
+    // https://stackoverflow.com/a/13470694
+    [window setReleasedWhenClosed:NO];
 }
 
 - (void)setupMenuBar

@@ -19,6 +19,7 @@ type baseKeyboardConfiguration struct{}
 
 func (*baseKeyboardConfiguration) keyboardConfiguration() {}
 
+// USBKeyboardConfiguration is a device that defines the configuration for a USB keyboard.
 type USBKeyboardConfiguration struct {
 	pointer
 
@@ -27,6 +28,7 @@ type USBKeyboardConfiguration struct {
 
 var _ KeyboardConfiguration = (*USBKeyboardConfiguration)(nil)
 
+// NewUSBKeyboardConfiguration creates a new USB keyboard configuration.
 func NewUSBKeyboardConfiguration() *USBKeyboardConfiguration {
 	config := &USBKeyboardConfiguration{
 		pointer: pointer{

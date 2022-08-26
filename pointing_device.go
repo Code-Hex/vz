@@ -8,6 +8,7 @@ package vz
 import "C"
 import "runtime"
 
+// PointingDeviceConfiguration is an interface for a pointing device configuration.
 type PointingDeviceConfiguration interface {
 	NSObject
 
@@ -18,6 +19,8 @@ type basePointingDeviceConfiguration struct{}
 
 func (*basePointingDeviceConfiguration) pointingDeviceConfiguration() {}
 
+// USBScreenCoordinatePointingDeviceConfiguration is a struct that defines the configuration
+// for a USB pointing device that reports absolute coordinates.
 type USBScreenCoordinatePointingDeviceConfiguration struct {
 	pointer
 
@@ -26,6 +29,7 @@ type USBScreenCoordinatePointingDeviceConfiguration struct {
 
 var _ PointingDeviceConfiguration = (*USBScreenCoordinatePointingDeviceConfiguration)(nil)
 
+// NewUSBScreenCoordinatePointingDeviceConfiguration creates a new USBScreenCoordinatePointingDeviceConfiguration.
 func NewUSBScreenCoordinatePointingDeviceConfiguration() *USBScreenCoordinatePointingDeviceConfiguration {
 	config := &USBScreenCoordinatePointingDeviceConfiguration{
 		pointer: pointer{

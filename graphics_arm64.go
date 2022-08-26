@@ -11,6 +11,7 @@ package vz
 import "C"
 import "runtime"
 
+// MacGraphicsDeviceConfiguration is a configuration for a display attached to a Mac graphics device.
 type MacGraphicsDeviceConfiguration struct {
 	pointer
 
@@ -32,6 +33,7 @@ func NewMacGraphicsDeviceConfiguration() *MacGraphicsDeviceConfiguration {
 	return graphicsConfiguration
 }
 
+// SetDisplays sets the displays associated with this graphics device.
 func (m *MacGraphicsDeviceConfiguration) SetDisplays(displayConfigs ...*MacGraphicsDisplayConfiguration) {
 	ptrs := make([]NSObject, len(displayConfigs))
 	for i, val := range displayConfigs {
@@ -41,11 +43,14 @@ func (m *MacGraphicsDeviceConfiguration) SetDisplays(displayConfigs ...*MacGraph
 	C.setDisplaysVZMacGraphicsDeviceConfiguration(m.Ptr(), array.Ptr())
 }
 
+// MacGraphicsDisplayConfiguration is the configuration for a Mac graphics device.
 type MacGraphicsDisplayConfiguration struct {
 	pointer
 }
 
 // NewMacGraphicsDisplayConfiguration creates a new MacGraphicsDisplayConfiguration.
+//
+// Creates a display configuration with the specified pixel dimensions and pixel density.
 func NewMacGraphicsDisplayConfiguration(widthInPixels int64, heightInPixels int64, pixelsPerInch int64) *MacGraphicsDisplayConfiguration {
 	graphicsDisplayConfiguration := &MacGraphicsDisplayConfiguration{
 		pointer: pointer{

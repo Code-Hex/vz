@@ -8,6 +8,7 @@ package vz
 import "C"
 import "runtime"
 
+// PlatformConfiguration is an interface for a platform configuration.
 type PlatformConfiguration interface {
 	NSObject
 
@@ -18,6 +19,7 @@ type basePlatformConfiguration struct{}
 
 func (*basePlatformConfiguration) platformConfiguration() {}
 
+// GenericPlatformConfiguration is the platform configuration for a generic Intel or ARM virtual machine.
 type GenericPlatformConfiguration struct {
 	pointer
 
@@ -26,6 +28,7 @@ type GenericPlatformConfiguration struct {
 
 var _ PlatformConfiguration = (*GenericPlatformConfiguration)(nil)
 
+// NewGenericPlatformConfiguration creates a new generic platform configuration.
 func NewGenericPlatformConfiguration() *GenericPlatformConfiguration {
 	platformConfig := &GenericPlatformConfiguration{
 		pointer: pointer{

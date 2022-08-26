@@ -129,6 +129,8 @@ func newMacMachineIdentifier(ptr unsafe.Pointer) *MacMachineIdentifier {
 // This can be used to recreate the same machine identifier with NewMacMachineIdentifierWithData function.
 func (m *MacMachineIdentifier) DataRepresentation() []byte { return m.dataRepresentation }
 
+// MacAuxiliaryStorage is a struct that contains information the boot loader
+// needs for booting macOS as a guest operating system.
 type MacAuxiliaryStorage struct {
 	pointer
 
@@ -180,6 +182,7 @@ func NewMacAuxiliaryStorage(storagePath string, opts ...NewMacAuxiliaryStorageOp
 	return storage, nil
 }
 
+// MacOSRestoreImage is a struct that describes a version of macOS to install on to a virtual machine.
 type MacOSRestoreImage struct {
 	url                                     string
 	buildVersion                            string
@@ -199,12 +202,14 @@ func (m *MacOSRestoreImage) BuildVersion() string {
 	return m.buildVersion
 }
 
+// OperatingSystemVersion represents the operating system version this restore image contains.
 type OperatingSystemVersion struct {
 	MajorVersion int64
 	MinorVersion int64
 	PatchVersion int64
 }
 
+// String returns string for the build version this restore image contains.
 func (osv OperatingSystemVersion) String() string {
 	return fmt.Sprintf("%d.%d.%d", osv.MajorVersion, osv.MinorVersion, osv.PatchVersion)
 }
@@ -247,7 +252,7 @@ func newMacOSConfigurationRequirements(ptr unsafe.Pointer) *MacOSConfigurationRe
 //
 // The hardware model can be used to configure a new virtual machine that meets the requirements.
 // Use VZMacPlatformConfiguration.hardwareModel to configure the Mac platform, and
-// -[VZMacAuxiliaryStorage initCreatingStorageAtURL:hardwareModel:options:error:] to create its auxiliary storage.
+// Use `WithCreatingStorage` functional option of the `NewMacAuxiliaryStorage` to create its auxiliary storage.
 func (m *MacOSConfigurationRequirements) HardwareModel() *MacHardwareModel {
 	return newMacHardwareModel(m.hardwareModelPtr)
 }
@@ -262,13 +267,13 @@ func (m *MacOSConfigurationRequirements) MinimumSupportedMemorySize() uint64 {
 	return m.minimumSupportedMemorySize
 }
 
-type MacOSRestoreImageHandler func(restoreImage *MacOSRestoreImage, err error)
+type macOSRestoreImageHandler func(restoreImage *MacOSRestoreImage, err error)
 
 //export macOSRestoreImageCompletionHandler
 func macOSRestoreImageCompletionHandler(cgoHandlerPtr, restoreImagePtr, errPtr unsafe.Pointer) {
 	cgoHandler := *(*cgo.Handle)(cgoHandlerPtr)
 
-	handler := cgoHandler.Value().(MacOSRestoreImageHandler)
+	handler := cgoHandler.Value().(macOSRestoreImageHandler)
 	defer cgoHandler.Delete()
 
 	restoreImageStruct := (*C.VZMacOSRestoreImageStruct)(restoreImagePtr)
@@ -338,13 +343,17 @@ func downloadRestoreImage(ctx context.Context, url string, destPath string) (*pr
 	return reader, nil
 }
 
+// FetchLatestSupportedMacOSRestoreImage fetches the latest macOS restore image supported by this host from the network.
+//
+// After downloading the restore image, you can initialize a MacOSInstaller using LoadMacOSRestoreImageFromPath function
+// with the local restore image file.
 func FetchLatestSupportedMacOSRestoreImage(ctx context.Context, destPath string) (*progress.Reader, error) {
 	waitCh := make(chan struct{})
 	var (
 		url      string
 		fetchErr error
 	)
-	handler := MacOSRestoreImageHandler(func(restoreImage *MacOSRestoreImage, err error) {
+	handler := macOSRestoreImageHandler(func(restoreImage *MacOSRestoreImage, err error) {
 		url = restoreImage.URL()
 		fetchErr = err
 		defer close(waitCh)
@@ -364,9 +373,12 @@ func FetchLatestSupportedMacOSRestoreImage(ctx context.Context, destPath string)
 	return progressReader, nil
 }
 
+// LoadMacOSRestoreImageFromPath loads a macOS restore image from a filepath on the local file system.
+//
+// If the imagePath parameter doesn’t refer to a local file, the system raises an exception via Objective-C.
 func LoadMacOSRestoreImageFromPath(imagePath string) (retImage *MacOSRestoreImage, retErr error) {
 	waitCh := make(chan struct{})
-	handler := MacOSRestoreImageHandler(func(restoreImage *MacOSRestoreImage, err error) {
+	handler := macOSRestoreImageHandler(func(restoreImage *MacOSRestoreImage, err error) {
 		retImage = restoreImage
 		retErr = err
 		close(waitCh)
@@ -380,6 +392,7 @@ func LoadMacOSRestoreImageFromPath(imagePath string) (retImage *MacOSRestoreImag
 	return
 }
 
+// MacOSInstaller is a struct you use to install macOS on the specified virtual machine.
 type MacOSInstaller struct {
 	pointer
 	observerPointer pointer
@@ -438,6 +451,10 @@ func macOSInstallFractionCompletedHandler(cgoHandlerPtr unsafe.Pointer, complete
 	handler(float64(completed))
 }
 
+// Install starts installing macOS.
+//
+// This method starts the installation process. The VM must be in a stopped state.
+// During the installation operation, pausing or stopping the VM results in an undefined behavior.
 func (m *MacOSInstaller) Install(ctx context.Context) error {
 	select {
 	case <-ctx.Done():
@@ -477,8 +494,11 @@ func (m *MacOSInstaller) setFractionCompleted(completed float64) {
 	m.progress.Store(completed)
 }
 
+// FractionCompleted returns the fraction of the overall work that the install process
+// completes.
 func (m *MacOSInstaller) FractionCompleted() float64 {
 	return m.progress.Load().(float64)
 }
 
+// Done recieves a notification that indicates the install process is completed.
 func (m *MacOSInstaller) Done() <-chan struct{} { return m.doneCh }

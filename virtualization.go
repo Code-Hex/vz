@@ -14,10 +14,6 @@ import (
 	"github.com/rs/xid"
 )
 
-func init() {
-	// startNSThread()
-}
-
 // VirtualMachineState represents execution state of the virtual machine.
 type VirtualMachineState int
 
@@ -302,6 +298,9 @@ func (v *VirtualMachine) RequestStop() (bool, error) {
 	return ret, nil
 }
 
+// StartGraphicApplication starts an application to display graphics of the VM.
+//
+// You must to call runtime.LockOSThread before calling this method.
 func (v *VirtualMachine) StartGraphicApplication(width, height float64) {
 	C.startVirtualMachineWindow(v.Ptr(), C.double(width), C.double(height))
 }

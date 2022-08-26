@@ -20,6 +20,7 @@ type MacOSBootLoader struct {
 
 var _ BootLoader = (*MacOSBootLoader)(nil)
 
+// NewMacOSBootLoader creates a new MacOSBootLoader struct.
 func NewMacOSBootLoader() *MacOSBootLoader {
 	bootLoader := &MacOSBootLoader{
 		pointer: pointer{

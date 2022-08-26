@@ -19,6 +19,14 @@ type baseAudioDeviceConfiguration struct{}
 
 func (*baseAudioDeviceConfiguration) audioDeviceConfiguration() {}
 
+// VirtioSoundDeviceConfiguration is a struct that defines a Virtio sound device configuration.
+//
+// Use a VirtioSoundDeviceConfiguration to configure an audio device for your VM. After creating
+// this struct, assign appropriate values via the SetStreams method which defines the behaviors of
+// the underlying audio streams for this audio device.
+//
+// After creating and configuring a VirtioSoundDeviceConfiguration struct, assign it to the
+// SetAudioDevicesVirtualMachineConfiguration method of your VM’s configuration.
 type VirtioSoundDeviceConfiguration struct {
 	pointer
 
@@ -27,6 +35,7 @@ type VirtioSoundDeviceConfiguration struct {
 
 var _ AudioDeviceConfiguration = (*VirtioSoundDeviceConfiguration)(nil)
 
+// NewVirtioSoundDeviceConfiguration creates a new sound device configuration.
 func NewVirtioSoundDeviceConfiguration() *VirtioSoundDeviceConfiguration {
 	config := &VirtioSoundDeviceConfiguration{
 		pointer: pointer{
@@ -39,6 +48,7 @@ func NewVirtioSoundDeviceConfiguration() *VirtioSoundDeviceConfiguration {
 	return config
 }
 
+// SetStreams sets the list of audio streams exposed by this device.
 func (v *VirtioSoundDeviceConfiguration) SetStreams(streams ...VirtioSoundDeviceStreamConfiguration) {
 	ptrs := make([]NSObject, len(streams))
 	for i, val := range streams {
@@ -59,6 +69,8 @@ type baseVirtioSoundDeviceStreamConfiguration struct{}
 
 func (*baseVirtioSoundDeviceStreamConfiguration) virtioSoundDeviceStreamConfiguration() {}
 
+// VirtioSoundDeviceHostInputStreamConfiguration is a PCM stream of input audio data,
+// such as from a microphone via host.
 type VirtioSoundDeviceHostInputStreamConfiguration struct {
 	pointer
 
@@ -67,6 +79,7 @@ type VirtioSoundDeviceHostInputStreamConfiguration struct {
 
 var _ VirtioSoundDeviceStreamConfiguration = (*VirtioSoundDeviceHostInputStreamConfiguration)(nil)
 
+// NewVirtioSoundDeviceHostInputStreamConfiguration creates a new PCM stream configuration of input audio data from host.
 func NewVirtioSoundDeviceHostInputStreamConfiguration() *VirtioSoundDeviceHostInputStreamConfiguration {
 	config := &VirtioSoundDeviceHostInputStreamConfiguration{
 		pointer: pointer{
@@ -79,6 +92,10 @@ func NewVirtioSoundDeviceHostInputStreamConfiguration() *VirtioSoundDeviceHostIn
 	return config
 }
 
+// VirtioSoundDeviceHostOutputStreamConfiguration is a struct that
+// defines a Virtio host sound device output stream configuration.
+//
+// A PCM stream of output audio data, such as to a speaker from host.
 type VirtioSoundDeviceHostOutputStreamConfiguration struct {
 	pointer
 
@@ -87,6 +104,7 @@ type VirtioSoundDeviceHostOutputStreamConfiguration struct {
 
 var _ VirtioSoundDeviceStreamConfiguration = (*VirtioSoundDeviceHostOutputStreamConfiguration)(nil)
 
+// NewVirtioSoundDeviceHostOutputStreamConfiguration creates a new sounds device output stream configuration.
 func NewVirtioSoundDeviceHostOutputStreamConfiguration() *VirtioSoundDeviceHostOutputStreamConfiguration {
 	config := &VirtioSoundDeviceHostOutputStreamConfiguration{
 		pointer: pointer{

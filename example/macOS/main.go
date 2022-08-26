@@ -2,35 +2,25 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"runtime"
 	"syscall"
-	"time"
 
 	"github.com/Code-Hex/vz/v2"
 )
 
+var install bool
+
+func init() {
+	flag.BoolVar(&install, "install", false, "run command as install mode")
+}
+
 func main() {
-	// progressReader, err := vz.FetchLatestSupportedMacOSRestoreImage(context.Background(), "RestoreImage.ipsw")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// ticker := time.NewTicker(time.Millisecond * 500)
-	// defer ticker.Stop()
-	// for {
-	// 	select {
-	// 	case <-ticker.C:
-	// 		log.Printf("progress: %f", progressReader.FractionCompleted()*100)
-	// 	case <-progressReader.Finished():
-	// 		log.Println("finished", progressReader.Err())
-	// 		return
-	// 	}
-	// }
-
+	flag.Parse()
 	if err := run(context.Background()); err != nil {
 		fmt.Fprintf(os.Stderr, "failed to run: %v", err)
 		os.Exit(1)
@@ -38,8 +28,7 @@ func main() {
 }
 
 func run(ctx context.Context) error {
-	if false {
-		defer time.Sleep(time.Second)
+	if install {
 		return installMacOS(ctx)
 	}
 	return runVM(ctx)

@@ -9,10 +9,11 @@ You can get knowledge build and codesign process in Makefile.
 make all
 ```
 
-## Setup Hints
+## Run
 
-- I used `ubuntu-20.04.1-live-server-arm64.iso` in this example
-- [The Unarchiver](https://apps.apple.com/us/app/the-unarchiver/id425424353?mt=12) can extracts some important files from iso.
-    - `vmlinuz` and `initrd` in `/casper`
-    - Need to rename vmlinuz to vmlinuz.gz and unarchive it.
-- https://forums.macrumors.com/threads/ubuntu-linux-virtualized-on-m1-success.2270365/
+- `./virtualization -install` install macOS to your VM.
+- `./virtualization` run macOS VM.
+
+## Resources
+
+Some resources will be created in `VM.bundle` directory on your home directory.

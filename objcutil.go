@@ -97,11 +97,6 @@ void releaseNSObject(void* o)
 	}
 }
 
-static inline void startNSThread()
-{
-	[[NSThread new] start]; // put the runtime into multi-threaded mode
-}
-
 static inline void releaseDispatch(void *queue)
 {
 	dispatch_release((dispatch_queue_t)queue);
@@ -124,11 +119,6 @@ import (
 	"runtime"
 	"unsafe"
 )
-
-// startNSThread starts NSThread.
-func startNSThread() {
-	C.startNSThread()
-}
 
 // releaseDispatch releases allocated dispatch_queue_t
 func releaseDispatch(p unsafe.Pointer) {

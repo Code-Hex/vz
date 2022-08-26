@@ -145,3 +145,72 @@ func (v *VirtualMachineConfiguration) SetDirectorySharingDevicesVirtualMachineCo
 	array := convertToNSMutableArray(ptrs)
 	C.setDirectorySharingDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
 }
+
+// SetPlatformVirtualMachineConfiguration sets the hardware platform to use. Defaults to GenericPlatformConfiguration.
+func (v *VirtualMachineConfiguration) SetPlatformVirtualMachineConfiguration(c PlatformConfiguration) {
+	C.setPlatformVZVirtualMachineConfiguration(v.Ptr(), c.Ptr())
+}
+
+// SetGraphicsDevicesVirtualMachineConfiguration sets list of graphics devices. Empty by default.
+func (v *VirtualMachineConfiguration) SetGraphicsDevicesVirtualMachineConfiguration(cs []GraphicsDeviceConfiguration) {
+	ptrs := make([]NSObject, len(cs))
+	for i, val := range cs {
+		ptrs[i] = val
+	}
+	array := convertToNSMutableArray(ptrs)
+	C.setGraphicsDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+}
+
+// SetPointingDevicesVirtualMachineConfiguration sets list of pointing devices. Empty by default.
+func (v *VirtualMachineConfiguration) SetPointingDevicesVirtualMachineConfiguration(cs []PointingDeviceConfiguration) {
+	ptrs := make([]NSObject, len(cs))
+	for i, val := range cs {
+		ptrs[i] = val
+	}
+	array := convertToNSMutableArray(ptrs)
+	C.setPointingDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+}
+
+// SetKeyboardsVirtualMachineConfiguration sets list of keyboards. Empty by default.
+func (v *VirtualMachineConfiguration) SetKeyboardsVirtualMachineConfiguration(cs []KeyboardConfiguration) {
+	ptrs := make([]NSObject, len(cs))
+	for i, val := range cs {
+		ptrs[i] = val
+	}
+	array := convertToNSMutableArray(ptrs)
+	C.setKeyboardsVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+}
+
+// SetAudioDevicesVirtualMachineConfiguration sets list of audio devices. Empty by default.
+func (v *VirtualMachineConfiguration) SetAudioDevicesVirtualMachineConfiguration(cs []AudioDeviceConfiguration) {
+	ptrs := make([]NSObject, len(cs))
+	for i, val := range cs {
+		ptrs[i] = val
+	}
+	array := convertToNSMutableArray(ptrs)
+	C.setAudioDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+}
+
+// VirtualMachineConfigurationMinimumAllowedMemorySize returns minimum
+// amount of memory required by virtual machines.
+func VirtualMachineConfigurationMinimumAllowedMemorySize() uint64 {
+	return uint64(C.minimumAllowedMemorySizeVZVirtualMachineConfiguration())
+}
+
+// VirtualMachineConfigurationMaximumAllowedMemorySize returns maximum
+// amount of memory allowed for a virtual machine.
+func VirtualMachineConfigurationMaximumAllowedMemorySize() uint64 {
+	return uint64(C.maximumAllowedMemorySizeVZVirtualMachineConfiguration())
+}
+
+// VirtualMachineConfigurationMinimumAllowedCPUCount returns minimum
+// number of CPUs for a virtual machine.
+func VirtualMachineConfigurationMinimumAllowedCPUCount() uint {
+	return uint(C.minimumAllowedCPUCountVZVirtualMachineConfiguration())
+}
+
+// VirtualMachineConfigurationMaximumAllowedCPUCount returns maximum
+// number of CPUs for a virtual machine.
+func VirtualMachineConfigurationMaximumAllowedCPUCount() uint {
+	return uint(C.maximumAllowedCPUCountVZVirtualMachineConfiguration())
+}

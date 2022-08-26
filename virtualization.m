@@ -5,6 +5,7 @@
 //
 
 #import "virtualization.h"
+#import "virtualization_view.h"
 
 char *copyCString(NSString *nss)
 {
@@ -100,6 +101,42 @@ bool validateVZVirtualMachineConfiguration(void *config, void **error)
 {
     return (bool)[(VZVirtualMachineConfiguration *)config
             validateWithError:(NSError * _Nullable * _Nullable)error];
+}
+
+/*!
+ @abstract: Minimum amount of memory required by virtual machines.
+ @see VZVirtualMachineConfiguration.memorySize
+ */
+unsigned long long minimumAllowedMemorySizeVZVirtualMachineConfiguration()
+{
+    return (unsigned long long)[VZVirtualMachineConfiguration minimumAllowedMemorySize];
+}
+
+/*!
+ @abstract: Maximum amount of memory allowed for a virtual machine.
+ @see VZVirtualMachineConfiguration.memorySize
+ */
+unsigned long long maximumAllowedMemorySizeVZVirtualMachineConfiguration()
+{
+    return (unsigned long long)[VZVirtualMachineConfiguration maximumAllowedMemorySize];
+}
+
+/*!
+ @abstract: Minimum number of CPUs for a virtual machine.
+ @see VZVirtualMachineConfiguration.CPUCount
+ */
+unsigned int minimumAllowedCPUCountVZVirtualMachineConfiguration()
+{
+    return (unsigned int)[VZVirtualMachineConfiguration minimumAllowedCPUCount];
+}
+
+/*!
+ @abstract: Maximum number of CPUs for a virtual machine.
+ @see VZVirtualMachineConfiguration.CPUCount
+ */
+unsigned int maximumAllowedCPUCountVZVirtualMachineConfiguration()
+{
+    return (unsigned int)[VZVirtualMachineConfiguration maximumAllowedCPUCount];
 }
 
 /*!
@@ -203,6 +240,115 @@ void setStorageDevicesVZVirtualMachineConfiguration(void *config,
 void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void *directorySharingDevices)
 {
     [(VZVirtualMachineConfiguration *)config setDirectorySharingDevices:[(NSMutableArray *)directorySharingDevices copy]];
+}
+
+/*!
+ @abstract The hardware platform to use.
+ @discussion
+    Can be an instance of a VZGenericPlatformConfiguration or VZMacPlatformConfiguration. Defaults to VZGenericPlatformConfiguration.
+ */
+void setPlatformVZVirtualMachineConfiguration(void *config, void *platform)
+{
+    [(VZVirtualMachineConfiguration *)config setPlatform:(VZPlatformConfiguration *)platform];
+}
+
+/*!
+ @abstract List of graphics devices. Empty by default.
+ @see VZMacGraphicsDeviceConfiguration
+ */
+void setGraphicsDevicesVZVirtualMachineConfiguration(void *config, void *graphicsDevices)
+{
+    [(VZVirtualMachineConfiguration *)config setGraphicsDevices:[(NSMutableArray *)graphicsDevices copy]];
+}
+
+/*!
+ @abstract List of pointing devices. Empty by default.
+ @see VZUSBScreenCoordinatePointingDeviceConfiguration
+ */
+void setPointingDevicesVZVirtualMachineConfiguration(void *config, void *pointingDevices)
+{
+    [(VZVirtualMachineConfiguration *)config setPointingDevices:[(NSMutableArray *)pointingDevices copy]];
+}
+
+/*!
+ @abstract List of keyboards. Empty by default.
+ @see VZUSBKeyboardConfiguration
+ */
+void setKeyboardsVZVirtualMachineConfiguration(void *config, void *keyboards)
+{
+    [(VZVirtualMachineConfiguration *)config setKeyboards:[(NSMutableArray *)keyboards copy]];
+}
+
+/*!
+ @abstract List of audio devices. Empty by default.
+ @see VZVirtioSoundDeviceConfiguration
+ */
+void setAudioDevicesVZVirtualMachineConfiguration(void *config, void *audioDevices)
+{
+    [(VZVirtualMachineConfiguration *)config setAudioDevices:[(NSMutableArray *)audioDevices copy]];
+}
+
+/*!
+ @abstract Initialize a new Virtio Sound Device Configuration.
+ @discussion The device exposes a source or destination of sound.
+ */
+void *newVZVirtioSoundDeviceConfiguration()
+{
+    return [[VZVirtioSoundDeviceConfiguration alloc] init];
+}
+
+/*!
+ @abstract Set the list of audio streams exposed by this device. Empty by default.
+*/
+void setStreamsVZVirtioSoundDeviceConfiguration(void *audioDeviceConfiguration, void *streams)
+{
+    [(VZVirtioSoundDeviceConfiguration *)audioDeviceConfiguration setStreams:[(NSMutableArray *)streams copy]];
+}
+
+/*!
+ @abstract Initialize a new Virtio Sound Device Input Stream Configuration.
+ @discussion A PCM stream of input audio data, such as from a microphone.
+ */
+void *newVZVirtioSoundDeviceInputStreamConfiguration()
+{
+    return [[VZVirtioSoundDeviceInputStreamConfiguration alloc] init];
+}
+
+/*!
+ @abstract Initialize a new Virtio Sound Device Host Audio Input Stream Configuration.
+ */
+void *newVZVirtioSoundDeviceHostInputStreamConfiguration()
+{
+    VZVirtioSoundDeviceInputStreamConfiguration *inputStream = (VZVirtioSoundDeviceInputStreamConfiguration *)newVZVirtioSoundDeviceInputStreamConfiguration();
+    [inputStream setSource:[[VZHostAudioInputStreamSource alloc] init]];
+    return inputStream;
+}
+
+/*!
+ @abstract Initialize a new Virtio Sound Device Output Stream Configuration.
+ @discussion A PCM stream of output audio data, such as to a speaker.
+ */
+void *newVZVirtioSoundDeviceOutputStreamConfiguration()
+{
+    return [[VZVirtioSoundDeviceOutputStreamConfiguration alloc] init];
+}
+
+/*!
+ @abstract Initialize a new Virtio Sound Device Host Audio Output Stream Configuration.
+ */
+void *newVZVirtioSoundDeviceHostOutputStreamConfiguration()
+{
+    VZVirtioSoundDeviceOutputStreamConfiguration *outputStream = (VZVirtioSoundDeviceOutputStreamConfiguration *)newVZVirtioSoundDeviceOutputStreamConfiguration();
+    [outputStream setSink:[[VZHostAudioOutputStreamSink alloc] init]];
+    return outputStream;
+}
+
+/*!
+ @abstract The platform configuration for a generic Intel or ARM virtual machine.
+*/
+void *newVZGenericPlatformConfiguration()
+{
+    return [[VZGenericPlatformConfiguration alloc] init];
 }
 
 /*!
@@ -639,6 +785,24 @@ void setVZVirtioFileSystemDeviceConfigurationShare(void *config, void *share)
 }
 
 /*!
+ @abstract Initialize a new configuration for a USB pointing device that reports absolute coordinates.
+ @discussion This device can be used by VZVirtualMachineView to send pointer events to the virtual machine.
+ */
+void *newVZUSBScreenCoordinatePointingDeviceConfiguration()
+{
+    return [[VZUSBScreenCoordinatePointingDeviceConfiguration alloc] init];
+}
+
+/*!
+ @abstract Initialize a new configuration for a USB keyboard.
+ @discussion This device can be used by VZVirtualMachineView to send key events to the virtual machine.
+ */
+void *newVZUSBKeyboardConfiguration()
+{
+    return [[VZUSBKeyboardConfiguration alloc] init];
+}
+
+/*!
  @abstract Request that the guest turns itself off.
  @param error If not nil, assigned with the error if the request failed.
  @return YES if the request was made successfully.
@@ -738,3 +902,20 @@ bool vmCanRequestStop(void *machine, void *queue)
     return (bool)result;
 }
 // --- TODO end
+
+void startVirtualMachineWindow(void *machine, double width, double height)
+{
+    @autoreleasepool {
+        AppDelegate *appDelegate = [[[AppDelegate alloc]
+                                        initWithVirtualMachine:(VZVirtualMachine *)machine
+                                        windowWidth:(CGFloat)width
+                                        windowHeight:(CGFloat)height] autorelease];
+
+        // Create a shared app instance.
+        // This will initialize the global variable
+	    // 'NSApp' with the application instance.
+        [NSApplication sharedApplication];
+        NSApp.delegate = appDelegate;
+        [NSApp run];
+    }
+}

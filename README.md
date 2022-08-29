@@ -17,11 +17,15 @@ Higher or equal to Go 1.17.
 
 ### macOS Monterey (v12.x.x)
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/Code-Hex/vz/v2.svg)](https://pkg.go.dev/github.com/Code-Hex/vz/v2)
+
 For the latest macOS version is developed on the [master](https://github.com/Code-Hex/vz) branch and released as `v2.x.x`.
 
 You can install by `go get github.com/Code-Hex/vz/v2`
 
 ### macOS Big Sur (v11.x.x)
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/Code-Hex/vz.svg)](https://pkg.go.dev/github.com/Code-Hex/vz)
 
 Some methods of this framework are available and some are not, depending on the version of macOS. Therefore, Go language side also needs to control which methods are available depending on the macOS version.
 

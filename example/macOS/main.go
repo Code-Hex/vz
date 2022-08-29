@@ -6,9 +6,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/signal"
 	"runtime"
-	"syscall"
+	"time"
 
 	"github.com/Code-Hex/vz/v2"
 )
@@ -48,9 +47,6 @@ func runVM(ctx context.Context) error {
 	}
 	vm := vz.NewVirtualMachine(config)
 
-	signalCh := make(chan os.Signal, 1)
-	signal.Notify(signalCh, syscall.SIGTERM)
-
 	errCh := make(chan error, 1)
 
 	vm.Start(func(err error) {
@@ -59,28 +55,50 @@ func runVM(ctx context.Context) error {
 		}
 	})
 
-	vm.StartGraphicApplication(960, 600)
-
-	for {
-		select {
-		case <-signalCh:
-			result, err := vm.RequestStop()
-			if err != nil {
-				return err
+	go func() {
+		for {
+			select {
+			case newState := <-vm.StateChangedNotify():
+				if newState == vz.VirtualMachineStateRunning {
+					log.Println("start VM is running")
+				}
+				if newState == vz.VirtualMachineStateStopped || newState == vz.VirtualMachineStateStopping {
+					log.Println("stopped state")
+					errCh <- nil
+					return
+				}
+			case err := <-errCh:
+				errCh <- fmt.Errorf("failed to start vm: %w", err)
+				return
 			}
-			log.Println("recieved signal", result)
-		case newState := <-vm.StateChangedNotify():
-			if newState == vz.VirtualMachineStateRunning {
-				log.Println("start VM is running")
-			}
-			if newState == vz.VirtualMachineStateStopped {
-				log.Println("stopped successfully")
-				return nil
-			}
-		case err := <-errCh:
-			return fmt.Errorf("failed to start vm: %w", err)
 		}
+	}()
+
+	// cleanup is this function is useful when finished graphic application.
+	cleanup := func() {
+		for i := 1; vm.CanRequestStop(); i++ {
+			result, err := vm.RequestStop()
+			log.Printf("sent stop request(%d): %t, %v", i, result, err)
+			time.Sleep(time.Second * 3)
+			if i > 3 {
+				log.Println("call stop")
+				vm.Stop(func(err error) {
+					if err != nil {
+						log.Println("stop with error", err)
+					}
+				})
+			}
+		}
+		log.Println("finished cleanup")
 	}
+
+	runtime.LockOSThread()
+	vm.StartGraphicApplication(960, 600)
+	runtime.UnlockOSThread()
+
+	cleanup()
+
+	return <-errCh
 }
 
 func computeCPUCount() uint {

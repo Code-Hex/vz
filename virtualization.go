@@ -8,11 +8,16 @@ package vz
 import "C"
 import (
 	"runtime"
+	"runtime/cgo"
 	"sync"
 	"unsafe"
 
 	"github.com/rs/xid"
 )
+
+func init() {
+	C.sharedApplication()
+}
 
 // VirtualMachineState represents execution state of the virtual machine.
 type VirtualMachineState int
@@ -77,17 +82,9 @@ type (
 
 		mu sync.RWMutex
 	}
-	machineHandlers struct {
-		start  func(error)
-		pause  func(error)
-		resume func(error)
-	}
 )
 
-var (
-	handlers = map[string]*machineHandlers{}
-	statuses = map[string]*machineStatus{}
-)
+var statuses = map[string]*machineStatus{}
 
 // NewVirtualMachine creates a new VirtualMachine with VirtualMachineConfiguration.
 //
@@ -103,11 +100,6 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) *VirtualMachine {
 	statuses[id] = &machineStatus{
 		state:       VirtualMachineState(0),
 		stateNotify: make(chan VirtualMachineState),
-	}
-	handlers[id] = &machineHandlers{
-		start:  func(error) {},
-		pause:  func(error) {},
-		resume: func(error) {},
 	}
 	dispatchQueue := C.makeDispatchQueue(cs.CString())
 	v := &VirtualMachine{
@@ -203,37 +195,16 @@ func (v *VirtualMachine) CanRequestStop() bool {
 	return (bool)(C.vmCanRequestStop(v.Ptr(), v.dispatchQueue))
 }
 
-//export startHandler
-func startHandler(errPtr unsafe.Pointer, cid *C.char) {
-	id := (*char)(cid).String()
-	// If returns nil in the cgo world, the nil will not be treated as nil in the Go world
-	// so this is temporarily handled (Go 1.17)
-	if err := newNSError(errPtr); err != nil {
-		handlers[id].start(err)
-	} else {
-		handlers[id].start(nil)
-	}
-}
+//export virtualMachineCompletionHandler
+func virtualMachineCompletionHandler(cgoHandlerPtr, errPtr unsafe.Pointer) {
+	cgoHandler := *(*cgo.Handle)(cgoHandlerPtr)
 
-//export pauseHandler
-func pauseHandler(errPtr unsafe.Pointer, cid *C.char) {
-	id := (*char)(cid).String()
-	// see: startHandler
-	if err := newNSError(errPtr); err != nil {
-		handlers[id].pause(err)
-	} else {
-		handlers[id].pause(nil)
-	}
-}
+	handler := cgoHandler.Value().(func(error))
 
-//export resumeHandler
-func resumeHandler(errPtr unsafe.Pointer, cid *C.char) {
-	id := (*char)(cid).String()
-	// see: startHandler
 	if err := newNSError(errPtr); err != nil {
-		handlers[id].resume(err)
+		handler(err)
 	} else {
-		handlers[id].resume(nil)
+		handler(nil)
 	}
 }
 
@@ -251,10 +222,9 @@ func makeHandler(fn func(error)) (func(error), chan struct{}) {
 // The error parameter passed to the block is null if the start was successful.
 func (v *VirtualMachine) Start(fn func(error)) {
 	h, done := makeHandler(fn)
-	handlers[v.id].start = h
-	cid := charWithGoString(v.id)
-	defer cid.Free()
-	C.startWithCompletionHandler(v.Ptr(), v.dispatchQueue, cid.CString())
+	handler := cgo.NewHandle(h)
+	defer handler.Delete()
+	C.startWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
 	<-done
 }
 
@@ -264,10 +234,9 @@ func (v *VirtualMachine) Start(fn func(error)) {
 // The error parameter passed to the block is null if the start was successful.
 func (v *VirtualMachine) Pause(fn func(error)) {
 	h, done := makeHandler(fn)
-	handlers[v.id].pause = h
-	cid := charWithGoString(v.id)
-	defer cid.Free()
-	C.pauseWithCompletionHandler(v.Ptr(), v.dispatchQueue, cid.CString())
+	handler := cgo.NewHandle(h)
+	defer handler.Delete()
+	C.pauseWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
 	<-done
 }
 
@@ -277,10 +246,9 @@ func (v *VirtualMachine) Pause(fn func(error)) {
 // The error parameter passed to the block is null if the resumption was successful.
 func (v *VirtualMachine) Resume(fn func(error)) {
 	h, done := makeHandler(fn)
-	handlers[v.id].resume = h
-	cid := charWithGoString(v.id)
-	defer cid.Free()
-	C.resumeWithCompletionHandler(v.Ptr(), v.dispatchQueue, cid.CString())
+	handler := cgo.NewHandle(h)
+	defer handler.Delete()
+	C.resumeWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
 	<-done
 }
 

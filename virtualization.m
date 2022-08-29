@@ -824,45 +824,31 @@ void *makeDispatchQueue(const char *label)
     return queue;
 }
 
-typedef void (^handler_t)(NSError *);
-
-handler_t generateHandler(const char *vmid, void handler(void *, char *))
+void startWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
-    handler_t ret;
-    @autoreleasepool {
-        NSString *str = [NSString stringWithUTF8String:vmid];
-        ret = Block_copy(^(NSError *err){
-            handler(err, copyCString(str));
-        });
-    }
-    return ret;
+    dispatch_sync((dispatch_queue_t)queue, ^{
+        [(VZVirtualMachine *)machine startWithCompletionHandler:^(NSError *err) {
+            virtualMachineCompletionHandler(completionHandler, err);
+        }];
+    });
 }
 
-void startWithCompletionHandler(void *machine, void *queue, const char *vmid)
+void pauseWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
-    handler_t handler = generateHandler(vmid, startHandler);
     dispatch_sync((dispatch_queue_t)queue, ^{
-        [(VZVirtualMachine *)machine startWithCompletionHandler:handler];
+        [(VZVirtualMachine *)machine pauseWithCompletionHandler:^(NSError *err) {
+            virtualMachineCompletionHandler(completionHandler, err);
+        }];
     });
-    Block_release(handler);
 }
 
-void pauseWithCompletionHandler(void *machine, void *queue, const char *vmid)
+void resumeWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
-    handler_t handler = generateHandler(vmid, pauseHandler);
     dispatch_sync((dispatch_queue_t)queue, ^{
-        [(VZVirtualMachine *)machine pauseWithCompletionHandler:handler];
+        [(VZVirtualMachine *)machine resumeWithCompletionHandler:^(NSError *err) {
+            virtualMachineCompletionHandler(completionHandler, err);
+        }];
     });
-    Block_release(handler);
-}
-
-void resumeWithCompletionHandler(void *machine, void *queue, const char *vmid)
-{
-    handler_t handler = generateHandler(vmid, pauseHandler);
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        [(VZVirtualMachine *)machine resumeWithCompletionHandler:handler];
-    });
-    Block_release(handler);
 }
 
 // TODO(codehex): use KVO
@@ -903,6 +889,14 @@ bool vmCanRequestStop(void *machine, void *queue)
 }
 // --- TODO end
 
+void sharedApplication()
+{
+	// Create a shared app instance.
+    // This will initialize the global variable
+	// 'NSApp' with the application instance.
+	[VZApplication sharedApplication];
+}
+
 void startVirtualMachineWindow(void *machine, double width, double height)
 {
     @autoreleasepool {
@@ -911,10 +905,6 @@ void startVirtualMachineWindow(void *machine, double width, double height)
                                         windowWidth:(CGFloat)width
                                         windowHeight:(CGFloat)height] autorelease];
 
-        // Create a shared app instance.
-        // This will initialize the global variable
-	    // 'NSApp' with the application instance.
-        [NSApplication sharedApplication];
         NSApp.delegate = appDelegate;
         [NSApp run];
     }

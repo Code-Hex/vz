@@ -46,6 +46,10 @@ const (
 	// VirtualMachineStateResuming The virtual machine is being resumed.
 	// This is the intermediate state between VirtualMachineStatePaused and VirtualMachineStateRunning.
 	VirtualMachineStateResuming
+
+	// VZVirtualMachineStateStopping The virtual machine is being stopped.
+	// This is the intermediate state between VZVirtualMachineStateRunning and VZVirtualMachineStateStop.
+	VirtualMachineStateStopping
 )
 
 // VirtualMachine represents the entire state of a single virtual machine.
@@ -195,6 +199,11 @@ func (v *VirtualMachine) CanRequestStop() bool {
 	return (bool)(C.vmCanRequestStop(v.Ptr(), v.dispatchQueue))
 }
 
+// CanStop returns whether the machine is in a state that can be stopped.
+func (v *VirtualMachine) CanStop() bool {
+	return (bool)(C.vmCanStop(v.Ptr(), v.dispatchQueue))
+}
+
 //export virtualMachineCompletionHandler
 func virtualMachineCompletionHandler(cgoHandlerPtr, errPtr unsafe.Pointer) {
 	cgoHandler := *(*cgo.Handle)(cgoHandlerPtr)
@@ -264,6 +273,21 @@ func (v *VirtualMachine) RequestStop() (bool, error) {
 		return ret, err
 	}
 	return ret, nil
+}
+
+// Stop stops a VM that’s in either a running or paused state.
+//
+// The completion handler returns an error object when the VM fails to stop,
+// or nil if the stop was successful.
+//
+// Warning: This is a destructive operation. It stops the VM without
+// giving the guest a chance to stop cleanly.
+func (v *VirtualMachine) Stop(fn func(error)) {
+	h, done := makeHandler(fn)
+	handler := cgo.NewHandle(h)
+	defer handler.Delete()
+	C.stopWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
+	<-done
 }
 
 // StartGraphicApplication starts an application to display graphics of the VM.

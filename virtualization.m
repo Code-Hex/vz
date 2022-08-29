@@ -851,6 +851,15 @@ void resumeWithCompletionHandler(void *machine, void *queue, void *completionHan
     });
 }
 
+void stopWithCompletionHandler(void *machine, void *queue, void *completionHandler)
+{
+    dispatch_sync((dispatch_queue_t)queue, ^{
+        [(VZVirtualMachine *)machine stopWithCompletionHandler:^(NSError *err) {
+            virtualMachineCompletionHandler(completionHandler, err);
+        }];
+    });
+}
+
 // TODO(codehex): use KVO
 bool vmCanStart(void *machine, void *queue)
 {
@@ -884,6 +893,15 @@ bool vmCanRequestStop(void *machine, void *queue)
     __block BOOL result;
     dispatch_sync((dispatch_queue_t)queue, ^{
         result = ((VZVirtualMachine *)machine).canRequestStop;
+    });
+    return (bool)result;
+}
+
+bool vmCanStop(void *machine, void *queue)
+{
+    __block BOOL result;
+    dispatch_sync((dispatch_queue_t)queue, ^{
+        result = ((VZVirtualMachine *)machine).canStop;
     });
     return (bool)result;
 }

@@ -105,10 +105,12 @@ bool requestStopVirtualMachine(void *machine, void *queue, void **error);
 void startWithCompletionHandler(void *machine, void *queue, void *completionHandler);
 void pauseWithCompletionHandler(void *machine, void *queue, void *completionHandler);
 void resumeWithCompletionHandler(void *machine, void *queue, void *completionHandler);
+void stopWithCompletionHandler(void *machine, void *queue, void *completionHandler);
 bool vmCanStart(void *machine, void *queue);
 bool vmCanPause(void *machine, void *queue);
 bool vmCanResume(void *machine, void *queue);
 bool vmCanRequestStop(void *machine, void *queue);
+bool vmCanStop(void *machine, void *queue);
 
 void *makeDispatchQueue(const char *label);
 

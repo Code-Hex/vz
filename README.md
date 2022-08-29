@@ -5,7 +5,7 @@ vz - Go binding with Apple [Virtualization.framework](https://developer.apple.co
 
 vz provides the power of the Apple Virtualization.framework in Go. Put here is block quote of overreview which is written what is Virtualization.framework from the document.
 
-> The Virtualization framework provides high-level APIs for creating and managing virtual machines on Apple silicon and Intel-based Mac computers. Use this framework to boot and run a Linux-based operating system in a custom environment that you define. The framework supports the Virtio specification, which defines standard interfaces for many device types, including network, socket, serial port, storage, entropy, and memory-balloon devices.
+> The Virtualization framework provides high-level APIs for creating and managing virtual machines (VM) on Apple silicon and Intel-based Mac computers. Use this framework to boot and run macOS or Linux-based operating systems in custom environments that you define. The framework supports the [Virtual I/O Device (VIRTIO)](https://docs.oasis-open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-csprd01.html) specification, which defines standard interfaces for many device types, including network, socket, serial port, storage, entropy, and memory-balloon devices.
 
 ## USAGE
 

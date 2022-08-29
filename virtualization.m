@@ -909,9 +909,9 @@ bool vmCanStop(void *machine, void *queue)
 
 void sharedApplication()
 {
-	// Create a shared app instance.
+    // Create a shared app instance.
     // This will initialize the global variable
-	// 'NSApp' with the application instance.
+    // 'NSApp' with the application instance.
 	[VZApplication sharedApplication];
 }
 

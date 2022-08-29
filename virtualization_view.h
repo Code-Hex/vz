@@ -12,7 +12,7 @@
 
 @interface VZApplication : NSApplication
 {
-	bool shouldKeepRunning;
+    bool shouldKeepRunning;
 }
 
 - (void)run;

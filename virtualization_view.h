@@ -10,6 +10,16 @@
 #import <Cocoa/Cocoa.h>
 #import <Virtualization/Virtualization.h>
 
+@interface VZApplication : NSApplication
+{
+    bool shouldKeepRunning;
+}
+
+- (void)run;
+- (void)terminate:(id)sender;
+
+@end
+
 @interface AboutViewController : NSViewController
 - (instancetype)init;
 @end

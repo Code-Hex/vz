@@ -10,9 +10,7 @@
 #import <Virtualization/Virtualization.h>
 
 /* exported from cgo */
-void startHandler(void *err, char *id);
-void pauseHandler(void *err, char *id);
-void resumeHandler(void *err, char *id);
+void virtualMachineCompletionHandler(void *cgoHandler, void *errPtr);
 void connectionHandler(void *connection, void *err, char *id);
 void changeStateOnObserver(int state, char *id);
 bool shouldAcceptNewConnectionHandler(void *listener, void *connection, void *socketDevice);
@@ -104,13 +102,15 @@ void *newVZGenericPlatformConfiguration();
 /* VirtualMachine */
 void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, const char *vmid);
 bool requestStopVirtualMachine(void *machine, void *queue, void **error);
-void startWithCompletionHandler(void *machine, void *queue, const char *vmid);
-void pauseWithCompletionHandler(void *machine, void *queue, const char *vmid);
-void resumeWithCompletionHandler(void *machine, void *queue, const char *vmid);
+void startWithCompletionHandler(void *machine, void *queue, void *completionHandler);
+void pauseWithCompletionHandler(void *machine, void *queue, void *completionHandler);
+void resumeWithCompletionHandler(void *machine, void *queue, void *completionHandler);
+void stopWithCompletionHandler(void *machine, void *queue, void *completionHandler);
 bool vmCanStart(void *machine, void *queue);
 bool vmCanPause(void *machine, void *queue);
 bool vmCanResume(void *machine, void *queue);
 bool vmCanRequestStop(void *machine, void *queue);
+bool vmCanStop(void *machine, void *queue);
 
 void *makeDispatchQueue(const char *label);
 
@@ -124,4 +124,5 @@ typedef struct VZVirtioSocketConnectionFlat
 
 VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connection);
 
+void sharedApplication();
 void startVirtualMachineWindow(void *machine, double width, double height);

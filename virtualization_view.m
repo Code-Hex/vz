@@ -6,6 +6,32 @@
 
 #import "virtualization_view.h"
 
+@implementation VZApplication
+
+- (void)run
+{
+	[self finishLaunching];
+
+	shouldKeepRunning = YES;
+	do
+	{
+		NSEvent *event = [self
+				nextEventMatchingMask:NSEventMaskAny
+				untilDate:[NSDate distantFuture]
+				inMode:NSDefaultRunLoopMode
+				dequeue:YES];
+        // NSLog(@"event: %@", event);
+		[self sendEvent:event];
+		[self updateWindows];
+	} while (shouldKeepRunning);
+}
+
+- (void)terminate:(id)sender
+{
+	shouldKeepRunning = NO;
+}
+@end
+
 @implementation AboutViewController {}
 
 - (instancetype)init
@@ -151,7 +177,6 @@
 
 /* IMPORTANT: delegate methods are called from VM's queue */
 - (void)guestDidStopVirtualMachine:(VZVirtualMachine *)virtualMachine {
-    NSLog(@"VM %@ guest stopped", virtualMachine);
     [NSApp performSelectorOnMainThread:@selector(terminate:) withObject:self waitUntilDone:NO];
 }
 
@@ -171,9 +196,8 @@
     [NSApp activateIgnoringOtherApps:YES];
 }
 
-- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender
-{
-    return YES;
+- (void)windowWillClose:(NSNotification *)notification {
+    [NSApp performSelectorOnMainThread:@selector(terminate:) withObject:self waitUntilDone:NO];
 }
 
 - (void)setupGraphicWindow
@@ -185,10 +209,10 @@
 
     [window setOpaque:NO];
     [window setContentView:_virtualMachineView];
-    // [window setDelegate:self];
     [window setTitleVisibility:NSWindowTitleHidden];
     [window center];
 
+    [window setDelegate:self];
     [window makeKeyAndOrderFront:nil];
 
     // This code to prevent crash when called applicationShouldTerminateAfterLastWindowClosed.

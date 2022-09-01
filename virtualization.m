@@ -22,9 +22,7 @@ char *copyCString(NSString *nss)
     @autoreleasepool {
         if ([keyPath isEqualToString:@"state"]) {
             int newState = (int)[change[NSKeyValueChangeNewKey] integerValue];
-            char *vmid = copyCString((NSString *)context);
-            changeStateOnObserver(newState, vmid);
-            free(vmid);
+            changeStateOnObserver(newState, context);
         } else {
             // bool canVal = (bool)[change[NSKeyValueChangeNewKey] boolValue];
             // char *vmid = copyCString((NSString *)context);
@@ -594,20 +592,6 @@ void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *
     });
 }
 
-typedef void (^connection_handler_t)(VZVirtioSocketConnection *, NSError *);
-
-connection_handler_t generateConnectionHandler(const char *socketDeviceID, void handler(void *, void *, char *))
-{
-    connection_handler_t ret;
-    @autoreleasepool {
-        NSString *str = [NSString stringWithUTF8String:socketDeviceID];
-        ret = Block_copy(^(VZVirtioSocketConnection *connection, NSError *err) {
-            handler(connection, err, copyCString(str));
-        });
-    }
-    return ret;
-}
-
 /*!
  @abstract Connects to a specified port.
  @discussion Does nothing if the guest does not listen on that port.
@@ -615,13 +599,14 @@ connection_handler_t generateConnectionHandler(const char *socketDeviceID, void 
  @param completionHandler Block called after the connection has been successfully established or on error.
     The error parameter passed to the block is nil if the connection was successful.
  */
-void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, const char *socketDeviceID)
+void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, void *cgoHandlerPtr)
 {
-    connection_handler_t handler = generateConnectionHandler(socketDeviceID, connectionHandler);
     dispatch_sync((dispatch_queue_t)vmQueue, ^{
-        [(VZVirtioSocketDevice *)socketDevice connectToPort:port completionHandler:handler];
+        [(VZVirtioSocketDevice *)socketDevice connectToPort:port
+                                          completionHandler:^(VZVirtioSocketConnection *connection, NSError *err) {
+                                              connectionHandler(connection, err, cgoHandlerPtr);
+                                          }];
     });
-    Block_release(handler);
 }
 
 VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connection)
@@ -642,18 +627,17 @@ VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connecti
     Every operation on the virtual machine must be done on that queue. The callbacks and delegate methods are invoked on that queue.
     If the queue is not serial, the behavior is undefined.
  */
-void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, const char *vmid)
+void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, void *statusHandler)
 {
     VZVirtualMachine *vm = [[VZVirtualMachine alloc]
         initWithConfiguration:(VZVirtualMachineConfiguration *)config
                         queue:(dispatch_queue_t)queue];
     @autoreleasepool {
         Observer *o = [[Observer alloc] init];
-        NSString *str = [NSString stringWithUTF8String:vmid];
         [vm addObserver:o
              forKeyPath:@"state"
                 options:NSKeyValueObservingOptionNew
-                context:[str copy]];
+                context:statusHandler];
     }
     return vm;
 }

@@ -93,8 +93,8 @@ type machineStatus struct {
 // A new dispatch queue will create when called this function.
 // Every operation on the virtual machine must be done on that queue. The callbacks and delegate methods are invoked on that queue.
 func NewVirtualMachine(config *VirtualMachineConfiguration) *VirtualMachine {
+	// should not call Free function for this string.
 	cs := getUUID()
-
 	dispatchQueue := C.makeDispatchQueue(cs.CString())
 
 	status := cgo.NewHandle(&machineStatus{

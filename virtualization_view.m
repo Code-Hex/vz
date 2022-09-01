@@ -30,6 +30,16 @@
 - (void)terminate:(id)sender
 {
     shouldKeepRunning = NO;
+
+    // We should call this method if we want to use `applicationWillTerminate` method.
+    //
+    // [[NSNotificationCenter defaultCenter]
+    //     postNotificationName:NSApplicationWillTerminateNotification
+    //                   object:NSApp];
+
+    // This method is used to end up the event loop.
+    // If no events are coming, the event loop will always be in a waiting state.
+    [self postEvent:self.currentEvent atStart:NO];
 }
 @end
 

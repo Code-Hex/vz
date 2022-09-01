@@ -16,10 +16,10 @@
         shouldKeepRunning = YES;
         do {
             NSEvent *event = [self
-                    nextEventMatchingMask:NSEventMaskAny
-                    untilDate:[NSDate distantFuture]
-                    inMode:NSDefaultRunLoopMode
-                    dequeue:YES];
+                nextEventMatchingMask:NSEventMaskAny
+                            untilDate:[NSDate distantFuture]
+                               inMode:NSDefaultRunLoopMode
+                              dequeue:YES];
             // NSLog(@"event: %@", event);
             [self sendEvent:event];
             [self updateWindows];
@@ -29,11 +29,11 @@
 
 - (void)terminate:(id)sender
 {
-	shouldKeepRunning = NO;
+    shouldKeepRunning = NO;
 }
 @end
 
-@implementation AboutViewController {}
+@implementation AboutViewController
 
 - (instancetype)init
 {
@@ -66,10 +66,14 @@
     [NSLayoutConstraint activateConstraints:@[
         [imageView.widthAnchor constraintEqualToConstant:80], // image size
         [imageView.heightAnchor constraintEqualToConstant:80], // image size
-        [stackView.topAnchor constraintEqualToAnchor:self.view.topAnchor constant:4],
-        [stackView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor constant:-16],
-        [stackView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor constant:32],
-        [stackView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor constant:-32],
+        [stackView.topAnchor constraintEqualToAnchor:self.view.topAnchor
+                                            constant:4],
+        [stackView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor
+                                               constant:-16],
+        [stackView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
+                                                constant:32],
+        [stackView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
+                                                 constant:-32],
         [stackView.widthAnchor constraintEqualToConstant:300]
     ]];
 }
@@ -77,15 +81,16 @@
 - (NSTextField *)makePoweredByLabel
 {
     NSMutableAttributedString *poweredByAttr = [[[NSMutableAttributedString alloc]
-        initWithString:@"Powered by " attributes:@{
-            NSForegroundColorAttributeName: [NSColor labelColor]
-        }] autorelease];
+        initWithString:@"Powered by "
+            attributes:@{
+                NSForegroundColorAttributeName : [NSColor labelColor]
+            }] autorelease];
     NSURL *repositoryURL = [NSURL URLWithString:@"https://github.com/Code-Hex/vz"];
     NSMutableAttributedString *repository = [self makeHyperLink:@"github.com/Code-Hex/vz" withURL:repositoryURL];
     [poweredByAttr appendAttributedString:repository];
     [poweredByAttr addAttribute:NSFontAttributeName
-        value:[NSFont systemFontOfSize:12]
-        range:NSMakeRange(0, [poweredByAttr length])];
+                          value:[NSFont systemFontOfSize:12]
+                          range:NSMakeRange(0, [poweredByAttr length])];
 
     NSTextField *label = [self makeLabel:@""];
     [label setSelectable:YES];
@@ -111,9 +116,9 @@
 }
 
 // https://developer.apple.com/library/archive/qa/qa1487/_index.html
-- (NSMutableAttributedString *)makeHyperLink:(NSString *)inString withURL:(NSURL*)aURL
+- (NSMutableAttributedString *)makeHyperLink:(NSString *)inString withURL:(NSURL *)aURL
 {
-    NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:inString];
+    NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:inString];
     NSRange range = NSMakeRange(0, [attrString length]);
 
     [attrString beginEditing];
@@ -124,7 +129,8 @@
 
     // next make the text appear with an underline
     [attrString addAttribute:NSUnderlineStyleAttributeName
-        value:[NSNumber numberWithInt:NSUnderlineStyleSingle] range:range];
+                       value:[NSNumber numberWithInt:NSUnderlineStyleSingle]
+                       range:range];
 
     [attrString endEditing];
     return [attrString autorelease];
@@ -132,11 +138,11 @@
 
 @end
 
-@implementation AboutPanel {}
+@implementation AboutPanel
 
 - (instancetype)init
 {
-    self = [super initWithContentRect:NSZeroRect styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable backing:NSBackingStoreBuffered defer:NO];
+    self = [super initWithContentRect:NSZeroRect styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable backing:NSBackingStoreBuffered defer:NO];
 
     AboutViewController *viewController = [[[AboutViewController alloc] init] autorelease];
     [self setContentViewController:viewController];
@@ -157,8 +163,8 @@
 }
 
 - (instancetype)initWithVirtualMachine:(VZVirtualMachine *)virtualMachine
-    windowWidth:(CGFloat)windowWidth
-    windowHeight:(CGFloat)windowHeight
+                           windowWidth:(CGFloat)windowWidth
+                          windowHeight:(CGFloat)windowHeight
 {
     self = [super init];
     _virtualMachine = virtualMachine;
@@ -177,16 +183,19 @@
 }
 
 /* IMPORTANT: delegate methods are called from VM's queue */
-- (void)guestDidStopVirtualMachine:(VZVirtualMachine *)virtualMachine {
+- (void)guestDidStopVirtualMachine:(VZVirtualMachine *)virtualMachine
+{
     [NSApp performSelectorOnMainThread:@selector(terminate:) withObject:self waitUntilDone:NO];
 }
 
-- (void)virtualMachine:(VZVirtualMachine *)virtualMachine didStopWithError:(NSError *)error {
+- (void)virtualMachine:(VZVirtualMachine *)virtualMachine didStopWithError:(NSError *)error
+{
     NSLog(@"VM %@ didStopWithError: %@", virtualMachine, error);
     [NSApp performSelectorOnMainThread:@selector(terminate:) withObject:self waitUntilDone:NO];
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)notification {
+- (void)applicationDidFinishLaunching:(NSNotification *)notification
+{
     [self setupMenuBar];
     [self setupGraphicWindow];
 
@@ -197,7 +206,8 @@
     [NSApp activateIgnoringOtherApps:YES];
 }
 
-- (void)windowWillClose:(NSNotification *)notification {
+- (void)windowWillClose:(NSNotification *)notification
+{
     [NSApp performSelectorOnMainThread:@selector(terminate:) withObject:self waitUntilDone:NO];
 }
 
@@ -205,8 +215,9 @@
 {
     NSRect rect = NSMakeRect(0, 0, _windowWidth, _windowHeight);
     NSWindow *window = [[[NSWindow alloc] initWithContentRect:rect
-                            styleMask:NSWindowStyleMaskTitled|NSWindowStyleMaskClosable|NSWindowStyleMaskMiniaturizable|NSWindowStyleMaskResizable//|NSTexturedBackgroundWindowMask
-                            backing:NSBackingStoreBuffered defer:NO] autorelease];
+                                                    styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable //|NSTexturedBackgroundWindowMask
+                                                      backing:NSBackingStoreBuffered
+                                                        defer:NO] autorelease];
 
     [window setOpaque:NO];
     [window setContentView:_virtualMachineView];
@@ -245,7 +256,6 @@
     [helpMenuItem setSubmenu:helpMenu];
 }
 
-
 - (NSMenu *)setupApplicationMenu
 {
     NSMenu *appMenu = [[[NSMenu alloc] init] autorelease];
@@ -253,13 +263,13 @@
 
     NSMenuItem *aboutMenuItem = [[[NSMenuItem alloc]
         initWithTitle:[NSString stringWithFormat:@"About %@", applicationName]
-        action:@selector(openAboutWindow:)
+               action:@selector(openAboutWindow:)
         keyEquivalent:@""] autorelease];
 
     // CapturesSystemKeys toggle
     NSMenuItem *capturesSystemKeysItem = [[[NSMenuItem alloc]
         initWithTitle:@"Enable to send system hot keys to virtual machine"
-        action:@selector(toggleCapturesSystemKeys:)
+               action:@selector(toggleCapturesSystemKeys:)
         keyEquivalent:@""] autorelease];
     [capturesSystemKeysItem setState:[self capturesSystemKeysState]];
 
@@ -270,10 +280,10 @@
     [NSApp setServicesMenu:servicesMenu];
 
     NSMenuItem *hideOthersItem = [[[NSMenuItem alloc]
-            initWithTitle:@"Hide Others"
-            action:@selector(hideOtherApplications:)
-            keyEquivalent:@"h"] autorelease];
-    [hideOthersItem setKeyEquivalentModifierMask:(NSEventModifierFlagOption|NSEventModifierFlagCommand)];
+        initWithTitle:@"Hide Others"
+               action:@selector(hideOtherApplications:)
+        keyEquivalent:@"h"] autorelease];
+    [hideOthersItem setKeyEquivalentModifierMask:(NSEventModifierFlagOption | NSEventModifierFlagCommand)];
 
     NSArray *menuItems = @[
         aboutMenuItem,
@@ -284,13 +294,13 @@
         [NSMenuItem separatorItem],
         [[[NSMenuItem alloc]
             initWithTitle:[@"Hide " stringByAppendingString:applicationName]
-            action:@selector(hide:)
+                   action:@selector(hide:)
             keyEquivalent:@"h"] autorelease],
         hideOthersItem,
         [NSMenuItem separatorItem],
         [[[NSMenuItem alloc]
             initWithTitle:[@"Quit " stringByAppendingString:applicationName]
-            action:@selector(terminate:)
+                   action:@selector(terminate:)
             keyEquivalent:@"q"] autorelease],
     ];
     for (NSMenuItem *menuItem in menuItems) {
@@ -330,7 +340,7 @@
 
 - (void)toggleCapturesSystemKeys:(id)sender
 {
-    NSMenuItem *item = (NSMenuItem*)sender;
+    NSMenuItem *item = (NSMenuItem *)sender;
     _virtualMachineView.capturesSystemKeys = !_virtualMachineView.capturesSystemKeys;
     [item setState:[self capturesSystemKeysState]];
 }

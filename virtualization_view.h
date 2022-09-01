@@ -6,12 +6,11 @@
 
 #pragma once
 
-#import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import <Virtualization/Virtualization.h>
 
-@interface VZApplication : NSApplication
-{
+@interface VZApplication : NSApplication {
     bool shouldKeepRunning;
 }
 
@@ -30,6 +29,6 @@
 
 @interface AppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate, VZVirtualMachineDelegate>
 - (instancetype)initWithVirtualMachine:(VZVirtualMachine *)virtualMachine
-    windowWidth:(CGFloat)windowWidth
-    windowHeight:(CGFloat)windowHeight;
+                           windowWidth:(CGFloat)windowWidth
+                          windowHeight:(CGFloat)windowHeight;
 @end

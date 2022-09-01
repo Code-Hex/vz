@@ -29,9 +29,9 @@ void *newVZMacAuxiliaryStorageWithCreating(const char *storagePath, void *hardwa
         NSString *storagePathNSString = [NSString stringWithUTF8String:storagePath];
         NSURL *storageURL = [NSURL fileURLWithPath:storagePathNSString];
         auxiliaryStorage = [[VZMacAuxiliaryStorage alloc] initCreatingStorageAtURL:storageURL
-                hardwareModel:(VZMacHardwareModel *)hardwareModel
-                options:VZMacAuxiliaryStorageInitializationOptionAllowOverwrite
-                error:(NSError * _Nullable * _Nullable)error];
+                                                                     hardwareModel:(VZMacHardwareModel *)hardwareModel
+                                                                           options:VZMacAuxiliaryStorageInitializationOptionAllowOverwrite
+                                                                             error:(NSError *_Nullable *_Nullable)error];
     }
     return auxiliaryStorage;
 }
@@ -167,8 +167,8 @@ void setDisplaysVZMacGraphicsDeviceConfiguration(void *graphicsConfiguration, vo
 void *newVZMacGraphicsDisplayConfiguration(NSInteger widthInPixels, NSInteger heightInPixels, NSInteger pixelsPerInch)
 {
     return [[VZMacGraphicsDisplayConfiguration alloc]
-                initWithWidthInPixels:widthInPixels
-                heightInPixels:heightInPixels
+        initWithWidthInPixels:widthInPixels
+               heightInPixels:heightInPixels
                 pixelsPerInch:pixelsPerInch];
 }
 
@@ -269,10 +269,11 @@ void loadMacOSRestoreImageFile(const char *ipswPath, void *cgoHandler)
     @autoreleasepool {
         NSString *ipswPathNSString = [NSString stringWithUTF8String:ipswPath];
         NSURL *ipswURL = [[NSURL alloc] initFileURLWithPath:ipswPathNSString];
-        [VZMacOSRestoreImage loadFileURL:ipswURL completionHandler:^(VZMacOSRestoreImage *restoreImage, NSError *error) {
-            VZMacOSRestoreImageStruct restoreImageStruct = convertVZMacOSRestoreImage2Struct(restoreImage);
-            macOSRestoreImageCompletionHandler(cgoHandler, &restoreImageStruct, error);
-        }];
+        [VZMacOSRestoreImage loadFileURL:ipswURL
+                       completionHandler:^(VZMacOSRestoreImage *restoreImage, NSError *error) {
+                           VZMacOSRestoreImageStruct restoreImageStruct = convertVZMacOSRestoreImage2Struct(restoreImage);
+                           macOSRestoreImageCompletionHandler(cgoHandler, &restoreImageStruct, error);
+                       }];
     }
 }
 
@@ -336,10 +337,9 @@ void installByVZMacOSInstaller(void *installerPtr, void *vmQueue, void *progress
         }];
         [installer.progress
             addObserver:(ProgressObserver *)progressObserverPtr
-            forKeyPath:@"fractionCompleted"
-            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
-            context:fractionCompletedHandler
-        ];
+             forKeyPath:@"fractionCompleted"
+                options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+                context:fractionCompletedHandler];
     });
 }
 

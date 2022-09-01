@@ -36,31 +36,31 @@ unsigned long long maximumAllowedMemorySizeVZVirtualMachineConfiguration();
 unsigned int minimumAllowedCPUCountVZVirtualMachineConfiguration();
 unsigned int maximumAllowedCPUCountVZVirtualMachineConfiguration();
 void *newVZVirtualMachineConfiguration(void *bootLoader,
-                                       unsigned int CPUCount,
-                                       unsigned long long memorySize);
+    unsigned int CPUCount,
+    unsigned long long memorySize);
 void setEntropyDevicesVZVirtualMachineConfiguration(void *config,
-                                                    void *entropyDevices);
+    void *entropyDevices);
 void setMemoryBalloonDevicesVZVirtualMachineConfiguration(void *config,
-                                                          void *memoryBalloonDevices);
+    void *memoryBalloonDevices);
 void setNetworkDevicesVZVirtualMachineConfiguration(void *config,
-                                                    void *networkDevices);
+    void *networkDevices);
 void setSerialPortsVZVirtualMachineConfiguration(void *config,
-                                                 void *serialPorts);
+    void *serialPorts);
 void setSocketDevicesVZVirtualMachineConfiguration(void *config,
-                                                   void *socketDevices);
+    void *socketDevices);
 void setStorageDevicesVZVirtualMachineConfiguration(void *config,
-                                                    void *storageDevices);
+    void *storageDevices);
 void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void *directorySharingDevices);
 void setPlatformVZVirtualMachineConfiguration(void *config,
-                                              void *platform);
+    void *platform);
 void setGraphicsDevicesVZVirtualMachineConfiguration(void *config,
-                                                     void *graphicsDevices);
+    void *graphicsDevices);
 void setPointingDevicesVZVirtualMachineConfiguration(void *config,
-                                                     void *pointingDevices);
+    void *pointingDevices);
 void setKeyboardsVZVirtualMachineConfiguration(void *config,
-                                               void *keyboards);
+    void *keyboards);
 void setAudioDevicesVZVirtualMachineConfiguration(void *config,
-                                                  void *audioDevices);
+    void *audioDevices);
 
 /* Configurations */
 void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileDescriptor);
@@ -115,8 +115,7 @@ bool vmCanStop(void *machine, void *queue);
 void *makeDispatchQueue(const char *label);
 
 /* VZVirtioSocketConnection */
-typedef struct VZVirtioSocketConnectionFlat
-{
+typedef struct VZVirtioSocketConnectionFlat {
     uint32_t destinationPort;
     uint32_t sourcePort;
     int fileDescriptor;

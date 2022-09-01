@@ -10,7 +10,7 @@
 char *copyCString(NSString *nss)
 {
     const char *cc = [nss UTF8String];
-    char *c = calloc([nss length]+1, 1);
+    char *c = calloc([nss length] + 1, 1);
     strncpy(c, cc, [nss length]);
     return c;
 }
@@ -18,7 +18,7 @@ char *copyCString(NSString *nss)
 @implementation Observer
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
 {
-    
+
     @autoreleasepool {
         if ([keyPath isEqualToString:@"state"]) {
             int newState = (int)[change[NSKeyValueChangeNewKey] integerValue];
@@ -90,7 +90,6 @@ void setInitialRamdiskURLVZLinuxBootLoader(void *bootLoaderPtr, const char *ramd
     }
 }
 
-
 /*!
  @abstract Validate the configuration.
  @param config  Virtual machine configuration.
@@ -100,7 +99,7 @@ void setInitialRamdiskURLVZLinuxBootLoader(void *bootLoaderPtr, const char *ramd
 bool validateVZVirtualMachineConfiguration(void *config, void **error)
 {
     return (bool)[(VZVirtualMachineConfiguration *)config
-            validateWithError:(NSError * _Nullable * _Nullable)error];
+        validateWithError:(NSError *_Nullable *_Nullable)error];
 }
 
 /*!
@@ -142,7 +141,7 @@ unsigned int maximumAllowedCPUCountVZVirtualMachineConfiguration()
 /*!
  @abstract Create a new Virtual machine configuration.
  @param bootLoader Boot loader used when the virtual machine starts.
- 
+
  @param CPUCount Number of CPUs.
  @discussion
     The number of CPUs must be a value between VZVirtualMachineConfiguration.minimumAllowedCPUCount
@@ -150,7 +149,7 @@ unsigned int maximumAllowedCPUCountVZVirtualMachineConfiguration()
 
  @see VZVirtualMachineConfiguration.minimumAllowedCPUCount
  @see VZVirtualMachineConfiguration.maximumAllowedCPUCount
- 
+
  @param memorySize Virtual machine memory size in bytes.
  @discussion
     The memory size must be a multiple of a 1 megabyte (1024 * 1024 bytes) between VZVirtualMachineConfiguration.minimumAllowedMemorySize
@@ -162,8 +161,8 @@ unsigned int maximumAllowedCPUCountVZVirtualMachineConfiguration()
  @see VZVirtualMachineConfiguration.maximumAllowedMemorySize
  */
 void *newVZVirtualMachineConfiguration(void *bootLoaderPtr,
-                                        unsigned int CPUCount,
-                                        unsigned long long memorySize)
+    unsigned int CPUCount,
+    unsigned long long memorySize)
 {
     VZVirtualMachineConfiguration *config = [[VZVirtualMachineConfiguration alloc] init];
     [config setBootLoader:(VZLinuxBootLoader *)bootLoaderPtr];
@@ -177,18 +176,17 @@ void *newVZVirtualMachineConfiguration(void *bootLoaderPtr,
  @see VZVirtioEntropyDeviceConfiguration
 */
 void setEntropyDevicesVZVirtualMachineConfiguration(void *config,
-                                                    void *entropyDevices)
+    void *entropyDevices)
 {
     [(VZVirtualMachineConfiguration *)config setEntropyDevices:[(NSMutableArray *)entropyDevices copy]];
 }
-
 
 /*!
  @abstract List of memory balloon devices. Empty by default.
  @see VZVirtioTraditionalMemoryBalloonDeviceConfiguration
 */
 void setMemoryBalloonDevicesVZVirtualMachineConfiguration(void *config,
-                                                    void *memoryBalloonDevices)
+    void *memoryBalloonDevices)
 {
     [(VZVirtualMachineConfiguration *)config setMemoryBalloonDevices:[(NSMutableArray *)memoryBalloonDevices copy]];
 }
@@ -198,7 +196,7 @@ void setMemoryBalloonDevicesVZVirtualMachineConfiguration(void *config,
  @see VZVirtioNetworkDeviceConfiguration
  */
 void setNetworkDevicesVZVirtualMachineConfiguration(void *config,
-                                                          void *networkDevices)
+    void *networkDevices)
 {
     [(VZVirtualMachineConfiguration *)config setNetworkDevices:[(NSMutableArray *)networkDevices copy]];
 }
@@ -208,18 +206,17 @@ void setNetworkDevicesVZVirtualMachineConfiguration(void *config,
  @see VZVirtioConsoleDeviceSerialPortConfiguration
  */
 void setSerialPortsVZVirtualMachineConfiguration(void *config,
-                                                    void *serialPorts)
+    void *serialPorts)
 {
     [(VZVirtualMachineConfiguration *)config setSerialPorts:[(NSMutableArray *)serialPorts copy]];
 }
-
 
 /*!
  @abstract List of socket devices. Empty by default.
  @see VZVirtioSocketDeviceConfiguration
  */
 void setSocketDevicesVZVirtualMachineConfiguration(void *config,
-                                                 void *socketDevices)
+    void *socketDevices)
 {
     [(VZVirtualMachineConfiguration *)config setSocketDevices:[(NSMutableArray *)socketDevices copy]];
 }
@@ -229,7 +226,7 @@ void setSocketDevicesVZVirtualMachineConfiguration(void *config,
  @see VZVirtioBlockDeviceConfiguration
  */
 void setStorageDevicesVZVirtualMachineConfiguration(void *config,
-                                                   void *storageDevices)
+    void *storageDevices)
 {
     [(VZVirtualMachineConfiguration *)config setStorageDevices:[(NSMutableArray *)storageDevices copy]];
 }
@@ -365,8 +362,8 @@ void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileD
         NSFileHandle *fileHandleForReading = [[NSFileHandle alloc] initWithFileDescriptor:readFileDescriptor];
         NSFileHandle *fileHandleForWriting = [[NSFileHandle alloc] initWithFileDescriptor:writeFileDescriptor];
         ret = [[VZFileHandleSerialPortAttachment alloc]
-                                       initWithFileHandleForReading:fileHandleForReading
-                                       fileHandleForWriting:fileHandleForWriting];
+            initWithFileHandleForReading:fileHandleForReading
+                    fileHandleForWriting:fileHandleForWriting];
     }
     return ret;
 }
@@ -386,7 +383,9 @@ void *newVZFileSerialPortAttachment(const char *filePath, bool shouldAppend, voi
         NSString *filePathNSString = [NSString stringWithUTF8String:filePath];
         NSURL *fileURL = [NSURL fileURLWithPath:filePathNSString];
         ret = [[VZFileSerialPortAttachment alloc]
-                    initWithURL:fileURL append:(BOOL)shouldAppend error:(NSError * _Nullable * _Nullable)error];
+            initWithURL:fileURL
+                 append:(BOOL)shouldAppend
+                  error:(NSError *_Nullable *_Nullable)error];
     }
     return ret;
 }
@@ -468,7 +467,7 @@ void *newVZFileHandleNetworkDeviceAttachment(int fileDescriptor)
     The configuration is only valid with valid MACAddress and attachment.
 
  @see VZVirtualMachineConfiguration.networkDevices
- 
+
  @param attachment  Base class for a network device attachment.
  @discussion
     A network device attachment defines how a virtual network device interfaces with the host system.
@@ -522,10 +521,9 @@ void *newVZDiskImageStorageDeviceAttachment(const char *diskPath, bool readOnly,
     NSURL *diskURL = [NSURL fileURLWithPath:diskPathNSString];
     return [[VZDiskImageStorageDeviceAttachment alloc]
         initWithURL:diskURL
-        readOnly:(BOOL)readOnly
-        error:(NSError * _Nullable * _Nullable)error];
+           readOnly:(BOOL)readOnly
+              error:(NSError *_Nullable *_Nullable)error];
 }
-
 
 /*!
  @abstract Create a configuration of the Virtio traditional memory balloon device.
@@ -603,7 +601,7 @@ connection_handler_t generateConnectionHandler(const char *socketDeviceID, void 
     connection_handler_t ret;
     @autoreleasepool {
         NSString *str = [NSString stringWithUTF8String:socketDeviceID];
-        ret = Block_copy(^(VZVirtioSocketConnection *connection, NSError *err){
+        ret = Block_copy(^(VZVirtioSocketConnection *connection, NSError *err) {
             handler(connection, err, copyCString(str));
         });
     }
@@ -626,7 +624,6 @@ void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint3
     Block_release(handler);
 }
 
-
 VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connection)
 {
     VZVirtioSocketConnectionFlat ret;
@@ -648,12 +645,13 @@ VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connecti
 void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, const char *vmid)
 {
     VZVirtualMachine *vm = [[VZVirtualMachine alloc]
-                initWithConfiguration:(VZVirtualMachineConfiguration *)config
-                queue:(dispatch_queue_t)queue];
+        initWithConfiguration:(VZVirtualMachineConfiguration *)config
+                        queue:(dispatch_queue_t)queue];
     @autoreleasepool {
         Observer *o = [[Observer alloc] init];
         NSString *str = [NSString stringWithUTF8String:vmid];
-        [vm addObserver:o forKeyPath:@"state"
+        [vm addObserver:o
+             forKeyPath:@"state"
                 options:NSKeyValueObservingOptionNew
                 context:[str copy]];
     }
@@ -727,7 +725,7 @@ const char *getVZMACAddressString(void *macAddress)
     If the directory should be mounted read only.
  @return A VZSharedDirectory
  */
-void* newVZSharedDirectory(const char *dirPath, bool readOnly)
+void *newVZSharedDirectory(const char *dirPath, bool readOnly)
 {
     VZSharedDirectory *ret;
     @autoreleasepool {
@@ -744,7 +742,7 @@ void* newVZSharedDirectory(const char *dirPath, bool readOnly)
     The shared directory to use.
  @return A VZSingleDirectoryShare
  */
-void* newVZSingleDirectoryShare(void *sharedDirectory)
+void *newVZSingleDirectoryShare(void *sharedDirectory)
 {
     return [[VZSingleDirectoryShare alloc] initWithDirectory:(VZSharedDirectory *)sharedDirectory];
 }
@@ -755,9 +753,9 @@ void* newVZSingleDirectoryShare(void *sharedDirectory)
     NSDictionary mapping names to shared directories.
  @return A VZMultipleDirectoryShare
  */
-void* newVZMultipleDirectoryShare(void *sharedDirectories)
+void *newVZMultipleDirectoryShare(void *sharedDirectories)
 {
-    return [[VZMultipleDirectoryShare alloc] initWithDirectories:(NSDictionary<NSString *,VZSharedDirectory *> *)sharedDirectories];
+    return [[VZMultipleDirectoryShare alloc] initWithDirectories:(NSDictionary<NSString *, VZSharedDirectory *> *)sharedDirectories];
 }
 
 /*!
@@ -766,7 +764,7 @@ void* newVZMultipleDirectoryShare(void *sharedDirectories)
     The tag to use for this device configuration.
  @return A VZVirtioFileSystemDeviceConfiguration
  */
-void* newVZVirtioFileSystemDeviceConfiguration(const char *tag)
+void *newVZVirtioFileSystemDeviceConfiguration(const char *tag)
 {
     VZVirtioFileSystemDeviceConfiguration *ret;
     @autoreleasepool {
@@ -811,16 +809,16 @@ bool requestStopVirtualMachine(void *machine, void *queue, void **error)
 {
     __block BOOL ret;
     dispatch_sync((dispatch_queue_t)queue, ^{
-        ret = [(VZVirtualMachine *)machine requestStopWithError:(NSError * _Nullable *_Nullable)error];
+        ret = [(VZVirtualMachine *)machine requestStopWithError:(NSError *_Nullable *_Nullable)error];
     });
     return (bool)ret;
 }
 
 void *makeDispatchQueue(const char *label)
 {
-    //dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_DEFAULT, 0);
+    // dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_DEFAULT, 0);
     dispatch_queue_t queue = dispatch_queue_create(label, DISPATCH_QUEUE_SERIAL);
-    //dispatch_retain(queue);
+    // dispatch_retain(queue);
     return queue;
 }
 
@@ -912,16 +910,16 @@ void sharedApplication()
     // Create a shared app instance.
     // This will initialize the global variable
     // 'NSApp' with the application instance.
-	[VZApplication sharedApplication];
+    [VZApplication sharedApplication];
 }
 
 void startVirtualMachineWindow(void *machine, double width, double height)
 {
     @autoreleasepool {
         AppDelegate *appDelegate = [[[AppDelegate alloc]
-                                        initWithVirtualMachine:(VZVirtualMachine *)machine
-                                        windowWidth:(CGFloat)width
-                                        windowHeight:(CGFloat)height] autorelease];
+            initWithVirtualMachine:(VZVirtualMachine *)machine
+                       windowWidth:(CGFloat)width
+                      windowHeight:(CGFloat)height] autorelease];
 
         NSApp.delegate = appDelegate;
         [NSApp run];

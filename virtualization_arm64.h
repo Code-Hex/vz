@@ -17,26 +17,26 @@
 @end
 
 typedef struct nbyteslice {
-	void *ptr;
-	int len;
+    void *ptr;
+    int len;
 } nbyteslice;
 
 typedef struct VZMacOSRestoreImageStruct {
-	const char *url;
+    const char *url;
     const char *buildVersion;
-	NSOperatingSystemVersion operatingSystemVersion;
+    NSOperatingSystemVersion operatingSystemVersion;
     void *mostFeaturefulSupportedConfiguration; // (VZMacOSConfigurationRequirements *)
 } VZMacOSRestoreImageStruct;
 
 typedef struct VZMacOSConfigurationRequirementsStruct {
     uint64_t minimumSupportedCPUCount;
-	uint64_t minimumSupportedMemorySize;
+    uint64_t minimumSupportedMemorySize;
     void *hardwareModel; // (VZMacHardwareModel *)
 } VZMacOSConfigurationRequirementsStruct;
 
 typedef struct VZMacHardwareModelStruct {
     bool supported;
-	nbyteslice dataRepresentation;
+    nbyteslice dataRepresentation;
 } VZMacHardwareModelStruct;
 
 /* exported from cgo */

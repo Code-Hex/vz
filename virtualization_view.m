@@ -10,20 +10,21 @@
 
 - (void)run
 {
-	[self finishLaunching];
+    @autoreleasepool {
+        [self finishLaunching];
 
-	shouldKeepRunning = YES;
-	do
-	{
-		NSEvent *event = [self
-				nextEventMatchingMask:NSEventMaskAny
-				untilDate:[NSDate distantFuture]
-				inMode:NSDefaultRunLoopMode
-				dequeue:YES];
-        // NSLog(@"event: %@", event);
-		[self sendEvent:event];
-		[self updateWindows];
-	} while (shouldKeepRunning);
+        shouldKeepRunning = YES;
+        do {
+            NSEvent *event = [self
+                    nextEventMatchingMask:NSEventMaskAny
+                    untilDate:[NSDate distantFuture]
+                    inMode:NSDefaultRunLoopMode
+                    dequeue:YES];
+            // NSLog(@"event: %@", event);
+            [self sendEvent:event];
+            [self updateWindows];
+        } while (shouldKeepRunning);
+    }
 }
 
 - (void)terminate:(id)sender

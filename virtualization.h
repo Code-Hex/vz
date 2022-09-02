@@ -11,8 +11,8 @@
 
 /* exported from cgo */
 void virtualMachineCompletionHandler(void *cgoHandler, void *errPtr);
-void connectionHandler(void *connection, void *err, char *id);
-void changeStateOnObserver(int state, char *id);
+void connectionHandler(void *connection, void *err, void *cgoHandlerPtr);
+void changeStateOnObserver(int state, void *cgoHandler);
 bool shouldAcceptNewConnectionHandler(void *listener, void *connection, void *socketDevice);
 
 @interface Observer : NSObject
@@ -88,7 +88,7 @@ void setVZVirtioFileSystemDeviceConfigurationShare(void *config, void *share);
 void *VZVirtualMachine_socketDevices(void *machine);
 void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQueue, void *listener, uint32_t port);
 void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *vmQueue, uint32_t port);
-void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, const char *socketDeviceID);
+void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, void *cgoHandlerPtr);
 void *newVZUSBScreenCoordinatePointingDeviceConfiguration();
 void *newVZUSBKeyboardConfiguration();
 void *newVZVirtioSoundDeviceConfiguration();
@@ -100,7 +100,7 @@ void *newVZVirtioSoundDeviceHostOutputStreamConfiguration(); // use in Go
 void *newVZGenericPlatformConfiguration();
 
 /* VirtualMachine */
-void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, const char *vmid);
+void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, void *statusHandler);
 bool requestStopVirtualMachine(void *machine, void *queue, void **error);
 void startWithCompletionHandler(void *machine, void *queue, void *completionHandler);
 void pauseWithCompletionHandler(void *machine, void *queue, void *completionHandler);

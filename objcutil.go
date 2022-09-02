@@ -85,11 +85,6 @@ bool hasError(void *err)
 	return (NSError *)err != nil;
 }
 
-void *minimumAlloc()
-{
-	return [[NSMutableData dataWithLength:1] mutableBytes];
-}
-
 void releaseNSObject(void* o)
 {
 	@autoreleasepool {
@@ -111,6 +106,16 @@ void* getNSArrayItem(void *ptr, int i)
 {
 	NSArray *arr = (NSArray *)ptr;
 	return [arr objectAtIndex:i];
+}
+
+const char *getUUID()
+{
+	const char *ret;
+	@autoreleasepool {
+		NSString *uuid = [[NSUUID UUID] UUIDString];
+		ret = [uuid UTF8String];
+	}
+	return ret;
 }
 */
 import "C"
@@ -261,4 +266,8 @@ func convertToNSMutableDictionary(d map[string]NSObject) *pointer {
 		self.Release()
 	})
 	return p
+}
+
+func getUUID() *char {
+	return (*char)(C.getUUID())
 }

@@ -11,8 +11,6 @@ import (
 	"runtime/cgo"
 	"sync"
 	"unsafe"
-
-	"github.com/rs/xid"
 )
 
 func init() {
@@ -75,20 +73,17 @@ type VirtualMachine struct {
 
 	pointer
 	dispatchQueue unsafe.Pointer
+	status        cgo.Handle
 
 	mu sync.Mutex
 }
 
-type (
-	machineStatus struct {
-		state       VirtualMachineState
-		stateNotify chan VirtualMachineState
+type machineStatus struct {
+	state       VirtualMachineState
+	stateNotify chan VirtualMachineState
 
-		mu sync.RWMutex
-	}
-)
-
-var statuses = map[string]*machineStatus{}
+	mu sync.RWMutex
+}
 
 // NewVirtualMachine creates a new VirtualMachine with VirtualMachineConfiguration.
 //
@@ -98,26 +93,30 @@ var statuses = map[string]*machineStatus{}
 // A new dispatch queue will create when called this function.
 // Every operation on the virtual machine must be done on that queue. The callbacks and delegate methods are invoked on that queue.
 func NewVirtualMachine(config *VirtualMachineConfiguration) *VirtualMachine {
-	id := xid.New().String()
-	cs := charWithGoString(id)
-	defer cs.Free()
-	statuses[id] = &machineStatus{
+	// should not call Free function for this string.
+	cs := getUUID()
+	dispatchQueue := C.makeDispatchQueue(cs.CString())
+
+	status := cgo.NewHandle(&machineStatus{
 		state:       VirtualMachineState(0),
 		stateNotify: make(chan VirtualMachineState),
-	}
-	dispatchQueue := C.makeDispatchQueue(cs.CString())
+	})
+
 	v := &VirtualMachine{
-		id: id,
+		id: cs.String(),
 		pointer: pointer{
 			ptr: C.newVZVirtualMachineWithDispatchQueue(
 				config.Ptr(),
 				dispatchQueue,
-				cs.CString(),
+				unsafe.Pointer(&status),
 			),
 		},
 		dispatchQueue: dispatchQueue,
+		status:        status,
 	}
+
 	runtime.SetFinalizer(v, func(self *VirtualMachine) {
+		self.status.Delete()
 		releaseDispatch(self.dispatchQueue)
 		self.Release()
 	})
@@ -145,17 +144,16 @@ func (v *VirtualMachine) SocketDevices() []*VirtioSocketDevice {
 }
 
 //export changeStateOnObserver
-func changeStateOnObserver(state C.int, cID *C.char) {
-	id := (*char)(cID)
+func changeStateOnObserver(state C.int, cgoHandlerPtr unsafe.Pointer) {
+	status := *(*cgo.Handle)(cgoHandlerPtr)
 	// I expected it will not cause panic.
 	// if caused panic, that's unexpected behavior.
-	v, _ := statuses[id.String()]
+	v, _ := status.Value().(*machineStatus)
 	v.mu.Lock()
 	newState := VirtualMachineState(state)
 	v.state = newState
 	// for non-blocking
 	go func() { v.stateNotify <- newState }()
-	statuses[id.String()] = v
 	v.mu.Unlock()
 }
 
@@ -163,7 +161,7 @@ func changeStateOnObserver(state C.int, cID *C.char) {
 func (v *VirtualMachine) State() VirtualMachineState {
 	// I expected it will not cause panic.
 	// if caused panic, that's unexpected behavior.
-	val, _ := statuses[v.id]
+	val, _ := v.status.Value().(*machineStatus)
 	val.mu.RLock()
 	defer val.mu.RUnlock()
 	return val.state
@@ -173,7 +171,7 @@ func (v *VirtualMachine) State() VirtualMachineState {
 func (v *VirtualMachine) StateChangedNotify() <-chan VirtualMachineState {
 	// I expected it will not cause panic.
 	// if caused panic, that's unexpected behavior.
-	val, _ := statuses[v.id]
+	val, _ := v.status.Value().(*machineStatus)
 	val.mu.RLock()
 	defer val.mu.RUnlock()
 	return val.stateNotify

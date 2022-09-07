@@ -255,7 +255,12 @@ void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void 
  */
 void setPlatformVZVirtualMachineConfiguration(void *config, void *platform)
 {
-    [(VZVirtualMachineConfiguration *)config setPlatform:(VZPlatformConfiguration *)platform];
+    if (@available(macOS 12, *)) {
+        [(VZVirtualMachineConfiguration *)config setPlatform:(VZPlatformConfiguration *)platform];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -264,7 +269,12 @@ void setPlatformVZVirtualMachineConfiguration(void *config, void *platform)
  */
 void setGraphicsDevicesVZVirtualMachineConfiguration(void *config, void *graphicsDevices)
 {
-    [(VZVirtualMachineConfiguration *)config setGraphicsDevices:[(NSMutableArray *)graphicsDevices copy]];
+    if (@available(macOS 12, *)) {
+        [(VZVirtualMachineConfiguration *)config setGraphicsDevices:[(NSMutableArray *)graphicsDevices copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -354,7 +364,11 @@ void *newVZVirtioSoundDeviceHostOutputStreamConfiguration()
 */
 void *newVZGenericPlatformConfiguration()
 {
-    return [[VZGenericPlatformConfiguration alloc] init];
+    if (@available(macOS 12, *)) {
+        return [[VZGenericPlatformConfiguration alloc] init];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!

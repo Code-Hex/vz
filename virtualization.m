@@ -929,11 +929,16 @@ void resumeWithCompletionHandler(void *machine, void *queue, void *completionHan
 
 void stopWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        [(VZVirtualMachine *)machine stopWithCompletionHandler:^(NSError *err) {
-            virtualMachineCompletionHandler(completionHandler, err);
-        }];
-    });
+    if (@available(macOS 12, *)) {
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            [(VZVirtualMachine *)machine stopWithCompletionHandler:^(NSError *err) {
+                virtualMachineCompletionHandler(completionHandler, err);
+            }];
+        });
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 // TODO(codehex): use KVO
@@ -975,11 +980,15 @@ bool vmCanRequestStop(void *machine, void *queue)
 
 bool vmCanStop(void *machine, void *queue)
 {
-    __block BOOL result;
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        result = ((VZVirtualMachine *)machine).canStop;
-    });
-    return (bool)result;
+    if (@available(macOS 12, *)) {
+        __block BOOL result;
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            result = ((VZVirtualMachine *)machine).canStop;
+        });
+        return (bool)result;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 // --- TODO end
 

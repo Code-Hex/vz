@@ -23,7 +23,10 @@ func installMacOS(ctx context.Context) error {
 	}
 	vm := vz.NewVirtualMachine(config)
 
-	installer := vz.NewMacOSInstaller(vm, restoreImagePath)
+	installer, err := vz.NewMacOSInstaller(vm, restoreImagePath)
+	if err != nil {
+		return err
+	}
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -65,7 +68,10 @@ func createMacInstallerPlatformConfiguration(macOSConfiguration *vz.MacOSConfigu
 		return nil, fmt.Errorf("failed to write hardware model data: %w", err)
 	}
 
-	machineIdentifier := vz.NewMacMachineIdentifier()
+	machineIdentifier, err := vz.NewMacMachineIdentifier()
+	if err != nil {
+		return nil, err
+	}
 	if err := CreateFileAndWriteTo(
 		machineIdentifier.DataRepresentation(),
 		GetMachineIdentifierPath(),
@@ -84,5 +90,5 @@ func createMacInstallerPlatformConfiguration(macOSConfiguration *vz.MacOSConfigu
 		vz.WithAuxiliaryStorage(auxiliaryStorage),
 		vz.WithHardwareModel(hardwareModel),
 		vz.WithMachineIdentifier(machineIdentifier),
-	), nil
+	)
 }

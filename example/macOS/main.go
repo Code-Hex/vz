@@ -152,12 +152,19 @@ func createBlockDeviceConfiguration(diskPath string) (*vz.VirtioBlockDeviceConfi
 	return storageDeviceConfig, nil
 }
 
-func createGraphicsDeviceConfiguration() *vz.MacGraphicsDeviceConfiguration {
-	graphicDeviceConfig := vz.NewMacGraphicsDeviceConfiguration()
+func createGraphicsDeviceConfiguration() (*vz.MacGraphicsDeviceConfiguration, error) {
+	graphicDeviceConfig, err := vz.NewMacGraphicsDeviceConfiguration()
+	if err != nil {
+		return nil, err
+	}
+	graphicsDisplayConfig, err := vz.NewMacGraphicsDisplayConfiguration(1920, 1200, 80)
+	if err != nil {
+		return nil, err
+	}
 	graphicDeviceConfig.SetDisplays(
-		vz.NewMacGraphicsDisplayConfiguration(1920, 1200, 80),
+		graphicsDisplayConfig,
 	)
-	return graphicDeviceConfig
+	return graphicDeviceConfig, nil
 }
 
 func createNetworkDeviceConfiguration() *vz.VirtioNetworkDeviceConfiguration {
@@ -206,18 +213,27 @@ func createMacPlatformConfiguration() (*vz.MacPlatformConfiguration, error) {
 		vz.WithAuxiliaryStorage(auxiliaryStorage),
 		vz.WithHardwareModel(hardwareModel),
 		vz.WithMachineIdentifier(machineIdentifier),
-	), nil
+	)
 }
 
 func setupVMConfiguration(platformConfig vz.PlatformConfiguration) (*vz.VirtualMachineConfiguration, error) {
+	bootloader, err := vz.NewMacOSBootLoader()
+	if err != nil {
+		return nil, err
+	}
+
 	config := vz.NewVirtualMachineConfiguration(
-		vz.NewMacOSBootLoader(),
+		bootloader,
 		computeCPUCount(),
 		computeMemorySize(),
 	)
 	config.SetPlatformVirtualMachineConfiguration(platformConfig)
+	graphicsDeviceConfig, err := createGraphicsDeviceConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create graphics device configuration: %w", err)
+	}
 	config.SetGraphicsDevicesVirtualMachineConfiguration([]vz.GraphicsDeviceConfiguration{
-		createGraphicsDeviceConfiguration(),
+		graphicsDeviceConfig,
 	})
 	blockDeviceConfig, err := createBlockDeviceConfiguration(GetDiskImagePath())
 	if err != nil {

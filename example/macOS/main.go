@@ -173,11 +173,11 @@ func createNetworkDeviceConfiguration() *vz.VirtioNetworkDeviceConfiguration {
 	return networkConfig
 }
 
-func createPointingDeviceConfiguration() *vz.USBScreenCoordinatePointingDeviceConfiguration {
+func createPointingDeviceConfiguration() (*vz.USBScreenCoordinatePointingDeviceConfiguration, error) {
 	return vz.NewUSBScreenCoordinatePointingDeviceConfiguration()
 }
 
-func createKeyboardConfiguration() *vz.USBKeyboardConfiguration {
+func createKeyboardConfiguration() (*vz.USBKeyboardConfiguration, error) {
 	return vz.NewUSBKeyboardConfiguration()
 }
 
@@ -245,12 +245,20 @@ func setupVMConfiguration(platformConfig vz.PlatformConfiguration) (*vz.VirtualM
 		createNetworkDeviceConfiguration(),
 	})
 
+	pointingDeviceConfig, err := createPointingDeviceConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create pointing device configuration: %w", err)
+	}
 	config.SetPointingDevicesVirtualMachineConfiguration([]vz.PointingDeviceConfiguration{
-		createPointingDeviceConfiguration(),
+		pointingDeviceConfig,
 	})
 
+	keyboardDeviceConfig, err := createKeyboardConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create keyboard device configuration: %w", err)
+	}
 	config.SetKeyboardsVirtualMachineConfiguration([]vz.KeyboardConfiguration{
-		createKeyboardConfiguration(),
+		keyboardDeviceConfig,
 	})
 
 	config.SetAudioDevicesVirtualMachineConfiguration([]vz.AudioDeviceConfiguration{

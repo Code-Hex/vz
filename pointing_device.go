@@ -30,7 +30,13 @@ type USBScreenCoordinatePointingDeviceConfiguration struct {
 var _ PointingDeviceConfiguration = (*USBScreenCoordinatePointingDeviceConfiguration)(nil)
 
 // NewUSBScreenCoordinatePointingDeviceConfiguration creates a new USBScreenCoordinatePointingDeviceConfiguration.
-func NewUSBScreenCoordinatePointingDeviceConfiguration() *USBScreenCoordinatePointingDeviceConfiguration {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewUSBScreenCoordinatePointingDeviceConfiguration() (*USBScreenCoordinatePointingDeviceConfiguration, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
 	config := &USBScreenCoordinatePointingDeviceConfiguration{
 		pointer: pointer{
 			ptr: C.newVZUSBScreenCoordinatePointingDeviceConfiguration(),
@@ -39,5 +45,5 @@ func NewUSBScreenCoordinatePointingDeviceConfiguration() *USBScreenCoordinatePoi
 	runtime.SetFinalizer(config, func(self *USBScreenCoordinatePointingDeviceConfiguration) {
 		self.Release()
 	})
-	return config
+	return config, nil
 }

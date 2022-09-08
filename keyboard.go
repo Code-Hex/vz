@@ -29,7 +29,13 @@ type USBKeyboardConfiguration struct {
 var _ KeyboardConfiguration = (*USBKeyboardConfiguration)(nil)
 
 // NewUSBKeyboardConfiguration creates a new USB keyboard configuration.
-func NewUSBKeyboardConfiguration() *USBKeyboardConfiguration {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewUSBKeyboardConfiguration() (*USBKeyboardConfiguration, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
 	config := &USBKeyboardConfiguration{
 		pointer: pointer{
 			ptr: C.newVZUSBKeyboardConfiguration(),
@@ -38,5 +44,5 @@ func NewUSBKeyboardConfiguration() *USBKeyboardConfiguration {
 	runtime.SetFinalizer(config, func(self *USBKeyboardConfiguration) {
 		self.Release()
 	})
-	return config
+	return config, nil
 }

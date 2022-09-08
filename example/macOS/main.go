@@ -181,15 +181,25 @@ func createKeyboardConfiguration() (*vz.USBKeyboardConfiguration, error) {
 	return vz.NewUSBKeyboardConfiguration()
 }
 
-func createAudioDeviceConfiguration() *vz.VirtioSoundDeviceConfiguration {
-	audioConfig := vz.NewVirtioSoundDeviceConfiguration()
-	inputStream := vz.NewVirtioSoundDeviceHostInputStreamConfiguration()
-	outputStream := vz.NewVirtioSoundDeviceHostOutputStreamConfiguration()
+func createAudioDeviceConfiguration() (*vz.VirtioSoundDeviceConfiguration, error) {
+	audioConfig, err := vz.NewVirtioSoundDeviceConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create sound device configuration: %w", err)
+	}
+	inputStream, err := vz.NewVirtioSoundDeviceHostInputStreamConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create input stream configuration: %w", err)
+	}
+
+	outputStream, err := vz.NewVirtioSoundDeviceHostOutputStreamConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create output stream configuration: %w", err)
+	}
 	audioConfig.SetStreams(
 		inputStream,
 		outputStream,
 	)
-	return audioConfig
+	return audioConfig, nil
 }
 
 func createMacPlatformConfiguration() (*vz.MacPlatformConfiguration, error) {
@@ -261,8 +271,12 @@ func setupVMConfiguration(platformConfig vz.PlatformConfiguration) (*vz.VirtualM
 		keyboardDeviceConfig,
 	})
 
+	audioDeviceConfig, err := createAudioDeviceConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create audio device configuration: %w", err)
+	}
 	config.SetAudioDevicesVirtualMachineConfiguration([]vz.AudioDeviceConfiguration{
-		createAudioDeviceConfiguration(),
+		audioDeviceConfig,
 	})
 
 	validated, err := config.Validate()

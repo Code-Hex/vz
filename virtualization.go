@@ -238,7 +238,7 @@ func (v *VirtualMachine) Start(fn func(error)) {
 // Pause a virtual machine that is in Running state.
 //
 // - fn parameter called after the virtual machine has been successfully paused or on error.
-// The error parameter passed to the block is null if the start was successful.
+// The error parameter passed to the block is null if the pause was successful.
 func (v *VirtualMachine) Pause(fn func(error)) {
 	h, done := makeHandler(fn)
 	handler := cgo.NewHandle(h)
@@ -262,7 +262,7 @@ func (v *VirtualMachine) Resume(fn func(error)) {
 // RequestStop requests that the guest turns itself off.
 //
 // If returned error is not nil, assigned with the error if the request failed.
-// Returens true if the request was made successfully.
+// Returns true if the request was made successfully.
 func (v *VirtualMachine) RequestStop() (bool, error) {
 	nserr := newNSErrorAsNil()
 	nserrPtr := nserr.Ptr()

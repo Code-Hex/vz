@@ -206,7 +206,14 @@ func (v *VirtualMachine) CanRequestStop() bool {
 }
 
 // CanStop returns whether the machine is in a state that can be stopped.
+//
+// This is only supported on macOS 12 and newer, false will always be returned
+// on older versions.
 func (v *VirtualMachine) CanStop() bool {
+	if macosMajorVersionLessThan(12) {
+		return false
+	}
+
 	return (bool)(C.vmCanStop(v.Ptr(), v.dispatchQueue))
 }
 
@@ -288,7 +295,14 @@ func (v *VirtualMachine) RequestStop() (bool, error) {
 //
 // Warning: This is a destructive operation. It stops the VM without
 // giving the guest a chance to stop cleanly.
+//
+// This is only supported on macOS 12 and newer, on older versions fn will be called immediately
+// with ErrUnsupportedOSVersion.
 func (v *VirtualMachine) Stop(fn func(error)) {
+	if macosMajorVersionLessThan(12) {
+		fn(ErrUnsupportedOSVersion)
+		return
+	}
 	h, done := makeHandler(fn)
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()

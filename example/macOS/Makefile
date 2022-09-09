@@ -7,4 +7,4 @@ codesign:
 
 .PHONY: build
 build:
-	go build -o virtualization .
+	CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -o virtualization .

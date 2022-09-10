@@ -806,40 +806,53 @@ void *makeDispatchQueue(const char *label)
     return queue;
 }
 
+typedef void (^handler_t)(NSError *);
+
+handler_t generateHandler(void handler(void *, char *))
+{
+    handler_t ret;
+    @autoreleasepool {
+        ret = Block_copy(^(NSError *err){
+            virtualMachineCompletionHandler(handler, err);
+        });
+    }
+    return ret;
+}
+
 void startWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
+    handler_t handler = generateHandler(completionHandler);
     dispatch_sync((dispatch_queue_t)queue, ^{
-        [(VZVirtualMachine *)machine startWithCompletionHandler:^(NSError *err) {
-            virtualMachineCompletionHandler(completionHandler, err);
-        }];
+        [(VZVirtualMachine *)machine startWithCompletionHandler:handler];
     });
+    Block_release(handler);
 }
 
 void pauseWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
+    handler_t handler = generateHandler(completionHandler);
     dispatch_sync((dispatch_queue_t)queue, ^{
-        [(VZVirtualMachine *)machine pauseWithCompletionHandler:^(NSError *err) {
-            virtualMachineCompletionHandler(completionHandler, err);
-        }];
+        [(VZVirtualMachine *)machine pauseWithCompletionHandler:handler];
     });
+    Block_release(handler);
 }
 
 void resumeWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
+    handler_t handler = generateHandler(completionHandler);
     dispatch_sync((dispatch_queue_t)queue, ^{
-        [(VZVirtualMachine *)machine resumeWithCompletionHandler:^(NSError *err) {
-            virtualMachineCompletionHandler(completionHandler, err);
-        }];
+        [(VZVirtualMachine *)machine resumeWithCompletionHandler:handler];
     });
+    Block_release(handler);
 }
 
 void stopWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
+    handler_t handler = generateHandler(completionHandler);
     dispatch_sync((dispatch_queue_t)queue, ^{
-        [(VZVirtualMachine *)machine stopWithCompletionHandler:^(NSError *err) {
-            virtualMachineCompletionHandler(completionHandler, err);
-        }];
+        [(VZVirtualMachine *)machine stopWithCompletionHandler:handler];
     });
+    Block_release(handler);
 }
 
 // TODO(codehex): use KVO

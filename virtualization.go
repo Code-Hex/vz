@@ -130,12 +130,12 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) *VirtualMachine {
 // it will always return VirtioSocketDevice.
 // see: https://developer.apple.com/documentation/virtualization/vzvirtualmachine/3656702-socketdevices?language=objc
 func (v *VirtualMachine) SocketDevices() []*VirtioSocketDevice {
-	nsArray := &NSArray{
+	nsarray := &nsArray{
 		pointer: pointer{
 			ptr: C.VZVirtualMachine_socketDevices(v.Ptr()),
 		},
 	}
-	ptrs := nsArray.ToPointerSlice()
+	ptrs := nsarray.ToPointerSlice()
 	socketDevices := make([]*VirtioSocketDevice, len(ptrs))
 	for i, ptr := range ptrs {
 		socketDevices[i] = newVirtioSocketDevice(ptr, v.dispatchQueue)

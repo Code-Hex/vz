@@ -177,13 +177,13 @@ type NSObject interface {
 	Ptr() unsafe.Pointer
 }
 
-// NSArray indicates NSArray
-type NSArray struct {
+// nsArray indicates objc NSArray
+type nsArray struct {
 	pointer
 }
 
 // ToPointerSlice method returns slice of the obj-c object as unsafe.Pointer.
-func (n *NSArray) ToPointerSlice() []unsafe.Pointer {
+func (n *nsArray) ToPointerSlice() []unsafe.Pointer {
 	count := int(C.getNSArrayCount(n.Ptr()))
 	ret := make([]unsafe.Pointer, count)
 	for i := 0; i < count; i++ {

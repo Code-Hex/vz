@@ -193,8 +193,8 @@ func (n *nsArray) ToPointerSlice() []unsafe.Pointer {
 	return ret
 }
 
-// NSError indicates NSError.
-type NSError struct {
+// nsError indicates objc NSError.
+type nsError struct {
 	Domain               string
 	Code                 int
 	LocalizedDescription string
@@ -215,7 +215,7 @@ func hasNSError(nserrPtr unsafe.Pointer) bool {
 	return (bool)(C.hasError(nserrPtr))
 }
 
-func (n *NSError) Error() string {
+func (n *nsError) Error() string {
 	if n == nil {
 		return "<nil>"
 	}
@@ -228,16 +228,16 @@ func (n *NSError) Error() string {
 	)
 }
 
-func newNSError(p unsafe.Pointer) *NSError {
+func newNSError(p unsafe.Pointer) *nsError {
 	if !hasNSError(p) {
 		return nil
 	}
-	nsError := C.convertNSError2Flat(p)
-	return &NSError{
-		Domain:               (*char)(nsError.domain).String(),
-		Code:                 int((nsError.code)),
-		LocalizedDescription: (*char)(nsError.localizedDescription).String(),
-		UserInfo:             (*char)(nsError.userinfo).String(), // NOTE(codehex): maybe we can convert to map[string]interface{}
+	nserror := C.convertNSError2Flat(p)
+	return &nsError{
+		Domain:               (*char)(nserror.domain).String(),
+		Code:                 int((nserror.code)),
+		LocalizedDescription: (*char)(nserror.localizedDescription).String(),
+		UserInfo:             (*char)(nserror.userinfo).String(), // NOTE(codehex): maybe we can convert to map[string]interface{}
 	}
 }
 

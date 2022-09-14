@@ -173,6 +173,7 @@ func (o *pointer) Ptr() unsafe.Pointer {
 }
 
 // NSObject indicates NSObject
+// nsObject, ptr(), no need to export?
 type NSObject interface {
 	Ptr() unsafe.Pointer
 }

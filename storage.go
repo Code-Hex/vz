@@ -47,13 +47,12 @@ func NewDiskImageStorageDeviceAttachment(diskPath string, readOnly bool) (*DiskI
 	diskPathChar := charWithGoString(diskPath)
 	defer diskPathChar.Free()
 	attachment := &DiskImageStorageDeviceAttachment{
-		pointer: pointer{
-			ptr: C.newVZDiskImageStorageDeviceAttachment(
-				diskPathChar.CString(),
-				C.bool(readOnly),
-				&nserrPtr,
-			),
-		},
+		pointer: newPointer(C.newVZDiskImageStorageDeviceAttachment(
+			diskPathChar.CString(),
+			C.bool(readOnly),
+			&nserrPtr,
+		),
+		),
 	}
 	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
@@ -96,11 +95,10 @@ type VirtioBlockDeviceConfiguration struct {
 // - attachment The storage device attachment. This defines how the virtualized device operates on the host side.
 func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) *VirtioBlockDeviceConfiguration {
 	config := &VirtioBlockDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioBlockDeviceConfiguration(
-				attachment.Ptr(),
-			),
-		},
+		pointer: newPointer(C.newVZVirtioBlockDeviceConfiguration(
+			attachment.Ptr(),
+		),
+		),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioBlockDeviceConfiguration) {
 		self.release()

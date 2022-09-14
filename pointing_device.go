@@ -32,9 +32,7 @@ var _ PointingDeviceConfiguration = (*USBScreenCoordinatePointingDeviceConfigura
 // NewUSBScreenCoordinatePointingDeviceConfiguration creates a new USBScreenCoordinatePointingDeviceConfiguration.
 func NewUSBScreenCoordinatePointingDeviceConfiguration() *USBScreenCoordinatePointingDeviceConfiguration {
 	config := &USBScreenCoordinatePointingDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZUSBScreenCoordinatePointingDeviceConfiguration(),
-		},
+		pointer: newPointer(C.newVZUSBScreenCoordinatePointingDeviceConfiguration()),
 	}
 	runtime.SetFinalizer(config, func(self *USBScreenCoordinatePointingDeviceConfiguration) {
 		self.release()

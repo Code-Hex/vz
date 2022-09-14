@@ -33,9 +33,7 @@ type VirtioTraditionalMemoryBalloonDeviceConfiguration struct {
 // NewVirtioTraditionalMemoryBalloonDeviceConfiguration creates a new VirtioTraditionalMemoryBalloonDeviceConfiguration.
 func NewVirtioTraditionalMemoryBalloonDeviceConfiguration() *VirtioTraditionalMemoryBalloonDeviceConfiguration {
 	config := &VirtioTraditionalMemoryBalloonDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioTraditionalMemoryBalloonDeviceConfiguration(),
-		},
+		pointer: newPointer(C.newVZVirtioTraditionalMemoryBalloonDeviceConfiguration()),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioTraditionalMemoryBalloonDeviceConfiguration) {
 		self.release()

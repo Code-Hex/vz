@@ -31,9 +31,7 @@ var _ PlatformConfiguration = (*GenericPlatformConfiguration)(nil)
 // NewGenericPlatformConfiguration creates a new generic platform configuration.
 func NewGenericPlatformConfiguration() *GenericPlatformConfiguration {
 	platformConfig := &GenericPlatformConfiguration{
-		pointer: pointer{
-			ptr: C.newVZGenericPlatformConfiguration(),
-		},
+		pointer: newPointer(C.newVZGenericPlatformConfiguration()),
 	}
 	runtime.SetFinalizer(platformConfig, func(self *GenericPlatformConfiguration) {
 		self.release()

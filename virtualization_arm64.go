@@ -60,9 +60,7 @@ func newMacHardwareModel(ptr unsafe.Pointer) *MacHardwareModel {
 	dataRepresentation := ret.dataRepresentation
 	bytePointer := (*byte)(unsafe.Pointer(dataRepresentation.ptr))
 	return &MacHardwareModel{
-		pointer: pointer{
-			ptr: ptr,
-		},
+		pointer:   newPointer(ptr),
 		supported: bool(ret.supported),
 		// https://github.com/golang/go/wiki/cgo#turning-c-arrays-into-go-slices
 		dataRepresentation: unsafe.Slice(bytePointer, dataRepresentation.len),
@@ -117,9 +115,7 @@ func newMacMachineIdentifier(ptr unsafe.Pointer) *MacMachineIdentifier {
 	dataRepresentation := C.getVZMacMachineIdentifierDataRepresentation(ptr)
 	bytePointer := (*byte)(unsafe.Pointer(dataRepresentation.ptr))
 	return &MacMachineIdentifier{
-		pointer: pointer{
-			ptr: ptr,
-		},
+		pointer: newPointer(ptr),
 		// https://github.com/golang/go/wiki/cgo#turning-c-arrays-into-go-slices
 		dataRepresentation: unsafe.Slice(bytePointer, dataRepresentation.len),
 	}
@@ -149,13 +145,12 @@ func WithCreatingStorage(hardwareModel *MacHardwareModel) NewMacAuxiliaryStorage
 
 		nserr := newNSErrorAsNil()
 		nserrPtr := nserr.Ptr()
-		mas.pointer = pointer{
-			ptr: C.newVZMacAuxiliaryStorageWithCreating(
-				cpath.CString(),
-				hardwareModel.Ptr(),
-				&nserrPtr,
-			),
-		}
+		mas.pointer = newPointer(C.newVZMacAuxiliaryStorageWithCreating(
+			cpath.CString(),
+			hardwareModel.Ptr(),
+			&nserrPtr,
+		),
+		)
 		if err := newNSError(nserrPtr); err != nil {
 			return err
 		}
@@ -175,9 +170,7 @@ func NewMacAuxiliaryStorage(storagePath string, opts ...NewMacAuxiliaryStorageOp
 	if storage.pointer.ptr == nil {
 		cpath := charWithGoString(storagePath)
 		defer cpath.Free()
-		storage.pointer = pointer{
-			ptr: C.newVZMacAuxiliaryStorage(cpath.CString()),
-		}
+		storage.pointer = newPointer(C.newVZMacAuxiliaryStorage(cpath.CString()))
 	}
 	return storage, nil
 }
@@ -412,14 +405,10 @@ func NewMacOSInstaller(vm *VirtualMachine, restoreImageIpsw string) *MacOSInstal
 	cs := charWithGoString(restoreImageIpsw)
 	defer cs.Free()
 	ret := &MacOSInstaller{
-		pointer: pointer{
-			ptr: C.newVZMacOSInstaller(vm.Ptr(), vm.dispatchQueue, cs.CString()),
-		},
-		observerPointer: pointer{
-			ptr: C.newProgressObserverVZMacOSInstaller(),
-		},
-		vm:     vm,
-		doneCh: make(chan struct{}),
+		pointer:         newPointer(C.newVZMacOSInstaller(vm.Ptr(), vm.dispatchQueue, cs.CString())),
+		observerPointer: newPointer(C.newProgressObserverVZMacOSInstaller()),
+		vm:              vm,
+		doneCh:          make(chan struct{}),
 	}
 	ret.setFractionCompleted(0)
 	runtime.SetFinalizer(ret, func(self *MacOSInstaller) {

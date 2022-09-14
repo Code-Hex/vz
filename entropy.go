@@ -20,9 +20,7 @@ type VirtioEntropyDeviceConfiguration struct {
 // NewVirtioEntropyDeviceConfiguration creates a new Virtio Entropy Device confiuration.
 func NewVirtioEntropyDeviceConfiguration() *VirtioEntropyDeviceConfiguration {
 	config := &VirtioEntropyDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioEntropyDeviceConfiguration(),
-		},
+		pointer: newPointer(C.newVZVirtioEntropyDeviceConfiguration()),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioEntropyDeviceConfiguration) {
 		self.release()

@@ -23,9 +23,7 @@ var _ BootLoader = (*MacOSBootLoader)(nil)
 // NewMacOSBootLoader creates a new MacOSBootLoader struct.
 func NewMacOSBootLoader() *MacOSBootLoader {
 	bootLoader := &MacOSBootLoader{
-		pointer: pointer{
-			ptr: C.newVZMacOSBootLoader(),
-		},
+		pointer: newPointer(C.newVZMacOSBootLoader()),
 	}
 	runtime.SetFinalizer(bootLoader, func(self *MacOSBootLoader) {
 		self.release()

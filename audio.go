@@ -38,9 +38,7 @@ var _ AudioDeviceConfiguration = (*VirtioSoundDeviceConfiguration)(nil)
 // NewVirtioSoundDeviceConfiguration creates a new sound device configuration.
 func NewVirtioSoundDeviceConfiguration() *VirtioSoundDeviceConfiguration {
 	config := &VirtioSoundDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioSoundDeviceConfiguration(),
-		},
+		pointer: newPointer(C.newVZVirtioSoundDeviceConfiguration()),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioSoundDeviceConfiguration) {
 		self.release()
@@ -82,9 +80,7 @@ var _ VirtioSoundDeviceStreamConfiguration = (*VirtioSoundDeviceHostInputStreamC
 // NewVirtioSoundDeviceHostInputStreamConfiguration creates a new PCM stream configuration of input audio data from host.
 func NewVirtioSoundDeviceHostInputStreamConfiguration() *VirtioSoundDeviceHostInputStreamConfiguration {
 	config := &VirtioSoundDeviceHostInputStreamConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioSoundDeviceHostInputStreamConfiguration(),
-		},
+		pointer: newPointer(C.newVZVirtioSoundDeviceHostInputStreamConfiguration()),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioSoundDeviceHostInputStreamConfiguration) {
 		self.release()
@@ -107,9 +103,7 @@ var _ VirtioSoundDeviceStreamConfiguration = (*VirtioSoundDeviceHostOutputStream
 // NewVirtioSoundDeviceHostOutputStreamConfiguration creates a new sounds device output stream configuration.
 func NewVirtioSoundDeviceHostOutputStreamConfiguration() *VirtioSoundDeviceHostOutputStreamConfiguration {
 	config := &VirtioSoundDeviceHostOutputStreamConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioSoundDeviceHostOutputStreamConfiguration(),
-		},
+		pointer: newPointer(C.newVZVirtioSoundDeviceHostOutputStreamConfiguration()),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioSoundDeviceHostOutputStreamConfiguration) {
 		self.release()

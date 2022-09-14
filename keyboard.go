@@ -31,9 +31,7 @@ var _ KeyboardConfiguration = (*USBKeyboardConfiguration)(nil)
 // NewUSBKeyboardConfiguration creates a new USB keyboard configuration.
 func NewUSBKeyboardConfiguration() *USBKeyboardConfiguration {
 	config := &USBKeyboardConfiguration{
-		pointer: pointer{
-			ptr: C.newVZUSBKeyboardConfiguration(),
-		},
+		pointer: newPointer(C.newVZUSBKeyboardConfiguration()),
 	}
 	runtime.SetFinalizer(config, func(self *USBKeyboardConfiguration) {
 		self.release()

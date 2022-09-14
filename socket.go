@@ -46,9 +46,7 @@ type VirtioSocketDeviceConfiguration struct {
 // NewVirtioSocketDeviceConfiguration creates a new VirtioSocketDeviceConfiguration.
 func NewVirtioSocketDeviceConfiguration() *VirtioSocketDeviceConfiguration {
 	config := &VirtioSocketDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioSocketDeviceConfiguration(),
-		},
+		pointer: newPointer(C.newVZVirtioSocketDeviceConfiguration()),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioSocketDeviceConfiguration) {
 		self.release()
@@ -69,9 +67,7 @@ type VirtioSocketDevice struct {
 func newVirtioSocketDevice(ptr, dispatchQueue unsafe.Pointer) *VirtioSocketDevice {
 	socketDevice := &VirtioSocketDevice{
 		dispatchQueue: dispatchQueue,
-		pointer: pointer{
-			ptr: ptr,
-		},
+		pointer:       newPointer(ptr),
 	}
 	runtime.SetFinalizer(socketDevice, func(self *VirtioSocketDevice) {
 		self.release()
@@ -140,9 +136,7 @@ var shouldAcceptNewConnectionHandlers = map[unsafe.Pointer]func(conn *VirtioSock
 func NewVirtioSocketListener(handler func(conn *VirtioSocketConnection, err error)) *VirtioSocketListener {
 	ptr := C.newVZVirtioSocketListener()
 	listener := &VirtioSocketListener{
-		pointer: pointer{
-			ptr: ptr,
-		},
+		pointer: newPointer(ptr),
 	}
 
 	dupCh := make(chan dup, 1)

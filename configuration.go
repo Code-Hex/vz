@@ -47,13 +47,12 @@ func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize 
 	config := &VirtualMachineConfiguration{
 		cpuCount:   cpu,
 		memorySize: memorySize,
-		pointer: pointer{
-			ptr: C.newVZVirtualMachineConfiguration(
-				bootLoader.Ptr(),
-				C.uint(cpu),
-				C.ulonglong(memorySize),
-			),
-		},
+		pointer: newPointer(C.newVZVirtualMachineConfiguration(
+			bootLoader.Ptr(),
+			C.uint(cpu),
+			C.ulonglong(memorySize),
+		),
+		),
 	}
 	runtime.SetFinalizer(config, func(self *VirtualMachineConfiguration) {
 		self.release()

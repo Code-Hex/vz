@@ -35,9 +35,7 @@ func NewVirtioFileSystemDeviceConfiguration(tag string) *VirtioFileSystemDeviceC
 	tagChar := charWithGoString(tag)
 	defer tagChar.Free()
 	fsdConfig := &VirtioFileSystemDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioFileSystemDeviceConfiguration(tagChar.CString()),
-		},
+		pointer: newPointer(C.newVZVirtioFileSystemDeviceConfiguration(tagChar.CString())),
 	}
 	runtime.SetFinalizer(fsdConfig, func(self *VirtioFileSystemDeviceConfiguration) {
 		self.release()
@@ -60,9 +58,7 @@ func NewSharedDirectory(dirPath string, readOnly bool) *SharedDirectory {
 	dirPathChar := charWithGoString(dirPath)
 	defer dirPathChar.Free()
 	sd := &SharedDirectory{
-		pointer: pointer{
-			ptr: C.newVZSharedDirectory(dirPathChar.CString(), C.bool(readOnly)),
-		},
+		pointer: newPointer(C.newVZSharedDirectory(dirPathChar.CString(), C.bool(readOnly))),
 	}
 	runtime.SetFinalizer(sd, func(self *SharedDirectory) {
 		self.release()
@@ -93,9 +89,7 @@ type SingleDirectoryShare struct {
 // NewSingleDirectoryShare creates a new single directory share.
 func NewSingleDirectoryShare(share *SharedDirectory) *SingleDirectoryShare {
 	config := &SingleDirectoryShare{
-		pointer: pointer{
-			ptr: C.newVZSingleDirectoryShare(share.Ptr()),
-		},
+		pointer: newPointer(C.newVZSingleDirectoryShare(share.Ptr())),
 	}
 	runtime.SetFinalizer(config, func(self *SingleDirectoryShare) {
 		self.release()
@@ -120,9 +114,7 @@ func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) *MultipleDire
 	dict := convertToNSMutableDictionary(directories)
 
 	config := &MultipleDirectoryShare{
-		pointer: pointer{
-			ptr: C.newVZMultipleDirectoryShare(dict.Ptr()),
-		},
+		pointer: newPointer(C.newVZMultipleDirectoryShare(dict.Ptr())),
 	}
 	runtime.SetFinalizer(config, func(self *SingleDirectoryShare) {
 		self.release()

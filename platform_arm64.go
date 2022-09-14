@@ -69,9 +69,7 @@ func WithAuxiliaryStorage(m *MacAuxiliaryStorage) MacPlatformConfigurationOption
 // NewMacPlatformConfiguration creates a new MacPlatformConfiguration. see also it's document.
 func NewMacPlatformConfiguration(opts ...MacPlatformConfigurationOption) *MacPlatformConfiguration {
 	platformConfig := &MacPlatformConfiguration{
-		pointer: pointer{
-			ptr: C.newVZMacPlatformConfiguration(),
-		},
+		pointer: newPointer(C.newVZMacPlatformConfiguration()),
 	}
 	for _, optFunc := range opts {
 		optFunc(platformConfig)

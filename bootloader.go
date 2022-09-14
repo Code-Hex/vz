@@ -73,11 +73,10 @@ func NewLinuxBootLoader(vmlinuz string, opts ...LinuxBootLoaderOption) *LinuxBoo
 	defer vmlinuzPath.Free()
 	bootLoader := &LinuxBootLoader{
 		vmlinuzPath: vmlinuz,
-		pointer: pointer{
-			ptr: C.newVZLinuxBootLoader(
-				vmlinuzPath.CString(),
-			),
-		},
+		pointer: newPointer(C.newVZLinuxBootLoader(
+			vmlinuzPath.CString(),
+		),
+		),
 	}
 	runtime.SetFinalizer(bootLoader, func(self *LinuxBootLoader) {
 		self.release()

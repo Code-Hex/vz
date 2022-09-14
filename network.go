@@ -50,9 +50,7 @@ var _ NetworkDeviceAttachment = (*NATNetworkDeviceAttachment)(nil)
 // NewNATNetworkDeviceAttachment creates a new NATNetworkDeviceAttachment.
 func NewNATNetworkDeviceAttachment() *NATNetworkDeviceAttachment {
 	attachment := &NATNetworkDeviceAttachment{
-		pointer: pointer{
-			ptr: C.newVZNATNetworkDeviceAttachment(),
-		},
+		pointer: newPointer(C.newVZNATNetworkDeviceAttachment()),
 	}
 	runtime.SetFinalizer(attachment, func(self *NATNetworkDeviceAttachment) {
 		self.release()
@@ -81,11 +79,10 @@ var _ NetworkDeviceAttachment = (*BridgedNetworkDeviceAttachment)(nil)
 // NewBridgedNetworkDeviceAttachment creates a new BridgedNetworkDeviceAttachment with networkInterface.
 func NewBridgedNetworkDeviceAttachment(networkInterface BridgedNetwork) *BridgedNetworkDeviceAttachment {
 	attachment := &BridgedNetworkDeviceAttachment{
-		pointer: pointer{
-			ptr: C.newVZBridgedNetworkDeviceAttachment(
-				networkInterface.Ptr(),
-			),
-		},
+		pointer: newPointer(C.newVZBridgedNetworkDeviceAttachment(
+			networkInterface.Ptr(),
+		),
+		),
 	}
 	runtime.SetFinalizer(attachment, func(self *BridgedNetworkDeviceAttachment) {
 		self.release()
@@ -111,11 +108,10 @@ var _ NetworkDeviceAttachment = (*FileHandleNetworkDeviceAttachment)(nil)
 // file parameter is holding a connected datagram socket.
 func NewFileHandleNetworkDeviceAttachment(file *os.File) *FileHandleNetworkDeviceAttachment {
 	attachment := &FileHandleNetworkDeviceAttachment{
-		pointer: pointer{
-			ptr: C.newVZFileHandleNetworkDeviceAttachment(
-				C.int(file.Fd()),
-			),
-		},
+		pointer: newPointer(C.newVZFileHandleNetworkDeviceAttachment(
+			C.int(file.Fd()),
+		),
+		),
 	}
 	runtime.SetFinalizer(attachment, func(self *FileHandleNetworkDeviceAttachment) {
 		self.release()
@@ -150,11 +146,10 @@ type VirtioNetworkDeviceConfiguration struct {
 // NewVirtioNetworkDeviceConfiguration creates a new VirtioNetworkDeviceConfiguration with NetworkDeviceAttachment.
 func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) *VirtioNetworkDeviceConfiguration {
 	config := &VirtioNetworkDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioNetworkDeviceConfiguration(
-				attachment.Ptr(),
-			),
-		},
+		pointer: newPointer(C.newVZVirtioNetworkDeviceConfiguration(
+			attachment.Ptr(),
+		),
+		),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioNetworkDeviceConfiguration) {
 		self.release()
@@ -177,9 +172,7 @@ func NewMACAddress(macAddr net.HardwareAddr) *MACAddress {
 	macAddrChar := charWithGoString(macAddr.String())
 	defer macAddrChar.Free()
 	ma := &MACAddress{
-		pointer: pointer{
-			ptr: C.newVZMACAddress(macAddrChar.CString()),
-		},
+		pointer: newPointer(C.newVZMACAddress(macAddrChar.CString())),
 	}
 	runtime.SetFinalizer(ma, func(self *MACAddress) {
 		self.release()
@@ -190,9 +183,7 @@ func NewMACAddress(macAddr net.HardwareAddr) *MACAddress {
 // NewRandomLocallyAdministeredMACAddress creates a valid, random, unicast, locally administered address.
 func NewRandomLocallyAdministeredMACAddress() *MACAddress {
 	ma := &MACAddress{
-		pointer: pointer{
-			ptr: C.newRandomLocallyAdministeredVZMACAddress(),
-		},
+		pointer: newPointer(C.newRandomLocallyAdministeredVZMACAddress()),
 	}
 	runtime.SetFinalizer(ma, func(self *MACAddress) {
 		self.release()

@@ -158,6 +158,12 @@ type pointer struct {
 	ptr unsafe.Pointer
 }
 
+func newPointer(ptr unsafe.Pointer) pointer {
+	return pointer{
+		ptr: ptr,
+	}
+}
+
 // release releases allocated resources in objective-c world.
 func (p *pointer) release() {
 	C.releaseNSObject(p.Ptr())
@@ -204,10 +210,8 @@ type nsError struct {
 
 // newNSErrorAsNil makes nil NSError in objective-c world.
 func newNSErrorAsNil() *pointer {
-	p := &pointer{
-		ptr: unsafe.Pointer(C.newNSError()),
-	}
-	return p
+	p := newPointer(unsafe.Pointer(C.newNSError()))
+	return &p
 }
 
 // hasNSError checks passed pointer is NSError or not.
@@ -248,11 +252,11 @@ func convertToNSMutableArray(s []NSObject) *pointer {
 	for _, v := range s {
 		C.addNSMutableArrayVal(ary, v.Ptr())
 	}
-	p := &pointer{ptr: ary}
+	p := newPointer(ary)
 	runtime.SetFinalizer(p, func(self *pointer) {
 		self.release()
 	})
-	return p
+	return &p
 }
 
 func convertToNSMutableDictionary(d map[string]NSObject) *pointer {
@@ -262,11 +266,11 @@ func convertToNSMutableDictionary(d map[string]NSObject) *pointer {
 		C.insertNSMutableDictionary(dict, cs.CString(), value.Ptr())
 		cs.Free()
 	}
-	p := &pointer{ptr: dict}
+	p := newPointer(dict)
 	runtime.SetFinalizer(p, func(self *pointer) {
 		self.release()
 	})
-	return p
+	return &p
 }
 
 func getUUID() *char {

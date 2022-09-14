@@ -23,9 +23,7 @@ var _ GraphicsDeviceConfiguration = (*MacGraphicsDeviceConfiguration)(nil)
 // NewMacGraphicsDeviceConfiguration creates a new MacGraphicsDeviceConfiguration.
 func NewMacGraphicsDeviceConfiguration() *MacGraphicsDeviceConfiguration {
 	graphicsConfiguration := &MacGraphicsDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZMacGraphicsDeviceConfiguration(),
-		},
+		pointer: newPointer(C.newVZMacGraphicsDeviceConfiguration()),
 	}
 	runtime.SetFinalizer(graphicsConfiguration, func(self *MacGraphicsDeviceConfiguration) {
 		self.release()
@@ -53,13 +51,12 @@ type MacGraphicsDisplayConfiguration struct {
 // Creates a display configuration with the specified pixel dimensions and pixel density.
 func NewMacGraphicsDisplayConfiguration(widthInPixels int64, heightInPixels int64, pixelsPerInch int64) *MacGraphicsDisplayConfiguration {
 	graphicsDisplayConfiguration := &MacGraphicsDisplayConfiguration{
-		pointer: pointer{
-			ptr: C.newVZMacGraphicsDisplayConfiguration(
-				C.NSInteger(widthInPixels),
-				C.NSInteger(heightInPixels),
-				C.NSInteger(pixelsPerInch),
-			),
-		},
+		pointer: newPointer(C.newVZMacGraphicsDisplayConfiguration(
+			C.NSInteger(widthInPixels),
+			C.NSInteger(heightInPixels),
+			C.NSInteger(pixelsPerInch),
+		),
+		),
 	}
 	runtime.SetFinalizer(graphicsDisplayConfiguration, func(self *MacGraphicsDisplayConfiguration) {
 		self.release()

@@ -104,13 +104,12 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) *VirtualMachine {
 
 	v := &VirtualMachine{
 		id: cs.String(),
-		pointer: pointer{
-			ptr: C.newVZVirtualMachineWithDispatchQueue(
-				config.Ptr(),
-				dispatchQueue,
-				unsafe.Pointer(&status),
-			),
-		},
+		pointer: newPointer(C.newVZVirtualMachineWithDispatchQueue(
+			config.Ptr(),
+			dispatchQueue,
+			unsafe.Pointer(&status),
+		),
+		),
 		dispatchQueue: dispatchQueue,
 		status:        status,
 	}
@@ -131,9 +130,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) *VirtualMachine {
 // see: https://developer.apple.com/documentation/virtualization/vzvirtualmachine/3656702-socketdevices?language=objc
 func (v *VirtualMachine) SocketDevices() []*VirtioSocketDevice {
 	nsarray := &nsArray{
-		pointer: pointer{
-			ptr: C.VZVirtualMachine_socketDevices(v.Ptr()),
-		},
+		pointer: newPointer(C.VZVirtualMachine_socketDevices(v.Ptr())),
 	}
 	ptrs := nsarray.ToPointerSlice()
 	socketDevices := make([]*VirtioSocketDevice, len(ptrs))

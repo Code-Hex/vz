@@ -42,12 +42,11 @@ type FileHandleSerialPortAttachment struct {
 // write parameter is an *os.File for writing to the file.
 func NewFileHandleSerialPortAttachment(read, write *os.File) *FileHandleSerialPortAttachment {
 	attachment := &FileHandleSerialPortAttachment{
-		pointer: pointer{
-			ptr: C.newVZFileHandleSerialPortAttachment(
-				C.int(read.Fd()),
-				C.int(write.Fd()),
-			),
-		},
+		pointer: newPointer(C.newVZFileHandleSerialPortAttachment(
+			C.int(read.Fd()),
+			C.int(write.Fd()),
+		),
+		),
 	}
 	runtime.SetFinalizer(attachment, func(self *FileHandleSerialPortAttachment) {
 		self.release()
@@ -81,13 +80,12 @@ func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPor
 	nserr := newNSErrorAsNil()
 	nserrPtr := nserr.Ptr()
 	attachment := &FileSerialPortAttachment{
-		pointer: pointer{
-			ptr: C.newVZFileSerialPortAttachment(
-				cpath.CString(),
-				C.bool(shouldAppend),
-				&nserrPtr,
-			),
-		},
+		pointer: newPointer(C.newVZFileSerialPortAttachment(
+			cpath.CString(),
+			C.bool(shouldAppend),
+			&nserrPtr,
+		),
+		),
 	}
 	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
@@ -110,11 +108,10 @@ type VirtioConsoleDeviceSerialPortConfiguration struct {
 // NewVirtioConsoleDeviceSerialPortConfiguration creates a new NewVirtioConsoleDeviceSerialPortConfiguration.
 func NewVirtioConsoleDeviceSerialPortConfiguration(attachment SerialPortAttachment) *VirtioConsoleDeviceSerialPortConfiguration {
 	config := &VirtioConsoleDeviceSerialPortConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioConsoleDeviceSerialPortConfiguration(
-				attachment.Ptr(),
-			),
-		},
+		pointer: newPointer(C.newVZVirtioConsoleDeviceSerialPortConfiguration(
+			attachment.Ptr(),
+		),
+		),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioConsoleDeviceSerialPortConfiguration) {
 		self.release()

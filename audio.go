@@ -53,7 +53,7 @@ func (v *VirtioSoundDeviceConfiguration) SetStreams(streams ...VirtioSoundDevice
 		ptrs[i] = val
 	}
 	array := convertToNSMutableArray(ptrs)
-	C.setStreamsVZVirtioSoundDeviceConfiguration(v.Ptr(), array.Ptr())
+	C.setStreamsVZVirtioSoundDeviceConfiguration(v.ptr(), array.ptr())
 }
 
 // VirtioSoundDeviceStreamConfiguration interface for Virtio Sound Device Stream Configuration.

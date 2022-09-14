@@ -79,14 +79,14 @@ func newVirtioSocketDevice(ptr, dispatchQueue unsafe.Pointer) *VirtioSocketDevic
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdevice/3656679-setsocketlistener?language=objc
 func (v *VirtioSocketDevice) SetSocketListenerForPort(listener *VirtioSocketListener, port uint32) {
-	C.VZVirtioSocketDevice_setSocketListenerForPort(v.Ptr(), v.dispatchQueue, listener.Ptr(), C.uint32_t(port))
+	C.VZVirtioSocketDevice_setSocketListenerForPort(v.ptr(), v.dispatchQueue, listener.ptr(), C.uint32_t(port))
 }
 
 // RemoveSocketListenerForPort removes the listener object from the specfied port.
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdevice/3656678-removesocketlistenerforport?language=objc
 func (v *VirtioSocketDevice) RemoveSocketListenerForPort(listener *VirtioSocketListener, port uint32) {
-	C.VZVirtioSocketDevice_removeSocketListenerForPort(v.Ptr(), v.dispatchQueue, C.uint32_t(port))
+	C.VZVirtioSocketDevice_removeSocketListenerForPort(v.ptr(), v.dispatchQueue, C.uint32_t(port))
 }
 
 //export connectionHandler
@@ -112,7 +112,7 @@ func connectionHandler(connPtr, errPtr, cgoHandlerPtr unsafe.Pointer) {
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdevice/3656677-connecttoport?language=objc
 func (v *VirtioSocketDevice) ConnectToPort(port uint32, fn func(conn *VirtioSocketConnection, err error)) {
 	cgoHandler := cgo.NewHandle(fn)
-	C.VZVirtioSocketDevice_connectToPort(v.Ptr(), v.dispatchQueue, C.uint32_t(port), unsafe.Pointer(&cgoHandler))
+	C.VZVirtioSocketDevice_connectToPort(v.ptr(), v.dispatchQueue, C.uint32_t(port), unsafe.Pointer(&cgoHandler))
 }
 
 // VirtioSocketListener a struct that listens for port-based connection requests from the guest operating system.

@@ -144,10 +144,10 @@ func WithCreatingStorage(hardwareModel *MacHardwareModel) NewMacAuxiliaryStorage
 		defer cpath.Free()
 
 		nserr := newNSErrorAsNil()
-		nserrPtr := nserr.Ptr()
+		nserrPtr := nserr.ptr()
 		mas.pointer = newPointer(C.newVZMacAuxiliaryStorageWithCreating(
 			cpath.CString(),
-			hardwareModel.Ptr(),
+			hardwareModel.ptr(),
 			&nserrPtr,
 		),
 		)
@@ -405,7 +405,7 @@ func NewMacOSInstaller(vm *VirtualMachine, restoreImageIpsw string) *MacOSInstal
 	cs := charWithGoString(restoreImageIpsw)
 	defer cs.Free()
 	ret := &MacOSInstaller{
-		pointer:         newPointer(C.newVZMacOSInstaller(vm.Ptr(), vm.dispatchQueue, cs.CString())),
+		pointer:         newPointer(C.newVZMacOSInstaller(vm.ptr(), vm.dispatchQueue, cs.CString())),
 		observerPointer: newPointer(C.newProgressObserverVZMacOSInstaller()),
 		vm:              vm,
 		doneCh:          make(chan struct{}),
@@ -461,9 +461,9 @@ func (m *MacOSInstaller) Install(ctx context.Context) error {
 		})
 
 		C.installByVZMacOSInstaller(
-			m.Ptr(),
+			m.ptr(),
 			m.vm.dispatchQueue,
-			m.observerPointer.Ptr(),
+			m.observerPointer.ptr(),
 			unsafe.Pointer(&completionHandler),
 			unsafe.Pointer(&fractionCompletedHandler),
 		)
@@ -471,7 +471,7 @@ func (m *MacOSInstaller) Install(ctx context.Context) error {
 
 	select {
 	case <-ctx.Done():
-		C.cancelInstallVZMacOSInstaller(m.Ptr())
+		C.cancelInstallVZMacOSInstaller(m.ptr())
 		return ctx.Err()
 	case <-m.doneCh:
 	}

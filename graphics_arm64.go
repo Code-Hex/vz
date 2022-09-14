@@ -38,7 +38,7 @@ func (m *MacGraphicsDeviceConfiguration) SetDisplays(displayConfigs ...*MacGraph
 		ptrs[i] = val
 	}
 	array := convertToNSMutableArray(ptrs)
-	C.setDisplaysVZMacGraphicsDeviceConfiguration(m.Ptr(), array.Ptr())
+	C.setDisplaysVZMacGraphicsDeviceConfiguration(m.ptr(), array.ptr())
 }
 
 // MacGraphicsDisplayConfiguration is the configuration for a Mac graphics device.

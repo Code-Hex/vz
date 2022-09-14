@@ -48,7 +48,7 @@ func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize 
 		cpuCount:   cpu,
 		memorySize: memorySize,
 		pointer: newPointer(C.newVZVirtualMachineConfiguration(
-			bootLoader.Ptr(),
+			bootLoader.ptr(),
 			C.uint(cpu),
 			C.ulonglong(memorySize),
 		),
@@ -66,8 +66,8 @@ func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize 
 // If error is not nil, assigned with the validation error if the validation failed.
 func (v *VirtualMachineConfiguration) Validate() (bool, error) {
 	nserr := newNSErrorAsNil()
-	nserrPtr := nserr.Ptr()
-	ret := C.validateVZVirtualMachineConfiguration(v.Ptr(), &nserrPtr)
+	nserrPtr := nserr.ptr()
+	ret := C.validateVZVirtualMachineConfiguration(v.ptr(), &nserrPtr)
 	err := newNSError(nserrPtr)
 	if err != nil {
 		return false, err
@@ -82,7 +82,7 @@ func (v *VirtualMachineConfiguration) SetEntropyDevicesVirtualMachineConfigurati
 		ptrs[i] = val
 	}
 	array := convertToNSMutableArray(ptrs)
-	C.setEntropyDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	C.setEntropyDevicesVZVirtualMachineConfiguration(v.ptr(), array.ptr())
 }
 
 // SetMemoryBalloonDevicesVirtualMachineConfiguration sets list of memory balloon devices. Empty by default.
@@ -92,7 +92,7 @@ func (v *VirtualMachineConfiguration) SetMemoryBalloonDevicesVirtualMachineConfi
 		ptrs[i] = val
 	}
 	array := convertToNSMutableArray(ptrs)
-	C.setMemoryBalloonDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	C.setMemoryBalloonDevicesVZVirtualMachineConfiguration(v.ptr(), array.ptr())
 }
 
 // SetNetworkDevicesVirtualMachineConfiguration sets list of network adapters. Empty by default.
@@ -102,7 +102,7 @@ func (v *VirtualMachineConfiguration) SetNetworkDevicesVirtualMachineConfigurati
 		ptrs[i] = val
 	}
 	array := convertToNSMutableArray(ptrs)
-	C.setNetworkDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	C.setNetworkDevicesVZVirtualMachineConfiguration(v.ptr(), array.ptr())
 }
 
 // SetSerialPortsVirtualMachineConfiguration sets list of serial ports. Empty by default.
@@ -112,7 +112,7 @@ func (v *VirtualMachineConfiguration) SetSerialPortsVirtualMachineConfiguration(
 		ptrs[i] = val
 	}
 	array := convertToNSMutableArray(ptrs)
-	C.setSerialPortsVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	C.setSerialPortsVZVirtualMachineConfiguration(v.ptr(), array.ptr())
 }
 
 // SetSocketDevicesVirtualMachineConfiguration sets list of socket devices. Empty by default.
@@ -122,7 +122,7 @@ func (v *VirtualMachineConfiguration) SetSocketDevicesVirtualMachineConfiguratio
 		ptrs[i] = val
 	}
 	array := convertToNSMutableArray(ptrs)
-	C.setSocketDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	C.setSocketDevicesVZVirtualMachineConfiguration(v.ptr(), array.ptr())
 }
 
 // SetStorageDevicesVirtualMachineConfiguration sets list of disk devices. Empty by default.
@@ -132,7 +132,7 @@ func (v *VirtualMachineConfiguration) SetStorageDevicesVirtualMachineConfigurati
 		ptrs[i] = val
 	}
 	array := convertToNSMutableArray(ptrs)
-	C.setStorageDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	C.setStorageDevicesVZVirtualMachineConfiguration(v.ptr(), array.ptr())
 }
 
 // SetDirectorySharingDevicesVirtualMachineConfiguration sets list of directory sharing devices. Empty by default.
@@ -142,12 +142,12 @@ func (v *VirtualMachineConfiguration) SetDirectorySharingDevicesVirtualMachineCo
 		ptrs[i] = val
 	}
 	array := convertToNSMutableArray(ptrs)
-	C.setDirectorySharingDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	C.setDirectorySharingDevicesVZVirtualMachineConfiguration(v.ptr(), array.ptr())
 }
 
 // SetPlatformVirtualMachineConfiguration sets the hardware platform to use. Defaults to GenericPlatformConfiguration.
 func (v *VirtualMachineConfiguration) SetPlatformVirtualMachineConfiguration(c PlatformConfiguration) {
-	C.setPlatformVZVirtualMachineConfiguration(v.Ptr(), c.Ptr())
+	C.setPlatformVZVirtualMachineConfiguration(v.ptr(), c.ptr())
 }
 
 // SetGraphicsDevicesVirtualMachineConfiguration sets list of graphics devices. Empty by default.
@@ -157,7 +157,7 @@ func (v *VirtualMachineConfiguration) SetGraphicsDevicesVirtualMachineConfigurat
 		ptrs[i] = val
 	}
 	array := convertToNSMutableArray(ptrs)
-	C.setGraphicsDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	C.setGraphicsDevicesVZVirtualMachineConfiguration(v.ptr(), array.ptr())
 }
 
 // SetPointingDevicesVirtualMachineConfiguration sets list of pointing devices. Empty by default.
@@ -167,7 +167,7 @@ func (v *VirtualMachineConfiguration) SetPointingDevicesVirtualMachineConfigurat
 		ptrs[i] = val
 	}
 	array := convertToNSMutableArray(ptrs)
-	C.setPointingDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	C.setPointingDevicesVZVirtualMachineConfiguration(v.ptr(), array.ptr())
 }
 
 // SetKeyboardsVirtualMachineConfiguration sets list of keyboards. Empty by default.
@@ -177,7 +177,7 @@ func (v *VirtualMachineConfiguration) SetKeyboardsVirtualMachineConfiguration(cs
 		ptrs[i] = val
 	}
 	array := convertToNSMutableArray(ptrs)
-	C.setKeyboardsVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	C.setKeyboardsVZVirtualMachineConfiguration(v.ptr(), array.ptr())
 }
 
 // SetAudioDevicesVirtualMachineConfiguration sets list of audio devices. Empty by default.
@@ -187,7 +187,7 @@ func (v *VirtualMachineConfiguration) SetAudioDevicesVirtualMachineConfiguration
 		ptrs[i] = val
 	}
 	array := convertToNSMutableArray(ptrs)
-	C.setAudioDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	C.setAudioDevicesVZVirtualMachineConfiguration(v.ptr(), array.ptr())
 }
 
 // VirtualMachineConfigurationMinimumAllowedMemorySize returns minimum

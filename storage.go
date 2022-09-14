@@ -42,7 +42,7 @@ type DiskImageStorageDeviceAttachment struct {
 // - readOnly if YES, the device attachment is read-only, otherwise the device can write data to the disk image.
 func NewDiskImageStorageDeviceAttachment(diskPath string, readOnly bool) (*DiskImageStorageDeviceAttachment, error) {
 	nserr := newNSErrorAsNil()
-	nserrPtr := nserr.Ptr()
+	nserrPtr := nserr.ptr()
 
 	diskPathChar := charWithGoString(diskPath)
 	defer diskPathChar.Free()
@@ -96,7 +96,7 @@ type VirtioBlockDeviceConfiguration struct {
 func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) *VirtioBlockDeviceConfiguration {
 	config := &VirtioBlockDeviceConfiguration{
 		pointer: newPointer(C.newVZVirtioBlockDeviceConfiguration(
-			attachment.Ptr(),
+			attachment.ptr(),
 		),
 		),
 	}

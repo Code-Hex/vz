@@ -46,7 +46,7 @@ type MacPlatformConfigurationOption func(*MacPlatformConfiguration)
 func WithHardwareModel(m *MacHardwareModel) MacPlatformConfigurationOption {
 	return func(mpc *MacPlatformConfiguration) {
 		mpc.hardwareModel = m
-		C.setHardwareModelVZMacPlatformConfiguration(mpc.Ptr(), m.Ptr())
+		C.setHardwareModelVZMacPlatformConfiguration(mpc.ptr(), m.ptr())
 	}
 }
 
@@ -54,7 +54,7 @@ func WithHardwareModel(m *MacHardwareModel) MacPlatformConfigurationOption {
 func WithMachineIdentifier(m *MacMachineIdentifier) MacPlatformConfigurationOption {
 	return func(mpc *MacPlatformConfiguration) {
 		mpc.machineIdentifier = m
-		C.setMachineIdentifierVZMacPlatformConfiguration(mpc.Ptr(), m.Ptr())
+		C.setMachineIdentifierVZMacPlatformConfiguration(mpc.ptr(), m.ptr())
 	}
 }
 
@@ -62,7 +62,7 @@ func WithMachineIdentifier(m *MacMachineIdentifier) MacPlatformConfigurationOpti
 func WithAuxiliaryStorage(m *MacAuxiliaryStorage) MacPlatformConfigurationOption {
 	return func(mpc *MacPlatformConfiguration) {
 		mpc.auxiliaryStorage = m
-		C.setAuxiliaryStorageVZMacPlatformConfiguration(mpc.Ptr(), m.Ptr())
+		C.setAuxiliaryStorageVZMacPlatformConfiguration(mpc.ptr(), m.ptr())
 	}
 }
 

@@ -53,7 +53,7 @@ func WithCommandLine(cmdLine string) LinuxBootLoaderOption {
 		b.cmdLine = cmdLine
 		cs := charWithGoString(cmdLine)
 		defer cs.Free()
-		C.setCommandLineVZLinuxBootLoader(b.Ptr(), cs.CString())
+		C.setCommandLineVZLinuxBootLoader(b.ptr(), cs.CString())
 	}
 }
 
@@ -63,7 +63,7 @@ func WithInitrd(initrdPath string) LinuxBootLoaderOption {
 		b.initrdPath = initrdPath
 		cs := charWithGoString(initrdPath)
 		defer cs.Free()
-		C.setInitialRamdiskURLVZLinuxBootLoader(b.Ptr(), cs.CString())
+		C.setInitialRamdiskURLVZLinuxBootLoader(b.ptr(), cs.CString())
 	}
 }
 

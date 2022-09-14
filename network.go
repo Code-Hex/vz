@@ -80,7 +80,7 @@ var _ NetworkDeviceAttachment = (*BridgedNetworkDeviceAttachment)(nil)
 func NewBridgedNetworkDeviceAttachment(networkInterface BridgedNetwork) *BridgedNetworkDeviceAttachment {
 	attachment := &BridgedNetworkDeviceAttachment{
 		pointer: newPointer(C.newVZBridgedNetworkDeviceAttachment(
-			networkInterface.Ptr(),
+			networkInterface.ptr(),
 		),
 		),
 	}
@@ -147,7 +147,7 @@ type VirtioNetworkDeviceConfiguration struct {
 func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) *VirtioNetworkDeviceConfiguration {
 	config := &VirtioNetworkDeviceConfiguration{
 		pointer: newPointer(C.newVZVirtioNetworkDeviceConfiguration(
-			attachment.Ptr(),
+			attachment.ptr(),
 		),
 		),
 	}
@@ -158,7 +158,7 @@ func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) *Vi
 }
 
 func (v *VirtioNetworkDeviceConfiguration) SetMACAddress(macAddress *MACAddress) {
-	C.setNetworkDevicesVZMACAddress(v.Ptr(), macAddress.Ptr())
+	C.setNetworkDevicesVZMACAddress(v.ptr(), macAddress.ptr())
 }
 
 // MACAddress represents a media access control address (MAC address), the 48-bit ethernet address.
@@ -192,7 +192,7 @@ func NewRandomLocallyAdministeredMACAddress() *MACAddress {
 }
 
 func (m *MACAddress) String() string {
-	cstring := (*char)(C.getVZMACAddressString(m.Ptr()))
+	cstring := (*char)(C.getVZMACAddressString(m.ptr()))
 	return cstring.String()
 }
 

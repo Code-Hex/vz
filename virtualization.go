@@ -105,7 +105,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) *VirtualMachine {
 	v := &VirtualMachine{
 		id: cs.String(),
 		pointer: newPointer(C.newVZVirtualMachineWithDispatchQueue(
-			config.Ptr(),
+			config.ptr(),
 			dispatchQueue,
 			unsafe.Pointer(&status),
 		),
@@ -130,7 +130,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) *VirtualMachine {
 // see: https://developer.apple.com/documentation/virtualization/vzvirtualmachine/3656702-socketdevices?language=objc
 func (v *VirtualMachine) SocketDevices() []*VirtioSocketDevice {
 	nsarray := &nsArray{
-		pointer: newPointer(C.VZVirtualMachine_socketDevices(v.Ptr())),
+		pointer: newPointer(C.VZVirtualMachine_socketDevices(v.ptr())),
 	}
 	ptrs := nsarray.ToPointerSlice()
 	socketDevices := make([]*VirtioSocketDevice, len(ptrs))
@@ -176,27 +176,27 @@ func (v *VirtualMachine) StateChangedNotify() <-chan VirtualMachineState {
 
 // CanStart returns true if the machine is in a state that can be started.
 func (v *VirtualMachine) CanStart() bool {
-	return bool(C.vmCanStart(v.Ptr(), v.dispatchQueue))
+	return bool(C.vmCanStart(v.ptr(), v.dispatchQueue))
 }
 
 // CanPause returns true if the machine is in a state that can be paused.
 func (v *VirtualMachine) CanPause() bool {
-	return bool(C.vmCanPause(v.Ptr(), v.dispatchQueue))
+	return bool(C.vmCanPause(v.ptr(), v.dispatchQueue))
 }
 
 // CanResume returns true if the machine is in a state that can be resumed.
 func (v *VirtualMachine) CanResume() bool {
-	return (bool)(C.vmCanResume(v.Ptr(), v.dispatchQueue))
+	return (bool)(C.vmCanResume(v.ptr(), v.dispatchQueue))
 }
 
 // CanRequestStop returns whether the machine is in a state where the guest can be asked to stop.
 func (v *VirtualMachine) CanRequestStop() bool {
-	return (bool)(C.vmCanRequestStop(v.Ptr(), v.dispatchQueue))
+	return (bool)(C.vmCanRequestStop(v.ptr(), v.dispatchQueue))
 }
 
 // CanStop returns whether the machine is in a state that can be stopped.
 func (v *VirtualMachine) CanStop() bool {
-	return (bool)(C.vmCanStop(v.Ptr(), v.dispatchQueue))
+	return (bool)(C.vmCanStop(v.ptr(), v.dispatchQueue))
 }
 
 //export virtualMachineCompletionHandler
@@ -228,7 +228,7 @@ func (v *VirtualMachine) Start(fn func(error)) {
 	h, done := makeHandler(fn)
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()
-	C.startWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
+	C.startWithCompletionHandler(v.ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
 	<-done
 }
 
@@ -240,7 +240,7 @@ func (v *VirtualMachine) Pause(fn func(error)) {
 	h, done := makeHandler(fn)
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()
-	C.pauseWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
+	C.pauseWithCompletionHandler(v.ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
 	<-done
 }
 
@@ -252,7 +252,7 @@ func (v *VirtualMachine) Resume(fn func(error)) {
 	h, done := makeHandler(fn)
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()
-	C.resumeWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
+	C.resumeWithCompletionHandler(v.ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
 	<-done
 }
 
@@ -262,8 +262,8 @@ func (v *VirtualMachine) Resume(fn func(error)) {
 // Returns true if the request was made successfully.
 func (v *VirtualMachine) RequestStop() (bool, error) {
 	nserr := newNSErrorAsNil()
-	nserrPtr := nserr.Ptr()
-	ret := (bool)(C.requestStopVirtualMachine(v.Ptr(), v.dispatchQueue, &nserrPtr))
+	nserrPtr := nserr.ptr()
+	ret := (bool)(C.requestStopVirtualMachine(v.ptr(), v.dispatchQueue, &nserrPtr))
 	if err := newNSError(nserrPtr); err != nil {
 		return ret, err
 	}
@@ -281,7 +281,7 @@ func (v *VirtualMachine) Stop(fn func(error)) {
 	h, done := makeHandler(fn)
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()
-	C.stopWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
+	C.stopWithCompletionHandler(v.ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
 	<-done
 }
 
@@ -289,5 +289,5 @@ func (v *VirtualMachine) Stop(fn func(error)) {
 //
 // You must to call runtime.LockOSThread before calling this method.
 func (v *VirtualMachine) StartGraphicApplication(width, height float64) {
-	C.startVirtualMachineWindow(v.Ptr(), C.double(width), C.double(height))
+	C.startVirtualMachineWindow(v.ptr(), C.double(width), C.double(height))
 }

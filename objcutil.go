@@ -155,33 +155,33 @@ func (c *char) Free() {
 
 // pointer indicates any pointers which are allocated in objective-c world.
 type pointer struct {
-	ptr unsafe.Pointer
+	wrappedPtr unsafe.Pointer
 }
 
 func newPointer(ptr unsafe.Pointer) pointer {
 	return pointer{
-		ptr: ptr,
+		wrappedPtr: ptr,
 	}
 }
 
 // release releases allocated resources in objective-c world.
 func (p *pointer) release() {
-	C.releaseNSObject(p.Ptr())
+	C.releaseNSObject(p.ptr())
 	runtime.KeepAlive(p)
 }
 
 // Ptr returns raw pointer.
-func (o *pointer) Ptr() unsafe.Pointer {
+func (o *pointer) ptr() unsafe.Pointer {
 	if o == nil {
 		return nil
 	}
-	return o.ptr
+	return o.wrappedPtr
 }
 
 // NSObject indicates NSObject
 // nsObject, ptr(), no need to export?
 type NSObject interface {
-	Ptr() unsafe.Pointer
+	ptr() unsafe.Pointer
 }
 
 // nsArray indicates objc NSArray
@@ -191,10 +191,10 @@ type nsArray struct {
 
 // ToPointerSlice method returns slice of the obj-c object as unsafe.Pointer.
 func (n *nsArray) ToPointerSlice() []unsafe.Pointer {
-	count := int(C.getNSArrayCount(n.Ptr()))
+	count := int(C.getNSArrayCount(n.ptr()))
 	ret := make([]unsafe.Pointer, count)
 	for i := 0; i < count; i++ {
-		ret[i] = C.getNSArrayItem(n.Ptr(), C.int(i))
+		ret[i] = C.getNSArrayItem(n.ptr(), C.int(i))
 	}
 	return ret
 }
@@ -250,7 +250,7 @@ func convertToNSMutableArray(s []NSObject) *pointer {
 	ln := len(s)
 	ary := C.makeNSMutableArray(C.ulong(ln))
 	for _, v := range s {
-		C.addNSMutableArrayVal(ary, v.Ptr())
+		C.addNSMutableArrayVal(ary, v.ptr())
 	}
 	p := newPointer(ary)
 	runtime.SetFinalizer(p, func(self *pointer) {
@@ -263,7 +263,7 @@ func convertToNSMutableDictionary(d map[string]NSObject) *pointer {
 	dict := C.makeNSMutableDictionary()
 	for key, value := range d {
 		cs := charWithGoString(key)
-		C.insertNSMutableDictionary(dict, cs.CString(), value.Ptr())
+		C.insertNSMutableDictionary(dict, cs.CString(), value.ptr())
 		cs.Free()
 	}
 	p := newPointer(dict)

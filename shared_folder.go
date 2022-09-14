@@ -45,7 +45,7 @@ func NewVirtioFileSystemDeviceConfiguration(tag string) *VirtioFileSystemDeviceC
 
 // SetDirectoryShare sets the directory share associated with this configuration.
 func (c *VirtioFileSystemDeviceConfiguration) SetDirectoryShare(share DirectoryShare) {
-	C.setVZVirtioFileSystemDeviceConfigurationShare(c.Ptr(), share.Ptr())
+	C.setVZVirtioFileSystemDeviceConfigurationShare(c.ptr(), share.ptr())
 }
 
 // SharedDirectory is a shared directory.
@@ -89,7 +89,7 @@ type SingleDirectoryShare struct {
 // NewSingleDirectoryShare creates a new single directory share.
 func NewSingleDirectoryShare(share *SharedDirectory) *SingleDirectoryShare {
 	config := &SingleDirectoryShare{
-		pointer: newPointer(C.newVZSingleDirectoryShare(share.Ptr())),
+		pointer: newPointer(C.newVZSingleDirectoryShare(share.ptr())),
 	}
 	runtime.SetFinalizer(config, func(self *SingleDirectoryShare) {
 		self.release()
@@ -114,7 +114,7 @@ func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) *MultipleDire
 	dict := convertToNSMutableDictionary(directories)
 
 	config := &MultipleDirectoryShare{
-		pointer: newPointer(C.newVZMultipleDirectoryShare(dict.Ptr())),
+		pointer: newPointer(C.newVZMultipleDirectoryShare(dict.ptr())),
 	}
 	runtime.SetFinalizer(config, func(self *SingleDirectoryShare) {
 		self.release()

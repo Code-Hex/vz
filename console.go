@@ -78,7 +78,7 @@ func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPor
 	defer cpath.Free()
 
 	nserr := newNSErrorAsNil()
-	nserrPtr := nserr.Ptr()
+	nserrPtr := nserr.ptr()
 	attachment := &FileSerialPortAttachment{
 		pointer: newPointer(C.newVZFileSerialPortAttachment(
 			cpath.CString(),
@@ -109,7 +109,7 @@ type VirtioConsoleDeviceSerialPortConfiguration struct {
 func NewVirtioConsoleDeviceSerialPortConfiguration(attachment SerialPortAttachment) *VirtioConsoleDeviceSerialPortConfiguration {
 	config := &VirtioConsoleDeviceSerialPortConfiguration{
 		pointer: newPointer(C.newVZVirtioConsoleDeviceSerialPortConfiguration(
-			attachment.Ptr(),
+			attachment.ptr(),
 		),
 		),
 	}

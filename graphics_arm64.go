@@ -28,7 +28,7 @@ func NewMacGraphicsDeviceConfiguration() *MacGraphicsDeviceConfiguration {
 		},
 	}
 	runtime.SetFinalizer(graphicsConfiguration, func(self *MacGraphicsDeviceConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return graphicsConfiguration
 }
@@ -62,7 +62,7 @@ func NewMacGraphicsDisplayConfiguration(widthInPixels int64, heightInPixels int6
 		},
 	}
 	runtime.SetFinalizer(graphicsDisplayConfiguration, func(self *MacGraphicsDisplayConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return graphicsDisplayConfiguration
 }

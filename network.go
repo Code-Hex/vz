@@ -55,7 +55,7 @@ func NewNATNetworkDeviceAttachment() *NATNetworkDeviceAttachment {
 		},
 	}
 	runtime.SetFinalizer(attachment, func(self *NATNetworkDeviceAttachment) {
-		self.Release()
+		self.release()
 	})
 	return attachment
 }
@@ -88,7 +88,7 @@ func NewBridgedNetworkDeviceAttachment(networkInterface BridgedNetwork) *Bridged
 		},
 	}
 	runtime.SetFinalizer(attachment, func(self *BridgedNetworkDeviceAttachment) {
-		self.Release()
+		self.release()
 	})
 	return attachment
 }
@@ -118,7 +118,7 @@ func NewFileHandleNetworkDeviceAttachment(file *os.File) *FileHandleNetworkDevic
 		},
 	}
 	runtime.SetFinalizer(attachment, func(self *FileHandleNetworkDeviceAttachment) {
-		self.Release()
+		self.release()
 	})
 	return attachment
 }
@@ -157,7 +157,7 @@ func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) *Vi
 		},
 	}
 	runtime.SetFinalizer(config, func(self *VirtioNetworkDeviceConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return config
 }
@@ -182,7 +182,7 @@ func NewMACAddress(macAddr net.HardwareAddr) *MACAddress {
 		},
 	}
 	runtime.SetFinalizer(ma, func(self *MACAddress) {
-		self.Release()
+		self.release()
 	})
 	return ma
 }
@@ -195,7 +195,7 @@ func NewRandomLocallyAdministeredMACAddress() *MACAddress {
 		},
 	}
 	runtime.SetFinalizer(ma, func(self *MACAddress) {
-		self.Release()
+		self.release()
 	})
 	return ma
 }

@@ -28,7 +28,7 @@ func NewMacOSBootLoader() *MacOSBootLoader {
 		},
 	}
 	runtime.SetFinalizer(bootLoader, func(self *MacOSBootLoader) {
-		self.Release()
+		self.release()
 	})
 	return bootLoader
 }

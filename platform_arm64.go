@@ -77,7 +77,7 @@ func NewMacPlatformConfiguration(opts ...MacPlatformConfigurationOption) *MacPla
 		optFunc(platformConfig)
 	}
 	runtime.SetFinalizer(platformConfig, func(self *MacPlatformConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return platformConfig
 }

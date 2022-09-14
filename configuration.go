@@ -56,7 +56,7 @@ func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize 
 		},
 	}
 	runtime.SetFinalizer(config, func(self *VirtualMachineConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return config
 }

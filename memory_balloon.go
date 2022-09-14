@@ -38,7 +38,7 @@ func NewVirtioTraditionalMemoryBalloonDeviceConfiguration() *VirtioTraditionalMe
 		},
 	}
 	runtime.SetFinalizer(config, func(self *VirtioTraditionalMemoryBalloonDeviceConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return config
 }

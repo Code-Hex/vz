@@ -158,8 +158,8 @@ type pointer struct {
 	ptr unsafe.Pointer
 }
 
-// Release releases allocated resources in objective-c world.
-func (p *pointer) Release() {
+// release releases allocated resources in objective-c world.
+func (p *pointer) release() {
 	C.releaseNSObject(p.Ptr())
 	runtime.KeepAlive(p)
 }
@@ -250,7 +250,7 @@ func convertToNSMutableArray(s []NSObject) *pointer {
 	}
 	p := &pointer{ptr: ary}
 	runtime.SetFinalizer(p, func(self *pointer) {
-		self.Release()
+		self.release()
 	})
 	return p
 }
@@ -264,7 +264,7 @@ func convertToNSMutableDictionary(d map[string]NSObject) *pointer {
 	}
 	p := &pointer{ptr: dict}
 	runtime.SetFinalizer(p, func(self *pointer) {
-		self.Release()
+		self.release()
 	})
 	return p
 }

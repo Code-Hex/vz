@@ -40,7 +40,7 @@ func NewVirtioFileSystemDeviceConfiguration(tag string) *VirtioFileSystemDeviceC
 		},
 	}
 	runtime.SetFinalizer(fsdConfig, func(self *VirtioFileSystemDeviceConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return fsdConfig
 }
@@ -65,7 +65,7 @@ func NewSharedDirectory(dirPath string, readOnly bool) *SharedDirectory {
 		},
 	}
 	runtime.SetFinalizer(sd, func(self *SharedDirectory) {
-		self.Release()
+		self.release()
 	})
 	return sd
 }
@@ -98,7 +98,7 @@ func NewSingleDirectoryShare(share *SharedDirectory) *SingleDirectoryShare {
 		},
 	}
 	runtime.SetFinalizer(config, func(self *SingleDirectoryShare) {
-		self.Release()
+		self.release()
 	})
 	return config
 }
@@ -125,7 +125,7 @@ func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) *MultipleDire
 		},
 	}
 	runtime.SetFinalizer(config, func(self *SingleDirectoryShare) {
-		self.Release()
+		self.release()
 	})
 	return config
 }

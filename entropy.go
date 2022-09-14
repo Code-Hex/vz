@@ -25,7 +25,7 @@ func NewVirtioEntropyDeviceConfiguration() *VirtioEntropyDeviceConfiguration {
 		},
 	}
 	runtime.SetFinalizer(config, func(self *VirtioEntropyDeviceConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return config
 }

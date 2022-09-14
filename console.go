@@ -50,7 +50,7 @@ func NewFileHandleSerialPortAttachment(read, write *os.File) *FileHandleSerialPo
 		},
 	}
 	runtime.SetFinalizer(attachment, func(self *FileHandleSerialPortAttachment) {
-		self.Release()
+		self.release()
 	})
 	return attachment
 }
@@ -93,7 +93,7 @@ func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPor
 		return nil, err
 	}
 	runtime.SetFinalizer(attachment, func(self *FileSerialPortAttachment) {
-		self.Release()
+		self.release()
 	})
 	return attachment, nil
 }
@@ -117,7 +117,7 @@ func NewVirtioConsoleDeviceSerialPortConfiguration(attachment SerialPortAttachme
 		},
 	}
 	runtime.SetFinalizer(config, func(self *VirtioConsoleDeviceSerialPortConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return config
 }

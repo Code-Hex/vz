@@ -36,7 +36,7 @@ func NewUSBKeyboardConfiguration() *USBKeyboardConfiguration {
 		},
 	}
 	runtime.SetFinalizer(config, func(self *USBKeyboardConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return config
 }

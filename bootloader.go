@@ -80,7 +80,7 @@ func NewLinuxBootLoader(vmlinuz string, opts ...LinuxBootLoaderOption) *LinuxBoo
 		},
 	}
 	runtime.SetFinalizer(bootLoader, func(self *LinuxBootLoader) {
-		self.Release()
+		self.release()
 	})
 	for _, opt := range opts {
 		opt(bootLoader)

@@ -59,7 +59,7 @@ func NewDiskImageStorageDeviceAttachment(diskPath string, readOnly bool) (*DiskI
 		return nil, err
 	}
 	runtime.SetFinalizer(attachment, func(self *DiskImageStorageDeviceAttachment) {
-		self.Release()
+		self.release()
 	})
 	return attachment, nil
 }
@@ -103,7 +103,7 @@ func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) *Virt
 		},
 	}
 	runtime.SetFinalizer(config, func(self *VirtioBlockDeviceConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return config
 }

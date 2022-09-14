@@ -43,7 +43,7 @@ func NewVirtioSoundDeviceConfiguration() *VirtioSoundDeviceConfiguration {
 		},
 	}
 	runtime.SetFinalizer(config, func(self *VirtioSoundDeviceConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return config
 }
@@ -87,7 +87,7 @@ func NewVirtioSoundDeviceHostInputStreamConfiguration() *VirtioSoundDeviceHostIn
 		},
 	}
 	runtime.SetFinalizer(config, func(self *VirtioSoundDeviceHostInputStreamConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return config
 }
@@ -112,7 +112,7 @@ func NewVirtioSoundDeviceHostOutputStreamConfiguration() *VirtioSoundDeviceHostO
 		},
 	}
 	runtime.SetFinalizer(config, func(self *VirtioSoundDeviceHostOutputStreamConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return config
 }

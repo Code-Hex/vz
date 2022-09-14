@@ -36,7 +36,7 @@ func NewGenericPlatformConfiguration() *GenericPlatformConfiguration {
 		},
 	}
 	runtime.SetFinalizer(platformConfig, func(self *GenericPlatformConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return platformConfig
 }

@@ -50,7 +50,7 @@ func NewMacHardwareModelWithData(b []byte) *MacHardwareModel {
 	)
 	ret := newMacHardwareModel(ptr)
 	runtime.SetFinalizer(ret, func(self *MacHardwareModel) {
-		self.Release()
+		self.release()
 	})
 	return ret
 }
@@ -423,8 +423,8 @@ func NewMacOSInstaller(vm *VirtualMachine, restoreImageIpsw string) *MacOSInstal
 	}
 	ret.setFractionCompleted(0)
 	runtime.SetFinalizer(ret, func(self *MacOSInstaller) {
-		self.observerPointer.Release()
-		self.Release()
+		self.observerPointer.release()
+		self.release()
 	})
 	return ret
 }

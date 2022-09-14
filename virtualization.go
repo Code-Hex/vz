@@ -118,7 +118,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) *VirtualMachine {
 	runtime.SetFinalizer(v, func(self *VirtualMachine) {
 		self.status.Delete()
 		releaseDispatch(self.dispatchQueue)
-		self.Release()
+		self.release()
 	})
 	return v
 }

@@ -37,7 +37,7 @@ func NewUSBScreenCoordinatePointingDeviceConfiguration() *USBScreenCoordinatePoi
 		},
 	}
 	runtime.SetFinalizer(config, func(self *USBScreenCoordinatePointingDeviceConfiguration) {
-		self.Release()
+		self.release()
 	})
 	return config
 }

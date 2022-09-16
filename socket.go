@@ -12,7 +12,6 @@ import (
 	"os"
 	"runtime"
 	"runtime/cgo"
-	"syscall"
 	"time"
 	"unsafe"
 
@@ -106,11 +105,11 @@ func connectionHandler(connPtr, errPtr, cgoHandlerPtr unsafe.Pointer) {
 	handler := cgoHandler.Value().(func(*VirtioSocketConnection, error))
 	defer cgoHandler.Delete()
 	// see: startHandler
-	conn := newVirtioSocketConnection(connPtr)
 	if err := newNSError(errPtr); err != nil {
-		handler(conn, err)
+		handler(nil, err)
 	} else {
-		handler(conn, nil)
+		conn, err := newVirtioSocketConnection(connPtr)
+		handler(conn, err)
 	}
 }
 
@@ -138,7 +137,7 @@ type dup struct {
 	err  error
 }
 
-var shouldAcceptNewConnectionHandlers = map[unsafe.Pointer]func(conn *VirtioSocketConnection) bool{}
+var shouldAcceptNewConnectionHandlers = map[unsafe.Pointer]func(conn *VirtioSocketConnection, err error) bool{}
 
 // NewVirtioSocketListener creates a new VirtioSocketListener with connection handler.
 //
@@ -165,10 +164,9 @@ func NewVirtioSocketListener(handler func(conn *VirtioSocketConnection, err erro
 			go handler(dup.conn, dup.err)
 		}
 	}()
-	shouldAcceptNewConnectionHandlers[ptr] = func(conn *VirtioSocketConnection) bool {
-		dupConn, err := conn.dup()
+	shouldAcceptNewConnectionHandlers[ptr] = func(conn *VirtioSocketConnection, err error) bool {
 		dupCh <- dup{
-			conn: dupConn,
+			conn: conn,
 			err:  err,
 		}
 		return true // must be connected
@@ -185,8 +183,8 @@ func shouldAcceptNewConnectionHandler(listenerPtr, connPtr, devicePtr unsafe.Poi
 	_ = devicePtr // NOTO(codehex): Is this really required? How to use?
 
 	// see: startHandler
-	conn := newVirtioSocketConnection(connPtr)
-	return (C.bool)(shouldAcceptNewConnectionHandlers[listenerPtr](conn))
+	conn, err := newVirtioSocketConnection(connPtr)
+	return (C.bool)(shouldAcceptNewConnectionHandlers[listenerPtr](conn, err))
 }
 
 // VirtioSocketConnection is a port-based connection between the guest operating system and the host computer.
@@ -204,25 +202,25 @@ func shouldAcceptNewConnectionHandler(listenerPtr, connPtr, devicePtr unsafe.Poi
 type VirtioSocketConnection struct {
 	sourcePort      uint32
 	destinationPort uint32
-	fileDescriptor  uintptr
-	file            *os.File
+	conn            net.Conn
 	laddr           net.Addr // local
 	raddr           net.Addr // remote
 }
 
 var _ net.Conn = (*VirtioSocketConnection)(nil)
 
-func newVirtioSocketConnection(ptr unsafe.Pointer) *VirtioSocketConnection {
+func newVirtioSocketConnection(ptr unsafe.Pointer) (*VirtioSocketConnection, error) {
 	vzVirtioSocketConnection := C.convertVZVirtioSocketConnection2Flat(ptr)
-	err := unix.SetNonblock(int(vzVirtioSocketConnection.fileDescriptor), true)
+	file := os.NewFile((uintptr)(vzVirtioSocketConnection.fileDescriptor), "")
+	defer file.Close()
+	rawConn, err := net.FileConn(file)
 	if err != nil {
-		fmt.Printf("set nonblock: %s\n", err.Error())
+		return nil, err
 	}
 	conn := &VirtioSocketConnection{
 		sourcePort:      (uint32)(vzVirtioSocketConnection.sourcePort),
 		destinationPort: (uint32)(vzVirtioSocketConnection.destinationPort),
-		fileDescriptor:  (uintptr)(vzVirtioSocketConnection.fileDescriptor),
-		file:            os.NewFile((uintptr)(vzVirtioSocketConnection.fileDescriptor), ""),
+		conn:            rawConn,
 		laddr: &Addr{
 			CID:  unix.VMADDR_CID_HOST,
 			Port: (uint32)(vzVirtioSocketConnection.destinationPort),
@@ -232,40 +230,18 @@ func newVirtioSocketConnection(ptr unsafe.Pointer) *VirtioSocketConnection {
 			Port: (uint32)(vzVirtioSocketConnection.sourcePort),
 		},
 	}
-	return conn
-}
-
-func (v *VirtioSocketConnection) dup() (*VirtioSocketConnection, error) {
-	nfd, err := syscall.Dup(int(v.fileDescriptor))
-	if err != nil {
-		return nil, &net.OpError{
-			Op:     "dup",
-			Net:    "vsock",
-			Source: v.laddr,
-			Addr:   v.raddr,
-			Err:    err,
-		}
-	}
-
-	dupConn := new(VirtioSocketConnection)
-	*dupConn = *v
-	dupConn.fileDescriptor = uintptr(nfd)
-	dupConn.file = os.NewFile(uintptr(nfd), v.file.Name())
-	dupConn.laddr = v.laddr
-	dupConn.raddr = v.raddr
-
-	return dupConn, nil
+	return conn, nil
 }
 
 // Read reads data from connection of the vsock protocol.
-func (v *VirtioSocketConnection) Read(b []byte) (n int, err error) { return v.file.Read(b) }
+func (v *VirtioSocketConnection) Read(b []byte) (n int, err error) { return v.conn.Read(b) }
 
 // Write writes data to the connection of the vsock protocol.
-func (v *VirtioSocketConnection) Write(b []byte) (n int, err error) { return v.file.Write(b) }
+func (v *VirtioSocketConnection) Write(b []byte) (n int, err error) { return v.conn.Write(b) }
 
 // Close will be called when caused something error in socket.
 func (v *VirtioSocketConnection) Close() error {
-	return v.file.Close()
+	return v.conn.Close()
 }
 
 // LocalAddr returns the local network address.
@@ -277,13 +253,13 @@ func (v *VirtioSocketConnection) RemoteAddr() net.Addr { return v.raddr }
 // SetDeadline sets the read and write deadlines associated
 // with the connection. It is equivalent to calling both
 // SetReadDeadline and SetWriteDeadline.
-func (v *VirtioSocketConnection) SetDeadline(t time.Time) error { return v.file.SetDeadline(t) }
+func (v *VirtioSocketConnection) SetDeadline(t time.Time) error { return v.conn.SetDeadline(t) }
 
 // SetReadDeadline sets the deadline for future Read calls
 // and any currently-blocked Read call.
 // A zero value for t means Read will not time out.
 func (v *VirtioSocketConnection) SetReadDeadline(t time.Time) error {
-	return v.file.SetReadDeadline(t)
+	return v.conn.SetReadDeadline(t)
 }
 
 // SetWriteDeadline sets the deadline for future Write calls
@@ -292,7 +268,7 @@ func (v *VirtioSocketConnection) SetReadDeadline(t time.Time) error {
 // some of the data was successfully written.
 // A zero value for t means Write will not time out.
 func (v *VirtioSocketConnection) SetWriteDeadline(t time.Time) error {
-	return v.file.SetWriteDeadline(t)
+	return v.conn.SetWriteDeadline(t)
 }
 
 // DestinationPort returns the destination port number of the connection.
@@ -303,15 +279,6 @@ func (v *VirtioSocketConnection) DestinationPort() uint32 {
 // SourcePort returns the source port number of the connection.
 func (v *VirtioSocketConnection) SourcePort() uint32 {
 	return v.sourcePort
-}
-
-// FileDescriptor returns the file descriptor associated with the socket.
-//
-// Data is sent by writing to the file descriptor.
-// Data is received by reading from the file descriptor.
-// A file descriptor of -1 indicates a closed connection.
-func (v *VirtioSocketConnection) FileDescriptor() uintptr {
-	return v.fileDescriptor
 }
 
 // Addr represents a network end point address for the vsock protocol.

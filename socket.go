@@ -99,7 +99,10 @@ func connectionHandler(connPtr, errPtr, cgoHandlerPtr unsafe.Pointer) {
 	handler := cgoHandler.Value().(func(*VirtioSocketConnection, error))
 	defer cgoHandler.Delete()
 	// see: startHandler
-	conn := newVirtioSocketConnection(connPtr)
+	conn, err := newVirtioSocketConnection(connPtr)
+	if err != nil {
+		handler(conn, err)
+	}
 	if err := newNSError(errPtr); err != nil {
 		handler(conn, err)
 	} else {
@@ -131,7 +134,7 @@ type dup struct {
 	err  error
 }
 
-var shouldAcceptNewConnectionHandlers = map[unsafe.Pointer]func(conn *VirtioSocketConnection) bool{}
+var shouldAcceptNewConnectionHandlers = map[unsafe.Pointer]func(conn *VirtioSocketConnection, err error) bool{}
 
 // NewVirtioSocketListener creates a new VirtioSocketListener with connection handler.
 //
@@ -151,10 +154,9 @@ func NewVirtioSocketListener(handler func(conn *VirtioSocketConnection, err erro
 			go handler(dup.conn, dup.err)
 		}
 	}()
-	shouldAcceptNewConnectionHandlers[ptr] = func(conn *VirtioSocketConnection) bool {
-		dupConn, err := conn.dup()
+	shouldAcceptNewConnectionHandlers[ptr] = func(conn *VirtioSocketConnection, err error) bool {
 		dupCh <- dup{
-			conn: dupConn,
+			conn: conn,
 			err:  err,
 		}
 		return true // must be connected
@@ -171,8 +173,8 @@ func shouldAcceptNewConnectionHandler(listenerPtr, connPtr, devicePtr unsafe.Poi
 	_ = devicePtr // NOTO(codehex): Is this really required? How to use?
 
 	// see: startHandler
-	conn := newVirtioSocketConnection(connPtr)
-	return (C.bool)(shouldAcceptNewConnectionHandlers[listenerPtr](conn))
+	conn, err := newVirtioSocketConnection(connPtr)
+	return (C.bool)(shouldAcceptNewConnectionHandlers[listenerPtr](conn, err))
 }
 
 // VirtioSocketConnection is a port-based connection between the guest operating system and the host computer.
@@ -198,7 +200,7 @@ type VirtioSocketConnection struct {
 
 var _ net.Conn = (*VirtioSocketConnection)(nil)
 
-func newVirtioSocketConnection(ptr unsafe.Pointer) *VirtioSocketConnection {
+func newVirtioSocketConnection(ptr unsafe.Pointer) (*VirtioSocketConnection, error) {
 	vzVirtioSocketConnection := C.convertVZVirtioSocketConnection2Flat(ptr)
 	err := unix.SetNonblock(int(vzVirtioSocketConnection.fileDescriptor), true)
 	if err != nil {
@@ -208,7 +210,6 @@ func newVirtioSocketConnection(ptr unsafe.Pointer) *VirtioSocketConnection {
 		sourcePort:      (uint32)(vzVirtioSocketConnection.sourcePort),
 		destinationPort: (uint32)(vzVirtioSocketConnection.destinationPort),
 		fileDescriptor:  (uintptr)(vzVirtioSocketConnection.fileDescriptor),
-		file:            os.NewFile((uintptr)(vzVirtioSocketConnection.fileDescriptor), ""),
 		laddr: &Addr{
 			CID:  unix.VMADDR_CID_HOST,
 			Port: (uint32)(vzVirtioSocketConnection.destinationPort),
@@ -218,7 +219,20 @@ func newVirtioSocketConnection(ptr unsafe.Pointer) *VirtioSocketConnection {
 			Port: (uint32)(vzVirtioSocketConnection.sourcePort),
 		},
 	}
-	return conn
+	fd, err := syscall.Dup(int(conn.fileDescriptor))
+	if err != nil {
+		return nil, &net.OpError{
+			Op:     "dup",
+			Net:    "vsock",
+			Source: conn.laddr,
+			Addr:   conn.raddr,
+			Err:    err,
+		}
+	}
+	conn.fileDescriptor = uintptr(fd)
+	conn.file = os.NewFile(conn.fileDescriptor, "")
+
+	return conn, nil
 }
 
 func (v *VirtioSocketConnection) dup() (*VirtioSocketConnection, error) {

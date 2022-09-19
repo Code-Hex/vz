@@ -110,12 +110,8 @@ void* getNSArrayItem(void *ptr, int i)
 
 const char *getUUID()
 {
-	const char *ret;
-	@autoreleasepool {
-		NSString *uuid = [[NSUUID UUID] UUIDString];
-		ret = [uuid UTF8String];
-	}
-	return ret;
+	NSString *uuid = [[NSUUID UUID] UUIDString];
+	return [uuid UTF8String];
 }
 */
 import "C"

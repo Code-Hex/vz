@@ -40,7 +40,14 @@ type FileHandleSerialPortAttachment struct {
 //
 // read parameter is an *os.File for reading from the file.
 // write parameter is an *os.File for writing to the file.
-func NewFileHandleSerialPortAttachment(read, write *os.File) *FileHandleSerialPortAttachment {
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewFileHandleSerialPortAttachment(read, write *os.File) (*FileHandleSerialPortAttachment, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	attachment := &FileHandleSerialPortAttachment{
 		pointer: pointer{
 			ptr: C.newVZFileHandleSerialPortAttachment(
@@ -52,7 +59,7 @@ func NewFileHandleSerialPortAttachment(read, write *os.File) *FileHandleSerialPo
 	runtime.SetFinalizer(attachment, func(self *FileHandleSerialPortAttachment) {
 		self.Release()
 	})
-	return attachment
+	return attachment, nil
 }
 
 var _ SerialPortAttachment = (*FileSerialPortAttachment)(nil)
@@ -74,7 +81,14 @@ type FileSerialPortAttachment struct {
 // - path of the file for the attachment on the local file system.
 // - shouldAppend True if the file should be opened in append mode, false otherwise.
 //    When a file is opened in append mode, writing to that file will append to the end of it.
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
 func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPortAttachment, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	cpath := charWithGoString(path)
 	defer cpath.Free()
 
@@ -108,7 +122,14 @@ type VirtioConsoleDeviceSerialPortConfiguration struct {
 }
 
 // NewVirtioConsoleDeviceSerialPortConfiguration creates a new NewVirtioConsoleDeviceSerialPortConfiguration.
-func NewVirtioConsoleDeviceSerialPortConfiguration(attachment SerialPortAttachment) *VirtioConsoleDeviceSerialPortConfiguration {
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewVirtioConsoleDeviceSerialPortConfiguration(attachment SerialPortAttachment) (*VirtioConsoleDeviceSerialPortConfiguration, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	config := &VirtioConsoleDeviceSerialPortConfiguration{
 		pointer: pointer{
 			ptr: C.newVZVirtioConsoleDeviceSerialPortConfiguration(
@@ -119,5 +140,5 @@ func NewVirtioConsoleDeviceSerialPortConfiguration(attachment SerialPortAttachme
 	runtime.SetFinalizer(config, func(self *VirtioConsoleDeviceSerialPortConfiguration) {
 		self.Release()
 	})
-	return config
+	return config, nil
 }

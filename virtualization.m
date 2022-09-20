@@ -265,7 +265,12 @@ void setNetworkDevicesVZVirtualMachineConfiguration(void *config,
 void setSerialPortsVZVirtualMachineConfiguration(void *config,
     void *serialPorts)
 {
-    [(VZVirtualMachineConfiguration *)config setSerialPorts:[(NSMutableArray *)serialPorts copy]];
+    if (@available(macOS 11, *)) {
+        [(VZVirtualMachineConfiguration *)config setSerialPorts:[(NSMutableArray *)serialPorts copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -473,15 +478,19 @@ void *newVZGenericPlatformConfiguration()
 */
 void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileDescriptor)
 {
-    VZFileHandleSerialPortAttachment *ret;
-    @autoreleasepool {
-        NSFileHandle *fileHandleForReading = [[NSFileHandle alloc] initWithFileDescriptor:readFileDescriptor];
-        NSFileHandle *fileHandleForWriting = [[NSFileHandle alloc] initWithFileDescriptor:writeFileDescriptor];
-        ret = [[VZFileHandleSerialPortAttachment alloc]
-            initWithFileHandleForReading:fileHandleForReading
-                    fileHandleForWriting:fileHandleForWriting];
+    if (@available(macOS 11, *)) {
+        VZFileHandleSerialPortAttachment *ret;
+        @autoreleasepool {
+            NSFileHandle *fileHandleForReading = [[NSFileHandle alloc] initWithFileDescriptor:readFileDescriptor];
+            NSFileHandle *fileHandleForWriting = [[NSFileHandle alloc] initWithFileDescriptor:writeFileDescriptor];
+            ret = [[VZFileHandleSerialPortAttachment alloc]
+                initWithFileHandleForReading:fileHandleForReading
+                        fileHandleForWriting:fileHandleForWriting];
+        }
+        return ret;
     }
-    return ret;
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -494,16 +503,20 @@ void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileD
  */
 void *newVZFileSerialPortAttachment(const char *filePath, bool shouldAppend, void **error)
 {
-    VZFileSerialPortAttachment *ret;
-    @autoreleasepool {
-        NSString *filePathNSString = [NSString stringWithUTF8String:filePath];
-        NSURL *fileURL = [NSURL fileURLWithPath:filePathNSString];
-        ret = [[VZFileSerialPortAttachment alloc]
-            initWithURL:fileURL
-                 append:(BOOL)shouldAppend
-                  error:(NSError *_Nullable *_Nullable)error];
+    if (@available(macOS 11, *)) {
+        VZFileSerialPortAttachment *ret;
+        @autoreleasepool {
+            NSString *filePathNSString = [NSString stringWithUTF8String:filePath];
+            NSURL *fileURL = [NSURL fileURLWithPath:filePathNSString];
+            ret = [[VZFileSerialPortAttachment alloc]
+                initWithURL:fileURL
+                     append:(BOOL)shouldAppend
+                      error:(NSError *_Nullable *_Nullable)error];
+        }
+        return ret;
     }
-    return ret;
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -516,9 +529,13 @@ void *newVZFileSerialPortAttachment(const char *filePath, bool shouldAppend, voi
  */
 void *newVZVirtioConsoleDeviceSerialPortConfiguration(void *attachment)
 {
-    VZVirtioConsoleDeviceSerialPortConfiguration *config = [[VZVirtioConsoleDeviceSerialPortConfiguration alloc] init];
-    [config setAttachment:(VZSerialPortAttachment *)attachment];
-    return config;
+    if (@available(macOS 11, *)) {
+        VZVirtioConsoleDeviceSerialPortConfiguration *config = [[VZVirtioConsoleDeviceSerialPortConfiguration alloc] init];
+        [config setAttachment:(VZSerialPortAttachment *)attachment];
+        return config;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!

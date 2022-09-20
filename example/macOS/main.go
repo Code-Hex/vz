@@ -232,11 +232,14 @@ func setupVMConfiguration(platformConfig vz.PlatformConfiguration) (*vz.VirtualM
 		return nil, err
 	}
 
-	config := vz.NewVirtualMachineConfiguration(
+	config, err := vz.NewVirtualMachineConfiguration(
 		bootloader,
 		computeCPUCount(),
 		computeMemorySize(),
 	)
+	if err != nil {
+		return nil, err
+	}
 	config.SetPlatformVirtualMachineConfiguration(platformConfig)
 	graphicsDeviceConfig, err := createGraphicsDeviceConfiguration()
 	if err != nil {

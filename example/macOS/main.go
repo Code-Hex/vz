@@ -148,8 +148,7 @@ func createBlockDeviceConfiguration(diskPath string) (*vz.VirtioBlockDeviceConfi
 	if err != nil {
 		return nil, err
 	}
-	storageDeviceConfig := vz.NewVirtioBlockDeviceConfiguration(diskImageAttachment)
-	return storageDeviceConfig, nil
+	return vz.NewVirtioBlockDeviceConfiguration(diskImageAttachment)
 }
 
 func createGraphicsDeviceConfiguration() (*vz.MacGraphicsDeviceConfiguration, error) {

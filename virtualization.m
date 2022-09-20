@@ -235,7 +235,12 @@ void setEntropyDevicesVZVirtualMachineConfiguration(void *config,
 void setMemoryBalloonDevicesVZVirtualMachineConfiguration(void *config,
     void *memoryBalloonDevices)
 {
-    [(VZVirtualMachineConfiguration *)config setMemoryBalloonDevices:[(NSMutableArray *)memoryBalloonDevices copy]];
+    if (@available(macOS 11, *)) {
+        [(VZVirtualMachineConfiguration *)config setMemoryBalloonDevices:[(NSMutableArray *)memoryBalloonDevices copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -644,7 +649,11 @@ void *newVZDiskImageStorageDeviceAttachment(const char *diskPath, bool readOnly,
  */
 void *newVZVirtioTraditionalMemoryBalloonDeviceConfiguration()
 {
-    return [[VZVirtioTraditionalMemoryBalloonDeviceConfiguration alloc] init];
+    if (@available(macOS 11, *)) {
+        return [[VZVirtioTraditionalMemoryBalloonDeviceConfiguration alloc] init];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!

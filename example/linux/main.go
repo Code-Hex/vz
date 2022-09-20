@@ -114,8 +114,12 @@ func main() {
 	})
 
 	// traditional memory balloon device which allows for managing guest memory. (optional)
+	memoryBalloonDevice, err := vz.NewVirtioTraditionalMemoryBalloonDeviceConfiguration()
+	if err != nil {
+		panic(err)
+	}
 	config.SetMemoryBalloonDevicesVirtualMachineConfiguration([]vz.MemoryBalloonDeviceConfiguration{
-		vz.NewVirtioTraditionalMemoryBalloonDeviceConfiguration(),
+		memoryBalloonDevice,
 	})
 
 	// socket device (optional)

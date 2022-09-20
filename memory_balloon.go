@@ -31,7 +31,14 @@ type VirtioTraditionalMemoryBalloonDeviceConfiguration struct {
 }
 
 // NewVirtioTraditionalMemoryBalloonDeviceConfiguration creates a new VirtioTraditionalMemoryBalloonDeviceConfiguration.
-func NewVirtioTraditionalMemoryBalloonDeviceConfiguration() *VirtioTraditionalMemoryBalloonDeviceConfiguration {
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewVirtioTraditionalMemoryBalloonDeviceConfiguration() (*VirtioTraditionalMemoryBalloonDeviceConfiguration, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	config := &VirtioTraditionalMemoryBalloonDeviceConfiguration{
 		pointer: pointer{
 			ptr: C.newVZVirtioTraditionalMemoryBalloonDeviceConfiguration(),
@@ -40,5 +47,5 @@ func NewVirtioTraditionalMemoryBalloonDeviceConfiguration() *VirtioTraditionalMe
 	runtime.SetFinalizer(config, func(self *VirtioTraditionalMemoryBalloonDeviceConfiguration) {
 		self.Release()
 	})
-	return config
+	return config, nil
 }

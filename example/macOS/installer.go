@@ -21,7 +21,10 @@ func installMacOS(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to setup config: %w", err)
 	}
-	vm := vz.NewVirtualMachine(config)
+	vm, err := vz.NewVirtualMachine(config)
+	if err != nil {
+		return err
+	}
 
 	installer, err := vz.NewMacOSInstaller(vm, restoreImagePath)
 	if err != nil {

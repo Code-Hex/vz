@@ -150,7 +150,10 @@ func main() {
 		log.Fatal("validation failed", err)
 	}
 
-	vm := vz.NewVirtualMachine(config)
+	vm, err := vz.NewVirtualMachine(config)
+	if err != nil {
+		panic(err)
+	}
 
 	signalCh := make(chan os.Signal, 1)
 	signal.Notify(signalCh, syscall.SIGTERM)

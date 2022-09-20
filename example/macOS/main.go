@@ -45,7 +45,10 @@ func runVM(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	vm := vz.NewVirtualMachine(config)
+	vm, err := vz.NewVirtualMachine(config)
+	if err != nil {
+		return err
+	}
 
 	errCh := make(chan error, 1)
 

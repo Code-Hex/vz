@@ -801,17 +801,21 @@ VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connecti
  */
 void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, void *statusHandler)
 {
-    VZVirtualMachine *vm = [[VZVirtualMachine alloc]
-        initWithConfiguration:(VZVirtualMachineConfiguration *)config
-                        queue:(dispatch_queue_t)queue];
-    @autoreleasepool {
-        Observer *o = [[Observer alloc] init];
-        [vm addObserver:o
-             forKeyPath:@"state"
-                options:NSKeyValueObservingOptionNew
-                context:statusHandler];
+    if (@available(macOS 11, *)) {
+        VZVirtualMachine *vm = [[VZVirtualMachine alloc]
+            initWithConfiguration:(VZVirtualMachineConfiguration *)config
+                            queue:(dispatch_queue_t)queue];
+        @autoreleasepool {
+            Observer *o = [[Observer alloc] init];
+            [vm addObserver:o
+                 forKeyPath:@"state"
+                    options:NSKeyValueObservingOptionNew
+                    context:statusHandler];
+        }
+        return vm;
     }
-    return vm;
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -1009,11 +1013,15 @@ void *newVZUSBKeyboardConfiguration()
  */
 bool requestStopVirtualMachine(void *machine, void *queue, void **error)
 {
-    __block BOOL ret;
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        ret = [(VZVirtualMachine *)machine requestStopWithError:(NSError *_Nullable *_Nullable)error];
-    });
-    return (bool)ret;
+    if (@available(macOS 11, *)) {
+        __block BOOL ret;
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            ret = [(VZVirtualMachine *)machine requestStopWithError:(NSError *_Nullable *_Nullable)error];
+        });
+        return (bool)ret;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 void *makeDispatchQueue(const char *label)
@@ -1026,29 +1034,44 @@ void *makeDispatchQueue(const char *label)
 
 void startWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        [(VZVirtualMachine *)machine startWithCompletionHandler:^(NSError *err) {
-            virtualMachineCompletionHandler(completionHandler, err);
-        }];
-    });
+    if (@available(macOS 11, *)) {
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            [(VZVirtualMachine *)machine startWithCompletionHandler:^(NSError *err) {
+                virtualMachineCompletionHandler(completionHandler, err);
+            }];
+        });
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 void pauseWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        [(VZVirtualMachine *)machine pauseWithCompletionHandler:^(NSError *err) {
-            virtualMachineCompletionHandler(completionHandler, err);
-        }];
-    });
+    if (@available(macOS 11, *)) {
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            [(VZVirtualMachine *)machine pauseWithCompletionHandler:^(NSError *err) {
+                virtualMachineCompletionHandler(completionHandler, err);
+            }];
+        });
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 void resumeWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        [(VZVirtualMachine *)machine resumeWithCompletionHandler:^(NSError *err) {
-            virtualMachineCompletionHandler(completionHandler, err);
-        }];
-    });
+    if (@available(macOS 11, *)) {
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            [(VZVirtualMachine *)machine resumeWithCompletionHandler:^(NSError *err) {
+                virtualMachineCompletionHandler(completionHandler, err);
+            }];
+        });
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 void stopWithCompletionHandler(void *machine, void *queue, void *completionHandler)
@@ -1068,38 +1091,54 @@ void stopWithCompletionHandler(void *machine, void *queue, void *completionHandl
 // TODO(codehex): use KVO
 bool vmCanStart(void *machine, void *queue)
 {
-    __block BOOL result;
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        result = ((VZVirtualMachine *)machine).canStart;
-    });
-    return (bool)result;
+    if (@available(macOS 11, *)) {
+        __block BOOL result;
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            result = ((VZVirtualMachine *)machine).canStart;
+        });
+        return (bool)result;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 bool vmCanPause(void *machine, void *queue)
 {
-    __block BOOL result;
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        result = ((VZVirtualMachine *)machine).canPause;
-    });
-    return (bool)result;
+    if (@available(macOS 11, *)) {
+        __block BOOL result;
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            result = ((VZVirtualMachine *)machine).canPause;
+        });
+        return (bool)result;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 bool vmCanResume(void *machine, void *queue)
 {
-    __block BOOL result;
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        result = ((VZVirtualMachine *)machine).canResume;
-    });
-    return (bool)result;
+    if (@available(macOS 11, *)) {
+        __block BOOL result;
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            result = ((VZVirtualMachine *)machine).canResume;
+        });
+        return (bool)result;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 bool vmCanRequestStop(void *machine, void *queue)
 {
-    __block BOOL result;
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        result = ((VZVirtualMachine *)machine).canRequestStop;
-    });
-    return (bool)result;
+    if (@available(macOS 11, *)) {
+        __block BOOL result;
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            result = ((VZVirtualMachine *)machine).canRequestStop;
+        });
+        return (bool)result;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 bool vmCanStop(void *machine, void *queue)

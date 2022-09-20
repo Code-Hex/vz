@@ -142,8 +142,12 @@ func main() {
 	})
 
 	// socket device (optional)
+	vsockDevice, err := vz.NewVirtioSocketDeviceConfiguration()
+	if err != nil {
+		panic(err)
+	}
 	config.SetSocketDevicesVirtualMachineConfiguration([]vz.SocketDeviceConfiguration{
-		vz.NewVirtioSocketDeviceConfiguration(),
+		vsockDevice,
 	})
 	validated, err := config.Validate()
 	if !validated || err != nil {

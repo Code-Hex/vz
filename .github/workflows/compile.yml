@@ -43,5 +43,7 @@ jobs:
         run: cd example/linux && make
       - name: Test
         run: make test
+      - name: Test (address sanitizer enabled)
+        run: make test-asan
       - name: vet
         run: go vet ./...

@@ -85,12 +85,22 @@ func main() {
 	})
 
 	// network
-	natAttachment := vz.NewNATNetworkDeviceAttachment()
-	networkConfig := vz.NewVirtioNetworkDeviceConfiguration(natAttachment)
+	natAttachment, err := vz.NewNATNetworkDeviceAttachment()
+	if err != nil {
+		panic(err)
+	}
+	networkConfig, err := vz.NewVirtioNetworkDeviceConfiguration(natAttachment)
+	if err != nil {
+		panic(err)
+	}
 	config.SetNetworkDevicesVirtualMachineConfiguration([]*vz.VirtioNetworkDeviceConfiguration{
 		networkConfig,
 	})
-	networkConfig.SetMACAddress(vz.NewRandomLocallyAdministeredMACAddress())
+	mac, err := vz.NewRandomLocallyAdministeredMACAddress()
+	if err != nil {
+		panic(err)
+	}
+	networkConfig.SetMACAddress(mac)
 
 	// entropy
 	entropyConfig, err := vz.NewVirtioEntropyDeviceConfiguration()

@@ -167,10 +167,12 @@ func createGraphicsDeviceConfiguration() (*vz.MacGraphicsDeviceConfiguration, er
 	return graphicDeviceConfig, nil
 }
 
-func createNetworkDeviceConfiguration() *vz.VirtioNetworkDeviceConfiguration {
-	natAttachment := vz.NewNATNetworkDeviceAttachment()
-	networkConfig := vz.NewVirtioNetworkDeviceConfiguration(natAttachment)
-	return networkConfig
+func createNetworkDeviceConfiguration() (*vz.VirtioNetworkDeviceConfiguration, error) {
+	natAttachment, err := vz.NewNATNetworkDeviceAttachment()
+	if err != nil {
+		return nil, err
+	}
+	return vz.NewVirtioNetworkDeviceConfiguration(natAttachment)
 }
 
 func createPointingDeviceConfiguration() (*vz.USBScreenCoordinatePointingDeviceConfiguration, error) {
@@ -254,8 +256,12 @@ func setupVMConfiguration(platformConfig vz.PlatformConfiguration) (*vz.VirtualM
 	}
 	config.SetStorageDevicesVirtualMachineConfiguration([]vz.StorageDeviceConfiguration{blockDeviceConfig})
 
+	networkDeviceConfig, err := createNetworkDeviceConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create network device configuration: %w", err)
+	}
 	config.SetNetworkDevicesVirtualMachineConfiguration([]*vz.VirtioNetworkDeviceConfiguration{
-		createNetworkDeviceConfiguration(),
+		networkDeviceConfig,
 	})
 
 	pointingDeviceConfig, err := createPointingDeviceConfiguration()

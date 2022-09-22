@@ -18,7 +18,14 @@ type VirtioEntropyDeviceConfiguration struct {
 }
 
 // NewVirtioEntropyDeviceConfiguration creates a new Virtio Entropy Device confiuration.
-func NewVirtioEntropyDeviceConfiguration() *VirtioEntropyDeviceConfiguration {
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewVirtioEntropyDeviceConfiguration() (*VirtioEntropyDeviceConfiguration, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	config := &VirtioEntropyDeviceConfiguration{
 		pointer: pointer{
 			ptr: C.newVZVirtioEntropyDeviceConfiguration(),
@@ -27,5 +34,5 @@ func NewVirtioEntropyDeviceConfiguration() *VirtioEntropyDeviceConfiguration {
 	runtime.SetFinalizer(config, func(self *VirtioEntropyDeviceConfiguration) {
 		self.Release()
 	})
-	return config
+	return config, nil
 }

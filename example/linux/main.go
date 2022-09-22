@@ -93,7 +93,10 @@ func main() {
 	networkConfig.SetMACAddress(vz.NewRandomLocallyAdministeredMACAddress())
 
 	// entropy
-	entropyConfig := vz.NewVirtioEntropyDeviceConfiguration()
+	entropyConfig, err := vz.NewVirtioEntropyDeviceConfiguration()
+	if err != nil {
+		panic(err)
+	}
 	config.SetEntropyDevicesVirtualMachineConfiguration([]*vz.VirtioEntropyDeviceConfiguration{
 		entropyConfig,
 	})

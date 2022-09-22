@@ -131,11 +131,6 @@ type VirtioSocketListener struct {
 	pointer
 }
 
-type dup struct {
-	conn *VirtioSocketConnection
-	err  error
-}
-
 var shouldAcceptNewConnectionHandlers = map[unsafe.Pointer]func(conn *VirtioSocketConnection, err error) bool{}
 
 // NewVirtioSocketListener creates a new VirtioSocketListener with connection handler.
@@ -157,17 +152,8 @@ func NewVirtioSocketListener(handler func(conn *VirtioSocketConnection, err erro
 		},
 	}
 
-	dupCh := make(chan dup, 1)
-	go func() {
-		for dup := range dupCh {
-			go handler(dup.conn, dup.err)
-		}
-	}()
 	shouldAcceptNewConnectionHandlers[ptr] = func(conn *VirtioSocketConnection, err error) bool {
-		dupCh <- dup{
-			conn: conn,
-			err:  err,
-		}
+		go handler(conn, err)
 		return true // must be connected
 	}
 

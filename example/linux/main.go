@@ -56,11 +56,14 @@ func main() {
 	initrd := os.Getenv("INITRD_PATH")
 	diskPath := os.Getenv("DISKIMG_PATH")
 
-	bootLoader := vz.NewLinuxBootLoader(
+	bootLoader, err := vz.NewLinuxBootLoader(
 		vmlinuz,
 		vz.WithCommandLine(strings.Join(kernelCommandLineArguments, " ")),
 		vz.WithInitrd(initrd),
 	)
+	if err != nil {
+		panic(err)
+	}
 	log.Println("bootLoader:", bootLoader)
 
 	config := vz.NewVirtualMachineConfiguration(

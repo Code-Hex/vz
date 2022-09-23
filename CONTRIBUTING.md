@@ -13,9 +13,11 @@
 * Ensure the PR description clearly describes the problem and solution. **Must** be included the relevant issue number.
 
 > **Note**
-> We generally do not accept a series of pull requests that are either very bad code or harassing.
+> Basically, this can be done after a policy has been decided like how to write the code or how to implement, etc in an issue.
+
+> **Warning**
+> We generally do not accept some pull requests like either did not follow the owner's opinion or harassing.
 
 #### **Did you fix whitespace, format code, or make a purely cosmetic patch?**
 
 Changes that are cosmetic in nature and do not add anything substantial to the stability, functionality, or testability of github.com/Code-Hex/vz will generally not be accepted.
-

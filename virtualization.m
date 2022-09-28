@@ -42,9 +42,13 @@ char *copyCString(NSString *nss)
 @end
 
 @implementation VZVirtioSocketListenerDelegateImpl
-- (BOOL)listener:(VZVirtioSocketListener *)listener shouldAcceptNewConnection:(VZVirtioSocketConnection *)connection fromSocketDevice:(VZVirtioSocketDevice *)socketDevice;
+- (BOOL)listener:(void *)listener shouldAcceptNewConnection:(void *)connection fromSocketDevice:(void *)socketDevice;
 {
-    return (BOOL)shouldAcceptNewConnectionHandler(listener, connection, socketDevice);
+    if (@available(macOS 11, *)) {
+        return (BOOL)shouldAcceptNewConnectionHandler((VZVirtioSocketListener *)listener, (VZVirtioSocketConnection *)connection, (VZVirtioSocketDevice *)socketDevice);
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 @end
 

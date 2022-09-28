@@ -329,9 +329,10 @@ nbyteslice getVZMacMachineIdentifierDataRepresentation(void *machineIdentifierPt
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
-VZMacOSRestoreImageStruct convertVZMacOSRestoreImage2Struct(VZMacOSRestoreImage *restoreImage)
+VZMacOSRestoreImageStruct convertVZMacOSRestoreImage2Struct(void *restoreImagePtr)
 {
     if (@available(macOS 12, *)) {
+        VZMacOSRestoreImage *restoreImage = (VZMacOSRestoreImage *)restoreImagePtr;
         VZMacOSRestoreImageStruct ret;
         ret.url = [[[restoreImage URL] absoluteString] UTF8String];
         ret.buildVersion = [[restoreImage buildVersion] UTF8String];

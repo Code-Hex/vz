@@ -65,7 +65,7 @@ void *newVZMacMachineIdentifierWithPath(const char *machineIdentifierPath);
 void *newVZMacMachineIdentifierWithBytes(void *machineIdentifierBytes, int len);
 nbyteslice getVZMacMachineIdentifierDataRepresentation(void *machineIdentifierPtr);
 
-VZMacOSRestoreImageStruct convertVZMacOSRestoreImage2Struct(VZMacOSRestoreImage *restoreImage);
+VZMacOSRestoreImageStruct convertVZMacOSRestoreImage2Struct(void *restoreImagePtr);
 void fetchLatestSupportedMacOSRestoreImageWithCompletionHandler(void *cgoHandler);
 void loadMacOSRestoreImageFile(const char *ipswPath, void *cgoHandler);
 

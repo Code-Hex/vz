@@ -1,10 +1,10 @@
 #ifdef __arm64__
 #import "virtualization_arm64.h"
 
-#define RAISE_UNSUPPORTED_MACOS_EXCEPTION() \
-    do { \
+#define RAISE_UNSUPPORTED_MACOS_EXCEPTION()                                                       \
+    do {                                                                                          \
         [[NSException exceptionWithName:@"UnhandledException" reason:@"bug" userInfo:nil] raise]; \
-        __builtin_unreachable(); \
+        __builtin_unreachable();                                                                  \
     } while (0)
 
 @implementation ProgressObserver

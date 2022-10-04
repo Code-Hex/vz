@@ -156,7 +156,7 @@ func main() {
 
 	vm, err := vz.NewVirtualMachine(config)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Virtual machine creation failed: %s", err)
 	}
 
 	signalCh := make(chan os.Signal, 1)

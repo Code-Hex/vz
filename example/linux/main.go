@@ -62,7 +62,7 @@ func main() {
 		vz.WithInitrd(initrd),
 	)
 	if err != nil {
-		panic(err)
+		log.Fatalf("bootloader creation failed: %s", err)
 	}
 	log.Println("bootLoader:", bootLoader)
 

@@ -72,7 +72,7 @@ func main() {
 		2*1024*1024*1024,
 	)
 	if err != nil {
-		panic(err)
+		log.Fatalf("failed to create virtual machine configuration: %s", err)
 	}
 
 	setRawMode(os.Stdin)

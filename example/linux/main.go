@@ -126,7 +126,7 @@ func main() {
 	}
 	storageDeviceConfig, err := vz.NewVirtioBlockDeviceConfiguration(diskImageAttachment)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Block device creation failed: %s", err)
 	}
 	config.SetStorageDevicesVirtualMachineConfiguration([]vz.StorageDeviceConfiguration{
 		storageDeviceConfig,

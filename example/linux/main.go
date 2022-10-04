@@ -111,7 +111,7 @@ func main() {
 	// entropy
 	entropyConfig, err := vz.NewVirtioEntropyDeviceConfiguration()
 	if err != nil {
-		panic(err)
+		log.Fatalf("Entropy device creation failed: %s", err)
 	}
 	config.SetEntropyDevicesVirtualMachineConfiguration([]*vz.VirtioEntropyDeviceConfiguration{
 		entropyConfig,

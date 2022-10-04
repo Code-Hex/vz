@@ -93,18 +93,18 @@ func main() {
 	// network
 	natAttachment, err := vz.NewNATNetworkDeviceAttachment()
 	if err != nil {
-		panic(err)
+		log.Fatalf("NAT network device creation failed: %s", err)
 	}
 	networkConfig, err := vz.NewVirtioNetworkDeviceConfiguration(natAttachment)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Creation of the networking configuration failed: %s", err)
 	}
 	config.SetNetworkDevicesVirtualMachineConfiguration([]*vz.VirtioNetworkDeviceConfiguration{
 		networkConfig,
 	})
 	mac, err := vz.NewRandomLocallyAdministeredMACAddress()
 	if err != nil {
-		panic(err)
+		log.Fatalf("Random MAC address creation failed: %s", err)
 	}
 	networkConfig.SetMACAddress(mac)
 

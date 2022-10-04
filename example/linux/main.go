@@ -144,7 +144,7 @@ func main() {
 	// socket device (optional)
 	vsockDevice, err := vz.NewVirtioSocketDeviceConfiguration()
 	if err != nil {
-		panic(err)
+		log.Fatalf("virtio-vsock device creation failed: %s", err)
 	}
 	config.SetSocketDevicesVirtualMachineConfiguration([]vz.SocketDeviceConfiguration{
 		vsockDevice,

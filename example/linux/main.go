@@ -80,11 +80,11 @@ func main() {
 	// console
 	serialPortAttachment, err := vz.NewFileHandleSerialPortAttachment(os.Stdin, os.Stdout)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Serial port attachment creation failed: %s", err)
 	}
 	consoleConfig, err := vz.NewVirtioConsoleDeviceSerialPortConfiguration(serialPortAttachment)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Failed to create serial configuration: %s", err)
 	}
 	config.SetSerialPortsVirtualMachineConfiguration([]*vz.VirtioConsoleDeviceSerialPortConfiguration{
 		consoleConfig,

@@ -7,10 +7,10 @@
 #import "virtualization.h"
 #import "virtualization_view.h"
 
-#define RAISE_UNSUPPORTED_MACOS_EXCEPTION() \
-    do { \
+#define RAISE_UNSUPPORTED_MACOS_EXCEPTION()                                                       \
+    do {                                                                                          \
         [[NSException exceptionWithName:@"UnhandledException" reason:@"bug" userInfo:nil] raise]; \
-        __builtin_unreachable(); \
+        __builtin_unreachable();                                                                  \
     } while (0)
 
 char *copyCString(NSString *nss)

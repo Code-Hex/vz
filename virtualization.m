@@ -509,15 +509,12 @@ void *newVZFileSerialPortAttachment(const char *filePath, bool shouldAppend, voi
 {
     if (@available(macOS 11, *)) {
         VZFileSerialPortAttachment *ret;
-        @autoreleasepool {
-            NSString *filePathNSString = [NSString stringWithUTF8String:filePath];
-            NSURL *fileURL = [NSURL fileURLWithPath:filePathNSString];
-            ret = [[VZFileSerialPortAttachment alloc]
-                initWithURL:fileURL
-                     append:(BOOL)shouldAppend
-                      error:(NSError *_Nullable *_Nullable)error];
-        }
-        return ret;
+        NSString *filePathNSString = [NSString stringWithUTF8String:filePath];
+        NSURL *fileURL = [NSURL fileURLWithPath:filePathNSString];
+        return [[VZFileSerialPortAttachment alloc]
+            initWithURL:fileURL
+                 append:(BOOL)shouldAppend
+                  error:(NSError *_Nullable *_Nullable)error];
     }
 
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();

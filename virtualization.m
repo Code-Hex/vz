@@ -376,16 +376,12 @@ void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileD
  */
 void *newVZFileSerialPortAttachment(const char *filePath, bool shouldAppend, void **error)
 {
-    VZFileSerialPortAttachment *ret;
-    @autoreleasepool {
-        NSString *filePathNSString = [NSString stringWithUTF8String:filePath];
-        NSURL *fileURL = [NSURL fileURLWithPath:filePathNSString];
-        ret = [[VZFileSerialPortAttachment alloc]
-            initWithURL:fileURL
-                 append:(BOOL)shouldAppend
-                  error:(NSError *_Nullable *_Nullable)error];
-    }
-    return ret;
+    NSString *filePathNSString = [NSString stringWithUTF8String:filePath];
+    NSURL *fileURL = [NSURL fileURLWithPath:filePathNSString];
+    return [[VZFileSerialPortAttachment alloc]
+        initWithURL:fileURL
+             append:(BOOL)shouldAppend
+              error:(NSError *_Nullable *_Nullable)error];
 }
 
 /*!

@@ -10,3 +10,10 @@ func TestNonExistingFileSerialPortAttachment(t *testing.T) {
 		t.Error("NewFileSerialPortAttachment should have returned an error")
 	}
 }
+
+func TestNonExistingImageStorageDeviceAttachment(t *testing.T) {
+	_, err := NewDiskImageStorageDeviceAttachment("/non/existing/path", true)
+	if err == nil {
+		t.Error("NewDiskImageStorageDeviceAttachment should have returned an error")
+	}
+}

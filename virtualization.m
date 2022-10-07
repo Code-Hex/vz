@@ -693,10 +693,14 @@ void *newVZDiskImageStorageDeviceAttachment(const char *diskPath, bool readOnly,
         @autoreleasepool {
             NSString *diskPathNSString = [NSString stringWithUTF8String:diskPath];
             NSURL *diskURL = [NSURL fileURLWithPath:diskPathNSString];
+            NSError *_Nullable *_Nullable err = (NSError *_Nullable *_Nullable)error;
             ret = [[VZDiskImageStorageDeviceAttachment alloc]
                 initWithURL:diskURL
                    readOnly:(BOOL)readOnly
-                      error:(NSError *_Nullable *_Nullable)error];
+                      error:err];
+            if (err != nil && *err != nil) {
+                [*err retain];
+            }
         }
         return ret;
     }

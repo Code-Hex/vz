@@ -518,10 +518,14 @@ void *newVZFileSerialPortAttachment(const char *filePath, bool shouldAppend, voi
         @autoreleasepool {
             NSString *filePathNSString = [NSString stringWithUTF8String:filePath];
             NSURL *fileURL = [NSURL fileURLWithPath:filePathNSString];
+            NSError *_Nullable *_Nullable err = (NSError *_Nullable *_Nullable)error;
             ret = [[VZFileSerialPortAttachment alloc]
                 initWithURL:fileURL
                      append:(BOOL)shouldAppend
-                      error:(NSError *_Nullable *_Nullable)error];
+                      error:err];
+            if (err != nil && *err != nil) {
+                [*err retain];
+            }
         }
         return ret;
     }

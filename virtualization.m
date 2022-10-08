@@ -7,6 +7,12 @@
 #import "virtualization.h"
 #import "virtualization_view.h"
 
+#define RAISE_UNSUPPORTED_MACOS_EXCEPTION()                                                       \
+    do {                                                                                          \
+        [[NSException exceptionWithName:@"UnhandledException" reason:@"bug" userInfo:nil] raise]; \
+        __builtin_unreachable();                                                                  \
+    } while (0)
+
 char *copyCString(NSString *nss)
 {
     const char *cc = [nss UTF8String];
@@ -48,13 +54,17 @@ char *copyCString(NSString *nss)
 */
 void *newVZLinuxBootLoader(const char *kernelPath)
 {
-    VZLinuxBootLoader *ret;
-    @autoreleasepool {
-        NSString *kernelPathNSString = [NSString stringWithUTF8String:kernelPath];
-        NSURL *kernelURL = [NSURL fileURLWithPath:kernelPathNSString];
-        ret = [[VZLinuxBootLoader alloc] initWithKernelURL:kernelURL];
+    if (@available(macOS 11, *)) {
+        VZLinuxBootLoader *ret;
+        @autoreleasepool {
+            NSString *kernelPathNSString = [NSString stringWithUTF8String:kernelPath];
+            NSURL *kernelURL = [NSURL fileURLWithPath:kernelPathNSString];
+            ret = [[VZLinuxBootLoader alloc] initWithKernelURL:kernelURL];
+        }
+        return ret;
     }
-    return ret;
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -65,11 +75,16 @@ void *newVZLinuxBootLoader(const char *kernelPath)
  */
 void setCommandLineVZLinuxBootLoader(void *bootLoaderPtr, const char *commandLine)
 {
-    VZLinuxBootLoader *bootLoader = (VZLinuxBootLoader *)bootLoaderPtr;
-    @autoreleasepool {
-        NSString *commandLineNSString = [NSString stringWithUTF8String:commandLine];
-        [bootLoader setCommandLine:commandLineNSString];
+    if (@available(macOS 11, *)) {
+        VZLinuxBootLoader *bootLoader = (VZLinuxBootLoader *)bootLoaderPtr;
+        @autoreleasepool {
+            NSString *commandLineNSString = [NSString stringWithUTF8String:commandLine];
+            [bootLoader setCommandLine:commandLineNSString];
+        }
+        return;
     }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -80,12 +95,17 @@ void setCommandLineVZLinuxBootLoader(void *bootLoaderPtr, const char *commandLin
  */
 void setInitialRamdiskURLVZLinuxBootLoader(void *bootLoaderPtr, const char *ramdiskPath)
 {
-    VZLinuxBootLoader *bootLoader = (VZLinuxBootLoader *)bootLoaderPtr;
-    @autoreleasepool {
-        NSString *ramdiskPathNSString = [NSString stringWithUTF8String:ramdiskPath];
-        NSURL *ramdiskURL = [NSURL fileURLWithPath:ramdiskPathNSString];
-        [bootLoader setInitialRamdiskURL:ramdiskURL];
+    if (@available(macOS 11, *)) {
+        VZLinuxBootLoader *bootLoader = (VZLinuxBootLoader *)bootLoaderPtr;
+        @autoreleasepool {
+            NSString *ramdiskPathNSString = [NSString stringWithUTF8String:ramdiskPath];
+            NSURL *ramdiskURL = [NSURL fileURLWithPath:ramdiskPathNSString];
+            [bootLoader setInitialRamdiskURL:ramdiskURL];
+        }
+        return;
     }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -96,8 +116,12 @@ void setInitialRamdiskURLVZLinuxBootLoader(void *bootLoaderPtr, const char *ramd
  */
 bool validateVZVirtualMachineConfiguration(void *config, void **error)
 {
-    return (bool)[(VZVirtualMachineConfiguration *)config
-        validateWithError:(NSError *_Nullable *_Nullable)error];
+    if (@available(macOS 11, *)) {
+        return (bool)[(VZVirtualMachineConfiguration *)config
+            validateWithError:(NSError *_Nullable *_Nullable)error];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -106,7 +130,11 @@ bool validateVZVirtualMachineConfiguration(void *config, void **error)
  */
 unsigned long long minimumAllowedMemorySizeVZVirtualMachineConfiguration()
 {
-    return (unsigned long long)[VZVirtualMachineConfiguration minimumAllowedMemorySize];
+    if (@available(macOS 11, *)) {
+        return (unsigned long long)[VZVirtualMachineConfiguration minimumAllowedMemorySize];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -115,7 +143,11 @@ unsigned long long minimumAllowedMemorySizeVZVirtualMachineConfiguration()
  */
 unsigned long long maximumAllowedMemorySizeVZVirtualMachineConfiguration()
 {
-    return (unsigned long long)[VZVirtualMachineConfiguration maximumAllowedMemorySize];
+    if (@available(macOS 11, *)) {
+        return (unsigned long long)[VZVirtualMachineConfiguration maximumAllowedMemorySize];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -124,7 +156,11 @@ unsigned long long maximumAllowedMemorySizeVZVirtualMachineConfiguration()
  */
 unsigned int minimumAllowedCPUCountVZVirtualMachineConfiguration()
 {
-    return (unsigned int)[VZVirtualMachineConfiguration minimumAllowedCPUCount];
+    if (@available(macOS 11, *)) {
+        return (unsigned int)[VZVirtualMachineConfiguration minimumAllowedCPUCount];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -133,7 +169,11 @@ unsigned int minimumAllowedCPUCountVZVirtualMachineConfiguration()
  */
 unsigned int maximumAllowedCPUCountVZVirtualMachineConfiguration()
 {
-    return (unsigned int)[VZVirtualMachineConfiguration maximumAllowedCPUCount];
+    if (@available(macOS 11, *)) {
+        return (unsigned int)[VZVirtualMachineConfiguration maximumAllowedCPUCount];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -162,11 +202,15 @@ void *newVZVirtualMachineConfiguration(void *bootLoaderPtr,
     unsigned int CPUCount,
     unsigned long long memorySize)
 {
-    VZVirtualMachineConfiguration *config = [[VZVirtualMachineConfiguration alloc] init];
-    [config setBootLoader:(VZLinuxBootLoader *)bootLoaderPtr];
-    [config setCPUCount:(NSUInteger)CPUCount];
-    [config setMemorySize:memorySize];
-    return config;
+    if (@available(macOS 11, *)) {
+        VZVirtualMachineConfiguration *config = [[VZVirtualMachineConfiguration alloc] init];
+        [config setBootLoader:(VZLinuxBootLoader *)bootLoaderPtr];
+        [config setCPUCount:(NSUInteger)CPUCount];
+        [config setMemorySize:memorySize];
+        return config;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -176,7 +220,12 @@ void *newVZVirtualMachineConfiguration(void *bootLoaderPtr,
 void setEntropyDevicesVZVirtualMachineConfiguration(void *config,
     void *entropyDevices)
 {
-    [(VZVirtualMachineConfiguration *)config setEntropyDevices:[(NSMutableArray *)entropyDevices copy]];
+    if (@available(macOS 11, *)) {
+        [(VZVirtualMachineConfiguration *)config setEntropyDevices:[(NSMutableArray *)entropyDevices copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -186,7 +235,12 @@ void setEntropyDevicesVZVirtualMachineConfiguration(void *config,
 void setMemoryBalloonDevicesVZVirtualMachineConfiguration(void *config,
     void *memoryBalloonDevices)
 {
-    [(VZVirtualMachineConfiguration *)config setMemoryBalloonDevices:[(NSMutableArray *)memoryBalloonDevices copy]];
+    if (@available(macOS 11, *)) {
+        [(VZVirtualMachineConfiguration *)config setMemoryBalloonDevices:[(NSMutableArray *)memoryBalloonDevices copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -196,7 +250,12 @@ void setMemoryBalloonDevicesVZVirtualMachineConfiguration(void *config,
 void setNetworkDevicesVZVirtualMachineConfiguration(void *config,
     void *networkDevices)
 {
-    [(VZVirtualMachineConfiguration *)config setNetworkDevices:[(NSMutableArray *)networkDevices copy]];
+    if (@available(macOS 11, *)) {
+        [(VZVirtualMachineConfiguration *)config setNetworkDevices:[(NSMutableArray *)networkDevices copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -206,7 +265,12 @@ void setNetworkDevicesVZVirtualMachineConfiguration(void *config,
 void setSerialPortsVZVirtualMachineConfiguration(void *config,
     void *serialPorts)
 {
-    [(VZVirtualMachineConfiguration *)config setSerialPorts:[(NSMutableArray *)serialPorts copy]];
+    if (@available(macOS 11, *)) {
+        [(VZVirtualMachineConfiguration *)config setSerialPorts:[(NSMutableArray *)serialPorts copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -216,7 +280,12 @@ void setSerialPortsVZVirtualMachineConfiguration(void *config,
 void setSocketDevicesVZVirtualMachineConfiguration(void *config,
     void *socketDevices)
 {
-    [(VZVirtualMachineConfiguration *)config setSocketDevices:[(NSMutableArray *)socketDevices copy]];
+    if (@available(macOS 11, *)) {
+        [(VZVirtualMachineConfiguration *)config setSocketDevices:[(NSMutableArray *)socketDevices copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -226,7 +295,12 @@ void setSocketDevicesVZVirtualMachineConfiguration(void *config,
 void setStorageDevicesVZVirtualMachineConfiguration(void *config,
     void *storageDevices)
 {
-    [(VZVirtualMachineConfiguration *)config setStorageDevices:[(NSMutableArray *)storageDevices copy]];
+    if (@available(macOS 11, *)) {
+        [(VZVirtualMachineConfiguration *)config setStorageDevices:[(NSMutableArray *)storageDevices copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 /*!
  @abstract List of directory sharing devices. Empty by default.
@@ -234,7 +308,12 @@ void setStorageDevicesVZVirtualMachineConfiguration(void *config,
  */
 void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void *directorySharingDevices)
 {
-    [(VZVirtualMachineConfiguration *)config setDirectorySharingDevices:[(NSMutableArray *)directorySharingDevices copy]];
+    if (@available(macOS 12, *)) {
+        [(VZVirtualMachineConfiguration *)config setDirectorySharingDevices:[(NSMutableArray *)directorySharingDevices copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -244,7 +323,12 @@ void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void 
  */
 void setPlatformVZVirtualMachineConfiguration(void *config, void *platform)
 {
-    [(VZVirtualMachineConfiguration *)config setPlatform:(VZPlatformConfiguration *)platform];
+    if (@available(macOS 12, *)) {
+        [(VZVirtualMachineConfiguration *)config setPlatform:(VZPlatformConfiguration *)platform];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -253,7 +337,12 @@ void setPlatformVZVirtualMachineConfiguration(void *config, void *platform)
  */
 void setGraphicsDevicesVZVirtualMachineConfiguration(void *config, void *graphicsDevices)
 {
-    [(VZVirtualMachineConfiguration *)config setGraphicsDevices:[(NSMutableArray *)graphicsDevices copy]];
+    if (@available(macOS 12, *)) {
+        [(VZVirtualMachineConfiguration *)config setGraphicsDevices:[(NSMutableArray *)graphicsDevices copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -262,7 +351,12 @@ void setGraphicsDevicesVZVirtualMachineConfiguration(void *config, void *graphic
  */
 void setPointingDevicesVZVirtualMachineConfiguration(void *config, void *pointingDevices)
 {
-    [(VZVirtualMachineConfiguration *)config setPointingDevices:[(NSMutableArray *)pointingDevices copy]];
+    if (@available(macOS 12, *)) {
+        [(VZVirtualMachineConfiguration *)config setPointingDevices:[(NSMutableArray *)pointingDevices copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -271,7 +365,12 @@ void setPointingDevicesVZVirtualMachineConfiguration(void *config, void *pointin
  */
 void setKeyboardsVZVirtualMachineConfiguration(void *config, void *keyboards)
 {
-    [(VZVirtualMachineConfiguration *)config setKeyboards:[(NSMutableArray *)keyboards copy]];
+    if (@available(macOS 12, *)) {
+        [(VZVirtualMachineConfiguration *)config setKeyboards:[(NSMutableArray *)keyboards copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -280,7 +379,12 @@ void setKeyboardsVZVirtualMachineConfiguration(void *config, void *keyboards)
  */
 void setAudioDevicesVZVirtualMachineConfiguration(void *config, void *audioDevices)
 {
-    [(VZVirtualMachineConfiguration *)config setAudioDevices:[(NSMutableArray *)audioDevices copy]];
+    if (@available(macOS 12, *)) {
+        [(VZVirtualMachineConfiguration *)config setAudioDevices:[(NSMutableArray *)audioDevices copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -289,7 +393,11 @@ void setAudioDevicesVZVirtualMachineConfiguration(void *config, void *audioDevic
  */
 void *newVZVirtioSoundDeviceConfiguration()
 {
-    return [[VZVirtioSoundDeviceConfiguration alloc] init];
+    if (@available(macOS 12, *)) {
+        return [[VZVirtioSoundDeviceConfiguration alloc] init];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -297,7 +405,12 @@ void *newVZVirtioSoundDeviceConfiguration()
 */
 void setStreamsVZVirtioSoundDeviceConfiguration(void *audioDeviceConfiguration, void *streams)
 {
-    [(VZVirtioSoundDeviceConfiguration *)audioDeviceConfiguration setStreams:[(NSMutableArray *)streams copy]];
+    if (@available(macOS 12, *)) {
+        [(VZVirtioSoundDeviceConfiguration *)audioDeviceConfiguration setStreams:[(NSMutableArray *)streams copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -306,7 +419,11 @@ void setStreamsVZVirtioSoundDeviceConfiguration(void *audioDeviceConfiguration, 
  */
 void *newVZVirtioSoundDeviceInputStreamConfiguration()
 {
-    return [[VZVirtioSoundDeviceInputStreamConfiguration alloc] init];
+    if (@available(macOS 12, *)) {
+        return [[VZVirtioSoundDeviceInputStreamConfiguration alloc] init];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -314,9 +431,13 @@ void *newVZVirtioSoundDeviceInputStreamConfiguration()
  */
 void *newVZVirtioSoundDeviceHostInputStreamConfiguration()
 {
-    VZVirtioSoundDeviceInputStreamConfiguration *inputStream = (VZVirtioSoundDeviceInputStreamConfiguration *)newVZVirtioSoundDeviceInputStreamConfiguration();
-    [inputStream setSource:[[VZHostAudioInputStreamSource alloc] init]];
-    return inputStream;
+    if (@available(macOS 12, *)) {
+        VZVirtioSoundDeviceInputStreamConfiguration *inputStream = (VZVirtioSoundDeviceInputStreamConfiguration *)newVZVirtioSoundDeviceInputStreamConfiguration();
+        [inputStream setSource:[[VZHostAudioInputStreamSource alloc] init]];
+        return inputStream;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -325,7 +446,11 @@ void *newVZVirtioSoundDeviceHostInputStreamConfiguration()
  */
 void *newVZVirtioSoundDeviceOutputStreamConfiguration()
 {
-    return [[VZVirtioSoundDeviceOutputStreamConfiguration alloc] init];
+    if (@available(macOS 12, *)) {
+        return [[VZVirtioSoundDeviceOutputStreamConfiguration alloc] init];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -333,9 +458,13 @@ void *newVZVirtioSoundDeviceOutputStreamConfiguration()
  */
 void *newVZVirtioSoundDeviceHostOutputStreamConfiguration()
 {
-    VZVirtioSoundDeviceOutputStreamConfiguration *outputStream = (VZVirtioSoundDeviceOutputStreamConfiguration *)newVZVirtioSoundDeviceOutputStreamConfiguration();
-    [outputStream setSink:[[VZHostAudioOutputStreamSink alloc] init]];
-    return outputStream;
+    if (@available(macOS 12, *)) {
+        VZVirtioSoundDeviceOutputStreamConfiguration *outputStream = (VZVirtioSoundDeviceOutputStreamConfiguration *)newVZVirtioSoundDeviceOutputStreamConfiguration();
+        [outputStream setSink:[[VZHostAudioOutputStreamSink alloc] init]];
+        return outputStream;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -343,7 +472,11 @@ void *newVZVirtioSoundDeviceHostOutputStreamConfiguration()
 */
 void *newVZGenericPlatformConfiguration()
 {
-    return [[VZGenericPlatformConfiguration alloc] init];
+    if (@available(macOS 12, *)) {
+        return [[VZGenericPlatformConfiguration alloc] init];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -355,15 +488,19 @@ void *newVZGenericPlatformConfiguration()
 */
 void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileDescriptor)
 {
-    VZFileHandleSerialPortAttachment *ret;
-    @autoreleasepool {
-        NSFileHandle *fileHandleForReading = [[NSFileHandle alloc] initWithFileDescriptor:readFileDescriptor];
-        NSFileHandle *fileHandleForWriting = [[NSFileHandle alloc] initWithFileDescriptor:writeFileDescriptor];
-        ret = [[VZFileHandleSerialPortAttachment alloc]
-            initWithFileHandleForReading:fileHandleForReading
-                    fileHandleForWriting:fileHandleForWriting];
+    if (@available(macOS 11, *)) {
+        VZFileHandleSerialPortAttachment *ret;
+        @autoreleasepool {
+            NSFileHandle *fileHandleForReading = [[NSFileHandle alloc] initWithFileDescriptor:readFileDescriptor];
+            NSFileHandle *fileHandleForWriting = [[NSFileHandle alloc] initWithFileDescriptor:writeFileDescriptor];
+            ret = [[VZFileHandleSerialPortAttachment alloc]
+                initWithFileHandleForReading:fileHandleForReading
+                        fileHandleForWriting:fileHandleForWriting];
+        }
+        return ret;
     }
-    return ret;
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -376,16 +513,20 @@ void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileD
  */
 void *newVZFileSerialPortAttachment(const char *filePath, bool shouldAppend, void **error)
 {
-    VZFileSerialPortAttachment *ret;
-    @autoreleasepool {
-        NSString *filePathNSString = [NSString stringWithUTF8String:filePath];
-        NSURL *fileURL = [NSURL fileURLWithPath:filePathNSString];
-        ret = [[VZFileSerialPortAttachment alloc]
-            initWithURL:fileURL
-                 append:(BOOL)shouldAppend
-                  error:(NSError *_Nullable *_Nullable)error];
+    if (@available(macOS 11, *)) {
+        VZFileSerialPortAttachment *ret;
+        @autoreleasepool {
+            NSString *filePathNSString = [NSString stringWithUTF8String:filePath];
+            NSURL *fileURL = [NSURL fileURLWithPath:filePathNSString];
+            ret = [[VZFileSerialPortAttachment alloc]
+                initWithURL:fileURL
+                     append:(BOOL)shouldAppend
+                      error:(NSError *_Nullable *_Nullable)error];
+        }
+        return ret;
     }
-    return ret;
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -398,9 +539,13 @@ void *newVZFileSerialPortAttachment(const char *filePath, bool shouldAppend, voi
  */
 void *newVZVirtioConsoleDeviceSerialPortConfiguration(void *attachment)
 {
-    VZVirtioConsoleDeviceSerialPortConfiguration *config = [[VZVirtioConsoleDeviceSerialPortConfiguration alloc] init];
-    [config setAttachment:(VZSerialPortAttachment *)attachment];
-    return config;
+    if (@available(macOS 11, *)) {
+        VZVirtioConsoleDeviceSerialPortConfiguration *config = [[VZVirtioConsoleDeviceSerialPortConfiguration alloc] init];
+        [config setAttachment:(VZSerialPortAttachment *)attachment];
+        return config;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -420,7 +565,11 @@ void *newVZVirtioConsoleDeviceSerialPortConfiguration(void *attachment)
  */
 void *newVZBridgedNetworkDeviceAttachment(void *networkInterface)
 {
-    return [[VZBridgedNetworkDeviceAttachment alloc] initWithInterface:(VZBridgedNetworkInterface *)networkInterface];
+    if (@available(macOS 11, *)) {
+        return [[VZBridgedNetworkDeviceAttachment alloc] initWithInterface:(VZBridgedNetworkInterface *)networkInterface];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -433,7 +582,11 @@ void *newVZBridgedNetworkDeviceAttachment(void *networkInterface)
  */
 void *newVZNATNetworkDeviceAttachment()
 {
-    return [[VZNATNetworkDeviceAttachment alloc] init];
+    if (@available(macOS 11, *)) {
+        return [[VZNATNetworkDeviceAttachment alloc] init];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -449,12 +602,16 @@ void *newVZNATNetworkDeviceAttachment()
  */
 void *newVZFileHandleNetworkDeviceAttachment(int fileDescriptor)
 {
-    VZFileHandleNetworkDeviceAttachment *ret;
-    @autoreleasepool {
-        NSFileHandle *fileHandle = [[NSFileHandle alloc] initWithFileDescriptor:fileDescriptor];
-        ret = [[VZFileHandleNetworkDeviceAttachment alloc] initWithFileHandle:fileHandle];
+    if (@available(macOS 11, *)) {
+        VZFileHandleNetworkDeviceAttachment *ret;
+        @autoreleasepool {
+            NSFileHandle *fileHandle = [[NSFileHandle alloc] initWithFileDescriptor:fileDescriptor];
+            ret = [[VZFileHandleNetworkDeviceAttachment alloc] initWithFileHandle:fileHandle];
+        }
+        return ret;
     }
-    return ret;
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -482,9 +639,13 @@ void *newVZFileHandleNetworkDeviceAttachment(int fileDescriptor)
  */
 void *newVZVirtioNetworkDeviceConfiguration(void *attachment)
 {
-    VZVirtioNetworkDeviceConfiguration *config = [[VZVirtioNetworkDeviceConfiguration alloc] init];
-    [config setAttachment:(VZNetworkDeviceAttachment *)attachment];
-    return config;
+    if (@available(macOS 11, *)) {
+        VZVirtioNetworkDeviceConfiguration *config = [[VZVirtioNetworkDeviceConfiguration alloc] init];
+        [config setAttachment:(VZNetworkDeviceAttachment *)attachment];
+        return config;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -493,7 +654,11 @@ void *newVZVirtioNetworkDeviceConfiguration(void *attachment)
 */
 void *newVZVirtioEntropyDeviceConfiguration()
 {
-    return [[VZVirtioEntropyDeviceConfiguration alloc] init];
+    if (@available(macOS 11, *)) {
+        return [[VZVirtioEntropyDeviceConfiguration alloc] init];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -503,7 +668,11 @@ void *newVZVirtioEntropyDeviceConfiguration()
  */
 void *newVZVirtioBlockDeviceConfiguration(void *attachment)
 {
-    return [[VZVirtioBlockDeviceConfiguration alloc] initWithAttachment:(VZStorageDeviceAttachment *)attachment];
+    if (@available(macOS 11, *)) {
+        return [[VZVirtioBlockDeviceConfiguration alloc] initWithAttachment:(VZStorageDeviceAttachment *)attachment];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -515,12 +684,16 @@ void *newVZVirtioBlockDeviceConfiguration(void *attachment)
  */
 void *newVZDiskImageStorageDeviceAttachment(const char *diskPath, bool readOnly, void **error)
 {
-    NSString *diskPathNSString = [NSString stringWithUTF8String:diskPath];
-    NSURL *diskURL = [NSURL fileURLWithPath:diskPathNSString];
-    return [[VZDiskImageStorageDeviceAttachment alloc]
-        initWithURL:diskURL
-           readOnly:(BOOL)readOnly
-              error:(NSError *_Nullable *_Nullable)error];
+    if (@available(macOS 11, *)) {
+        NSString *diskPathNSString = [NSString stringWithUTF8String:diskPath];
+        NSURL *diskURL = [NSURL fileURLWithPath:diskPathNSString];
+        return [[VZDiskImageStorageDeviceAttachment alloc]
+            initWithURL:diskURL
+               readOnly:(BOOL)readOnly
+                  error:(NSError *_Nullable *_Nullable)error];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -532,7 +705,11 @@ void *newVZDiskImageStorageDeviceAttachment(const char *diskPath, bool readOnly,
  */
 void *newVZVirtioTraditionalMemoryBalloonDeviceConfiguration()
 {
-    return [[VZVirtioTraditionalMemoryBalloonDeviceConfiguration alloc] init];
+    if (@available(macOS 11, *)) {
+        return [[VZVirtioTraditionalMemoryBalloonDeviceConfiguration alloc] init];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -545,7 +722,11 @@ void *newVZVirtioTraditionalMemoryBalloonDeviceConfiguration()
  */
 void *newVZVirtioSocketDeviceConfiguration()
 {
-    return [[VZVirtioSocketDeviceConfiguration alloc] init];
+    if (@available(macOS 11, *)) {
+        return [[VZVirtioSocketDeviceConfiguration alloc] init];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -559,9 +740,13 @@ void *newVZVirtioSocketDeviceConfiguration()
  */
 void *newVZVirtioSocketListener()
 {
-    VZVirtioSocketListener *ret = [[VZVirtioSocketListener alloc] init];
-    [ret setDelegate:[[VZVirtioSocketListenerDelegateImpl alloc] init]];
-    return ret;
+    if (@available(macOS 11, *)) {
+        VZVirtioSocketListener *ret = [[VZVirtioSocketListener alloc] init];
+        [ret setDelegate:[[VZVirtioSocketListenerDelegateImpl alloc] init]];
+        return ret;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -575,9 +760,14 @@ void *newVZVirtioSocketListener()
  */
 void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQueue, void *listener, uint32_t port)
 {
-    dispatch_sync((dispatch_queue_t)vmQueue, ^{
-        [(VZVirtioSocketDevice *)socketDevice setSocketListener:(VZVirtioSocketListener *)listener forPort:port];
-    });
+    if (@available(macOS 11, *)) {
+        dispatch_sync((dispatch_queue_t)vmQueue, ^{
+            [(VZVirtioSocketDevice *)socketDevice setSocketListener:(VZVirtioSocketListener *)listener forPort:port];
+        });
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -587,9 +777,14 @@ void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQ
  */
 void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *vmQueue, uint32_t port)
 {
-    dispatch_sync((dispatch_queue_t)vmQueue, ^{
-        [(VZVirtioSocketDevice *)socketDevice removeSocketListenerForPort:port];
-    });
+    if (@available(macOS 11, *)) {
+        dispatch_sync((dispatch_queue_t)vmQueue, ^{
+            [(VZVirtioSocketDevice *)socketDevice removeSocketListenerForPort:port];
+        });
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -601,21 +796,30 @@ void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *
  */
 void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, void *cgoHandlerPtr)
 {
-    dispatch_sync((dispatch_queue_t)vmQueue, ^{
-        [(VZVirtioSocketDevice *)socketDevice connectToPort:port
-                                          completionHandler:^(VZVirtioSocketConnection *connection, NSError *err) {
-                                              connectionHandler(connection, err, cgoHandlerPtr);
-                                          }];
-    });
+    if (@available(macOS 11, *)) {
+        dispatch_sync((dispatch_queue_t)vmQueue, ^{
+            [(VZVirtioSocketDevice *)socketDevice connectToPort:port
+                                              completionHandler:^(VZVirtioSocketConnection *connection, NSError *err) {
+                                                  connectionHandler(connection, err, cgoHandlerPtr);
+                                              }];
+        });
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connection)
 {
-    VZVirtioSocketConnectionFlat ret;
-    ret.sourcePort = [(VZVirtioSocketConnection *)connection sourcePort];
-    ret.destinationPort = [(VZVirtioSocketConnection *)connection destinationPort];
-    ret.fileDescriptor = [(VZVirtioSocketConnection *)connection fileDescriptor];
-    return ret;
+    if (@available(macOS 11, *)) {
+        VZVirtioSocketConnectionFlat ret;
+        ret.sourcePort = [(VZVirtioSocketConnection *)connection sourcePort];
+        ret.destinationPort = [(VZVirtioSocketConnection *)connection destinationPort];
+        ret.fileDescriptor = [(VZVirtioSocketConnection *)connection fileDescriptor];
+        return ret;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -629,17 +833,21 @@ VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connecti
  */
 void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, void *statusHandler)
 {
-    VZVirtualMachine *vm = [[VZVirtualMachine alloc]
-        initWithConfiguration:(VZVirtualMachineConfiguration *)config
-                        queue:(dispatch_queue_t)queue];
-    @autoreleasepool {
-        Observer *o = [[Observer alloc] init];
-        [vm addObserver:o
-             forKeyPath:@"state"
-                options:NSKeyValueObservingOptionNew
-                context:statusHandler];
+    if (@available(macOS 11, *)) {
+        VZVirtualMachine *vm = [[VZVirtualMachine alloc]
+            initWithConfiguration:(VZVirtualMachineConfiguration *)config
+                            queue:(dispatch_queue_t)queue];
+        @autoreleasepool {
+            Observer *o = [[Observer alloc] init];
+            [vm addObserver:o
+                 forKeyPath:@"state"
+                    options:NSKeyValueObservingOptionNew
+                    context:statusHandler];
+        }
+        return vm;
     }
-    return vm;
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -649,7 +857,11 @@ void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, void *stat
  */
 void *VZVirtualMachine_socketDevices(void *machine)
 {
-    return [(VZVirtualMachine *)machine socketDevices]; // NSArray<VZSocketDevice *>
+    if (@available(macOS 11, *)) {
+        return [(VZVirtualMachine *)machine socketDevices]; // NSArray<VZSocketDevice *>
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -663,12 +875,16 @@ void *VZVirtualMachine_socketDevices(void *machine)
  */
 void *newVZMACAddress(const char *macAddress)
 {
-    VZMACAddress *ret;
-    @autoreleasepool {
-        NSString *str = [NSString stringWithUTF8String:macAddress];
-        ret = [[VZMACAddress alloc] initWithString:str];
+    if (@available(macOS 11, *)) {
+        VZMACAddress *ret;
+        @autoreleasepool {
+            NSString *str = [NSString stringWithUTF8String:macAddress];
+            ret = [[VZMACAddress alloc] initWithString:str];
+        }
+        return ret;
     }
-    return ret;
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -677,7 +893,11 @@ void *newVZMACAddress(const char *macAddress)
  */
 void *newRandomLocallyAdministeredVZMACAddress()
 {
-    return [VZMACAddress randomLocallyAdministeredAddress];
+    if (@available(macOS 11, *)) {
+        return [VZMACAddress randomLocallyAdministeredAddress];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -685,7 +905,12 @@ void *newRandomLocallyAdministeredVZMACAddress()
  */
 void setNetworkDevicesVZMACAddress(void *config, void *macAddress)
 {
-    [(VZNetworkDeviceConfiguration *)config setMACAddress:[(VZMACAddress *)macAddress copy]];
+    if (@available(macOS 11, *)) {
+        [(VZNetworkDeviceConfiguration *)config setMACAddress:[(VZMACAddress *)macAddress copy]];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -698,7 +923,11 @@ void setNetworkDevicesVZMACAddress(void *config, void *macAddress)
  */
 const char *getVZMACAddressString(void *macAddress)
 {
-    return [[(VZMACAddress *)macAddress string] UTF8String];
+    if (@available(macOS 11, *)) {
+        return [[(VZMACAddress *)macAddress string] UTF8String];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -711,13 +940,17 @@ const char *getVZMACAddressString(void *macAddress)
  */
 void *newVZSharedDirectory(const char *dirPath, bool readOnly)
 {
-    VZSharedDirectory *ret;
-    @autoreleasepool {
-        NSString *dirPathNSString = [NSString stringWithUTF8String:dirPath];
-        NSURL *dirURL = [NSURL fileURLWithPath:dirPathNSString];
-        ret = [[VZSharedDirectory alloc] initWithURL:dirURL readOnly:(BOOL)readOnly];
+    if (@available(macOS 12, *)) {
+        VZSharedDirectory *ret;
+        @autoreleasepool {
+            NSString *dirPathNSString = [NSString stringWithUTF8String:dirPath];
+            NSURL *dirURL = [NSURL fileURLWithPath:dirPathNSString];
+            ret = [[VZSharedDirectory alloc] initWithURL:dirURL readOnly:(BOOL)readOnly];
+        }
+        return ret;
     }
-    return ret;
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -728,7 +961,11 @@ void *newVZSharedDirectory(const char *dirPath, bool readOnly)
  */
 void *newVZSingleDirectoryShare(void *sharedDirectory)
 {
-    return [[VZSingleDirectoryShare alloc] initWithDirectory:(VZSharedDirectory *)sharedDirectory];
+    if (@available(macOS 12, *)) {
+        return [[VZSingleDirectoryShare alloc] initWithDirectory:(VZSharedDirectory *)sharedDirectory];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -739,7 +976,11 @@ void *newVZSingleDirectoryShare(void *sharedDirectory)
  */
 void *newVZMultipleDirectoryShare(void *sharedDirectories)
 {
-    return [[VZMultipleDirectoryShare alloc] initWithDirectories:(NSDictionary<NSString *, VZSharedDirectory *> *)sharedDirectories];
+    if (@available(macOS 12, *)) {
+        return [[VZMultipleDirectoryShare alloc] initWithDirectories:(NSDictionary<NSString *, VZSharedDirectory *> *)sharedDirectories];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -750,12 +991,16 @@ void *newVZMultipleDirectoryShare(void *sharedDirectories)
  */
 void *newVZVirtioFileSystemDeviceConfiguration(const char *tag)
 {
-    VZVirtioFileSystemDeviceConfiguration *ret;
-    @autoreleasepool {
-        NSString *tagNSString = [NSString stringWithUTF8String:tag];
-        ret = [[VZVirtioFileSystemDeviceConfiguration alloc] initWithTag:tagNSString];
+    if (@available(macOS 12, *)) {
+        VZVirtioFileSystemDeviceConfiguration *ret;
+        @autoreleasepool {
+            NSString *tagNSString = [NSString stringWithUTF8String:tag];
+            ret = [[VZVirtioFileSystemDeviceConfiguration alloc] initWithTag:tagNSString];
+        }
+        return ret;
     }
-    return ret;
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -763,7 +1008,12 @@ void *newVZVirtioFileSystemDeviceConfiguration(const char *tag)
  */
 void setVZVirtioFileSystemDeviceConfigurationShare(void *config, void *share)
 {
-    [(VZVirtioFileSystemDeviceConfiguration *)config setShare:(VZDirectoryShare *)share];
+    if (@available(macOS 12, *)) {
+        [(VZVirtioFileSystemDeviceConfiguration *)config setShare:(VZDirectoryShare *)share];
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -772,7 +1022,11 @@ void setVZVirtioFileSystemDeviceConfigurationShare(void *config, void *share)
  */
 void *newVZUSBScreenCoordinatePointingDeviceConfiguration()
 {
-    return [[VZUSBScreenCoordinatePointingDeviceConfiguration alloc] init];
+    if (@available(macOS 12, *)) {
+        return [[VZUSBScreenCoordinatePointingDeviceConfiguration alloc] init];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -781,7 +1035,11 @@ void *newVZUSBScreenCoordinatePointingDeviceConfiguration()
  */
 void *newVZUSBKeyboardConfiguration()
 {
-    return [[VZUSBKeyboardConfiguration alloc] init];
+    if (@available(macOS 12, *)) {
+        return [[VZUSBKeyboardConfiguration alloc] init];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 /*!
@@ -791,11 +1049,15 @@ void *newVZUSBKeyboardConfiguration()
  */
 bool requestStopVirtualMachine(void *machine, void *queue, void **error)
 {
-    __block BOOL ret;
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        ret = [(VZVirtualMachine *)machine requestStopWithError:(NSError *_Nullable *_Nullable)error];
-    });
-    return (bool)ret;
+    if (@available(macOS 11, *)) {
+        __block BOOL ret;
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            ret = [(VZVirtualMachine *)machine requestStopWithError:(NSError *_Nullable *_Nullable)error];
+        });
+        return (bool)ret;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 void *makeDispatchQueue(const char *label)
@@ -808,84 +1070,124 @@ void *makeDispatchQueue(const char *label)
 
 void startWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        [(VZVirtualMachine *)machine startWithCompletionHandler:^(NSError *err) {
-            virtualMachineCompletionHandler(completionHandler, err);
-        }];
-    });
+    if (@available(macOS 11, *)) {
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            [(VZVirtualMachine *)machine startWithCompletionHandler:^(NSError *err) {
+                virtualMachineCompletionHandler(completionHandler, err);
+            }];
+        });
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 void pauseWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        [(VZVirtualMachine *)machine pauseWithCompletionHandler:^(NSError *err) {
-            virtualMachineCompletionHandler(completionHandler, err);
-        }];
-    });
+    if (@available(macOS 11, *)) {
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            [(VZVirtualMachine *)machine pauseWithCompletionHandler:^(NSError *err) {
+                virtualMachineCompletionHandler(completionHandler, err);
+            }];
+        });
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 void resumeWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        [(VZVirtualMachine *)machine resumeWithCompletionHandler:^(NSError *err) {
-            virtualMachineCompletionHandler(completionHandler, err);
-        }];
-    });
+    if (@available(macOS 11, *)) {
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            [(VZVirtualMachine *)machine resumeWithCompletionHandler:^(NSError *err) {
+                virtualMachineCompletionHandler(completionHandler, err);
+            }];
+        });
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 void stopWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        [(VZVirtualMachine *)machine stopWithCompletionHandler:^(NSError *err) {
-            virtualMachineCompletionHandler(completionHandler, err);
-        }];
-    });
+    if (@available(macOS 12, *)) {
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            [(VZVirtualMachine *)machine stopWithCompletionHandler:^(NSError *err) {
+                virtualMachineCompletionHandler(completionHandler, err);
+            }];
+        });
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 // TODO(codehex): use KVO
 bool vmCanStart(void *machine, void *queue)
 {
-    __block BOOL result;
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        result = ((VZVirtualMachine *)machine).canStart;
-    });
-    return (bool)result;
+    if (@available(macOS 11, *)) {
+        __block BOOL result;
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            result = ((VZVirtualMachine *)machine).canStart;
+        });
+        return (bool)result;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 bool vmCanPause(void *machine, void *queue)
 {
-    __block BOOL result;
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        result = ((VZVirtualMachine *)machine).canPause;
-    });
-    return (bool)result;
+    if (@available(macOS 11, *)) {
+        __block BOOL result;
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            result = ((VZVirtualMachine *)machine).canPause;
+        });
+        return (bool)result;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 bool vmCanResume(void *machine, void *queue)
 {
-    __block BOOL result;
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        result = ((VZVirtualMachine *)machine).canResume;
-    });
-    return (bool)result;
+    if (@available(macOS 11, *)) {
+        __block BOOL result;
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            result = ((VZVirtualMachine *)machine).canResume;
+        });
+        return (bool)result;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 bool vmCanRequestStop(void *machine, void *queue)
 {
-    __block BOOL result;
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        result = ((VZVirtualMachine *)machine).canRequestStop;
-    });
-    return (bool)result;
+    if (@available(macOS 11, *)) {
+        __block BOOL result;
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            result = ((VZVirtualMachine *)machine).canRequestStop;
+        });
+        return (bool)result;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 bool vmCanStop(void *machine, void *queue)
 {
-    __block BOOL result;
-    dispatch_sync((dispatch_queue_t)queue, ^{
-        result = ((VZVirtualMachine *)machine).canStop;
-    });
-    return (bool)result;
+    if (@available(macOS 12, *)) {
+        __block BOOL result;
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            result = ((VZVirtualMachine *)machine).canStop;
+        });
+        return (bool)result;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 // --- TODO end
 

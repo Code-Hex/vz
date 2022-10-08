@@ -21,7 +21,14 @@ type MacOSBootLoader struct {
 var _ BootLoader = (*MacOSBootLoader)(nil)
 
 // NewMacOSBootLoader creates a new MacOSBootLoader struct.
-func NewMacOSBootLoader() *MacOSBootLoader {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewMacOSBootLoader() (*MacOSBootLoader, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	bootLoader := &MacOSBootLoader{
 		pointer: pointer{
 			ptr: C.newVZMacOSBootLoader(),
@@ -30,5 +37,5 @@ func NewMacOSBootLoader() *MacOSBootLoader {
 	runtime.SetFinalizer(bootLoader, func(self *MacOSBootLoader) {
 		self.Release()
 	})
-	return bootLoader
+	return bootLoader, nil
 }

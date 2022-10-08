@@ -36,7 +36,13 @@ type VirtioSoundDeviceConfiguration struct {
 var _ AudioDeviceConfiguration = (*VirtioSoundDeviceConfiguration)(nil)
 
 // NewVirtioSoundDeviceConfiguration creates a new sound device configuration.
-func NewVirtioSoundDeviceConfiguration() *VirtioSoundDeviceConfiguration {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewVirtioSoundDeviceConfiguration() (*VirtioSoundDeviceConfiguration, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
 	config := &VirtioSoundDeviceConfiguration{
 		pointer: pointer{
 			ptr: C.newVZVirtioSoundDeviceConfiguration(),
@@ -45,7 +51,7 @@ func NewVirtioSoundDeviceConfiguration() *VirtioSoundDeviceConfiguration {
 	runtime.SetFinalizer(config, func(self *VirtioSoundDeviceConfiguration) {
 		self.Release()
 	})
-	return config
+	return config, nil
 }
 
 // SetStreams sets the list of audio streams exposed by this device.
@@ -80,7 +86,13 @@ type VirtioSoundDeviceHostInputStreamConfiguration struct {
 var _ VirtioSoundDeviceStreamConfiguration = (*VirtioSoundDeviceHostInputStreamConfiguration)(nil)
 
 // NewVirtioSoundDeviceHostInputStreamConfiguration creates a new PCM stream configuration of input audio data from host.
-func NewVirtioSoundDeviceHostInputStreamConfiguration() *VirtioSoundDeviceHostInputStreamConfiguration {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewVirtioSoundDeviceHostInputStreamConfiguration() (*VirtioSoundDeviceHostInputStreamConfiguration, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
 	config := &VirtioSoundDeviceHostInputStreamConfiguration{
 		pointer: pointer{
 			ptr: C.newVZVirtioSoundDeviceHostInputStreamConfiguration(),
@@ -89,7 +101,7 @@ func NewVirtioSoundDeviceHostInputStreamConfiguration() *VirtioSoundDeviceHostIn
 	runtime.SetFinalizer(config, func(self *VirtioSoundDeviceHostInputStreamConfiguration) {
 		self.Release()
 	})
-	return config
+	return config, nil
 }
 
 // VirtioSoundDeviceHostOutputStreamConfiguration is a struct that
@@ -105,7 +117,13 @@ type VirtioSoundDeviceHostOutputStreamConfiguration struct {
 var _ VirtioSoundDeviceStreamConfiguration = (*VirtioSoundDeviceHostOutputStreamConfiguration)(nil)
 
 // NewVirtioSoundDeviceHostOutputStreamConfiguration creates a new sounds device output stream configuration.
-func NewVirtioSoundDeviceHostOutputStreamConfiguration() *VirtioSoundDeviceHostOutputStreamConfiguration {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewVirtioSoundDeviceHostOutputStreamConfiguration() (*VirtioSoundDeviceHostOutputStreamConfiguration, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
 	config := &VirtioSoundDeviceHostOutputStreamConfiguration{
 		pointer: pointer{
 			ptr: C.newVZVirtioSoundDeviceHostOutputStreamConfiguration(),
@@ -114,5 +132,5 @@ func NewVirtioSoundDeviceHostOutputStreamConfiguration() *VirtioSoundDeviceHostO
 	runtime.SetFinalizer(config, func(self *VirtioSoundDeviceHostOutputStreamConfiguration) {
 		self.Release()
 	})
-	return config
+	return config, nil
 }

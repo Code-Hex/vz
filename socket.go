@@ -44,7 +44,14 @@ type VirtioSocketDeviceConfiguration struct {
 }
 
 // NewVirtioSocketDeviceConfiguration creates a new VirtioSocketDeviceConfiguration.
-func NewVirtioSocketDeviceConfiguration() *VirtioSocketDeviceConfiguration {
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewVirtioSocketDeviceConfiguration() (*VirtioSocketDeviceConfiguration, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	config := &VirtioSocketDeviceConfiguration{
 		pointer: pointer{
 			ptr: C.newVZVirtioSocketDeviceConfiguration(),
@@ -53,7 +60,7 @@ func NewVirtioSocketDeviceConfiguration() *VirtioSocketDeviceConfiguration {
 	runtime.SetFinalizer(config, func(self *VirtioSocketDeviceConfiguration) {
 		self.Release()
 	})
-	return config
+	return config, nil
 }
 
 // VirtioSocketDevice a device that manages port-based connections between the guest system and the host computer.
@@ -137,7 +144,14 @@ var shouldAcceptNewConnectionHandlers = map[unsafe.Pointer]func(conn *VirtioSock
 //
 // The handler is executed asynchronously. Be sure to close the connection used in the handler by calling `conn.Close`.
 // This is to prevent connection leaks.
-func NewVirtioSocketListener(handler func(conn *VirtioSocketConnection, err error)) *VirtioSocketListener {
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewVirtioSocketListener(handler func(conn *VirtioSocketConnection, err error)) (*VirtioSocketListener, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	ptr := C.newVZVirtioSocketListener()
 	listener := &VirtioSocketListener{
 		pointer: pointer{
@@ -163,7 +177,7 @@ func NewVirtioSocketListener(handler func(conn *VirtioSocketConnection, err erro
 	runtime.SetFinalizer(listener, func(self *VirtioSocketListener) {
 		self.Release()
 	})
-	return listener
+	return listener, nil
 }
 
 //export shouldAcceptNewConnectionHandler

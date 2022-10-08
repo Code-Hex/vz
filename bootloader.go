@@ -68,7 +68,14 @@ func WithInitrd(initrdPath string) LinuxBootLoaderOption {
 }
 
 // NewLinuxBootLoader creates a LinuxBootLoader with the Linux kernel passed as Path.
-func NewLinuxBootLoader(vmlinuz string, opts ...LinuxBootLoaderOption) *LinuxBootLoader {
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewLinuxBootLoader(vmlinuz string, opts ...LinuxBootLoaderOption) (*LinuxBootLoader, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	vmlinuzPath := charWithGoString(vmlinuz)
 	defer vmlinuzPath.Free()
 	bootLoader := &LinuxBootLoader{
@@ -85,5 +92,5 @@ func NewLinuxBootLoader(vmlinuz string, opts ...LinuxBootLoaderOption) *LinuxBoo
 	for _, opt := range opts {
 		opt(bootLoader)
 	}
-	return bootLoader
+	return bootLoader, nil
 }

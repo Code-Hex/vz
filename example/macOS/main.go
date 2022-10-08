@@ -45,7 +45,10 @@ func runVM(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	vm := vz.NewVirtualMachine(config)
+	vm, err := vz.NewVirtualMachine(config)
+	if err != nil {
+		return err
+	}
 
 	errCh := make(chan error, 1)
 
@@ -148,41 +151,59 @@ func createBlockDeviceConfiguration(diskPath string) (*vz.VirtioBlockDeviceConfi
 	if err != nil {
 		return nil, err
 	}
-	storageDeviceConfig := vz.NewVirtioBlockDeviceConfiguration(diskImageAttachment)
-	return storageDeviceConfig, nil
+	return vz.NewVirtioBlockDeviceConfiguration(diskImageAttachment)
 }
 
-func createGraphicsDeviceConfiguration() *vz.MacGraphicsDeviceConfiguration {
-	graphicDeviceConfig := vz.NewMacGraphicsDeviceConfiguration()
+func createGraphicsDeviceConfiguration() (*vz.MacGraphicsDeviceConfiguration, error) {
+	graphicDeviceConfig, err := vz.NewMacGraphicsDeviceConfiguration()
+	if err != nil {
+		return nil, err
+	}
+	graphicsDisplayConfig, err := vz.NewMacGraphicsDisplayConfiguration(1920, 1200, 80)
+	if err != nil {
+		return nil, err
+	}
 	graphicDeviceConfig.SetDisplays(
-		vz.NewMacGraphicsDisplayConfiguration(1920, 1200, 80),
+		graphicsDisplayConfig,
 	)
-	return graphicDeviceConfig
+	return graphicDeviceConfig, nil
 }
 
-func createNetworkDeviceConfiguration() *vz.VirtioNetworkDeviceConfiguration {
-	natAttachment := vz.NewNATNetworkDeviceAttachment()
-	networkConfig := vz.NewVirtioNetworkDeviceConfiguration(natAttachment)
-	return networkConfig
+func createNetworkDeviceConfiguration() (*vz.VirtioNetworkDeviceConfiguration, error) {
+	natAttachment, err := vz.NewNATNetworkDeviceAttachment()
+	if err != nil {
+		return nil, err
+	}
+	return vz.NewVirtioNetworkDeviceConfiguration(natAttachment)
 }
 
-func createPointingDeviceConfiguration() *vz.USBScreenCoordinatePointingDeviceConfiguration {
+func createPointingDeviceConfiguration() (*vz.USBScreenCoordinatePointingDeviceConfiguration, error) {
 	return vz.NewUSBScreenCoordinatePointingDeviceConfiguration()
 }
 
-func createKeyboardConfiguration() *vz.USBKeyboardConfiguration {
+func createKeyboardConfiguration() (*vz.USBKeyboardConfiguration, error) {
 	return vz.NewUSBKeyboardConfiguration()
 }
 
-func createAudioDeviceConfiguration() *vz.VirtioSoundDeviceConfiguration {
-	audioConfig := vz.NewVirtioSoundDeviceConfiguration()
-	inputStream := vz.NewVirtioSoundDeviceHostInputStreamConfiguration()
-	outputStream := vz.NewVirtioSoundDeviceHostOutputStreamConfiguration()
+func createAudioDeviceConfiguration() (*vz.VirtioSoundDeviceConfiguration, error) {
+	audioConfig, err := vz.NewVirtioSoundDeviceConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create sound device configuration: %w", err)
+	}
+	inputStream, err := vz.NewVirtioSoundDeviceHostInputStreamConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create input stream configuration: %w", err)
+	}
+
+	outputStream, err := vz.NewVirtioSoundDeviceHostOutputStreamConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create output stream configuration: %w", err)
+	}
 	audioConfig.SetStreams(
 		inputStream,
 		outputStream,
 	)
-	return audioConfig
+	return audioConfig, nil
 }
 
 func createMacPlatformConfiguration() (*vz.MacPlatformConfiguration, error) {
@@ -206,18 +227,30 @@ func createMacPlatformConfiguration() (*vz.MacPlatformConfiguration, error) {
 		vz.WithAuxiliaryStorage(auxiliaryStorage),
 		vz.WithHardwareModel(hardwareModel),
 		vz.WithMachineIdentifier(machineIdentifier),
-	), nil
+	)
 }
 
 func setupVMConfiguration(platformConfig vz.PlatformConfiguration) (*vz.VirtualMachineConfiguration, error) {
-	config := vz.NewVirtualMachineConfiguration(
-		vz.NewMacOSBootLoader(),
+	bootloader, err := vz.NewMacOSBootLoader()
+	if err != nil {
+		return nil, err
+	}
+
+	config, err := vz.NewVirtualMachineConfiguration(
+		bootloader,
 		computeCPUCount(),
 		computeMemorySize(),
 	)
+	if err != nil {
+		return nil, err
+	}
 	config.SetPlatformVirtualMachineConfiguration(platformConfig)
+	graphicsDeviceConfig, err := createGraphicsDeviceConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create graphics device configuration: %w", err)
+	}
 	config.SetGraphicsDevicesVirtualMachineConfiguration([]vz.GraphicsDeviceConfiguration{
-		createGraphicsDeviceConfiguration(),
+		graphicsDeviceConfig,
 	})
 	blockDeviceConfig, err := createBlockDeviceConfiguration(GetDiskImagePath())
 	if err != nil {
@@ -225,20 +258,36 @@ func setupVMConfiguration(platformConfig vz.PlatformConfiguration) (*vz.VirtualM
 	}
 	config.SetStorageDevicesVirtualMachineConfiguration([]vz.StorageDeviceConfiguration{blockDeviceConfig})
 
+	networkDeviceConfig, err := createNetworkDeviceConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create network device configuration: %w", err)
+	}
 	config.SetNetworkDevicesVirtualMachineConfiguration([]*vz.VirtioNetworkDeviceConfiguration{
-		createNetworkDeviceConfiguration(),
+		networkDeviceConfig,
 	})
 
+	pointingDeviceConfig, err := createPointingDeviceConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create pointing device configuration: %w", err)
+	}
 	config.SetPointingDevicesVirtualMachineConfiguration([]vz.PointingDeviceConfiguration{
-		createPointingDeviceConfiguration(),
+		pointingDeviceConfig,
 	})
 
+	keyboardDeviceConfig, err := createKeyboardConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create keyboard device configuration: %w", err)
+	}
 	config.SetKeyboardsVirtualMachineConfiguration([]vz.KeyboardConfiguration{
-		createKeyboardConfiguration(),
+		keyboardDeviceConfig,
 	})
 
+	audioDeviceConfig, err := createAudioDeviceConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create audio device configuration: %w", err)
+	}
 	config.SetAudioDevicesVirtualMachineConfiguration([]vz.AudioDeviceConfiguration{
-		createAudioDeviceConfiguration(),
+		audioDeviceConfig,
 	})
 
 	validated, err := config.Validate()

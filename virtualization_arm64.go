@@ -34,28 +34,45 @@ type MacHardwareModel struct {
 }
 
 // NewMacHardwareModelWithDataPath initialize a new hardware model described by the specified pathname.
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
 func NewMacHardwareModelWithDataPath(pathname string) (*MacHardwareModel, error) {
 	b, err := os.ReadFile(pathname)
 	if err != nil {
 		return nil, err
 	}
-	return NewMacHardwareModelWithData(b), nil
+	return NewMacHardwareModelWithData(b)
 }
 
 // NewMacHardwareModelWithData initialize a new hardware model described by the specified data representation.
-func NewMacHardwareModelWithData(b []byte) *MacHardwareModel {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewMacHardwareModelWithData(b []byte) (*MacHardwareModel, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	ptr := C.newVZMacHardwareModelWithBytes(
 		unsafe.Pointer(&b[0]),
 		C.int(len(b)),
 	)
-	ret := newMacHardwareModel(ptr)
+	ret, err := newMacHardwareModel(ptr)
+	if err != nil {
+		return nil, err
+	}
 	runtime.SetFinalizer(ret, func(self *MacHardwareModel) {
 		self.Release()
 	})
-	return ret
+	return ret, nil
 }
 
-func newMacHardwareModel(ptr unsafe.Pointer) *MacHardwareModel {
+func newMacHardwareModel(ptr unsafe.Pointer) (*MacHardwareModel, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	ret := C.convertVZMacHardwareModel2Struct(ptr)
 	dataRepresentation := ret.dataRepresentation
 	bytePointer := (*byte)(unsafe.Pointer(dataRepresentation.ptr))
@@ -66,7 +83,7 @@ func newMacHardwareModel(ptr unsafe.Pointer) *MacHardwareModel {
 		supported: bool(ret.supported),
 		// https://github.com/golang/go/wiki/cgo#turning-c-arrays-into-go-slices
 		dataRepresentation: unsafe.Slice(bytePointer, dataRepresentation.len),
-	}
+	}, nil
 }
 
 // Supported indicate whether this hardware model is supported by the host.
@@ -84,16 +101,26 @@ type MacMachineIdentifier struct {
 }
 
 // NewMacMachineIdentifierWithDataPath initialize a new machine identifier described by the specified pathname.
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
 func NewMacMachineIdentifierWithDataPath(pathname string) (*MacMachineIdentifier, error) {
 	b, err := os.ReadFile(pathname)
 	if err != nil {
 		return nil, err
 	}
-	return NewMacMachineIdentifierWithData(b), nil
+	return NewMacMachineIdentifierWithData(b)
 }
 
 // NewMacMachineIdentifierWithData initialize a new machine identifier described by the specified data representation.
-func NewMacMachineIdentifierWithData(b []byte) *MacMachineIdentifier {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewMacMachineIdentifierWithData(b []byte) (*MacMachineIdentifier, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	ptr := C.newVZMacMachineIdentifierWithBytes(
 		unsafe.Pointer(&b[0]),
 		C.int(len(b)),
@@ -109,11 +136,18 @@ func NewMacMachineIdentifierWithData(b []byte) *MacMachineIdentifier {
 // If the virtual machine is serialized to disk, the identifier can be preserved in a binary representation through
 // DataRepresentation method.
 // The identifier can then be recreated with NewMacMachineIdentifierWithData function from the binary representation.
-func NewMacMachineIdentifier() *MacMachineIdentifier {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewMacMachineIdentifier() (*MacMachineIdentifier, error) {
 	return newMacMachineIdentifier(C.newVZMacMachineIdentifier())
 }
 
-func newMacMachineIdentifier(ptr unsafe.Pointer) *MacMachineIdentifier {
+func newMacMachineIdentifier(ptr unsafe.Pointer) (*MacMachineIdentifier, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	dataRepresentation := C.getVZMacMachineIdentifierDataRepresentation(ptr)
 	bytePointer := (*byte)(unsafe.Pointer(dataRepresentation.ptr))
 	return &MacMachineIdentifier{
@@ -122,7 +156,7 @@ func newMacMachineIdentifier(ptr unsafe.Pointer) *MacMachineIdentifier {
 		},
 		// https://github.com/golang/go/wiki/cgo#turning-c-arrays-into-go-slices
 		dataRepresentation: unsafe.Slice(bytePointer, dataRepresentation.len),
-	}
+	}, nil
 }
 
 // DataRepresentation opaque data representation of the machine identifier.
@@ -165,7 +199,14 @@ func WithCreatingStorage(hardwareModel *MacHardwareModel) NewMacAuxiliaryStorage
 
 // NewMacAuxiliaryStorage creates a new MacAuxiliaryStorage is based Mac auxiliary storage data from the storagePath
 // of an existing file by default.
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
 func NewMacAuxiliaryStorage(storagePath string, opts ...NewMacAuxiliaryStorageOption) (*MacAuxiliaryStorage, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	storage := &MacAuxiliaryStorage{storagePath: storagePath}
 	for _, opt := range opts {
 		if err := opt(storage); err != nil {
@@ -227,7 +268,9 @@ func (m *MacOSRestoreImage) OperatingSystemVersion() OperatingSystemVersion {
 // configuration requirements that will provide the most complete feature set on the current host.
 // If none of the hardware models are supported on the current host, this property is nil.
 func (m *MacOSRestoreImage) MostFeaturefulSupportedConfiguration() *MacOSConfigurationRequirements {
-	return newMacOSConfigurationRequirements(m.mostFeaturefulSupportedConfigurationPtr)
+	// ignoring ErrUnsupportedOSVersion, it's already returned when trying to create a MacOSRestoreImage
+	config, _ := newMacOSConfigurationRequirements(m.mostFeaturefulSupportedConfigurationPtr)
+	return config
 }
 
 // MacOSConfigurationRequirements describes the parameter constraints required by a specific configuration of macOS.
@@ -239,13 +282,17 @@ type MacOSConfigurationRequirements struct {
 	hardwareModelPtr           unsafe.Pointer
 }
 
-func newMacOSConfigurationRequirements(ptr unsafe.Pointer) *MacOSConfigurationRequirements {
+func newMacOSConfigurationRequirements(ptr unsafe.Pointer) (*MacOSConfigurationRequirements, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	ret := C.convertVZMacOSConfigurationRequirements2Struct(ptr)
 	return &MacOSConfigurationRequirements{
 		minimumSupportedCPUCount:   uint64(ret.minimumSupportedCPUCount),
 		minimumSupportedMemorySize: uint64(ret.minimumSupportedMemorySize),
 		hardwareModelPtr:           ret.hardwareModel,
-	}
+	}, nil
 }
 
 // HardwareModel returns the hardware model for this configuration.
@@ -254,7 +301,9 @@ func newMacOSConfigurationRequirements(ptr unsafe.Pointer) *MacOSConfigurationRe
 // Use VZMacPlatformConfiguration.hardwareModel to configure the Mac platform, and
 // Use `WithCreatingStorage` functional option of the `NewMacAuxiliaryStorage` to create its auxiliary storage.
 func (m *MacOSConfigurationRequirements) HardwareModel() *MacHardwareModel {
-	return newMacHardwareModel(m.hardwareModelPtr)
+	// ignoring ErrUnsupportedOSVersion, it's already returned when trying to create a MacOSConfigurationRequirements
+	model, _ := newMacHardwareModel(m.hardwareModelPtr)
+	return model
 }
 
 // MinimumSupportedCPUCount returns the minimum supported number of CPUs for this configuration.
@@ -347,7 +396,14 @@ func downloadRestoreImage(ctx context.Context, url string, destPath string) (*pr
 //
 // After downloading the restore image, you can initialize a MacOSInstaller using LoadMacOSRestoreImageFromPath function
 // with the local restore image file.
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
 func FetchLatestSupportedMacOSRestoreImage(ctx context.Context, destPath string) (*progress.Reader, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	waitCh := make(chan struct{})
 	var (
 		url      string
@@ -376,7 +432,14 @@ func FetchLatestSupportedMacOSRestoreImage(ctx context.Context, destPath string)
 // LoadMacOSRestoreImageFromPath loads a macOS restore image from a filepath on the local file system.
 //
 // If the imagePath parameter doesn’t refer to a local file, the system raises an exception via Objective-C.
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
 func LoadMacOSRestoreImageFromPath(imagePath string) (retImage *MacOSRestoreImage, retErr error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	waitCh := make(chan struct{})
 	handler := macOSRestoreImageHandler(func(restoreImage *MacOSRestoreImage, err error) {
 		retImage = restoreImage
@@ -408,7 +471,14 @@ type MacOSInstaller struct {
 //
 // A param vm is the virtual machine that the operating system will be installed onto.
 // A param restoreImageIpsw is a file path indicating the macOS restore image to install.
-func NewMacOSInstaller(vm *VirtualMachine, restoreImageIpsw string) *MacOSInstaller {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewMacOSInstaller(vm *VirtualMachine, restoreImageIpsw string) (*MacOSInstaller, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	cs := charWithGoString(restoreImageIpsw)
 	defer cs.Free()
 	ret := &MacOSInstaller{
@@ -426,7 +496,7 @@ func NewMacOSInstaller(vm *VirtualMachine, restoreImageIpsw string) *MacOSInstal
 		self.observerPointer.Release()
 		self.Release()
 	})
-	return ret
+	return ret, nil
 }
 
 //export macOSInstallCompletionHandler

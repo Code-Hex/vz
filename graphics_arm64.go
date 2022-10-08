@@ -21,7 +21,14 @@ type MacGraphicsDeviceConfiguration struct {
 var _ GraphicsDeviceConfiguration = (*MacGraphicsDeviceConfiguration)(nil)
 
 // NewMacGraphicsDeviceConfiguration creates a new MacGraphicsDeviceConfiguration.
-func NewMacGraphicsDeviceConfiguration() *MacGraphicsDeviceConfiguration {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewMacGraphicsDeviceConfiguration() (*MacGraphicsDeviceConfiguration, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	graphicsConfiguration := &MacGraphicsDeviceConfiguration{
 		pointer: pointer{
 			ptr: C.newVZMacGraphicsDeviceConfiguration(),
@@ -30,7 +37,7 @@ func NewMacGraphicsDeviceConfiguration() *MacGraphicsDeviceConfiguration {
 	runtime.SetFinalizer(graphicsConfiguration, func(self *MacGraphicsDeviceConfiguration) {
 		self.Release()
 	})
-	return graphicsConfiguration
+	return graphicsConfiguration, nil
 }
 
 // SetDisplays sets the displays associated with this graphics device.
@@ -51,7 +58,14 @@ type MacGraphicsDisplayConfiguration struct {
 // NewMacGraphicsDisplayConfiguration creates a new MacGraphicsDisplayConfiguration.
 //
 // Creates a display configuration with the specified pixel dimensions and pixel density.
-func NewMacGraphicsDisplayConfiguration(widthInPixels int64, heightInPixels int64, pixelsPerInch int64) *MacGraphicsDisplayConfiguration {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewMacGraphicsDisplayConfiguration(widthInPixels int64, heightInPixels int64, pixelsPerInch int64) (*MacGraphicsDisplayConfiguration, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	graphicsDisplayConfiguration := &MacGraphicsDisplayConfiguration{
 		pointer: pointer{
 			ptr: C.newVZMacGraphicsDisplayConfiguration(
@@ -64,5 +78,5 @@ func NewMacGraphicsDisplayConfiguration(widthInPixels int64, heightInPixels int6
 	runtime.SetFinalizer(graphicsDisplayConfiguration, func(self *MacGraphicsDisplayConfiguration) {
 		self.Release()
 	})
-	return graphicsDisplayConfiguration
+	return graphicsDisplayConfiguration, nil
 }

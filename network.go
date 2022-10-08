@@ -48,7 +48,14 @@ type NATNetworkDeviceAttachment struct {
 var _ NetworkDeviceAttachment = (*NATNetworkDeviceAttachment)(nil)
 
 // NewNATNetworkDeviceAttachment creates a new NATNetworkDeviceAttachment.
-func NewNATNetworkDeviceAttachment() *NATNetworkDeviceAttachment {
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewNATNetworkDeviceAttachment() (*NATNetworkDeviceAttachment, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	attachment := &NATNetworkDeviceAttachment{
 		pointer: pointer{
 			ptr: C.newVZNATNetworkDeviceAttachment(),
@@ -57,7 +64,7 @@ func NewNATNetworkDeviceAttachment() *NATNetworkDeviceAttachment {
 	runtime.SetFinalizer(attachment, func(self *NATNetworkDeviceAttachment) {
 		self.Release()
 	})
-	return attachment
+	return attachment, nil
 }
 
 // BridgedNetworkDeviceAttachment represents a physical interface on the host computer.
@@ -79,7 +86,14 @@ type BridgedNetworkDeviceAttachment struct {
 var _ NetworkDeviceAttachment = (*BridgedNetworkDeviceAttachment)(nil)
 
 // NewBridgedNetworkDeviceAttachment creates a new BridgedNetworkDeviceAttachment with networkInterface.
-func NewBridgedNetworkDeviceAttachment(networkInterface BridgedNetwork) *BridgedNetworkDeviceAttachment {
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewBridgedNetworkDeviceAttachment(networkInterface BridgedNetwork) (*BridgedNetworkDeviceAttachment, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	attachment := &BridgedNetworkDeviceAttachment{
 		pointer: pointer{
 			ptr: C.newVZBridgedNetworkDeviceAttachment(
@@ -90,7 +104,7 @@ func NewBridgedNetworkDeviceAttachment(networkInterface BridgedNetwork) *Bridged
 	runtime.SetFinalizer(attachment, func(self *BridgedNetworkDeviceAttachment) {
 		self.Release()
 	})
-	return attachment
+	return attachment, nil
 }
 
 // FileHandleNetworkDeviceAttachment sending raw network packets over a file handle.
@@ -109,7 +123,14 @@ var _ NetworkDeviceAttachment = (*FileHandleNetworkDeviceAttachment)(nil)
 // NewFileHandleNetworkDeviceAttachment initialize the attachment with a file handle.
 //
 // file parameter is holding a connected datagram socket.
-func NewFileHandleNetworkDeviceAttachment(file *os.File) *FileHandleNetworkDeviceAttachment {
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewFileHandleNetworkDeviceAttachment(file *os.File) (*FileHandleNetworkDeviceAttachment, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	attachment := &FileHandleNetworkDeviceAttachment{
 		pointer: pointer{
 			ptr: C.newVZFileHandleNetworkDeviceAttachment(
@@ -120,7 +141,7 @@ func NewFileHandleNetworkDeviceAttachment(file *os.File) *FileHandleNetworkDevic
 	runtime.SetFinalizer(attachment, func(self *FileHandleNetworkDeviceAttachment) {
 		self.Release()
 	})
-	return attachment
+	return attachment, nil
 }
 
 // NetworkDeviceAttachment for a network device attachment.
@@ -148,7 +169,14 @@ type VirtioNetworkDeviceConfiguration struct {
 }
 
 // NewVirtioNetworkDeviceConfiguration creates a new VirtioNetworkDeviceConfiguration with NetworkDeviceAttachment.
-func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) *VirtioNetworkDeviceConfiguration {
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) (*VirtioNetworkDeviceConfiguration, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	config := &VirtioNetworkDeviceConfiguration{
 		pointer: pointer{
 			ptr: C.newVZVirtioNetworkDeviceConfiguration(
@@ -159,7 +187,7 @@ func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) *Vi
 	runtime.SetFinalizer(config, func(self *VirtioNetworkDeviceConfiguration) {
 		self.Release()
 	})
-	return config
+	return config, nil
 }
 
 func (v *VirtioNetworkDeviceConfiguration) SetMACAddress(macAddress *MACAddress) {
@@ -173,7 +201,14 @@ type MACAddress struct {
 }
 
 // NewMACAddress creates a new MACAddress with net.HardwareAddr (MAC address).
-func NewMACAddress(macAddr net.HardwareAddr) *MACAddress {
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewMACAddress(macAddr net.HardwareAddr) (*MACAddress, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	macAddrChar := charWithGoString(macAddr.String())
 	defer macAddrChar.Free()
 	ma := &MACAddress{
@@ -184,11 +219,18 @@ func NewMACAddress(macAddr net.HardwareAddr) *MACAddress {
 	runtime.SetFinalizer(ma, func(self *MACAddress) {
 		self.Release()
 	})
-	return ma
+	return ma, nil
 }
 
 // NewRandomLocallyAdministeredMACAddress creates a valid, random, unicast, locally administered address.
-func NewRandomLocallyAdministeredMACAddress() *MACAddress {
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewRandomLocallyAdministeredMACAddress() (*MACAddress, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	ma := &MACAddress{
 		pointer: pointer{
 			ptr: C.newRandomLocallyAdministeredVZMACAddress(),
@@ -197,7 +239,7 @@ func NewRandomLocallyAdministeredMACAddress() *MACAddress {
 	runtime.SetFinalizer(ma, func(self *MACAddress) {
 		self.Release()
 	})
-	return ma
+	return ma, nil
 }
 
 func (m *MACAddress) String() string {

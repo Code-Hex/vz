@@ -29,7 +29,14 @@ type GenericPlatformConfiguration struct {
 var _ PlatformConfiguration = (*GenericPlatformConfiguration)(nil)
 
 // NewGenericPlatformConfiguration creates a new generic platform configuration.
-func NewGenericPlatformConfiguration() *GenericPlatformConfiguration {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewGenericPlatformConfiguration() (*GenericPlatformConfiguration, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	platformConfig := &GenericPlatformConfiguration{
 		pointer: pointer{
 			ptr: C.newVZGenericPlatformConfiguration(),
@@ -38,5 +45,5 @@ func NewGenericPlatformConfiguration() *GenericPlatformConfiguration {
 	runtime.SetFinalizer(platformConfig, func(self *GenericPlatformConfiguration) {
 		self.Release()
 	})
-	return platformConfig
+	return platformConfig, nil
 }

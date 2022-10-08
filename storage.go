@@ -40,7 +40,14 @@ type DiskImageStorageDeviceAttachment struct {
 //
 // - diskPath is local file URL to the disk image in RAW format.
 // - readOnly if YES, the device attachment is read-only, otherwise the device can write data to the disk image.
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
 func NewDiskImageStorageDeviceAttachment(diskPath string, readOnly bool) (*DiskImageStorageDeviceAttachment, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	nserr := newNSErrorAsNil()
 	nserrPtr := nserr.Ptr()
 
@@ -94,7 +101,14 @@ type VirtioBlockDeviceConfiguration struct {
 // NewVirtioBlockDeviceConfiguration initialize a VZVirtioBlockDeviceConfiguration with a device attachment.
 //
 // - attachment The storage device attachment. This defines how the virtualized device operates on the host side.
-func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) *VirtioBlockDeviceConfiguration {
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) (*VirtioBlockDeviceConfiguration, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	config := &VirtioBlockDeviceConfiguration{
 		pointer: pointer{
 			ptr: C.newVZVirtioBlockDeviceConfiguration(
@@ -105,5 +119,5 @@ func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) *Virt
 	runtime.SetFinalizer(config, func(self *VirtioBlockDeviceConfiguration) {
 		self.Release()
 	})
-	return config
+	return config, nil
 }

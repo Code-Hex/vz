@@ -43,7 +43,14 @@ type VirtualMachineConfiguration struct {
 // - memorySize parameter represents memory size in bytes.
 //    The memory size must be a multiple of a 1 megabyte (1024 * 1024 bytes) between
 //    VZVirtualMachineConfiguration.minimumAllowedMemorySize and VZVirtualMachineConfiguration.maximumAllowedMemorySize.
-func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize uint64) *VirtualMachineConfiguration {
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize uint64) (*VirtualMachineConfiguration, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	config := &VirtualMachineConfiguration{
 		cpuCount:   cpu,
 		memorySize: memorySize,
@@ -58,14 +65,21 @@ func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize 
 	runtime.SetFinalizer(config, func(self *VirtualMachineConfiguration) {
 		self.Release()
 	})
-	return config
+	return config, nil
 }
 
 // Validate the configuration.
 //
 // Return true if the configuration is valid.
 // If error is not nil, assigned with the validation error if the validation failed.
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
 func (v *VirtualMachineConfiguration) Validate() (bool, error) {
+	if macosMajorVersionLessThan(11) {
+		return false, ErrUnsupportedOSVersion
+	}
+
 	nserr := newNSErrorAsNil()
 	nserrPtr := nserr.Ptr()
 	ret := C.validateVZVirtualMachineConfiguration(v.Ptr(), &nserrPtr)

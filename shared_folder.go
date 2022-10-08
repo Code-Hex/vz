@@ -31,7 +31,13 @@ type VirtioFileSystemDeviceConfiguration struct {
 }
 
 // NewVirtioFileSystemDeviceConfiguration create a new VirtioFileSystemDeviceConfiguration.
-func NewVirtioFileSystemDeviceConfiguration(tag string) *VirtioFileSystemDeviceConfiguration {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewVirtioFileSystemDeviceConfiguration(tag string) (*VirtioFileSystemDeviceConfiguration, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
 	tagChar := charWithGoString(tag)
 	defer tagChar.Free()
 	fsdConfig := &VirtioFileSystemDeviceConfiguration{
@@ -42,7 +48,7 @@ func NewVirtioFileSystemDeviceConfiguration(tag string) *VirtioFileSystemDeviceC
 	runtime.SetFinalizer(fsdConfig, func(self *VirtioFileSystemDeviceConfiguration) {
 		self.Release()
 	})
-	return fsdConfig
+	return fsdConfig, nil
 }
 
 // SetDirectoryShare sets the directory share associated with this configuration.
@@ -56,7 +62,13 @@ type SharedDirectory struct {
 }
 
 // NewSharedDirectory creates a new shared directory.
-func NewSharedDirectory(dirPath string, readOnly bool) *SharedDirectory {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewSharedDirectory(dirPath string, readOnly bool) (*SharedDirectory, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
 	dirPathChar := charWithGoString(dirPath)
 	defer dirPathChar.Free()
 	sd := &SharedDirectory{
@@ -67,7 +79,7 @@ func NewSharedDirectory(dirPath string, readOnly bool) *SharedDirectory {
 	runtime.SetFinalizer(sd, func(self *SharedDirectory) {
 		self.Release()
 	})
-	return sd
+	return sd, nil
 }
 
 // DirectoryShare is the base interface for a directory share.

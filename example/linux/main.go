@@ -56,38 +56,63 @@ func main() {
 	initrd := os.Getenv("INITRD_PATH")
 	diskPath := os.Getenv("DISKIMG_PATH")
 
-	bootLoader := vz.NewLinuxBootLoader(
+	bootLoader, err := vz.NewLinuxBootLoader(
 		vmlinuz,
 		vz.WithCommandLine(strings.Join(kernelCommandLineArguments, " ")),
 		vz.WithInitrd(initrd),
 	)
+	if err != nil {
+		log.Fatalf("bootloader creation failed: %s", err)
+	}
 	log.Println("bootLoader:", bootLoader)
 
-	config := vz.NewVirtualMachineConfiguration(
+	config, err := vz.NewVirtualMachineConfiguration(
 		bootLoader,
 		1,
 		2*1024*1024*1024,
 	)
+	if err != nil {
+		log.Fatalf("failed to create virtual machine configuration: %s", err)
+	}
 
 	setRawMode(os.Stdin)
 
 	// console
-	serialPortAttachment := vz.NewFileHandleSerialPortAttachment(os.Stdin, os.Stdout)
-	consoleConfig := vz.NewVirtioConsoleDeviceSerialPortConfiguration(serialPortAttachment)
+	serialPortAttachment, err := vz.NewFileHandleSerialPortAttachment(os.Stdin, os.Stdout)
+	if err != nil {
+		log.Fatalf("Serial port attachment creation failed: %s", err)
+	}
+	consoleConfig, err := vz.NewVirtioConsoleDeviceSerialPortConfiguration(serialPortAttachment)
+	if err != nil {
+		log.Fatalf("Failed to create serial configuration: %s", err)
+	}
 	config.SetSerialPortsVirtualMachineConfiguration([]*vz.VirtioConsoleDeviceSerialPortConfiguration{
 		consoleConfig,
 	})
 
 	// network
-	natAttachment := vz.NewNATNetworkDeviceAttachment()
-	networkConfig := vz.NewVirtioNetworkDeviceConfiguration(natAttachment)
+	natAttachment, err := vz.NewNATNetworkDeviceAttachment()
+	if err != nil {
+		log.Fatalf("NAT network device creation failed: %s", err)
+	}
+	networkConfig, err := vz.NewVirtioNetworkDeviceConfiguration(natAttachment)
+	if err != nil {
+		log.Fatalf("Creation of the networking configuration failed: %s", err)
+	}
 	config.SetNetworkDevicesVirtualMachineConfiguration([]*vz.VirtioNetworkDeviceConfiguration{
 		networkConfig,
 	})
-	networkConfig.SetMACAddress(vz.NewRandomLocallyAdministeredMACAddress())
+	mac, err := vz.NewRandomLocallyAdministeredMACAddress()
+	if err != nil {
+		log.Fatalf("Random MAC address creation failed: %s", err)
+	}
+	networkConfig.SetMACAddress(mac)
 
 	// entropy
-	entropyConfig := vz.NewVirtioEntropyDeviceConfiguration()
+	entropyConfig, err := vz.NewVirtioEntropyDeviceConfiguration()
+	if err != nil {
+		log.Fatalf("Entropy device creation failed: %s", err)
+	}
 	config.SetEntropyDevicesVirtualMachineConfiguration([]*vz.VirtioEntropyDeviceConfiguration{
 		entropyConfig,
 	})
@@ -99,26 +124,40 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	storageDeviceConfig := vz.NewVirtioBlockDeviceConfiguration(diskImageAttachment)
+	storageDeviceConfig, err := vz.NewVirtioBlockDeviceConfiguration(diskImageAttachment)
+	if err != nil {
+		log.Fatalf("Block device creation failed: %s", err)
+	}
 	config.SetStorageDevicesVirtualMachineConfiguration([]vz.StorageDeviceConfiguration{
 		storageDeviceConfig,
 	})
 
 	// traditional memory balloon device which allows for managing guest memory. (optional)
+	memoryBalloonDevice, err := vz.NewVirtioTraditionalMemoryBalloonDeviceConfiguration()
+	if err != nil {
+		log.Fatalf("Balloon device creation failed: %s", err)
+	}
 	config.SetMemoryBalloonDevicesVirtualMachineConfiguration([]vz.MemoryBalloonDeviceConfiguration{
-		vz.NewVirtioTraditionalMemoryBalloonDeviceConfiguration(),
+		memoryBalloonDevice,
 	})
 
 	// socket device (optional)
+	vsockDevice, err := vz.NewVirtioSocketDeviceConfiguration()
+	if err != nil {
+		log.Fatalf("virtio-vsock device creation failed: %s", err)
+	}
 	config.SetSocketDevicesVirtualMachineConfiguration([]vz.SocketDeviceConfiguration{
-		vz.NewVirtioSocketDeviceConfiguration(),
+		vsockDevice,
 	})
 	validated, err := config.Validate()
 	if !validated || err != nil {
 		log.Fatal("validation failed", err)
 	}
 
-	vm := vz.NewVirtualMachine(config)
+	vm, err := vz.NewVirtualMachine(config)
+	if err != nil {
+		log.Fatalf("Virtual machine creation failed: %s", err)
+	}
 
 	signalCh := make(chan os.Signal, 1)
 	signal.Notify(signalCh, syscall.SIGTERM)

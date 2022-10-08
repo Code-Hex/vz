@@ -67,7 +67,14 @@ func WithAuxiliaryStorage(m *MacAuxiliaryStorage) MacPlatformConfigurationOption
 }
 
 // NewMacPlatformConfiguration creates a new MacPlatformConfiguration. see also it's document.
-func NewMacPlatformConfiguration(opts ...MacPlatformConfigurationOption) *MacPlatformConfiguration {
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewMacPlatformConfiguration(opts ...MacPlatformConfigurationOption) (*MacPlatformConfiguration, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
 	platformConfig := &MacPlatformConfiguration{
 		pointer: pointer{
 			ptr: C.newVZMacPlatformConfiguration(),
@@ -79,7 +86,7 @@ func NewMacPlatformConfiguration(opts ...MacPlatformConfigurationOption) *MacPla
 	runtime.SetFinalizer(platformConfig, func(self *MacPlatformConfiguration) {
 		self.Release()
 	})
-	return platformConfig
+	return platformConfig, nil
 }
 
 // HardwareModel returns the Mac hardware model.

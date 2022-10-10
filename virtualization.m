@@ -689,12 +689,16 @@ void *newVZVirtioBlockDeviceConfiguration(void *attachment)
 void *newVZDiskImageStorageDeviceAttachment(const char *diskPath, bool readOnly, void **error)
 {
     if (@available(macOS 11, *)) {
-        NSString *diskPathNSString = [NSString stringWithUTF8String:diskPath];
-        NSURL *diskURL = [NSURL fileURLWithPath:diskPathNSString];
-        return [[VZDiskImageStorageDeviceAttachment alloc]
-            initWithURL:diskURL
-               readOnly:(BOOL)readOnly
-                  error:(NSError *_Nullable *_Nullable)error];
+        VZDiskImageStorageDeviceAttachment *ret;
+        @autoreleasepool {
+            NSString *diskPathNSString = [NSString stringWithUTF8String:diskPath];
+            NSURL *diskURL = [NSURL fileURLWithPath:diskPathNSString];
+            ret = [[VZDiskImageStorageDeviceAttachment alloc]
+                initWithURL:diskURL
+                   readOnly:(BOOL)readOnly
+                      error:(NSError *_Nullable *_Nullable)error];
+        }
+        return ret;
     }
 
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();

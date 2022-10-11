@@ -12,7 +12,6 @@ import (
 	"os"
 	"runtime"
 	"runtime/cgo"
-	"time"
 	"unsafe"
 
 	"golang.org/x/sys/unix"
@@ -200,12 +199,10 @@ func shouldAcceptNewConnectionHandler(listenerPtr, connPtr, devicePtr unsafe.Poi
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketconnection?language=objc
 type VirtioSocketConnection struct {
-	conn  net.Conn
+	net.Conn
 	laddr *Addr // local
 	raddr *Addr // remote
 }
-
-var _ net.Conn = (*VirtioSocketConnection)(nil)
 
 func newVirtioSocketConnection(ptr unsafe.Pointer) (*VirtioSocketConnection, error) {
 	vzVirtioSocketConnection := C.convertVZVirtioSocketConnection2Flat(ptr)
@@ -216,7 +213,7 @@ func newVirtioSocketConnection(ptr unsafe.Pointer) (*VirtioSocketConnection, err
 		return nil, err
 	}
 	conn := &VirtioSocketConnection{
-		conn: rawConn,
+		Conn: rawConn,
 		laddr: &Addr{
 			CID:  unix.VMADDR_CID_HOST,
 			Port: (uint32)(vzVirtioSocketConnection.destinationPort),
@@ -229,43 +226,11 @@ func newVirtioSocketConnection(ptr unsafe.Pointer) (*VirtioSocketConnection, err
 	return conn, nil
 }
 
-// Read reads data from connection of the vsock protocol.
-func (v *VirtioSocketConnection) Read(b []byte) (n int, err error) { return v.conn.Read(b) }
-
-// Write writes data to the connection of the vsock protocol.
-func (v *VirtioSocketConnection) Write(b []byte) (n int, err error) { return v.conn.Write(b) }
-
-// Close will be called when caused something error in socket.
-func (v *VirtioSocketConnection) Close() error {
-	return v.conn.Close()
-}
-
 // LocalAddr returns the local network address.
 func (v *VirtioSocketConnection) LocalAddr() net.Addr { return v.laddr }
 
 // RemoteAddr returns the remote network address.
 func (v *VirtioSocketConnection) RemoteAddr() net.Addr { return v.raddr }
-
-// SetDeadline sets the read and write deadlines associated
-// with the connection. It is equivalent to calling both
-// SetReadDeadline and SetWriteDeadline.
-func (v *VirtioSocketConnection) SetDeadline(t time.Time) error { return v.conn.SetDeadline(t) }
-
-// SetReadDeadline sets the deadline for future Read calls
-// and any currently-blocked Read call.
-// A zero value for t means Read will not time out.
-func (v *VirtioSocketConnection) SetReadDeadline(t time.Time) error {
-	return v.conn.SetReadDeadline(t)
-}
-
-// SetWriteDeadline sets the deadline for future Write calls
-// and any currently-blocked Write call.
-// Even if write times out, it may return n > 0, indicating that
-// some of the data was successfully written.
-// A zero value for t means Write will not time out.
-func (v *VirtioSocketConnection) SetWriteDeadline(t time.Time) error {
-	return v.conn.SetWriteDeadline(t)
-}
 
 // DestinationPort returns the destination port number of the connection.
 func (v *VirtioSocketConnection) DestinationPort() uint32 {

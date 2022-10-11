@@ -200,11 +200,9 @@ func shouldAcceptNewConnectionHandler(listenerPtr, connPtr, devicePtr unsafe.Poi
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketconnection?language=objc
 type VirtioSocketConnection struct {
-	sourcePort      uint32
-	destinationPort uint32
-	conn            net.Conn
-	laddr           net.Addr // local
-	raddr           net.Addr // remote
+	conn  net.Conn
+	laddr *Addr // local
+	raddr *Addr // remote
 }
 
 var _ net.Conn = (*VirtioSocketConnection)(nil)
@@ -218,9 +216,7 @@ func newVirtioSocketConnection(ptr unsafe.Pointer) (*VirtioSocketConnection, err
 		return nil, err
 	}
 	conn := &VirtioSocketConnection{
-		sourcePort:      (uint32)(vzVirtioSocketConnection.sourcePort),
-		destinationPort: (uint32)(vzVirtioSocketConnection.destinationPort),
-		conn:            rawConn,
+		conn: rawConn,
 		laddr: &Addr{
 			CID:  unix.VMADDR_CID_HOST,
 			Port: (uint32)(vzVirtioSocketConnection.destinationPort),
@@ -273,12 +269,12 @@ func (v *VirtioSocketConnection) SetWriteDeadline(t time.Time) error {
 
 // DestinationPort returns the destination port number of the connection.
 func (v *VirtioSocketConnection) DestinationPort() uint32 {
-	return v.destinationPort
+	return v.laddr.Port
 }
 
 // SourcePort returns the source port number of the connection.
 func (v *VirtioSocketConnection) SourcePort() uint32 {
-	return v.sourcePort
+	return v.raddr.Port
 }
 
 // Addr represents a network end point address for the vsock protocol.

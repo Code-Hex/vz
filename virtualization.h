@@ -6,6 +6,7 @@
 
 #pragma once
 
+#import "virtualization_raise.h"
 #import <Foundation/Foundation.h>
 #import <Virtualization/Virtualization.h>
 

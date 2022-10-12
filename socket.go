@@ -72,16 +72,12 @@ type VirtioSocketDevice struct {
 }
 
 func newVirtioSocketDevice(ptr, dispatchQueue unsafe.Pointer) *VirtioSocketDevice {
-	socketDevice := &VirtioSocketDevice{
+	return &VirtioSocketDevice{
 		dispatchQueue: dispatchQueue,
 		pointer: pointer{
 			ptr: ptr,
 		},
 	}
-	runtime.SetFinalizer(socketDevice, func(self *VirtioSocketDevice) {
-		self.Release()
-	})
-	return socketDevice
 }
 
 // SetSocketListenerForPort configures an object to monitor the specified port for new connections.
@@ -157,9 +153,6 @@ func NewVirtioSocketListener(handler func(conn *VirtioSocketConnection, err erro
 		return true // must be connected
 	}
 
-	runtime.SetFinalizer(listener, func(self *VirtioSocketListener) {
-		self.Release()
-	})
 	return listener, nil
 }
 

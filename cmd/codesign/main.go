@@ -29,6 +29,7 @@ func run() error {
 		return fmt.Errorf("failed to create temp file: %w", err)
 	}
 	defer f.Close()
+	defer os.Remove(f.Name()) // clean up
 
 	if _, err := f.WriteString(entitlements); err != nil {
 		return fmt.Errorf("failed to write entitlements content: %w", err)
@@ -37,7 +38,6 @@ func run() error {
 	if err := f.Close(); err != nil {
 		return fmt.Errorf("failed to close temp file: %w", err)
 	}
-	defer os.Remove(f.Name()) // clean up
 
 	cmd := exec.Command("codesign", "--entitlements", f.Name(), "-s", "-", os.Args[1])
 	cmd.Stderr = os.Stderr

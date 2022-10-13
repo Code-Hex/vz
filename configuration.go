@@ -37,12 +37,12 @@ type VirtualMachineConfiguration struct {
 
 // NewVirtualMachineConfiguration creates a new configuration.
 //
-// - bootLoader parameter is used when the virtual machine starts.
-// - cpu parameter is The number of CPUs must be a value between
+//   - bootLoader parameter is used when the virtual machine starts.
+//   - cpu parameter is The number of CPUs must be a value between
 //     VZVirtualMachineConfiguration.minimumAllowedCPUCount and VZVirtualMachineConfiguration.maximumAllowedCPUCount.
-// - memorySize parameter represents memory size in bytes.
-//    The memory size must be a multiple of a 1 megabyte (1024 * 1024 bytes) between
-//    VZVirtualMachineConfiguration.minimumAllowedMemorySize and VZVirtualMachineConfiguration.maximumAllowedMemorySize.
+//   - memorySize parameter represents memory size in bytes.
+//     The memory size must be a multiple of a 1 megabyte (1024 * 1024 bytes) between
+//     VZVirtualMachineConfiguration.minimumAllowedMemorySize and VZVirtualMachineConfiguration.maximumAllowedMemorySize.
 //
 // This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
 // be returned on older versions.
@@ -72,14 +72,7 @@ func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize 
 //
 // Return true if the configuration is valid.
 // If error is not nil, assigned with the validation error if the validation failed.
-//
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
-// be returned on older versions.
 func (v *VirtualMachineConfiguration) Validate() (bool, error) {
-	if macosMajorVersionLessThan(11) {
-		return false, ErrUnsupportedOSVersion
-	}
-
 	nserr := newNSErrorAsNil()
 	nserrPtr := nserr.Ptr()
 	ret := C.validateVZVirtualMachineConfiguration(v.Ptr(), &nserrPtr)

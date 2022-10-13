@@ -103,7 +103,10 @@ type SingleDirectoryShare struct {
 }
 
 // NewSingleDirectoryShare creates a new single directory share.
-func NewSingleDirectoryShare(share *SharedDirectory) *SingleDirectoryShare {
+func NewSingleDirectoryShare(share *SharedDirectory) (*SingleDirectoryShare, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
 	config := &SingleDirectoryShare{
 		pointer: pointer{
 			ptr: C.newVZSingleDirectoryShare(share.Ptr()),
@@ -112,7 +115,7 @@ func NewSingleDirectoryShare(share *SharedDirectory) *SingleDirectoryShare {
 	runtime.SetFinalizer(config, func(self *SingleDirectoryShare) {
 		self.Release()
 	})
-	return config
+	return config, nil
 }
 
 // MultipleDirectoryShare defines the directory share for multiple directories.
@@ -123,7 +126,10 @@ type MultipleDirectoryShare struct {
 }
 
 // NewMultipleDirectoryShare creates a new multiple directories share.
-func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) *MultipleDirectoryShare {
+func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) (*MultipleDirectoryShare, error) {
+	if macosMajorVersionLessThan(12) {
+		return nil, ErrUnsupportedOSVersion
+	}
 	directories := make(map[string]NSObject, len(shares))
 	for k, v := range shares {
 		directories[k] = v
@@ -139,5 +145,5 @@ func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) *MultipleDire
 	runtime.SetFinalizer(config, func(self *SingleDirectoryShare) {
 		self.Release()
 	})
-	return config
+	return config, nil
 }

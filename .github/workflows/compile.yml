@@ -39,6 +39,8 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go }}
+      - name: Unit Test
+        run: go test ./...
       - name: Build
         run: cd example/linux && make
       - name: vet

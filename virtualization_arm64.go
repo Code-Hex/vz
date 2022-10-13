@@ -58,21 +58,14 @@ func NewMacHardwareModelWithData(b []byte) (*MacHardwareModel, error) {
 		unsafe.Pointer(&b[0]),
 		C.int(len(b)),
 	)
-	ret, err := newMacHardwareModel(ptr)
-	if err != nil {
-		return nil, err
-	}
+	ret := newMacHardwareModel(ptr)
 	runtime.SetFinalizer(ret, func(self *MacHardwareModel) {
 		self.Release()
 	})
 	return ret, nil
 }
 
-func newMacHardwareModel(ptr unsafe.Pointer) (*MacHardwareModel, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
-	}
-
+func newMacHardwareModel(ptr unsafe.Pointer) *MacHardwareModel {
 	ret := C.convertVZMacHardwareModel2Struct(ptr)
 	dataRepresentation := ret.dataRepresentation
 	bytePointer := (*byte)(unsafe.Pointer(dataRepresentation.ptr))
@@ -83,7 +76,7 @@ func newMacHardwareModel(ptr unsafe.Pointer) (*MacHardwareModel, error) {
 		supported: bool(ret.supported),
 		// https://github.com/golang/go/wiki/cgo#turning-c-arrays-into-go-slices
 		dataRepresentation: unsafe.Slice(bytePointer, dataRepresentation.len),
-	}, nil
+	}
 }
 
 // Supported indicate whether this hardware model is supported by the host.
@@ -125,7 +118,7 @@ func NewMacMachineIdentifierWithData(b []byte) (*MacMachineIdentifier, error) {
 		unsafe.Pointer(&b[0]),
 		C.int(len(b)),
 	)
-	return newMacMachineIdentifier(ptr)
+	return newMacMachineIdentifier(ptr), nil
 }
 
 // NewMacMachineIdentifier initialize a new Mac machine identifier is used by macOS guests to uniquely
@@ -140,14 +133,13 @@ func NewMacMachineIdentifierWithData(b []byte) (*MacMachineIdentifier, error) {
 // This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
 // be returned on older versions.
 func NewMacMachineIdentifier() (*MacMachineIdentifier, error) {
-	return newMacMachineIdentifier(C.newVZMacMachineIdentifier())
-}
-
-func newMacMachineIdentifier(ptr unsafe.Pointer) (*MacMachineIdentifier, error) {
 	if macosMajorVersionLessThan(12) {
 		return nil, ErrUnsupportedOSVersion
 	}
+	return newMacMachineIdentifier(C.newVZMacMachineIdentifier()), nil
+}
 
+func newMacMachineIdentifier(ptr unsafe.Pointer) *MacMachineIdentifier {
 	dataRepresentation := C.getVZMacMachineIdentifierDataRepresentation(ptr)
 	bytePointer := (*byte)(unsafe.Pointer(dataRepresentation.ptr))
 	return &MacMachineIdentifier{
@@ -156,7 +148,7 @@ func newMacMachineIdentifier(ptr unsafe.Pointer) (*MacMachineIdentifier, error) 
 		},
 		// https://github.com/golang/go/wiki/cgo#turning-c-arrays-into-go-slices
 		dataRepresentation: unsafe.Slice(bytePointer, dataRepresentation.len),
-	}, nil
+	}
 }
 
 // DataRepresentation opaque data representation of the machine identifier.
@@ -268,31 +260,25 @@ func (m *MacOSRestoreImage) OperatingSystemVersion() OperatingSystemVersion {
 // configuration requirements that will provide the most complete feature set on the current host.
 // If none of the hardware models are supported on the current host, this property is nil.
 func (m *MacOSRestoreImage) MostFeaturefulSupportedConfiguration() *MacOSConfigurationRequirements {
-	// ignoring ErrUnsupportedOSVersion, it's already returned when trying to create a MacOSRestoreImage
-	config, _ := newMacOSConfigurationRequirements(m.mostFeaturefulSupportedConfigurationPtr)
-	return config
+	return newMacOSConfigurationRequirements(m.mostFeaturefulSupportedConfigurationPtr)
 }
 
 // MacOSConfigurationRequirements describes the parameter constraints required by a specific configuration of macOS.
 //
-//  When a VZMacOSRestoreImage is loaded, it can be inspected to determine the configurations supported by that restore image.
+// When a VZMacOSRestoreImage is loaded, it can be inspected to determine the configurations supported by that restore image.
 type MacOSConfigurationRequirements struct {
 	minimumSupportedCPUCount   uint64
 	minimumSupportedMemorySize uint64
 	hardwareModelPtr           unsafe.Pointer
 }
 
-func newMacOSConfigurationRequirements(ptr unsafe.Pointer) (*MacOSConfigurationRequirements, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
-	}
-
+func newMacOSConfigurationRequirements(ptr unsafe.Pointer) *MacOSConfigurationRequirements {
 	ret := C.convertVZMacOSConfigurationRequirements2Struct(ptr)
 	return &MacOSConfigurationRequirements{
 		minimumSupportedCPUCount:   uint64(ret.minimumSupportedCPUCount),
 		minimumSupportedMemorySize: uint64(ret.minimumSupportedMemorySize),
 		hardwareModelPtr:           ret.hardwareModel,
-	}, nil
+	}
 }
 
 // HardwareModel returns the hardware model for this configuration.
@@ -301,9 +287,7 @@ func newMacOSConfigurationRequirements(ptr unsafe.Pointer) (*MacOSConfigurationR
 // Use VZMacPlatformConfiguration.hardwareModel to configure the Mac platform, and
 // Use `WithCreatingStorage` functional option of the `NewMacAuxiliaryStorage` to create its auxiliary storage.
 func (m *MacOSConfigurationRequirements) HardwareModel() *MacHardwareModel {
-	// ignoring ErrUnsupportedOSVersion, it's already returned when trying to create a MacOSConfigurationRequirements
-	model, _ := newMacHardwareModel(m.hardwareModelPtr)
-	return model
+	return newMacHardwareModel(m.hardwareModelPtr)
 }
 
 // MinimumSupportedCPUCount returns the minimum supported number of CPUs for this configuration.

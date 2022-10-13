@@ -10,10 +10,7 @@ import (
 	"errors"
 	"runtime"
 	"runtime/cgo"
-	"strconv"
-	"strings"
 	"sync"
-	"syscall"
 	"unsafe"
 )
 
@@ -194,37 +191,21 @@ func (v *VirtualMachine) StateChangedNotify() <-chan VirtualMachineState {
 
 // CanStart returns true if the machine is in a state that can be started.
 func (v *VirtualMachine) CanStart() bool {
-	if macosMajorVersionLessThan(11) {
-		return false
-	}
-
 	return bool(C.vmCanStart(v.Ptr(), v.dispatchQueue))
 }
 
 // CanPause returns true if the machine is in a state that can be paused.
 func (v *VirtualMachine) CanPause() bool {
-	if macosMajorVersionLessThan(11) {
-		return false
-	}
-
 	return bool(C.vmCanPause(v.Ptr(), v.dispatchQueue))
 }
 
 // CanResume returns true if the machine is in a state that can be resumed.
 func (v *VirtualMachine) CanResume() bool {
-	if macosMajorVersionLessThan(11) {
-		return false
-	}
-
 	return (bool)(C.vmCanResume(v.Ptr(), v.dispatchQueue))
 }
 
 // CanRequestStop returns whether the machine is in a state where the guest can be asked to stop.
 func (v *VirtualMachine) CanRequestStop() bool {
-	if macosMajorVersionLessThan(11) {
-		return false
-	}
-
 	return (bool)(C.vmCanRequestStop(v.Ptr(), v.dispatchQueue))
 }
 
@@ -236,7 +217,6 @@ func (v *VirtualMachine) CanStop() bool {
 	if macosMajorVersionLessThan(12) {
 		return false
 	}
-
 	return (bool)(C.vmCanStop(v.Ptr(), v.dispatchQueue))
 }
 
@@ -269,11 +249,6 @@ func makeHandler(fn func(error)) (func(error), chan struct{}) {
 // This is only supported on macOS 11 and newer, on older versions fn will be called immediately
 // with ErrUnsupportedOSVersion.
 func (v *VirtualMachine) Start(fn func(error)) {
-	if macosMajorVersionLessThan(11) {
-		fn(ErrUnsupportedOSVersion)
-		return
-	}
-
 	h, done := makeHandler(fn)
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()
@@ -289,11 +264,6 @@ func (v *VirtualMachine) Start(fn func(error)) {
 // This is only supported on macOS 11 and newer, on older versions fn will be called immediately
 // with ErrUnsupportedOSVersion.
 func (v *VirtualMachine) Pause(fn func(error)) {
-	if macosMajorVersionLessThan(11) {
-		fn(ErrUnsupportedOSVersion)
-		return
-	}
-
 	h, done := makeHandler(fn)
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()
@@ -309,11 +279,6 @@ func (v *VirtualMachine) Pause(fn func(error)) {
 // This is only supported on macOS 11 and newer, on older versions fn will be called immediately
 // with ErrUnsupportedOSVersion.
 func (v *VirtualMachine) Resume(fn func(error)) {
-	if macosMajorVersionLessThan(11) {
-		fn(ErrUnsupportedOSVersion)
-		return
-	}
-
 	h, done := makeHandler(fn)
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()
@@ -329,10 +294,6 @@ func (v *VirtualMachine) Resume(fn func(error)) {
 // This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
 // be returned on older versions.
 func (v *VirtualMachine) RequestStop() (bool, error) {
-	if macosMajorVersionLessThan(11) {
-		return false, ErrUnsupportedOSVersion
-	}
-
 	nserr := newNSErrorAsNil()
 	nserrPtr := nserr.Ptr()
 	ret := (bool)(C.requestStopVirtualMachine(v.Ptr(), v.dispatchQueue, &nserrPtr))
@@ -367,35 +328,13 @@ func (v *VirtualMachine) Stop(fn func(error)) {
 // StartGraphicApplication starts an application to display graphics of the VM.
 //
 // You must to call runtime.LockOSThread before calling this method.
-func (v *VirtualMachine) StartGraphicApplication(width, height float64) {
+//
+// This is only supported on macOS 12 and newer, on older versions fn will be called immediately
+// with ErrUnsupportedOSVersion.
+func (v *VirtualMachine) StartGraphicApplication(width, height float64) error {
+	if macosMajorVersionLessThan(12) {
+		return ErrUnsupportedOSVersion
+	}
 	C.startVirtualMachineWindow(v.Ptr(), C.double(width), C.double(height))
-}
-
-func macosMajorVersionLessThan(major int) bool {
-	return macOSMajorVersion() < major
-}
-
-var (
-	majorVersion     int
-	majorVersionOnce sync.Once
-)
-
-// This can be replaced in the test code to enable mock.
-// It will not be changed in production.
-var fetchMajorVersion = func() {
-	osver, err := syscall.Sysctl("kern.osproductversion")
-	if err != nil {
-		panic(err)
-	}
-	osverArray := strings.Split(osver, ".")
-	major, err := strconv.Atoi(osverArray[0])
-	if err != nil {
-		panic(err)
-	}
-	majorVersion = major
-}
-
-func macOSMajorVersion() int {
-	majorVersionOnce.Do(fetchMajorVersion)
-	return majorVersion
+	return nil
 }

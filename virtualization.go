@@ -16,7 +16,7 @@ import (
 
 // ErrUnsupportedOSVersion is returned when calling a method which is only
 // available in newer macOS versions.
-var ErrUnsupportedOSVersion error = errors.New("unsupported macOS version")
+var ErrUnsupportedOSVersion = errors.New("unsupported macOS version")
 
 func init() {
 	C.sharedApplication()

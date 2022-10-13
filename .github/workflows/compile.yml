@@ -40,7 +40,7 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
       - name: Unit Test
-        run: go test ./...
+        run: make test
       - name: Build
         run: cd example/linux && make
       - name: vet

@@ -136,6 +136,14 @@ func TestAvailableVersion(t *testing.T) {
 				_, err := NewSharedDirectory("", false)
 				return err
 			},
+			"NewSingleDirectoryShare": func() error {
+				_, err := NewSingleDirectoryShare(nil)
+				return err
+			},
+			"NewMultipleDirectoryShare": func() error {
+				_, err := NewMultipleDirectoryShare(nil)
+				return err
+			},
 			"(*VirtualMachine).Stop": func() error {
 				var err error
 				(*VirtualMachine)(nil).Stop(func(e error) {

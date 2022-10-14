@@ -26,16 +26,12 @@
 void *newVZMacAuxiliaryStorageWithCreating(const char *storagePath, void *hardwareModel, void **error)
 {
     if (@available(macOS 12, *)) {
-        VZMacAuxiliaryStorage *auxiliaryStorage;
-        @autoreleasepool {
-            NSString *storagePathNSString = [NSString stringWithUTF8String:storagePath];
-            NSURL *storageURL = [NSURL fileURLWithPath:storagePathNSString];
-            auxiliaryStorage = [[VZMacAuxiliaryStorage alloc] initCreatingStorageAtURL:storageURL
-                                                                         hardwareModel:(VZMacHardwareModel *)hardwareModel
-                                                                               options:VZMacAuxiliaryStorageInitializationOptionAllowOverwrite
-                                                                                 error:(NSError *_Nullable *_Nullable)error];
-        }
-        return auxiliaryStorage;
+        NSString *storagePathNSString = [NSString stringWithUTF8String:storagePath];
+        NSURL *storageURL = [NSURL fileURLWithPath:storagePathNSString];
+        return [[VZMacAuxiliaryStorage alloc] initCreatingStorageAtURL:storageURL
+                                                         hardwareModel:(VZMacHardwareModel *)hardwareModel
+                                                               options:VZMacAuxiliaryStorageInitializationOptionAllowOverwrite
+                                                                 error:(NSError *_Nullable *_Nullable)error];
     }
 
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
@@ -49,15 +45,11 @@ void *newVZMacAuxiliaryStorageWithCreating(const char *storagePath, void *hardwa
 void *newVZMacAuxiliaryStorage(const char *storagePath)
 {
     if (@available(macOS 12, *)) {
-        VZMacAuxiliaryStorage *auxiliaryStorage;
-        @autoreleasepool {
-            NSString *storagePathNSString = [NSString stringWithUTF8String:storagePath];
-            NSURL *storageURL = [NSURL fileURLWithPath:storagePathNSString];
-            // Use initWithURL: in macOS 13.x
-            // https://developer.apple.com/documentation/virtualization/vzmacauxiliarystorage?language=objc
-            auxiliaryStorage = [[VZMacAuxiliaryStorage alloc] initWithContentsOfURL:storageURL];
-        }
-        return auxiliaryStorage;
+        NSString *storagePathNSString = [NSString stringWithUTF8String:storagePath];
+        NSURL *storageURL = [NSURL fileURLWithPath:storagePathNSString];
+        // Use initWithURL: in macOS 13.x
+        // https://developer.apple.com/documentation/virtualization/vzmacauxiliarystorage?language=objc
+        return [[VZMacAuxiliaryStorage alloc] initWithContentsOfURL:storageURL];
     }
 
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
@@ -108,11 +100,9 @@ void storeHardwareModelDataVZMacPlatformConfiguration(void *config, const char *
 {
     if (@available(macOS 12, *)) {
         VZMacPlatformConfiguration *macPlatformConfiguration = (VZMacPlatformConfiguration *)config;
-        @autoreleasepool {
-            NSString *filePathNSString = [NSString stringWithUTF8String:filePath];
-            NSURL *fileURL = [NSURL fileURLWithPath:filePathNSString];
-            [macPlatformConfiguration.hardwareModel.dataRepresentation writeToURL:fileURL atomically:YES];
-        }
+        NSString *filePathNSString = [NSString stringWithUTF8String:filePath];
+        NSURL *fileURL = [NSURL fileURLWithPath:filePathNSString];
+        [macPlatformConfiguration.hardwareModel.dataRepresentation writeToURL:fileURL atomically:YES];
         return;
     }
 
@@ -139,11 +129,9 @@ void storeMachineIdentifierDataVZMacPlatformConfiguration(void *config, const ch
 {
     if (@available(macOS 12, *)) {
         VZMacPlatformConfiguration *macPlatformConfiguration = (VZMacPlatformConfiguration *)config;
-        @autoreleasepool {
-            NSString *filePathNSString = [NSString stringWithUTF8String:filePath];
-            NSURL *fileURL = [NSURL fileURLWithPath:filePathNSString];
-            [macPlatformConfiguration.machineIdentifier.dataRepresentation writeToURL:fileURL atomically:YES];
-        }
+        NSString *filePathNSString = [NSString stringWithUTF8String:filePath];
+        NSURL *fileURL = [NSURL fileURLWithPath:filePathNSString];
+        [macPlatformConfiguration.machineIdentifier.dataRepresentation writeToURL:fileURL atomically:YES];
         return;
     }
 
@@ -235,9 +223,9 @@ void *newVZMacHardwareModelWithPath(const char *hardwareModelPath)
 {
     if (@available(macOS 12, *)) {
         VZMacHardwareModel *hardwareModel;
+        NSString *hardwareModelPathNSString = [NSString stringWithUTF8String:hardwareModelPath];
+        NSURL *hardwareModelPathURL = [NSURL fileURLWithPath:hardwareModelPathNSString];
         @autoreleasepool {
-            NSString *hardwareModelPathNSString = [NSString stringWithUTF8String:hardwareModelPath];
-            NSURL *hardwareModelPathURL = [NSURL fileURLWithPath:hardwareModelPathNSString];
             NSData *hardwareModelData = [[NSData alloc] initWithContentsOfURL:hardwareModelPathURL];
             hardwareModel = [[VZMacHardwareModel alloc] initWithDataRepresentation:hardwareModelData];
         }
@@ -283,9 +271,9 @@ void *newVZMacMachineIdentifierWithPath(const char *machineIdentifierPath)
 {
     if (@available(macOS 12, *)) {
         VZMacMachineIdentifier *machineIdentifier;
+        NSString *machineIdentifierPathNSString = [NSString stringWithUTF8String:machineIdentifierPath];
+        NSURL *machineIdentifierPathURL = [NSURL fileURLWithPath:machineIdentifierPathNSString];
         @autoreleasepool {
-            NSString *machineIdentifierPathNSString = [NSString stringWithUTF8String:machineIdentifierPath];
-            NSURL *machineIdentifierPathURL = [NSURL fileURLWithPath:machineIdentifierPathNSString];
             NSData *machineIdentifierData = [[NSData alloc] initWithContentsOfURL:machineIdentifierPathURL];
             machineIdentifier = [[VZMacMachineIdentifier alloc] initWithDataRepresentation:machineIdentifierData];
         }
@@ -356,15 +344,13 @@ void fetchLatestSupportedMacOSRestoreImageWithCompletionHandler(void *cgoHandler
 void loadMacOSRestoreImageFile(const char *ipswPath, void *cgoHandler)
 {
     if (@available(macOS 12, *)) {
-        @autoreleasepool {
-            NSString *ipswPathNSString = [NSString stringWithUTF8String:ipswPath];
-            NSURL *ipswURL = [[NSURL alloc] initFileURLWithPath:ipswPathNSString];
-            [VZMacOSRestoreImage loadFileURL:ipswURL
-                           completionHandler:^(VZMacOSRestoreImage *restoreImage, NSError *error) {
-                               VZMacOSRestoreImageStruct restoreImageStruct = convertVZMacOSRestoreImage2Struct(restoreImage);
-                               macOSRestoreImageCompletionHandler(cgoHandler, &restoreImageStruct, error);
-                           }];
-        }
+        NSString *ipswPathNSString = [NSString stringWithUTF8String:ipswPath];
+        NSURL *ipswURL = [NSURL fileURLWithPath:ipswPathNSString];
+        [VZMacOSRestoreImage loadFileURL:ipswURL
+                       completionHandler:^(VZMacOSRestoreImage *restoreImage, NSError *error) {
+                           VZMacOSRestoreImageStruct restoreImageStruct = convertVZMacOSRestoreImage2Struct(restoreImage);
+                           macOSRestoreImageCompletionHandler(cgoHandler, &restoreImageStruct, error);
+                       }];
         return;
     }
 
@@ -416,13 +402,11 @@ void *newVZMacOSInstaller(void *virtualMachine, void *vmQueue, const char *resto
 {
     if (@available(macOS 12, *)) {
         __block VZMacOSInstaller *ret;
-        @autoreleasepool {
-            NSString *restoreImageFilePathNSString = [NSString stringWithUTF8String:restoreImageFilePath];
-            NSURL *restoreImageFileURL = [[NSURL alloc] initFileURLWithPath:restoreImageFilePathNSString];
-            dispatch_sync((dispatch_queue_t)vmQueue, ^{
-                ret = [[VZMacOSInstaller alloc] initWithVirtualMachine:(VZVirtualMachine *)virtualMachine restoreImageURL:restoreImageFileURL];
-            });
-        }
+        NSString *restoreImageFilePathNSString = [NSString stringWithUTF8String:restoreImageFilePath];
+        NSURL *restoreImageFileURL = [NSURL fileURLWithPath:restoreImageFilePathNSString];
+        dispatch_sync((dispatch_queue_t)vmQueue, ^{
+            ret = [[VZMacOSInstaller alloc] initWithVirtualMachine:(VZVirtualMachine *)virtualMachine restoreImageURL:restoreImageFileURL];
+        });
         return ret;
     }
 

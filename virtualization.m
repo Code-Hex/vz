@@ -50,13 +50,9 @@ char *copyCString(NSString *nss)
 void *newVZLinuxBootLoader(const char *kernelPath)
 {
     if (@available(macOS 11, *)) {
-        VZLinuxBootLoader *ret;
-        @autoreleasepool {
-            NSString *kernelPathNSString = [NSString stringWithUTF8String:kernelPath];
-            NSURL *kernelURL = [NSURL fileURLWithPath:kernelPathNSString];
-            ret = [[VZLinuxBootLoader alloc] initWithKernelURL:kernelURL];
-        }
-        return ret;
+        NSString *kernelPathNSString = [NSString stringWithUTF8String:kernelPath];
+        NSURL *kernelURL = [NSURL fileURLWithPath:kernelPathNSString];
+        return [[VZLinuxBootLoader alloc] initWithKernelURL:kernelURL];
     }
 
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
@@ -71,11 +67,8 @@ void *newVZLinuxBootLoader(const char *kernelPath)
 void setCommandLineVZLinuxBootLoader(void *bootLoaderPtr, const char *commandLine)
 {
     if (@available(macOS 11, *)) {
-        VZLinuxBootLoader *bootLoader = (VZLinuxBootLoader *)bootLoaderPtr;
-        @autoreleasepool {
-            NSString *commandLineNSString = [NSString stringWithUTF8String:commandLine];
-            [bootLoader setCommandLine:commandLineNSString];
-        }
+        NSString *commandLineNSString = [NSString stringWithUTF8String:commandLine];
+        [(VZLinuxBootLoader *)bootLoaderPtr setCommandLine:commandLineNSString];
         return;
     }
 
@@ -91,12 +84,9 @@ void setCommandLineVZLinuxBootLoader(void *bootLoaderPtr, const char *commandLin
 void setInitialRamdiskURLVZLinuxBootLoader(void *bootLoaderPtr, const char *ramdiskPath)
 {
     if (@available(macOS 11, *)) {
-        VZLinuxBootLoader *bootLoader = (VZLinuxBootLoader *)bootLoaderPtr;
-        @autoreleasepool {
-            NSString *ramdiskPathNSString = [NSString stringWithUTF8String:ramdiskPath];
-            NSURL *ramdiskURL = [NSURL fileURLWithPath:ramdiskPathNSString];
-            [bootLoader setInitialRamdiskURL:ramdiskURL];
-        }
+        NSString *ramdiskPathNSString = [NSString stringWithUTF8String:ramdiskPath];
+        NSURL *ramdiskURL = [NSURL fileURLWithPath:ramdiskPathNSString];
+        [(VZLinuxBootLoader *)bootLoaderPtr setInitialRamdiskURL:ramdiskURL];
         return;
     }
 
@@ -509,7 +499,6 @@ void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileD
 void *newVZFileSerialPortAttachment(const char *filePath, bool shouldAppend, void **error)
 {
     if (@available(macOS 11, *)) {
-        VZFileSerialPortAttachment *ret;
         NSString *filePathNSString = [NSString stringWithUTF8String:filePath];
         NSURL *fileURL = [NSURL fileURLWithPath:filePathNSString];
         return [[VZFileSerialPortAttachment alloc]
@@ -868,12 +857,8 @@ void *VZVirtualMachine_socketDevices(void *machine)
 void *newVZMACAddress(const char *macAddress)
 {
     if (@available(macOS 11, *)) {
-        VZMACAddress *ret;
-        @autoreleasepool {
-            NSString *str = [NSString stringWithUTF8String:macAddress];
-            ret = [[VZMACAddress alloc] initWithString:str];
-        }
-        return ret;
+        NSString *str = [NSString stringWithUTF8String:macAddress];
+        return [[VZMACAddress alloc] initWithString:str];
     }
 
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
@@ -933,13 +918,9 @@ const char *getVZMACAddressString(void *macAddress)
 void *newVZSharedDirectory(const char *dirPath, bool readOnly)
 {
     if (@available(macOS 12, *)) {
-        VZSharedDirectory *ret;
-        @autoreleasepool {
-            NSString *dirPathNSString = [NSString stringWithUTF8String:dirPath];
-            NSURL *dirURL = [NSURL fileURLWithPath:dirPathNSString];
-            ret = [[VZSharedDirectory alloc] initWithURL:dirURL readOnly:(BOOL)readOnly];
-        }
-        return ret;
+        NSString *dirPathNSString = [NSString stringWithUTF8String:dirPath];
+        NSURL *dirURL = [NSURL fileURLWithPath:dirPathNSString];
+        return [[VZSharedDirectory alloc] initWithURL:dirURL readOnly:(BOOL)readOnly];
     }
 
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
@@ -984,12 +965,8 @@ void *newVZMultipleDirectoryShare(void *sharedDirectories)
 void *newVZVirtioFileSystemDeviceConfiguration(const char *tag)
 {
     if (@available(macOS 12, *)) {
-        VZVirtioFileSystemDeviceConfiguration *ret;
-        @autoreleasepool {
-            NSString *tagNSString = [NSString stringWithUTF8String:tag];
-            ret = [[VZVirtioFileSystemDeviceConfiguration alloc] initWithTag:tagNSString];
-        }
-        return ret;
+        NSString *tagNSString = [NSString stringWithUTF8String:tag];
+        return [[VZVirtioFileSystemDeviceConfiguration alloc] initWithTag:tagNSString];
     }
 
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();

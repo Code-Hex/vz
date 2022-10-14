@@ -13,12 +13,8 @@ const char *getNSErrorLocalizedDescription(void *err)
 
 const char *getNSErrorDomain(void *err)
 {
-	const char *ret;
-	@autoreleasepool {
-		NSString *domain = (NSString *)[(NSError *)err domain];
-		ret = [domain UTF8String];
-	}
-	return ret;
+	NSString *domain = (NSString *)[(NSError *)err domain];
+	return [domain UTF8String];
 }
 
 const char *getNSErrorUserInfo(void *err)
@@ -68,10 +64,8 @@ void *makeNSMutableDictionary()
 
 void insertNSMutableDictionary(void *dict, char *key, void *val)
 {
-	@autoreleasepool {
-		NSString *nskey = [NSString stringWithUTF8String: key];
-		[(NSMutableDictionary *)dict setValue:(NSObject *)val forKey:nskey];
-	}
+	NSString *nskey = [NSString stringWithUTF8String: key];
+	[(NSMutableDictionary *)dict setValue:(NSObject *)val forKey:nskey];
 }
 
 void *newNSError()

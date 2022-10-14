@@ -5,6 +5,7 @@
 //
 
 #import "virtualization.h"
+#import "virtualization_helper.h"
 #import "virtualization_view.h"
 
 char *copyCString(NSString *nss)
@@ -1059,14 +1060,23 @@ void *makeDispatchQueue(const char *label)
     return queue;
 }
 
+typedef void (^vm_completion_handler_t)(NSError *);
+
+vm_completion_handler_t makeVMCompletionHandler(void *completionHandler)
+{
+    return Block_copy(^(NSError *err) {
+        virtualMachineCompletionHandler(completionHandler, err);
+    });
+}
+
 void startWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
     if (@available(macOS 11, *)) {
+        vm_completion_handler_t handler = makeVMCompletionHandler(completionHandler);
         dispatch_sync((dispatch_queue_t)queue, ^{
-            [(VZVirtualMachine *)machine startWithCompletionHandler:^(NSError *err) {
-                virtualMachineCompletionHandler(completionHandler, err);
-            }];
+            [(VZVirtualMachine *)machine startWithCompletionHandler:handler];
         });
+        Block_release(handler);
         return;
     }
 
@@ -1076,11 +1086,11 @@ void startWithCompletionHandler(void *machine, void *queue, void *completionHand
 void pauseWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
     if (@available(macOS 11, *)) {
+        vm_completion_handler_t handler = makeVMCompletionHandler(completionHandler);
         dispatch_sync((dispatch_queue_t)queue, ^{
-            [(VZVirtualMachine *)machine pauseWithCompletionHandler:^(NSError *err) {
-                virtualMachineCompletionHandler(completionHandler, err);
-            }];
+            [(VZVirtualMachine *)machine pauseWithCompletionHandler:handler];
         });
+        Block_release(handler);
         return;
     }
 
@@ -1090,11 +1100,11 @@ void pauseWithCompletionHandler(void *machine, void *queue, void *completionHand
 void resumeWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
     if (@available(macOS 11, *)) {
+        vm_completion_handler_t handler = makeVMCompletionHandler(completionHandler);
         dispatch_sync((dispatch_queue_t)queue, ^{
-            [(VZVirtualMachine *)machine resumeWithCompletionHandler:^(NSError *err) {
-                virtualMachineCompletionHandler(completionHandler, err);
-            }];
+            [(VZVirtualMachine *)machine resumeWithCompletionHandler:handler];
         });
+        Block_release(handler);
         return;
     }
 
@@ -1104,11 +1114,11 @@ void resumeWithCompletionHandler(void *machine, void *queue, void *completionHan
 void stopWithCompletionHandler(void *machine, void *queue, void *completionHandler)
 {
     if (@available(macOS 12, *)) {
+        vm_completion_handler_t handler = makeVMCompletionHandler(completionHandler);
         dispatch_sync((dispatch_queue_t)queue, ^{
-            [(VZVirtualMachine *)machine stopWithCompletionHandler:^(NSError *err) {
-                virtualMachineCompletionHandler(completionHandler, err);
-            }];
+            [(VZVirtualMachine *)machine stopWithCompletionHandler:handler];
         });
+        Block_release(handler);
         return;
     }
 

@@ -1,6 +1,6 @@
 #ifdef __arm64__
 #import "virtualization_arm64.h"
-#import "virtualization_raise.h"
+#import "virtualization_helper.h"
 
 @implementation ProgressObserver
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;

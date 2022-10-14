@@ -6,7 +6,10 @@ package vz
 # include "virtualization.h"
 */
 import "C"
-import "runtime"
+import (
+	"os"
+	"runtime"
+)
 
 type baseStorageDeviceAttachment struct{}
 
@@ -46,6 +49,9 @@ type DiskImageStorageDeviceAttachment struct {
 func NewDiskImageStorageDeviceAttachment(diskPath string, readOnly bool) (*DiskImageStorageDeviceAttachment, error) {
 	if macosMajorVersionLessThan(11) {
 		return nil, ErrUnsupportedOSVersion
+	}
+	if _, err := os.Stat(diskPath); err != nil {
+		return nil, err
 	}
 
 	nserr := newNSErrorAsNil()

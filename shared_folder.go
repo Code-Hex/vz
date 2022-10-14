@@ -6,7 +6,10 @@ package vz
 # include "virtualization.h"
 */
 import "C"
-import "runtime"
+import (
+	"os"
+	"runtime"
+)
 
 // DirectorySharingDeviceConfiguration for a directory sharing device configuration.
 type DirectorySharingDeviceConfiguration interface {
@@ -69,6 +72,10 @@ func NewSharedDirectory(dirPath string, readOnly bool) (*SharedDirectory, error)
 	if macosMajorVersionLessThan(12) {
 		return nil, ErrUnsupportedOSVersion
 	}
+	if _, err := os.Stat(dirPath); err != nil {
+		return nil, err
+	}
+
 	dirPathChar := charWithGoString(dirPath)
 	defer dirPathChar.Free()
 	sd := &SharedDirectory{
@@ -124,6 +131,8 @@ type MultipleDirectoryShare struct {
 
 	*baseDirectoryShare
 }
+
+var _ DirectoryShare = (*MultipleDirectoryShare)(nil)
 
 // NewMultipleDirectoryShare creates a new multiple directories share.
 func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) (*MultipleDirectoryShare, error) {

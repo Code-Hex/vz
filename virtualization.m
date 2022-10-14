@@ -45,7 +45,7 @@ char *copyCString(NSString *nss)
 
 /*!
  @abstract Create a VZLinuxBootLoader with the Linux kernel passed as URL.
- @param kernelPath  Path of Linux kernel on the local file system.
+ @param kernelPath Path of Linux kernel on the local file system.
 */
 void *newVZLinuxBootLoader(const char *kernelPath)
 {

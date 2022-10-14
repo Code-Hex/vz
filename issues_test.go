@@ -1,7 +1,9 @@
 package vz
 
 import (
+	"errors"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -55,9 +57,66 @@ func TestIssue50(t *testing.T) {
 	})
 }
 
-func TestIssue71(t *testing.T) {
-	_, err := NewFileSerialPortAttachment("/non/existing/path", false)
-	if err == nil {
-		t.Error("NewFileSerialPortAttachment should have returned an error")
-	}
+func TestIssue43(t *testing.T) {
+	const doesNotExists = "/non/existing/path"
+	t.Run("does not throw NSInvalidArgumentException", func(t *testing.T) {
+		t.Run("NewLinuxBootLoader", func(t *testing.T) {
+			_, err := NewLinuxBootLoader(doesNotExists)
+			if err == nil {
+				t.Fatal("expected returns error")
+			}
+			if !strings.HasPrefix(err.Error(), "invalid linux kernel") {
+				t.Error(err)
+			}
+			if !errors.Is(err, os.ErrNotExist) {
+				t.Errorf("want underlying error %q but got %q", os.ErrNotExist, err)
+			}
+
+			f, err := os.CreateTemp("", "vmlinuz")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := f.Close(); err != nil {
+				t.Fatal(err)
+			}
+
+			_, err = NewLinuxBootLoader(f.Name(), WithInitrd(doesNotExists))
+			if err == nil {
+				t.Fatal("expected returns error")
+			}
+			if !strings.HasPrefix(err.Error(), "invalid initial RAM disk") {
+				t.Error(err)
+			}
+			if !errors.Is(err, os.ErrNotExist) {
+				t.Errorf("want underlying error %q but got %q", os.ErrNotExist, err)
+			}
+		})
+
+		cases := map[string]func() error{
+			// This is also fixed issue #71
+			"NewFileSerialPortAttachment": func() error {
+				_, err := NewFileSerialPortAttachment(doesNotExists, false)
+				return err
+			},
+			"NewSharedDirectory": func() error {
+				_, err := NewFileSerialPortAttachment(doesNotExists, false)
+				return err
+			},
+			"NewDiskImageStorageDeviceAttachment": func() error {
+				_, err := NewDiskImageStorageDeviceAttachment(doesNotExists, false)
+				return err
+			},
+		}
+		for name, run := range cases {
+			t.Run(name, func(t *testing.T) {
+				err := run()
+				if err == nil {
+					t.Fatal("expected returns error")
+				}
+				if !errors.Is(err, os.ErrNotExist) {
+					t.Errorf("want underlying error %q but got %q", os.ErrNotExist, err)
+				}
+			})
+		}
+	})
 }

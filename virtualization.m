@@ -6,6 +6,7 @@
 
 #import "virtualization.h"
 #import "virtualization_view.h"
+#import "virtualization_helper.h"
 
 char *copyCString(NSString *nss)
 {

@@ -198,6 +198,9 @@ func NewMacAuxiliaryStorage(storagePath string, opts ...NewMacAuxiliaryStorageOp
 	if macosMajorVersionLessThan(12) {
 		return nil, ErrUnsupportedOSVersion
 	}
+	if _, err := os.Stat(storagePath); err != nil {
+		return nil, err
+	}
 
 	storage := &MacAuxiliaryStorage{storagePath: storagePath}
 	for _, opt := range opts {
@@ -205,6 +208,7 @@ func NewMacAuxiliaryStorage(storagePath string, opts ...NewMacAuxiliaryStorageOp
 			return nil, err
 		}
 	}
+
 	if storage.pointer.ptr == nil {
 		cpath := charWithGoString(storagePath)
 		defer cpath.Free()
@@ -423,6 +427,9 @@ func LoadMacOSRestoreImageFromPath(imagePath string) (retImage *MacOSRestoreImag
 	if macosMajorVersionLessThan(12) {
 		return nil, ErrUnsupportedOSVersion
 	}
+	if _, err := os.Stat(imagePath); err != nil {
+		return nil, err
+	}
 
 	waitCh := make(chan struct{})
 	handler := macOSRestoreImageHandler(func(restoreImage *MacOSRestoreImage, err error) {
@@ -461,6 +468,9 @@ type MacOSInstaller struct {
 func NewMacOSInstaller(vm *VirtualMachine, restoreImageIpsw string) (*MacOSInstaller, error) {
 	if macosMajorVersionLessThan(12) {
 		return nil, ErrUnsupportedOSVersion
+	}
+	if _, err := os.Stat(restoreImageIpsw); err != nil {
+		return nil, err
 	}
 
 	cs := charWithGoString(restoreImageIpsw)

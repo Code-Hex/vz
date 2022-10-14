@@ -8,6 +8,7 @@ package vz
 import "C"
 import (
 	"fmt"
+	"os"
 	"runtime"
 )
 
@@ -44,26 +45,31 @@ func (b *LinuxBootLoader) String() string {
 	)
 }
 
-type LinuxBootLoaderOption func(b *LinuxBootLoader)
+type LinuxBootLoaderOption func(b *LinuxBootLoader) error
 
 // WithCommandLine sets the command-line parameters.
 // see: https://www.kernel.org/doc/html/latest/admin-guide/kernel-parameters.html
 func WithCommandLine(cmdLine string) LinuxBootLoaderOption {
-	return func(b *LinuxBootLoader) {
+	return func(b *LinuxBootLoader) error {
 		b.cmdLine = cmdLine
 		cs := charWithGoString(cmdLine)
 		defer cs.Free()
 		C.setCommandLineVZLinuxBootLoader(b.Ptr(), cs.CString())
+		return nil
 	}
 }
 
 // WithInitrd sets the optional initial RAM disk.
 func WithInitrd(initrdPath string) LinuxBootLoaderOption {
-	return func(b *LinuxBootLoader) {
+	return func(b *LinuxBootLoader) error {
+		if _, err := os.Stat(initrdPath); err != nil {
+			return fmt.Errorf("invalid initial RAM disk path: %w", err)
+		}
 		b.initrdPath = initrdPath
 		cs := charWithGoString(initrdPath)
 		defer cs.Free()
 		C.setInitialRamdiskURLVZLinuxBootLoader(b.Ptr(), cs.CString())
+		return nil
 	}
 }
 
@@ -74,6 +80,9 @@ func WithInitrd(initrdPath string) LinuxBootLoaderOption {
 func NewLinuxBootLoader(vmlinuz string, opts ...LinuxBootLoaderOption) (*LinuxBootLoader, error) {
 	if macosMajorVersionLessThan(11) {
 		return nil, ErrUnsupportedOSVersion
+	}
+	if _, err := os.Stat(vmlinuz); err != nil {
+		return nil, fmt.Errorf("invalid linux kernel path: %w", err)
 	}
 
 	vmlinuzPath := charWithGoString(vmlinuz)
@@ -90,7 +99,9 @@ func NewLinuxBootLoader(vmlinuz string, opts ...LinuxBootLoaderOption) (*LinuxBo
 		self.Release()
 	})
 	for _, opt := range opts {
-		opt(bootLoader)
+		if err := opt(bootLoader); err != nil {
+			return nil, err
+		}
 	}
 	return bootLoader, nil
 }

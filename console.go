@@ -78,15 +78,18 @@ type FileSerialPortAttachment struct {
 // NewFileSerialPortAttachment initialize the FileSerialPortAttachment from a path of a file.
 // If error is not nil, used to report errors if intialization fails.
 //
-// - path of the file for the attachment on the local file system.
-// - shouldAppend True if the file should be opened in append mode, false otherwise.
-//    When a file is opened in append mode, writing to that file will append to the end of it.
+//   - path of the file for the attachment on the local file system.
+//   - shouldAppend True if the file should be opened in append mode, false otherwise.
+//     When a file is opened in append mode, writing to that file will append to the end of it.
 //
 // This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
 // be returned on older versions.
 func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPortAttachment, error) {
 	if macosMajorVersionLessThan(11) {
 		return nil, ErrUnsupportedOSVersion
+	}
+	if _, err := os.Stat(path); err != nil {
+		return nil, err
 	}
 
 	cpath := charWithGoString(path)

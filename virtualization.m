@@ -1062,11 +1062,11 @@ void *makeDispatchQueue(const char *label)
 
 typedef void (^vm_completion_handler_t)(NSError *);
 
-vm_completion_handler_t makeVMCompletionHandler(const void *completionHandler)
+vm_completion_handler_t makeVMCompletionHandler(void *completionHandler)
 {
     return Block_copy(^(NSError *err) {
-        virtualMachineCompletionHandler(handler, err);
-    })
+        virtualMachineCompletionHandler(completionHandler, err);
+    });
 }
 
 void startWithCompletionHandler(void *machine, void *queue, void *completionHandler)

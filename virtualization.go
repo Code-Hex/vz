@@ -233,57 +233,54 @@ func virtualMachineCompletionHandler(cgoHandlerPtr, errPtr unsafe.Pointer) {
 	}
 }
 
-func makeHandler(fn func(error)) (func(error), chan struct{}) {
-	done := make(chan struct{})
+func makeHandler() (func(error), chan error) {
+	ch := make(chan error, 1)
 	return func(err error) {
-		fn(err)
-		close(done)
-	}, done
+		ch <- err
+		close(ch)
+	}, ch
 }
 
 // Start a virtual machine that is in either Stopped or Error state.
 //
-// - fn parameter called after the virtual machine has been successfully started or on error.
-// The error parameter passed to the block is null if the start was successful.
+// If you want to listen status change events, use the "StateChangedNotify" method.
 //
 // This is only supported on macOS 11 and newer, on older versions fn will be called immediately
 // with ErrUnsupportedOSVersion.
-func (v *VirtualMachine) Start(fn func(error)) {
-	h, done := makeHandler(fn)
+func (v *VirtualMachine) Start() error {
+	h, errCh := makeHandler()
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()
 	C.startWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
-	<-done
+	return <-errCh
 }
 
 // Pause a virtual machine that is in Running state.
 //
-// - fn parameter called after the virtual machine has been successfully paused or on error.
-// The error parameter passed to the block is null if the pause was successful.
+// If you want to listen status change events, use the "StateChangedNotify" method.
 //
 // This is only supported on macOS 11 and newer, on older versions fn will be called immediately
 // with ErrUnsupportedOSVersion.
-func (v *VirtualMachine) Pause(fn func(error)) {
-	h, done := makeHandler(fn)
+func (v *VirtualMachine) Pause() error {
+	h, errCh := makeHandler()
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()
 	C.pauseWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
-	<-done
+	return <-errCh
 }
 
 // Resume a virtual machine that is in the Paused state.
 //
-// - fn parameter called after the virtual machine has been successfully resumed or on error.
-// The error parameter passed to the block is null if the resumption was successful.
+// If you want to listen status change events, use the "StateChangedNotify" method.
 //
 // This is only supported on macOS 11 and newer, on older versions fn will be called immediately
 // with ErrUnsupportedOSVersion.
-func (v *VirtualMachine) Resume(fn func(error)) {
-	h, done := makeHandler(fn)
+func (v *VirtualMachine) Resume() error {
+	h, errCh := makeHandler()
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()
 	C.resumeWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
-	<-done
+	return <-errCh
 }
 
 // RequestStop requests that the guest turns itself off.
@@ -308,21 +305,22 @@ func (v *VirtualMachine) RequestStop() (bool, error) {
 // The completion handler returns an error object when the VM fails to stop,
 // or nil if the stop was successful.
 //
+// If you want to listen status change events, use the "StateChangedNotify" method.
+//
 // Warning: This is a destructive operation. It stops the VM without
 // giving the guest a chance to stop cleanly.
 //
 // This is only supported on macOS 12 and newer, on older versions fn will be called immediately
 // with ErrUnsupportedOSVersion.
-func (v *VirtualMachine) Stop(fn func(error)) {
+func (v *VirtualMachine) Stop() error {
 	if macosMajorVersionLessThan(12) {
-		fn(ErrUnsupportedOSVersion)
-		return
+		return ErrUnsupportedOSVersion
 	}
-	h, done := makeHandler(fn)
+	h, errCh := makeHandler()
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()
 	C.stopWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
-	<-done
+	return <-errCh
 }
 
 // StartGraphicApplication starts an application to display graphics of the VM.

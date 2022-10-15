@@ -162,13 +162,11 @@ func main() {
 	signalCh := make(chan os.Signal, 1)
 	signal.Notify(signalCh, syscall.SIGTERM)
 
-	errCh := make(chan error, 1)
+	if err := vm.Start(); err != nil {
+		log.Fatalf("Start virtual machine is failed: %s", err)
+	}
 
-	vm.Start(func(err error) {
-		if err != nil {
-			errCh <- err
-		}
-	})
+	errCh := make(chan error, 1)
 
 	for {
 		select {
@@ -192,7 +190,7 @@ func main() {
 		}
 	}
 
-	// vm.Resume(func(err error) {
-	// 	fmt.Println("in resume:", err)
-	// })
+	// if err := vm.Resume(); err != nil {
+	// 	log.Println("in resume:", err)
+	// }
 }

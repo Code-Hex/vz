@@ -145,11 +145,7 @@ func TestAvailableVersion(t *testing.T) {
 				return err
 			},
 			"(*VirtualMachine).Stop": func() error {
-				var err error
-				(*VirtualMachine)(nil).Stop(func(e error) {
-					err = e
-				})
-				return err
+				return (*VirtualMachine)(nil).Stop()
 			},
 			"(*VirtualMachine).StartGraphicApplication": func() error {
 				return (*VirtualMachine)(nil).StartGraphicApplication(0, 0)

@@ -35,23 +35,15 @@ func TestIssue50(t *testing.T) {
 	}
 
 	t.Run("check for segmentation faults", func(t *testing.T) {
-		cases := map[string]func(){
-			"start handler": func() {
-				m.Start(func(err error) { _ = err == nil })
-			},
-			"pause handler": func() {
-				m.Pause(func(err error) { _ = err == nil })
-			},
-			"resume handler": func() {
-				m.Resume(func(err error) { _ = err == nil })
-			},
-			"stop handler": func() {
-				m.Stop(func(err error) { _ = err == nil })
-			},
+		cases := map[string]func() error{
+			"start handler":  m.Start,
+			"pause handler":  m.Pause,
+			"resume handler": m.Resume,
+			"stop handler":   m.Stop,
 		}
 		for name, run := range cases {
 			t.Run(name, func(t *testing.T) {
-				run()
+				_ = run()
 			})
 		}
 	})

@@ -95,9 +95,6 @@ type machineStatus struct {
 // The configuration must be valid. Validation can be performed at runtime with (*VirtualMachineConfiguration).Validate() method.
 // The configuration is copied by the initializer.
 //
-// A new dispatch queue will create when called this function.
-// Every operation on the virtual machine must be done on that queue. The callbacks and delegate methods are invoked on that queue.
-//
 // This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
 // be returned on older versions.
 func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, error) {

@@ -50,13 +50,11 @@ func runVM(ctx context.Context) error {
 		return err
 	}
 
-	errCh := make(chan error, 1)
+	if err := vm.Start(); err != nil {
+		return err
+	}
 
-	vm.Start(func(err error) {
-		if err != nil {
-			errCh <- err
-		}
-	})
+	errCh := make(chan error, 1)
 
 	go func() {
 		for {
@@ -85,11 +83,9 @@ func runVM(ctx context.Context) error {
 			time.Sleep(time.Second * 3)
 			if i > 3 {
 				log.Println("call stop")
-				vm.Stop(func(err error) {
-					if err != nil {
-						log.Println("stop with error", err)
-					}
-				})
+				if err := vm.Stop(); err != nil {
+					log.Println("stop with error", err)
+				}
 			}
 		}
 		log.Println("finished cleanup")

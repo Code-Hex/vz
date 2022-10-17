@@ -48,6 +48,7 @@ void setSerialPortsVZVirtualMachineConfiguration(void *config,
     void *serialPorts);
 void setSocketDevicesVZVirtualMachineConfiguration(void *config,
     void *socketDevices);
+void *socketDevicesVZVirtualMachineConfiguration(void *config);
 void setStorageDevicesVZVirtualMachineConfiguration(void *config,
     void *storageDevices);
 void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void *directorySharingDevices);

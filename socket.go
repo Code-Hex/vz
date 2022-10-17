@@ -51,15 +51,20 @@ func NewVirtioSocketDeviceConfiguration() (*VirtioSocketDeviceConfiguration, err
 		return nil, ErrUnsupportedOSVersion
 	}
 
-	config := &VirtioSocketDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioSocketDeviceConfiguration(),
-		},
-	}
+	config := newVirtioSocketDeviceConfiguration(C.newVZVirtioSocketDeviceConfiguration())
+
 	runtime.SetFinalizer(config, func(self *VirtioSocketDeviceConfiguration) {
 		self.Release()
 	})
 	return config, nil
+}
+
+func newVirtioSocketDeviceConfiguration(ptr unsafe.Pointer) *VirtioSocketDeviceConfiguration {
+	return &VirtioSocketDeviceConfiguration{
+		pointer: pointer{
+			ptr: ptr,
+		},
+	}
 }
 
 // VirtioSocketDevice a device that manages port-based connections between the guest system and the host computer.

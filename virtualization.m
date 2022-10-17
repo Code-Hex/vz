@@ -274,6 +274,18 @@ void setSocketDevicesVZVirtualMachineConfiguration(void *config,
 }
 
 /*!
+ @abstract Return the list of socket devices configurations for this VZVirtualMachineConfiguration. Return an empty array if no socket device configuration is set.
+ */
+void *socketDevicesVZVirtualMachineConfiguration(void *config)
+{
+    if (@available(macOS 11, *)) {
+        return [(VZVirtualMachineConfiguration *)config socketDevices]; // NSArray<VZSocketDeviceConfiguration *>
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+/*!
  @abstract List of disk devices. Empty by default.
  @see VZVirtioBlockDeviceConfiguration
  */

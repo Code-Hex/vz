@@ -44,6 +44,7 @@ void setMemoryBalloonDevicesVZVirtualMachineConfiguration(void *config,
     void *memoryBalloonDevices);
 void setNetworkDevicesVZVirtualMachineConfiguration(void *config,
     void *networkDevices);
+void *networkDevicesVZVirtualMachineConfiguration(void *config);
 void setSerialPortsVZVirtualMachineConfiguration(void *config,
     void *serialPorts);
 void setSocketDevicesVZVirtualMachineConfiguration(void *config,

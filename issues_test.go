@@ -131,20 +131,46 @@ func TestIssue81(t *testing.T) {
 	if !ok {
 		t.Fatal("failed to validate config")
 	}
-	vsockDevs := config.SocketDevices()
-	if len(vsockDevs) != 0 {
-		t.Errorf("unexpected number of virtio-vsock devices: got %d, expected 0", len(vsockDevs))
-	}
 
-	vsockDev, err := NewVirtioSocketDeviceConfiguration()
-	if err != nil {
-		t.Fatal(err)
-	}
+	t.Run("SocketDevices", func(t *testing.T) {
+		vsockDevs := config.SocketDevices()
+		if len(vsockDevs) != 0 {
+			t.Errorf("unexpected number of virtio-vsock devices: got %d, expected 0", len(vsockDevs))
+		}
 
-	config.SetSocketDevicesVirtualMachineConfiguration([]SocketDeviceConfiguration{vsockDev})
+		vsockDev, err := NewVirtioSocketDeviceConfiguration()
+		if err != nil {
+			t.Fatal(err)
+		}
 
-	vsockDevs = config.SocketDevices()
-	if len(vsockDevs) != 1 {
-		t.Errorf("unexpected number of virtio-vsock devices: got %d, expected 1", len(vsockDevs))
-	}
+		config.SetSocketDevicesVirtualMachineConfiguration([]SocketDeviceConfiguration{vsockDev})
+
+		vsockDevs = config.SocketDevices()
+		if len(vsockDevs) != 1 {
+			t.Errorf("unexpected number of virtio-vsock devices: got %d, expected 1", len(vsockDevs))
+		}
+	})
+
+	t.Run("NetworkDevices", func(t *testing.T) {
+		networkDevs := config.NetworkDevices()
+		if len(networkDevs) != 0 {
+			t.Errorf("unexpected number of virtio-net devices: got %d, expected 0", len(networkDevs))
+		}
+
+		nat, err := NewNATNetworkDeviceAttachment()
+		if err != nil {
+			t.Fatal(err)
+		}
+		networkDev, err := NewVirtioNetworkDeviceConfiguration(nat)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		config.SetNetworkDevicesVirtualMachineConfiguration([]*VirtioNetworkDeviceConfiguration{networkDev})
+
+		networkDevs = config.NetworkDevices()
+		if len(networkDevs) != 1 {
+			t.Errorf("unexpected number of virtio-vsock devices: got %d, expected 1", len(networkDevs))
+		}
+	})
 }

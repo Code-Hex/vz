@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestIssue50(t *testing.T) {
+func newTestConfig(t *testing.T) *VirtualMachineConfiguration {
 	f, err := os.CreateTemp("", "vmlinuz")
 	if err != nil {
 		t.Fatal(err)
@@ -22,6 +22,13 @@ func TestIssue50(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	return config
+}
+
+func TestIssue50(t *testing.T) {
+	config := newTestConfig(t)
+
 	ok, err := config.Validate()
 	if err != nil {
 		t.Fatal(err)

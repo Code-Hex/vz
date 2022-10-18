@@ -120,3 +120,31 @@ func TestIssue43(t *testing.T) {
 		}
 	})
 }
+
+func TestIssue81(t *testing.T) {
+	config := newTestConfig(t)
+
+	ok, err := config.Validate()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Fatal("failed to validate config")
+	}
+	vsockDevs := config.SocketDevices()
+	if len(vsockDevs) != 0 {
+		t.Errorf("unexpected number of virtio-vsock devices: got %d, expected 0", len(vsockDevs))
+	}
+
+	vsockDev, err := NewVirtioSocketDeviceConfiguration()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	config.SetSocketDevicesVirtualMachineConfiguration([]SocketDeviceConfiguration{vsockDev})
+
+	vsockDevs = config.SocketDevices()
+	if len(vsockDevs) != 1 {
+		t.Errorf("unexpected number of virtio-vsock devices: got %d, expected 1", len(vsockDevs))
+	}
+}

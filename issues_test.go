@@ -13,6 +13,7 @@ func newTestConfig(t *testing.T) *VirtualMachineConfiguration {
 		t.Fatal(err)
 	}
 	defer f.Close()
+	defer os.Remove(f.Name())
 
 	bootloader, err := NewLinuxBootLoader(f.Name())
 	if err != nil {

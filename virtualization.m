@@ -244,6 +244,18 @@ void setNetworkDevicesVZVirtualMachineConfiguration(void *config,
 }
 
 /*!
+ @abstract Return the list of network devices configurations for this VZVirtualMachineConfiguration. Return an empty array if no network device configuration is set.
+ */
+void *networkDevicesVZVirtualMachineConfiguration(void *config)
+{
+    if (@available(macOS 11, *)) {
+        return [(VZVirtualMachineConfiguration *)config networkDevices]; // NSArray<VZSocketDeviceConfiguration *>
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+/*!
  @abstract List of serial ports. Empty by default.
  @see VZVirtioConsoleDeviceSerialPortConfiguration
  */
@@ -268,6 +280,18 @@ void setSocketDevicesVZVirtualMachineConfiguration(void *config,
     if (@available(macOS 11, *)) {
         [(VZVirtualMachineConfiguration *)config setSocketDevices:[(NSMutableArray *)socketDevices copy]];
         return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+/*!
+ @abstract Return the list of socket devices configurations for this VZVirtualMachineConfiguration. Return an empty array if no socket device configuration is set.
+ */
+void *socketDevicesVZVirtualMachineConfiguration(void *config)
+{
+    if (@available(macOS 11, *)) {
+        return [(VZVirtualMachineConfiguration *)config socketDevices]; // NSArray<VZSocketDeviceConfiguration *>
     }
 
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();

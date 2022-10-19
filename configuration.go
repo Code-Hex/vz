@@ -113,6 +113,22 @@ func (v *VirtualMachineConfiguration) SetNetworkDevicesVirtualMachineConfigurati
 	C.setNetworkDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
 }
 
+// NetworkDevices return the list of network device configuration set in this virtual machine configuration.
+// Return an empty array if no network device configuration is set.
+func (v *VirtualMachineConfiguration) NetworkDevices() []*VirtioNetworkDeviceConfiguration {
+	nsArray := &NSArray{
+		pointer: pointer{
+			ptr: C.networkDevicesVZVirtualMachineConfiguration(v.Ptr()),
+		},
+	}
+	ptrs := nsArray.ToPointerSlice()
+	networkDevices := make([]*VirtioNetworkDeviceConfiguration, len(ptrs))
+	for i, ptr := range ptrs {
+		networkDevices[i] = newVirtioNetworkDeviceConfiguration(ptr)
+	}
+	return networkDevices
+}
+
 // SetSerialPortsVirtualMachineConfiguration sets list of serial ports. Empty by default.
 func (v *VirtualMachineConfiguration) SetSerialPortsVirtualMachineConfiguration(cs []*VirtioConsoleDeviceSerialPortConfiguration) {
 	ptrs := make([]NSObject, len(cs))
@@ -131,6 +147,22 @@ func (v *VirtualMachineConfiguration) SetSocketDevicesVirtualMachineConfiguratio
 	}
 	array := convertToNSMutableArray(ptrs)
 	C.setSocketDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+}
+
+// SocketDevices return the list of socket device configuration configured in this virtual machine configuration.
+// Return an empty array if no socket device configuration is set.
+func (v *VirtualMachineConfiguration) SocketDevices() []SocketDeviceConfiguration {
+	nsArray := &NSArray{
+		pointer: pointer{
+			ptr: C.socketDevicesVZVirtualMachineConfiguration(v.Ptr()),
+		},
+	}
+	ptrs := nsArray.ToPointerSlice()
+	socketDevices := make([]SocketDeviceConfiguration, len(ptrs))
+	for i, ptr := range ptrs {
+		socketDevices[i] = newVirtioSocketDeviceConfiguration(ptr)
+	}
+	return socketDevices
 }
 
 // SetStorageDevicesVirtualMachineConfiguration sets list of disk devices. Empty by default.

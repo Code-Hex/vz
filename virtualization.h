@@ -44,10 +44,12 @@ void setMemoryBalloonDevicesVZVirtualMachineConfiguration(void *config,
     void *memoryBalloonDevices);
 void setNetworkDevicesVZVirtualMachineConfiguration(void *config,
     void *networkDevices);
+void *networkDevicesVZVirtualMachineConfiguration(void *config);
 void setSerialPortsVZVirtualMachineConfiguration(void *config,
     void *serialPorts);
 void setSocketDevicesVZVirtualMachineConfiguration(void *config,
     void *socketDevices);
+void *socketDevicesVZVirtualMachineConfiguration(void *config);
 void setStorageDevicesVZVirtualMachineConfiguration(void *config,
     void *storageDevices);
 void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void *directorySharingDevices);

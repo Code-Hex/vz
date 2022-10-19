@@ -10,6 +10,7 @@ import (
 	"net"
 	"os"
 	"runtime"
+	"unsafe"
 )
 
 // BridgedNetwork defines a network interface that bridges a physical interface with a virtual machine.
@@ -177,17 +178,23 @@ func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) (*V
 		return nil, ErrUnsupportedOSVersion
 	}
 
-	config := &VirtioNetworkDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioNetworkDeviceConfiguration(
-				attachment.Ptr(),
-			),
-		},
-	}
+	config := newVirtioNetworkDeviceConfiguration(
+		C.newVZVirtioNetworkDeviceConfiguration(
+			attachment.Ptr(),
+		),
+	)
 	runtime.SetFinalizer(config, func(self *VirtioNetworkDeviceConfiguration) {
 		self.Release()
 	})
 	return config, nil
+}
+
+func newVirtioNetworkDeviceConfiguration(ptr unsafe.Pointer) *VirtioNetworkDeviceConfiguration {
+	return &VirtioNetworkDeviceConfiguration{
+		pointer: pointer{
+			ptr: ptr,
+		},
+	}
 }
 
 func (v *VirtioNetworkDeviceConfiguration) SetMACAddress(macAddress *MACAddress) {

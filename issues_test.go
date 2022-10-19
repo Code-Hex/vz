@@ -7,12 +7,13 @@ import (
 	"testing"
 )
 
-func TestIssue50(t *testing.T) {
+func newTestConfig(t *testing.T) *VirtualMachineConfiguration {
 	f, err := os.CreateTemp("", "vmlinuz")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer f.Close()
+	defer os.Remove(f.Name())
 
 	bootloader, err := NewLinuxBootLoader(f.Name())
 	if err != nil {
@@ -22,6 +23,13 @@ func TestIssue50(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	return config
+}
+
+func TestIssue50(t *testing.T) {
+	config := newTestConfig(t)
+
 	ok, err := config.Validate()
 	if err != nil {
 		t.Fatal(err)
@@ -109,6 +117,60 @@ func TestIssue43(t *testing.T) {
 					t.Errorf("want underlying error %q but got %q", os.ErrNotExist, err)
 				}
 			})
+		}
+	})
+}
+
+func TestIssue81(t *testing.T) {
+	config := newTestConfig(t)
+
+	ok, err := config.Validate()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !ok {
+		t.Fatal("failed to validate config")
+	}
+
+	t.Run("SocketDevices", func(t *testing.T) {
+		vsockDevs := config.SocketDevices()
+		if len(vsockDevs) != 0 {
+			t.Errorf("unexpected number of virtio-vsock devices: got %d, expected 0", len(vsockDevs))
+		}
+
+		vsockDev, err := NewVirtioSocketDeviceConfiguration()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		config.SetSocketDevicesVirtualMachineConfiguration([]SocketDeviceConfiguration{vsockDev})
+
+		vsockDevs = config.SocketDevices()
+		if len(vsockDevs) != 1 {
+			t.Errorf("unexpected number of virtio-vsock devices: got %d, expected 1", len(vsockDevs))
+		}
+	})
+
+	t.Run("NetworkDevices", func(t *testing.T) {
+		networkDevs := config.NetworkDevices()
+		if len(networkDevs) != 0 {
+			t.Errorf("unexpected number of virtio-net devices: got %d, expected 0", len(networkDevs))
+		}
+
+		nat, err := NewNATNetworkDeviceAttachment()
+		if err != nil {
+			t.Fatal(err)
+		}
+		networkDev, err := NewVirtioNetworkDeviceConfiguration(nat)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		config.SetNetworkDevicesVirtualMachineConfiguration([]*VirtioNetworkDeviceConfiguration{networkDev})
+
+		networkDevs = config.NetworkDevices()
+		if len(networkDevs) != 1 {
+			t.Errorf("unexpected number of virtio-vsock devices: got %d, expected 1", len(networkDevs))
 		}
 	})
 }

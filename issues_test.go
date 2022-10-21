@@ -99,7 +99,7 @@ func TestIssue43(t *testing.T) {
 				return err
 			},
 			"NewSharedDirectory": func() error {
-				_, err := NewFileSerialPortAttachment(doesNotExists, false)
+				_, err := NewSharedDirectory(doesNotExists, false)
 				return err
 			},
 			"NewDiskImageStorageDeviceAttachment": func() error {
@@ -113,7 +113,7 @@ func TestIssue43(t *testing.T) {
 				if err == nil {
 					t.Fatal("expected returns error")
 				}
-				if !errors.Is(err, os.ErrNotExist) {
+				if !errors.Is(err, ErrUnsupportedOSVersion) && !errors.Is(err, os.ErrNotExist) {
 					t.Errorf("want underlying error %q but got %q", os.ErrNotExist, err)
 				}
 			})

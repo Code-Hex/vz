@@ -93,11 +93,6 @@ func TestIssue43(t *testing.T) {
 		})
 
 		cases := map[string]func() error{
-			// This is also fixed issue #71
-			"NewFileSerialPortAttachment": func() error {
-				_, err := NewFileSerialPortAttachment(doesNotExists, false)
-				return err
-			},
 			"NewSharedDirectory": func() error {
 				_, err := NewSharedDirectory(doesNotExists, false)
 				return err

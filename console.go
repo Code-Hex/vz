@@ -88,9 +88,6 @@ func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPor
 	if macosMajorVersionLessThan(11) {
 		return nil, ErrUnsupportedOSVersion
 	}
-	if _, err := os.Stat(path); err != nil {
-		return nil, err
-	}
 
 	cpath := charWithGoString(path)
 	defer cpath.Free()

@@ -3,3 +3,5 @@ virtualization
 .envrc
 .env
 RestoreImage.ipsw
+testdata/*
+!testdata/.gitkeep

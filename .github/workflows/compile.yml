@@ -4,8 +4,6 @@ on:
     paths-ignore:
       - example/**
       - README.md
-    branches:
-      - "master"
   pull_request:
     paths-ignore:
       - example/**
@@ -40,6 +38,8 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go }}
+      - name: Download Linux kernel
+        run: make download_kernel
       - name: Unit Test
         run: make test
       - name: Build

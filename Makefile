@@ -10,7 +10,7 @@ fmt:
 
 .PHONY: test
 test:
-	go test -exec "go run $(PWD)/cmd/codesign" -count=1 ./... -timeout 60s
+	go test -exec "go run $(PWD)/cmd/codesign" -count=1 ./... -timeout 60s -v
 
 .PHONY: download_kernel
 download_kernel:

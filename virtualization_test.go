@@ -217,7 +217,9 @@ func setKeepAlive(t *testing.T, session *ssh.Session) {
 }
 
 func TestRun(t *testing.T) {
-	container := newVirtualizationMachine(t)
+	container := newVirtualizationMachine(t, func(vmc *vz.VirtualMachineConfiguration) error {
+		return setupConsoleConfig(vmc)
+	})
 	sshSession, err := container.Client.NewSession()
 	if err != nil {
 		t.Error(err)

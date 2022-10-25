@@ -157,7 +157,7 @@ func newVirtualizationMachine(
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
-	time.Sleep(3 * time.Second)
+	time.Sleep(7 * time.Second)
 
 	clientCh := make(chan *ssh.Client, 1)
 	socketDevice.ConnectToPort(2222, func(vsockConn *vz.VirtioSocketConnection, err error) {

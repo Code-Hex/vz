@@ -313,31 +313,14 @@ func TestRun(t *testing.T) {
 }
 
 func TestStop(t *testing.T) {
+	if vz.MacosMajorVersionLessThan(12) {
+		t.Skip("Stop is supported from macOS 12")
+	}
+
 	container := newVirtualizationMachine(t)
 	defer container.Close()
 
 	vm := container.VirtualMachine
-
-	if vz.MacosMajorVersionLessThan(12) {
-		t.Run("check Stop API for macOS 11", func(t *testing.T) {
-			if got := vm.CanStop(); got {
-				t.Fatal("want CanStop is false")
-			}
-			if err := vm.Stop(); err != nil && !errors.Is(err, vz.ErrUnsupportedOSVersion) {
-				t.Fatalf("unexpected error want %v but got %v",
-					vz.ErrUnsupportedOSVersion,
-					err,
-				)
-			}
-
-			sshSession := container.NewSession(t)
-			defer sshSession.Close()
-
-			sshSession.Run("poweroff")
-			waitState(t, 3*time.Second, vm, vz.VirtualMachineStateStopped)
-		})
-		return
-	}
 
 	if got := vm.CanStop(); !got {
 		t.Fatal("want CanRequestStop is true")

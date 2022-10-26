@@ -1,10 +1,12 @@
 package vz_test
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net"
 	"os"
+	"syscall"
 	"testing"
 	"time"
 
@@ -100,6 +102,15 @@ func (c *Container) Close() error {
 	return c.Client.Close()
 }
 
+func (c *Container) NewSession(t *testing.T) *ssh.Session {
+	sshSession, err := c.Client.NewSession()
+	if err != nil {
+		t.Fatal(err)
+	}
+	setKeepAlive(t, sshSession)
+	return sshSession
+}
+
 func newVirtualizationMachine(
 	t *testing.T,
 	configs ...func(*vz.VirtualMachineConfiguration) error,
@@ -157,30 +168,44 @@ func newVirtualizationMachine(
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
-	time.Sleep(7 * time.Second)
-
 	clientCh := make(chan *ssh.Client, 1)
-	socketDevice.ConnectToPort(2222, func(vsockConn *vz.VirtioSocketConnection, err error) {
-		if err != nil {
-			t.Errorf("failed to connect vsock: %v", err)
-			return
+	errCh := make(chan error, 1)
+
+RETRY:
+	for i := 1; ; i++ {
+		socketDevice.ConnectToPort(2222, func(vsockConn *vz.VirtioSocketConnection, err error) {
+			if err != nil {
+				errCh <- fmt.Errorf("failed to connect vsock: %w", err)
+				return
+			}
+
+			sshClient, err := newSshClient(vsockConn, ":22", sshConfig)
+			if err != nil {
+				vsockConn.Close()
+				errCh <- fmt.Errorf("failed to create a new ssh client: %w", err)
+				return
+			}
+			clientCh <- sshClient
+			close(clientCh)
+		})
+
+		select {
+		case err := <-errCh:
+			var nserr *vz.NSError
+			if !errors.As(err, &nserr) || i > 5 {
+				t.Fatal(err)
+			}
+			if nserr.Code == int(syscall.ECONNRESET) {
+				t.Logf("retry vsock connect: %d", i)
+				time.Sleep(time.Second)
+				continue RETRY
+			}
+		case sshClient := <-clientCh:
+			return &Container{
+				VirtualMachine: vm,
+				Client:         sshClient,
+			}
 		}
-
-		sshClient, err := newSshClient(vsockConn, ":22", sshConfig)
-		if err != nil {
-			vsockConn.Close()
-			t.Errorf("failed to create a new ssh client: %v", err)
-			return
-		}
-		clientCh <- sshClient
-		close(clientCh)
-	})
-
-	sshClient := <-clientCh
-
-	return &Container{
-		VirtualMachine: vm,
-		Client:         sshClient,
 	}
 }
 
@@ -217,16 +242,15 @@ func setKeepAlive(t *testing.T, session *ssh.Session) {
 }
 
 func TestRun(t *testing.T) {
-	container := newVirtualizationMachine(t, func(vmc *vz.VirtualMachineConfiguration) error {
-		return setupConsoleConfig(vmc)
-	})
-	sshSession, err := container.Client.NewSession()
-	if err != nil {
-		t.Error(err)
-		return
-	}
+	container := newVirtualizationMachine(t,
+		func(vmc *vz.VirtualMachineConfiguration) error {
+			return setupConsoleConfig(vmc)
+		},
+	)
+	defer container.Close()
+
+	sshSession := container.NewSession(t)
 	defer sshSession.Close()
-	setKeepAlive(t, sshSession)
 
 	vm := container.VirtualMachine
 
@@ -251,10 +275,12 @@ func TestRun(t *testing.T) {
 	waitState(t, timeout, vm, vz.VirtualMachineStateResuming)
 	waitState(t, timeout, vm, vz.VirtualMachineStateRunning)
 
+	if got := vm.CanRequestStop(); !got {
+		t.Fatal("want CanRequestStop is true")
+	}
 	// TODO(codehex): I need to support
 	// see: https://developer.apple.com/forums/thread/702160
 	//
-	// t.Logf("CanRequestStop: %t", vm.CanRequestStop())
 	// if success, err := vm.RequestStop(); !success || err != nil {
 	// 	t.Error(success, err)
 	// 	return
@@ -265,5 +291,44 @@ func TestRun(t *testing.T) {
 
 	sshSession.Run("poweroff")
 
-	waitState(t, 5*time.Second, vm, vz.VirtualMachineStateStopped)
+	waitState(t, timeout, vm, vz.VirtualMachineStateStopped)
+}
+
+func TestStop(t *testing.T) {
+	container := newVirtualizationMachine(t)
+	defer container.Close()
+
+	vm := container.VirtualMachine
+
+	if vz.MacosMajorVersionLessThan(12) {
+		t.Run("check Stop API for macOS 11", func(t *testing.T) {
+			if got := vm.CanStop(); got {
+				t.Fatal("want CanStop is false")
+			}
+			if err := vm.Stop(); err != nil && !errors.Is(err, vz.ErrUnsupportedOSVersion) {
+				t.Fatalf("unexpected error want %v but got %v",
+					vz.ErrUnsupportedOSVersion,
+					err,
+				)
+			}
+
+			sshSession := container.NewSession(t)
+			defer sshSession.Close()
+
+			sshSession.Run("poweroff")
+			waitState(t, 3*time.Second, vm, vz.VirtualMachineStateStopped)
+		})
+		return
+	}
+
+	if got := vm.CanStop(); !got {
+		t.Fatal("want CanRequestStop is true")
+	}
+	if err := vm.Stop(); err != nil {
+		t.Fatal(err)
+	}
+
+	timeout := 3 * time.Second
+	waitState(t, timeout, vm, vz.VirtualMachineStateStopping)
+	waitState(t, timeout, vm, vz.VirtualMachineStateStopped)
 }

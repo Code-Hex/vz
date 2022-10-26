@@ -171,6 +171,14 @@ func newVirtualizationMachine(
 	clientCh := make(chan *ssh.Client, 1)
 	errCh := make(chan error, 1)
 
+	// Workaround for macOS 11
+	//
+	// This is a workaround. This version of the API does not immediately return an error and
+	// does not seem to have a connection timeout set.
+	if vz.MacosMajorVersionLessThan(12) {
+		time.Sleep(5 * time.Second)
+	}
+
 RETRY:
 	for i := 1; ; i++ {
 		socketDevice.ConnectToPort(2222, func(vsockConn *vz.VirtioSocketConnection, err error) {

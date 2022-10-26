@@ -85,7 +85,7 @@ void *newVZVirtioSocketListener();
 void *newVZSharedDirectory(const char *dirPath, bool readOnly);
 void *newVZSingleDirectoryShare(void *sharedDirectory);
 void *newVZMultipleDirectoryShare(void *sharedDirectories);
-void *newVZVirtioFileSystemDeviceConfiguration(const char *tag);
+void *newVZVirtioFileSystemDeviceConfiguration(const char *tag, void **error);
 void setVZVirtioFileSystemDeviceConfigurationShare(void *config, void *share);
 void *VZVirtualMachine_socketDevices(void *machine);
 void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQueue, void *listener, uint32_t port);

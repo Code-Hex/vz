@@ -43,10 +43,17 @@ func NewVirtioFileSystemDeviceConfiguration(tag string) (*VirtioFileSystemDevice
 	}
 	tagChar := charWithGoString(tag)
 	defer tagChar.Free()
+
+	nserr := newNSErrorAsNil()
+	nserrPtr := nserr.Ptr()
+
 	fsdConfig := &VirtioFileSystemDeviceConfiguration{
 		pointer: pointer{
-			ptr: C.newVZVirtioFileSystemDeviceConfiguration(tagChar.CString()),
+			ptr: C.newVZVirtioFileSystemDeviceConfiguration(tagChar.CString(), &nserrPtr),
 		},
+	}
+	if err := newNSError(nserrPtr); err != nil {
+		return nil, err
 	}
 	runtime.SetFinalizer(fsdConfig, func(self *VirtioFileSystemDeviceConfiguration) {
 		self.Release()
@@ -151,7 +158,7 @@ func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) (*MultipleDir
 			ptr: C.newVZMultipleDirectoryShare(dict.Ptr()),
 		},
 	}
-	runtime.SetFinalizer(config, func(self *SingleDirectoryShare) {
+	runtime.SetFinalizer(config, func(self *MultipleDirectoryShare) {
 		self.Release()
 	})
 	return config, nil

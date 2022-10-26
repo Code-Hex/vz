@@ -986,10 +986,14 @@ void *newVZMultipleDirectoryShare(void *sharedDirectories)
     The tag to use for this device configuration.
  @return A VZVirtioFileSystemDeviceConfiguration
  */
-void *newVZVirtioFileSystemDeviceConfiguration(const char *tag)
+void *newVZVirtioFileSystemDeviceConfiguration(const char *tag, void **error)
 {
     if (@available(macOS 12, *)) {
         NSString *tagNSString = [NSString stringWithUTF8String:tag];
+        BOOL valid = [VZVirtioFileSystemDeviceConfiguration validateTag:tagNSString error:(NSError *_Nullable *_Nullable)error];
+        if (!valid) {
+            return nil;
+        }
         return [[VZVirtioFileSystemDeviceConfiguration alloc] initWithTag:tagNSString];
     }
 

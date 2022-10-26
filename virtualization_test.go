@@ -262,6 +262,9 @@ func TestRun(t *testing.T) {
 
 	vm := container.VirtualMachine
 
+	if got := vm.State(); vz.VirtualMachineStateRunning != got {
+		t.Fatalf("want state %v but got %v", vz.VirtualMachineStateRunning, got)
+	}
 	if got := vm.CanPause(); !got {
 		t.Fatal("want CanPause is true")
 	}
@@ -273,6 +276,9 @@ func TestRun(t *testing.T) {
 	waitState(t, timeout, vm, vz.VirtualMachineStatePausing)
 	waitState(t, timeout, vm, vz.VirtualMachineStatePaused)
 
+	if got := vm.State(); vz.VirtualMachineStatePaused != got {
+		t.Fatalf("want state %v but got %v", vz.VirtualMachineStatePaused, got)
+	}
 	if got := vm.CanResume(); !got {
 		t.Fatal("want CanPause is true")
 	}
@@ -300,6 +306,10 @@ func TestRun(t *testing.T) {
 	sshSession.Run("poweroff")
 
 	waitState(t, timeout, vm, vz.VirtualMachineStateStopped)
+
+	if got := vm.State(); vz.VirtualMachineStateStopped != got {
+		t.Fatalf("want state %v but got %v", vz.VirtualMachineStateStopped, got)
+	}
 }
 
 func TestStop(t *testing.T) {

@@ -13,7 +13,7 @@ import (
 )
 
 func setupConsoleConfig(config *vz.VirtualMachineConfiguration) error {
-	serialPortAttachment, err := vz.NewFileHandleSerialPortAttachment(os.Stdin, os.Stdout)
+	serialPortAttachment, err := vz.NewFileHandleSerialPortAttachment(os.Stdin, os.Stderr)
 	if err != nil {
 		return fmt.Errorf("failed to create file handle serial port attachment: %w", err)
 	}

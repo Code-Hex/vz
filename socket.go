@@ -7,10 +7,12 @@ package vz
 */
 import "C"
 import (
+	"fmt"
 	"net"
 	"os"
 	"runtime"
 	"runtime/cgo"
+	"sync"
 	"time"
 	"unsafe"
 )
@@ -83,18 +85,44 @@ func newVirtioSocketDevice(ptr, dispatchQueue unsafe.Pointer) *VirtioSocketDevic
 	}
 }
 
-// SetSocketListenerForPort configures an object to monitor the specified port for new connections.
+// Listen creates a new VirtioSocketListener which is a struct that listens for port-based connection requests
+// from the guest operating system.
 //
-// see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdevice/3656679-setsocketlistener?language=objc
-func (v *VirtioSocketDevice) SetSocketListenerForPort(listener *VirtioSocketListener, port uint32) {
-	C.VZVirtioSocketDevice_setSocketListenerForPort(v.Ptr(), v.dispatchQueue, listener.Ptr(), C.uint32_t(port))
-}
+// Be sure to close the listener by calling `VirtioSocketListener.Close` after used this one.
+//
+// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func (v *VirtioSocketDevice) Listen(port uint32) (*VirtioSocketListener, error) {
+	if macosMajorVersionLessThan(11) {
+		return nil, ErrUnsupportedOSVersion
+	}
 
-// RemoveSocketListenerForPort removes the listener object from the specfied port.
-//
-// see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdevice/3656678-removesocketlistenerforport?language=objc
-func (v *VirtioSocketDevice) RemoveSocketListenerForPort(listener *VirtioSocketListener, port uint32) {
-	C.VZVirtioSocketDevice_removeSocketListenerForPort(v.Ptr(), v.dispatchQueue, C.uint32_t(port))
+	ch := make(chan accept, 1) // should I increase more caps?
+
+	handler := cgo.NewHandle(func(conn *VirtioSocketConnection, err error) {
+		ch <- accept{conn, err}
+	})
+	ptr := C.newVZVirtioSocketListener(
+		unsafe.Pointer(&handler),
+	)
+	listener := &VirtioSocketListener{
+		pointer: pointer{
+			ptr: ptr,
+		},
+		vsockDevice: v,
+		port:        port,
+		handler:     handler,
+		acceptch:    ch,
+	}
+
+	C.VZVirtioSocketDevice_setSocketListenerForPort(
+		v.Ptr(),
+		v.dispatchQueue,
+		listener.Ptr(),
+		C.uint32_t(port),
+	)
+
+	return listener, nil
 }
 
 //export connectionHandler
@@ -121,6 +149,12 @@ func connectionHandler(connPtr, errPtr, cgoHandlerPtr unsafe.Pointer) {
 func (v *VirtioSocketDevice) ConnectToPort(port uint32, fn func(conn *VirtioSocketConnection, err error)) {
 	cgoHandler := cgo.NewHandle(fn)
 	C.VZVirtioSocketDevice_connectToPort(v.Ptr(), v.dispatchQueue, C.uint32_t(port), unsafe.Pointer(&cgoHandler))
+	runtime.KeepAlive(v)
+}
+
+type accept struct {
+	conn *VirtioSocketConnection
+	err  error
 }
 
 // VirtioSocketListener a struct that listens for port-based connection requests from the guest operating system.
@@ -128,44 +162,71 @@ func (v *VirtioSocketDevice) ConnectToPort(port uint32, fn func(conn *VirtioSock
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketlistener?language=objc
 type VirtioSocketListener struct {
 	pointer
+	vsockDevice *VirtioSocketDevice
+	handler     cgo.Handle
+	port        uint32
+	acceptch    chan accept
+	closeOnce   sync.Once
 }
 
-var shouldAcceptNewConnectionHandlers = map[unsafe.Pointer]func(conn *VirtioSocketConnection, err error) bool{}
+var _ net.Listener = (*VirtioSocketListener)(nil)
 
-// NewVirtioSocketListener creates a new VirtioSocketListener with connection handler.
-//
-// The handler is executed asynchronously. Be sure to close the connection used in the handler by calling `conn.Close`.
-// This is to prevent connection leaks.
-//
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
-// be returned on older versions.
-func NewVirtioSocketListener(handler func(conn *VirtioSocketConnection, err error)) (*VirtioSocketListener, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
-	}
-
-	ptr := C.newVZVirtioSocketListener()
-	listener := &VirtioSocketListener{
-		pointer: pointer{
-			ptr: ptr,
-		},
-	}
-
-	shouldAcceptNewConnectionHandlers[ptr] = func(conn *VirtioSocketConnection, err error) bool {
-		go handler(conn, err)
-		return true // must be connected
-	}
-
-	return listener, nil
+// Accept implements the Accept method in the Listener interface; it waits for the next call and returns a net.Conn.
+func (v *VirtioSocketListener) Accept() (net.Conn, error) {
+	return v.AcceptVirtioSocketConnection()
 }
+
+// AcceptVirtioSocketConnection accepts the next incoming call and returns the new connection.
+func (v *VirtioSocketListener) AcceptVirtioSocketConnection() (*VirtioSocketConnection, error) {
+	result := <-v.acceptch
+	return result.conn, result.err
+}
+
+// Close stops listening on the virtio socket.
+func (v *VirtioSocketListener) Close() error {
+	v.closeOnce.Do(func() {
+		C.VZVirtioSocketDevice_removeSocketListenerForPort(
+			v.vsockDevice.Ptr(),
+			v.vsockDevice.dispatchQueue,
+			C.uint32_t(v.port),
+		)
+		v.handler.Delete()
+	})
+	return nil
+}
+
+// Addr returns the listener's network address, a *VirtioSocketListenerAddr.
+func (v *VirtioSocketListener) Addr() net.Addr {
+	const VMADDR_CID_HOST = 2 // copied from unix pacage
+	return &VirtioSocketListenerAddr{
+		CID:  VMADDR_CID_HOST,
+		Port: v.port,
+	}
+}
+
+// VirtioSocketListenerAddr represents a network end point address for the vsock protocol.
+type VirtioSocketListenerAddr struct {
+	CID  uint32
+	Port uint32
+}
+
+var _ net.Addr = (*VirtioSocketListenerAddr)(nil)
+
+// Network returns "vsock".
+func (a *VirtioSocketListenerAddr) Network() string { return "vsock" }
+
+// String returns string of "<cid>:<port>"
+func (a *VirtioSocketListenerAddr) String() string { return fmt.Sprintf("%d:%d", a.CID, a.Port) }
 
 //export shouldAcceptNewConnectionHandler
-func shouldAcceptNewConnectionHandler(listenerPtr, connPtr, devicePtr unsafe.Pointer) C.bool {
-	_ = devicePtr // NOTO(codehex): Is this really required? How to use?
+func shouldAcceptNewConnectionHandler(cgoHandlerPtr, connPtr, devicePtr unsafe.Pointer) C.bool {
+	cgoHandler := *(*cgo.Handle)(cgoHandlerPtr)
+	handler := cgoHandler.Value().(func(*VirtioSocketConnection, error))
 
 	// see: startHandler
 	conn, err := newVirtioSocketConnection(connPtr)
-	return (C.bool)(shouldAcceptNewConnectionHandlers[listenerPtr](conn, err))
+	go handler(conn, err)
+	return (C.bool)(true)
 }
 
 // VirtioSocketConnection is a port-based connection between the guest operating system and the host computer.

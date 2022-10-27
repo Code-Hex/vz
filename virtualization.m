@@ -36,10 +36,20 @@ char *copyCString(NSString *nss)
 }
 @end
 
-@implementation VZVirtioSocketListenerDelegateImpl
+@implementation VZVirtioSocketListenerDelegateImpl {
+    void *_cgoHandler;
+}
+
+- (instancetype)initWithHandler:(void *)cgoHandler
+{
+    self = [super init];
+    _cgoHandler = cgoHandler;
+    return self;
+}
+
 - (BOOL)listener:(VZVirtioSocketListener *)listener shouldAcceptNewConnection:(VZVirtioSocketConnection *)connection fromSocketDevice:(VZVirtioSocketDevice *)socketDevice;
 {
-    return (BOOL)shouldAcceptNewConnectionHandler(listener, connection, socketDevice);
+    return (BOOL)shouldAcceptNewConnectionHandler(_cgoHandler, connection, socketDevice);
 }
 @end
 
@@ -743,11 +753,11 @@ void *newVZVirtioSocketDeviceConfiguration()
  @see VZVirtioSocketDevice
  @see VZVirtioSocketListenerDelegate
  */
-void *newVZVirtioSocketListener()
+void *newVZVirtioSocketListener(void *cgoHandlerPtr)
 {
     if (@available(macOS 11, *)) {
         VZVirtioSocketListener *ret = [[VZVirtioSocketListener alloc] init];
-        [ret setDelegate:[[VZVirtioSocketListenerDelegateImpl alloc] init]];
+        [ret setDelegate:[[VZVirtioSocketListenerDelegateImpl alloc] initWithHandler:cgoHandlerPtr]];
         return ret;
     }
 

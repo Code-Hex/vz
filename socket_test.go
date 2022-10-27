@@ -22,16 +22,23 @@ func TestVirtioSocketListener(t *testing.T) {
 	wantData := "hello"
 	done := make(chan struct{})
 
-	listener, err := vz.NewVirtioSocketListener(func(conn *vz.VirtioSocketConnection, err error) {
+	listener, err := socketDevice.Listen(uint32(port))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer listener.Close()
+
+	go func() {
 		defer close(done)
 
+		conn, err := listener.Accept()
 		if err != nil {
 			t.Errorf("failed to accept connection: %v", err)
 			return
 		}
 		defer conn.Close()
 
-		destPort := conn.DestinationPort()
+		destPort := conn.(*vz.VirtioSocketConnection).DestinationPort()
 		if port != int(destPort) {
 			t.Errorf("want destination port %d but got %d", destPort, port)
 			return
@@ -48,12 +55,7 @@ func TestVirtioSocketListener(t *testing.T) {
 		if wantData != got {
 			t.Errorf("want %q but got %q", wantData, got)
 		}
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	socketDevice.SetSocketListenerForPort(listener, uint32(port))
+	}()
 
 	session := container.NewSession(t)
 	var buf bytes.Buffer
@@ -69,6 +71,4 @@ func TestVirtioSocketListener(t *testing.T) {
 	case <-time.After(3 * time.Second):
 		t.Fatalf("timeout connection handling after accepted")
 	}
-
-	socketDevice.RemoveSocketListenerForPort(listener, uint32(port))
 }

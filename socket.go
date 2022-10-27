@@ -7,15 +7,12 @@ package vz
 */
 import "C"
 import (
-	"fmt"
 	"net"
 	"os"
 	"runtime"
 	"runtime/cgo"
 	"time"
 	"unsafe"
-
-	"golang.org/x/sys/unix"
 )
 
 // SocketDeviceConfiguration for a socket device configuration.
@@ -176,7 +173,16 @@ func shouldAcceptNewConnectionHandler(listenerPtr, connPtr, devicePtr unsafe.Poi
 // You don’t create connection objects directly. When the guest operating system initiates a connection, the virtual machine creates
 // the connection object and passes it to the appropriate VirtioSocketListener struct, which forwards the object to its delegate.
 //
-// This is implemented net.Conn interface.
+// This is implemented net.Conn interface. This is generated from duplicated a file descriptor which is returned
+// from virtualization.framework. macOS cannot connect directly to the Guest operating system using vsock. The　vsock
+// connection must always be made via virtualization.framework. The diagram looks like this.
+//
+// ┌─────────┐                     ┌────────────────────────────┐               ┌────────────┐
+// │  macOS  │<─── unix socket ───>│  virtualization.framework  │<─── vsock ───>│  Guest OS  │
+// └─────────┘                     └────────────────────────────┘               └────────────┘
+//
+// You will notice that this is not vsock in using this library. However, all data this connection goes through to the vsock
+// connection to which the Guest OS is connected.
 //
 // This struct does not have any pointers for objects of the Objective-C. Because the various values
 // of the VZVirtioSocketConnection object handled by Objective-C are no longer needed after the conversion
@@ -184,9 +190,9 @@ func shouldAcceptNewConnectionHandler(listenerPtr, connPtr, devicePtr unsafe.Poi
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketconnection?language=objc
 type VirtioSocketConnection struct {
-	rawConn net.Conn
-	laddr   *Addr // local
-	raddr   *Addr // remote
+	rawConn         net.Conn
+	destinationPort uint32
+	sourcePort      uint32
 }
 
 var _ net.Conn = (*VirtioSocketConnection)(nil)
@@ -200,15 +206,9 @@ func newVirtioSocketConnection(ptr unsafe.Pointer) (*VirtioSocketConnection, err
 		return nil, err
 	}
 	conn := &VirtioSocketConnection{
-		rawConn: rawConn,
-		laddr: &Addr{
-			CID:  unix.VMADDR_CID_HOST,
-			Port: (uint32)(vzVirtioSocketConnection.destinationPort),
-		},
-		raddr: &Addr{
-			CID:  unix.VMADDR_CID_HYPERVISOR,
-			Port: (uint32)(vzVirtioSocketConnection.sourcePort),
-		},
+		rawConn:         rawConn,
+		destinationPort: (uint32)(vzVirtioSocketConnection.destinationPort),
+		sourcePort:      (uint32)(vzVirtioSocketConnection.sourcePort),
 	}
 	return conn, nil
 }
@@ -225,10 +225,10 @@ func (v *VirtioSocketConnection) Close() error {
 }
 
 // LocalAddr returns the local network address.
-func (v *VirtioSocketConnection) LocalAddr() net.Addr { return v.laddr }
+func (v *VirtioSocketConnection) LocalAddr() net.Addr { return v.rawConn.LocalAddr() }
 
 // RemoteAddr returns the remote network address.
-func (v *VirtioSocketConnection) RemoteAddr() net.Addr { return v.raddr }
+func (v *VirtioSocketConnection) RemoteAddr() net.Addr { return v.rawConn.RemoteAddr() }
 
 // SetDeadline sets the read and write deadlines associated
 // with the connection. It is equivalent to calling both
@@ -253,24 +253,10 @@ func (v *VirtioSocketConnection) SetWriteDeadline(t time.Time) error {
 
 // DestinationPort returns the destination port number of the connection.
 func (v *VirtioSocketConnection) DestinationPort() uint32 {
-	return v.laddr.Port
+	return v.destinationPort
 }
 
 // SourcePort returns the source port number of the connection.
 func (v *VirtioSocketConnection) SourcePort() uint32 {
-	return v.raddr.Port
+	return v.sourcePort
 }
-
-// Addr represents a network end point address for the vsock protocol.
-type Addr struct {
-	CID  uint32
-	Port uint32
-}
-
-var _ net.Addr = (*Addr)(nil)
-
-// Network returns "vsock".
-func (a *Addr) Network() string { return "vsock" }
-
-// String returns string of "<cid>:<port>"
-func (a *Addr) String() string { return fmt.Sprintf("%d:%d", a.CID, a.Port) }

@@ -168,9 +168,6 @@ func newVirtualizationMachine(
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
-	clientCh := make(chan *ssh.Client, 1)
-	errCh := make(chan error, 1)
-
 	// Workaround for macOS 11
 	//
 	// This is a workaround. This version of the API does not immediately return an error and
@@ -181,24 +178,8 @@ func newVirtualizationMachine(
 
 RETRY:
 	for i := 1; ; i++ {
-		socketDevice.ConnectToPort(2222, func(vsockConn *vz.VirtioSocketConnection, err error) {
-			if err != nil {
-				errCh <- fmt.Errorf("failed to connect vsock: %w", err)
-				return
-			}
-
-			sshClient, err := newSshClient(vsockConn, ":22", sshConfig)
-			if err != nil {
-				vsockConn.Close()
-				errCh <- fmt.Errorf("failed to create a new ssh client: %w", err)
-				return
-			}
-			clientCh <- sshClient
-			close(clientCh)
-		})
-
-		select {
-		case err := <-errCh:
+		conn, err := socketDevice.Connect(2222)
+		if err != nil {
 			var nserr *vz.NSError
 			if !errors.As(err, &nserr) || i > 5 {
 				t.Fatal(err)
@@ -208,11 +189,18 @@ RETRY:
 				time.Sleep(time.Second)
 				continue RETRY
 			}
-		case sshClient := <-clientCh:
-			return &Container{
-				VirtualMachine: vm,
-				Client:         sshClient,
-			}
+			t.Fatalf("failed to connect vsock: %v", err)
+		}
+
+		sshClient, err := newSshClient(conn, ":22", sshConfig)
+		if err != nil {
+			conn.Close()
+			t.Fatalf("failed to create a new ssh client: %v", err)
+		}
+
+		return &Container{
+			VirtualMachine: vm,
+			Client:         sshClient,
 		}
 	}
 }

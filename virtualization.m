@@ -812,7 +812,7 @@ void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *
 void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, void *cgoHandlerPtr)
 {
     if (@available(macOS 11, *)) {
-        dispatch_sync((dispatch_queue_t)vmQueue, ^{
+        dispatch_async((dispatch_queue_t)vmQueue, ^{
             [(VZVirtioSocketDevice *)socketDevice connectToPort:port
                                               completionHandler:^(VZVirtioSocketConnection *connection, NSError *err) {
                                                   connectionHandler(connection, err, cgoHandlerPtr);

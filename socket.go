@@ -97,10 +97,10 @@ func (v *VirtioSocketDevice) Listen(port uint32) (*VirtioSocketListener, error) 
 		return nil, ErrUnsupportedOSVersion
 	}
 
-	ch := make(chan accept, 1) // should I increase more caps?
+	ch := make(chan connResults, 1) // should I increase more caps?
 
 	handler := cgo.NewHandle(func(conn *VirtioSocketConnection, err error) {
-		ch <- accept{conn, err}
+		ch <- connResults{conn, err}
 	})
 	ptr := C.newVZVirtioSocketListener(
 		unsafe.Pointer(&handler),
@@ -139,20 +139,26 @@ func connectionHandler(connPtr, errPtr, cgoHandlerPtr unsafe.Pointer) {
 	}
 }
 
-// ConnectToPort Initiates a connection to the specified port of the guest operating system.
+// Connect Initiates a connection to the specified port of the guest operating system.
 //
 // This method initiates the connection asynchronously, and executes the completion handler when the results are available.
 // If the guest operating system doesn’t listen for connections to the specifed port, this method does nothing.
 //
 // For a successful connection, this method sets the sourcePort property of the resulting VZVirtioSocketConnection object to a random port number.
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdevice/3656677-connecttoport?language=objc
-func (v *VirtioSocketDevice) ConnectToPort(port uint32, fn func(conn *VirtioSocketConnection, err error)) {
-	cgoHandler := cgo.NewHandle(fn)
+func (v *VirtioSocketDevice) Connect(port uint32) (*VirtioSocketConnection, error) {
+	ch := make(chan connResults, 1)
+	cgoHandler := cgo.NewHandle(func(conn *VirtioSocketConnection, err error) {
+		ch <- connResults{conn, err}
+		close(ch)
+	})
 	C.VZVirtioSocketDevice_connectToPort(v.Ptr(), v.dispatchQueue, C.uint32_t(port), unsafe.Pointer(&cgoHandler))
+	result := <-ch
 	runtime.KeepAlive(v)
+	return result.conn, result.err
 }
 
-type accept struct {
+type connResults struct {
 	conn *VirtioSocketConnection
 	err  error
 }
@@ -165,7 +171,7 @@ type VirtioSocketListener struct {
 	vsockDevice *VirtioSocketDevice
 	handler     cgo.Handle
 	port        uint32
-	acceptch    chan accept
+	acceptch    chan connResults
 	closeOnce   sync.Once
 }
 

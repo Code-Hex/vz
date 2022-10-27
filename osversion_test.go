@@ -76,8 +76,8 @@ func TestAvailableVersion(t *testing.T) {
 				_, err := NewVirtioSocketDeviceConfiguration()
 				return err
 			},
-			"NewVirtioSocketListener": func() error {
-				_, err := NewVirtioSocketListener(nil)
+			"(*VirtioSocketDevice).Listen": func() error {
+				_, err := (*VirtioSocketDevice)(nil).Listen(1)
 				return err
 			},
 			"NewDiskImageStorageDeviceAttachment": func() error {

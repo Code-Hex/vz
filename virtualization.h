@@ -13,7 +13,7 @@
 void virtualMachineCompletionHandler(void *cgoHandler, void *errPtr);
 void connectionHandler(void *connection, void *err, void *cgoHandlerPtr);
 void changeStateOnObserver(int state, void *cgoHandler);
-bool shouldAcceptNewConnectionHandler(void *listener, void *connection, void *socketDevice);
+bool shouldAcceptNewConnectionHandler(void *cgoHandler, void *connection, void *socketDevice);
 
 @interface Observer : NSObject
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
@@ -21,6 +21,7 @@ bool shouldAcceptNewConnectionHandler(void *listener, void *connection, void *so
 
 /* VZVirtioSocketListener */
 @interface VZVirtioSocketListenerDelegateImpl : NSObject <VZVirtioSocketListenerDelegate>
+- (instancetype)initWithHandler:(void *)cgoHandler;
 - (BOOL)listener:(VZVirtioSocketListener *)listener shouldAcceptNewConnection:(VZVirtioSocketConnection *)connection fromSocketDevice:(VZVirtioSocketDevice *)socketDevice;
 @end
 
@@ -81,7 +82,7 @@ void *newVZVirtioSocketDeviceConfiguration();
 void *newVZMACAddress(const char *macAddress);
 void *newRandomLocallyAdministeredVZMACAddress();
 const char *getVZMACAddressString(void *macAddress);
-void *newVZVirtioSocketListener();
+void *newVZVirtioSocketListener(void *cgoHandlerPtr);
 void *newVZSharedDirectory(const char *dirPath, bool readOnly);
 void *newVZSingleDirectoryShare(void *sharedDirectory);
 void *newVZMultipleDirectoryShare(void *sharedDirectories);

@@ -18,6 +18,7 @@ func TestVirtioSocketListener(t *testing.T) {
 
 	socketDevice := vm.SocketDevices()[0] // already tested in newVirtualizationMachine
 
+	port := 43218
 	wantData := "hello"
 	done := make(chan struct{})
 
@@ -29,6 +30,12 @@ func TestVirtioSocketListener(t *testing.T) {
 			return
 		}
 		defer conn.Close()
+
+		destPort := conn.DestinationPort()
+		if port != int(destPort) {
+			t.Errorf("want destination port %d but got %d", destPort, port)
+			return
+		}
 
 		buf := make([]byte, len(wantData))
 		n, err := conn.Read(buf)
@@ -46,7 +53,6 @@ func TestVirtioSocketListener(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	port := 43218
 	socketDevice.SetSocketListenerForPort(listener, uint32(port))
 
 	session := container.NewSession(t)

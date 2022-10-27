@@ -150,6 +150,7 @@ func (v *VirtioSocketDevice) Connect(port uint32) (*VirtioSocketConnection, erro
 	ch := make(chan connResults, 1)
 	cgoHandler := cgo.NewHandle(func(conn *VirtioSocketConnection, err error) {
 		ch <- connResults{conn, err}
+		close(ch)
 	})
 	C.VZVirtioSocketDevice_connectToPort(v.Ptr(), v.dispatchQueue, C.uint32_t(port), unsafe.Pointer(&cgoHandler))
 	result := <-ch

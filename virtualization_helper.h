@@ -5,3 +5,8 @@
         [[NSException exceptionWithName:@"UnhandledException" reason:@"bug" userInfo:nil] raise]; \
         __builtin_unreachable();                                                                  \
     } while (0)
+
+typedef struct nbyteslice {
+    void *ptr;
+    int len;
+} nbyteslice;

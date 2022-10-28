@@ -6,6 +6,7 @@
 
 #pragma once
 
+#import "virtualization_helper.h"
 #import <Foundation/Foundation.h>
 #import <Foundation/NSNotification.h>
 #import <Virtualization/Virtualization.h>
@@ -15,11 +16,6 @@
 @interface ProgressObserver : NSObject
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
 @end
-
-typedef struct nbyteslice {
-    void *ptr;
-    int len;
-} nbyteslice;
 
 typedef struct VZMacOSRestoreImageStruct {
     const char *url;

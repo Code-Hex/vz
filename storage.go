@@ -4,6 +4,7 @@ package vz
 #cgo darwin CFLAGS: -x objective-c -fno-objc-arc
 #cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
 # include "virtualization.h"
+# include "virtualization_13.h"
 */
 import "C"
 import (
@@ -126,4 +127,40 @@ func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) (*Vir
 		self.Release()
 	})
 	return config, nil
+}
+
+// USBMassStorageDeviceConfiguration is a configuration of a USB Mass Storage storage device.
+//
+// This device configuration creates a storage device that conforms to the USB Mass Storage specification.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzusbmassstoragedeviceconfiguration?language=objc
+type USBMassStorageDeviceConfiguration struct {
+	pointer
+
+	*baseStorageDeviceConfiguration
+
+	// marking as currently reachable.
+	// This ensures that the object is not freed, and its finalizer is not run
+	attachment StorageDeviceAttachment
+}
+
+// NewUSBMassStorageDeviceConfiguration initialize a USBMassStorageDeviceConfiguration
+// with a device attachment.
+//
+// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewUSBMassStorageDeviceConfiguration(attachment StorageDeviceAttachment) (*USBMassStorageDeviceConfiguration, error) {
+	if macosMajorVersionLessThan(13) {
+		return nil, ErrUnsupportedOSVersion
+	}
+	usbMass := &USBMassStorageDeviceConfiguration{
+		pointer: pointer{
+			ptr: C.newVZUSBMassStorageDeviceConfiguration(attachment.Ptr()),
+		},
+		attachment: attachment,
+	}
+	runtime.SetFinalizer(usbMass, func(self *USBMassStorageDeviceConfiguration) {
+		self.Release()
+	})
+	return usbMass, nil
 }

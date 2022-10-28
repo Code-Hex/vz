@@ -4,6 +4,7 @@ package vz
 #cgo darwin CFLAGS: -x objective-c -fno-objc-arc
 #cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
 # include "virtualization.h"
+# include "virtualization_13.h"
 */
 import "C"
 import "runtime"
@@ -258,6 +259,21 @@ func (v *VirtualMachineConfiguration) SetAudioDevicesVirtualMachineConfiguration
 	}
 	array := convertToNSMutableArray(ptrs)
 	C.setAudioDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+}
+
+// SetConsoleDevicesVirtualMachineConfiguration sets list of console devices. Empty by default.
+//
+// This is only supported on macOS 13 and newer. Older versions do nothing.
+func (v *VirtualMachineConfiguration) SetConsoleDevicesVirtualMachineConfiguration(cs []ConsoleDeviceConfiguration) {
+	if macosMajorVersionLessThan(13) {
+		return
+	}
+	ptrs := make([]NSObject, len(cs))
+	for i, val := range cs {
+		ptrs[i] = val
+	}
+	array := convertToNSMutableArray(ptrs)
+	C.setConsoleDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
 }
 
 // VirtualMachineConfigurationMinimumAllowedMemorySize returns minimum

@@ -13,12 +13,13 @@
  */
 void setConsoleDevicesVZVirtualMachineConfiguration(void *config, void *consoleDevices)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         [(VZVirtualMachineConfiguration *)config
             setConsoleDevices:[(NSMutableArray *)consoleDevices copy]];
         return;
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -32,10 +33,11 @@ void setConsoleDevicesVZVirtualMachineConfiguration(void *config, void *consoleD
 */
 void *newVZEFIBootLoader()
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         return [[VZEFIBootLoader alloc] init];
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -44,11 +46,12 @@ void *newVZEFIBootLoader()
  */
 void setVariableStoreVZEFIBootLoader(void *bootLoaderPtr, void *variableStore)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         [(VZEFIBootLoader *)bootLoaderPtr setVariableStore:(VZEFIVariableStore *)variableStore];
         return;
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -59,12 +62,13 @@ void setVariableStoreVZEFIBootLoader(void *bootLoaderPtr, void *variableStore)
  */
 void *newVZEFIVariableStorePath(const char *variableStorePath)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         NSString *variableStorePathNSString = [NSString stringWithUTF8String:variableStorePath];
         NSURL *variableStoreURL = [NSURL fileURLWithPath:variableStorePathNSString];
         return [[VZEFIVariableStore alloc] initWithURL:variableStoreURL];
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -76,6 +80,7 @@ void *newVZEFIVariableStorePath(const char *variableStorePath)
  */
 void *newCreatingVZEFIVariableStoreAtPath(const char *variableStorePath, void **error)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         NSString *variableStorePathNSString = [NSString stringWithUTF8String:variableStorePath];
         NSURL *variableStoreURL = [NSURL fileURLWithPath:variableStorePathNSString];
@@ -84,7 +89,7 @@ void *newCreatingVZEFIVariableStoreAtPath(const char *variableStorePath, void **
                                    options:VZEFIVariableStoreInitializationOptionAllowOverwrite
                                      error:(NSError *_Nullable *_Nullable)error];
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -96,6 +101,7 @@ void *newCreatingVZEFIVariableStoreAtPath(const char *variableStorePath, void **
  */
 void *newVZGenericMachineIdentifierWithBytes(void *machineIdentifierBytes, int len)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         VZGenericMachineIdentifier *machineIdentifier;
         @autoreleasepool {
@@ -104,7 +110,7 @@ void *newVZGenericMachineIdentifierWithBytes(void *machineIdentifierBytes, int l
         }
         return machineIdentifier;
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -115,6 +121,7 @@ void *newVZGenericMachineIdentifierWithBytes(void *machineIdentifierBytes, int l
  */
 nbyteslice getVZGenericMachineIdentifierDataRepresentation(void *machineIdentifierPtr)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         VZGenericMachineIdentifier *machineIdentifier = (VZGenericMachineIdentifier *)machineIdentifierPtr;
         NSData *data = [machineIdentifier dataRepresentation];
@@ -124,7 +131,7 @@ nbyteslice getVZGenericMachineIdentifierDataRepresentation(void *machineIdentifi
         };
         return ret;
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -133,10 +140,11 @@ nbyteslice getVZGenericMachineIdentifierDataRepresentation(void *machineIdentifi
  */
 void *newVZGenericMachineIdentifier()
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         return [[VZGenericMachineIdentifier alloc] init];
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -145,11 +153,12 @@ void *newVZGenericMachineIdentifier()
  */
 void setMachineIdentifierVZGenericPlatformConfiguration(void *config, void *machineIdentifier)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         [(VZGenericPlatformConfiguration *)config setMachineIdentifier:(VZGenericMachineIdentifier *)machineIdentifier];
         return;
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -160,11 +169,12 @@ void setMachineIdentifierVZGenericPlatformConfiguration(void *config, void *mach
  */
 void *newVZUSBMassStorageDeviceConfiguration(void *attachment)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         return [[VZUSBMassStorageDeviceConfiguration alloc]
             initWithAttachment:(VZStorageDeviceAttachment *)attachment];
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -178,10 +188,11 @@ void *newVZUSBMassStorageDeviceConfiguration(void *attachment)
 */
 void *newVZVirtioGraphicsDeviceConfiguration()
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         return [[VZVirtioGraphicsDeviceConfiguration alloc] init];
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -192,12 +203,13 @@ void *newVZVirtioGraphicsDeviceConfiguration()
 */
 void setScanoutsVZVirtioGraphicsDeviceConfiguration(void *graphicsConfiguration, void *scanouts)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         [(VZVirtioGraphicsDeviceConfiguration *)graphicsConfiguration
             setScanouts:[(NSMutableArray *)scanouts copy]];
         return;
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -208,12 +220,13 @@ void setScanoutsVZVirtioGraphicsDeviceConfiguration(void *graphicsConfiguration,
 */
 void *newVZVirtioGraphicsScanoutConfiguration(NSInteger widthInPixels, NSInteger heightInPixels)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         return [[VZVirtioGraphicsScanoutConfiguration alloc]
             initWithWidthInPixels:widthInPixels
                    heightInPixels:heightInPixels];
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -228,10 +241,11 @@ void *newVZVirtioGraphicsScanoutConfiguration(NSInteger widthInPixels, NSInteger
  */
 void *newVZVirtioConsoleDeviceConfiguration()
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         return [[VZVirtioConsoleDeviceConfiguration alloc] init];
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -240,10 +254,11 @@ void *newVZVirtioConsoleDeviceConfiguration()
  */
 void *portsVZVirtioConsoleDeviceConfiguration(void *consoleDevice)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         return [(VZVirtioConsoleDeviceConfiguration *)consoleDevice ports]; // VZVirtioConsolePortConfigurationArray
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -252,10 +267,11 @@ void *portsVZVirtioConsoleDeviceConfiguration(void *consoleDevice)
  */
 uint32_t maximumPortCountVZVirtioConsolePortConfigurationArray(void *ports)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         return [(VZVirtioConsolePortConfigurationArray *)ports maximumPortCount];
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -264,11 +280,12 @@ uint32_t maximumPortCountVZVirtioConsolePortConfigurationArray(void *ports)
  */
 void *getObjectAtIndexedSubscriptVZVirtioConsolePortConfigurationArray(void *portsPtr, int portIndex)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         VZVirtioConsolePortConfigurationArray *ports = (VZVirtioConsolePortConfigurationArray *)portsPtr;
         return ports[portIndex];
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -277,12 +294,13 @@ void *getObjectAtIndexedSubscriptVZVirtioConsolePortConfigurationArray(void *por
  */
 void setObjectAtIndexedSubscriptVZVirtioConsolePortConfigurationArray(void *portsPtr, void *portConfig, int portIndex)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         VZVirtioConsolePortConfigurationArray *ports = (VZVirtioConsolePortConfigurationArray *)portsPtr;
         ports[portIndex] = (VZVirtioConsolePortConfiguration *)portConfig;
         return;
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -297,10 +315,11 @@ void setObjectAtIndexedSubscriptVZVirtioConsolePortConfigurationArray(void *port
  */
 void *newVZVirtioConsolePortConfiguration()
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         return [[VZVirtioConsolePortConfiguration alloc] init];
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -309,12 +328,13 @@ void *newVZVirtioConsolePortConfiguration()
  */
 void setNameVZVirtioConsolePortConfiguration(void *consolePortConfig, const char *name)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         NSString *nameNSString = [NSString stringWithUTF8String:name];
         [(VZVirtioConsolePortConfiguration *)consolePortConfig setName:nameNSString];
         return;
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -323,11 +343,12 @@ void setNameVZVirtioConsolePortConfiguration(void *consolePortConfig, const char
  */
 void setIsConsoleVZVirtioConsolePortConfiguration(void *consolePortConfig, bool isConsole)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         [(VZVirtioConsolePortConfiguration *)consolePortConfig setIsConsole:(BOOL)isConsole];
         return;
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -339,21 +360,23 @@ void setIsConsoleVZVirtioConsolePortConfiguration(void *consolePortConfig, bool 
  */
 void setAttachmentVZVirtioConsolePortConfiguration(void *consolePortConfig, void *serialPortAttachment)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         [(VZVirtioConsolePortConfiguration *)consolePortConfig
             setAttachment:(VZSerialPortAttachment *)serialPortAttachment];
         return;
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
 void *newVZSpiceAgentPortAttachment()
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         return [[VZSpiceAgentPortAttachment alloc] init];
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -367,10 +390,11 @@ void *newVZSpiceAgentPortAttachment()
  */
 void setSharesClipboardVZSpiceAgentPortAttachment(void *attachment, bool sharesClipboard)
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         return [(VZSpiceAgentPortAttachment *)attachment setSharesClipboard:(BOOL)sharesClipboard];
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
@@ -384,54 +408,10 @@ void setSharesClipboardVZSpiceAgentPortAttachment(void *attachment, bool sharesC
  */
 const char *getSpiceAgentPortName()
 {
+#ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         return [[VZSpiceAgentPortAttachment spiceAgentPortName] UTF8String];
     }
-
-    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
-}
-
-/*!
- @abstract Initialize a Rosetta directory share if Rosetta support for Linux binaries is installed.
- @param error Error object to store the error, if an error exists.
- @discussion The call returns an error if Rosetta is not available for a directory share. To install Rosetta support, use +[VZLinuxRosettaDirectoryShare installRosettaWithCompletionHandler:].
- */
-void *newVZLinuxRosettaDirectoryShare(void **error)
-{
-    if (@available(macOS 13, *)) {
-        return [[VZLinuxRosettaDirectoryShare alloc] initWithError:(NSError *_Nullable *_Nullable)error];
-    }
-
-    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
-}
-
-/*!
- @abstract Download and install Rosetta support for Linux binaries if necessary.
- @param completionHandler The completion handler gets called with a valid error on failure and a nil error on success. It will also be invoked on an arbitrary queue.
- @discussion
-    The call prompts the user through the download and install flow for Rosetta. This call is successful if the error is nil.
- @see +[VZLinuxRosettaDirectoryShare availability]
- */
-void linuxInstallRosetta(void *cgoHandler)
-{
-    if (@available(macOS 13, *)) {
-        [VZLinuxRosettaDirectoryShare installRosettaWithCompletionHandler:^(NSError *error) {
-            linuxInstallRosettaWithCompletionHandler(cgoHandler, error);
-        }];
-        return;
-    }
-
-    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
-}
-
-/*!
- @abstract Check the availability of Rosetta support for the directory share.
- */
-int availabilityVZLinuxRosettaDirectoryShare()
-{
-    if (@available(macOS 13, *)) {
-        return (int)[VZLinuxRosettaDirectoryShare availability];
-    }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }

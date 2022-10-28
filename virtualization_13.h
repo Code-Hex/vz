@@ -10,9 +10,6 @@
 #import <Foundation/Foundation.h>
 #import <Virtualization/Virtualization.h>
 
-/* exported from cgo */
-void linuxInstallRosettaWithCompletionHandler(void *cgoHandler, void *errPtr);
-
 /* macOS 13 API */
 void setConsoleDevicesVZVirtualMachineConfiguration(void *config, void *consoleDevices);
 
@@ -44,7 +41,3 @@ void setAttachmentVZVirtioConsolePortConfiguration(void *consolePortConfig, void
 void *newVZSpiceAgentPortAttachment();
 void setSharesClipboardVZSpiceAgentPortAttachment(void *attachment, bool sharesClipboard);
 const char *getSpiceAgentPortName();
-
-void *newVZLinuxRosettaDirectoryShare(void **error);
-void linuxInstallRosetta(void *cgoHandler);
-int availabilityVZLinuxRosettaDirectoryShare();

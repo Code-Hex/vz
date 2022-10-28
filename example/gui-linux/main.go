@@ -221,7 +221,7 @@ func createGraphicsDeviceConfiguration() (*vz.VirtioGraphicsDeviceConfiguration,
 	return graphicDeviceConfig, nil
 }
 
-func createAudioDeviceConfiguration() (*vz.VirtioSoundDeviceConfiguration, error) {
+func createInputAudioDeviceConfiguration() (*vz.VirtioSoundDeviceConfiguration, error) {
 	audioConfig, err := vz.NewVirtioSoundDeviceConfiguration()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create sound device configuration: %w", err)
@@ -230,13 +230,22 @@ func createAudioDeviceConfiguration() (*vz.VirtioSoundDeviceConfiguration, error
 	if err != nil {
 		return nil, fmt.Errorf("failed to create input stream configuration: %w", err)
 	}
+	audioConfig.SetStreams(
+		inputStream,
+	)
+	return audioConfig, nil
+}
 
+func createOutputAudioDeviceConfiguration() (*vz.VirtioSoundDeviceConfiguration, error) {
+	audioConfig, err := vz.NewVirtioSoundDeviceConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create sound device configuration: %w", err)
+	}
 	outputStream, err := vz.NewVirtioSoundDeviceHostOutputStreamConfiguration()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create output stream configuration: %w", err)
 	}
 	audioConfig.SetStreams(
-		inputStream,
 		outputStream,
 	)
 	return audioConfig, nil
@@ -362,12 +371,17 @@ func createVirtualMachineConfig(installerISOPath string, needsInstall bool) (*vz
 	})
 
 	// Set audio device
-	audioDeviceConfig, err := createAudioDeviceConfiguration()
+	inputAudioDeviceConfig, err := createInputAudioDeviceConfiguration()
 	if err != nil {
-		return nil, fmt.Errorf("failed to create audio device configuration: %w", err)
+		return nil, fmt.Errorf("failed to create input audio device configuration: %w", err)
+	}
+	outputAudioDeviceConfig, err := createOutputAudioDeviceConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create output audio device configuration: %w", err)
 	}
 	config.SetAudioDevicesVirtualMachineConfiguration([]vz.AudioDeviceConfiguration{
-		audioDeviceConfig,
+		inputAudioDeviceConfig,
+		outputAudioDeviceConfig,
 	})
 
 	// Set pointing device

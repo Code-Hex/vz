@@ -3,142 +3,170 @@ package vz
 /*
 #cgo darwin CFLAGS: -x objective-c -fno-objc-arc
 #cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
-# include "virtualization.h"
+# include "virtualization_13.h"
 */
 import "C"
 import (
-	"os"
 	"runtime"
+	"unsafe"
 )
 
-// SerialPortAttachment interface for a serial port attachment.
-//
-// A serial port attachment defines how the virtual machine's serial port interfaces with the host system.
-type SerialPortAttachment interface {
+// ConsoleDeviceConfiguration interface for an console device configuration.
+type ConsoleDeviceConfiguration interface {
 	NSObject
 
-	serialPortAttachment()
+	consoleDeviceConfiguration()
 }
 
-type baseSerialPortAttachment struct{}
+type baseConsoleDeviceConfiguration struct{}
 
-func (*baseSerialPortAttachment) serialPortAttachment() {}
+func (*baseConsoleDeviceConfiguration) consoleDeviceConfiguration() {}
 
-var _ SerialPortAttachment = (*FileHandleSerialPortAttachment)(nil)
-
-// FileHandleSerialPortAttachment defines a serial port attachment from a file handle.
-//
-// Data written to fileHandleForReading goes to the guest. Data sent from the guest appears on fileHandleForWriting.
-// see: https://developer.apple.com/documentation/virtualization/vzfilehandleserialportattachment?language=objc
-type FileHandleSerialPortAttachment struct {
+// VirtioConsoleDeviceConfiguration is Virtio Console Device.
+type VirtioConsoleDeviceConfiguration struct {
 	pointer
+	portsPtr unsafe.Pointer
 
-	*baseSerialPortAttachment
+	*baseConsoleDeviceConfiguration
+
+	consolePorts map[int]*VirtioConsolePortConfiguration
 }
 
-// NewFileHandleSerialPortAttachment intialize the FileHandleSerialPortAttachment from file handles.
-//
-// read parameter is an *os.File for reading from the file.
-// write parameter is an *os.File for writing to the file.
-//
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
-// be returned on older versions.
-func NewFileHandleSerialPortAttachment(read, write *os.File) (*FileHandleSerialPortAttachment, error) {
-	if macosMajorVersionLessThan(11) {
+var _ ConsoleDeviceConfiguration = (*VirtioConsoleDeviceConfiguration)(nil)
+
+// NewVirtioConsoleDeviceConfiguration creates a new VirtioConsoleDeviceConfiguration.
+func NewVirtioConsoleDeviceConfiguration() (*VirtioConsoleDeviceConfiguration, error) {
+	if macosMajorVersionLessThan(13) {
 		return nil, ErrUnsupportedOSVersion
 	}
-
-	attachment := &FileHandleSerialPortAttachment{
+	config := &VirtioConsoleDeviceConfiguration{
 		pointer: pointer{
-			ptr: C.newVZFileHandleSerialPortAttachment(
-				C.int(read.Fd()),
-				C.int(write.Fd()),
-			),
+			ptr: C.newVZVirtioConsoleDeviceConfiguration(),
 		},
+		consolePorts: make(map[int]*VirtioConsolePortConfiguration),
 	}
-	runtime.SetFinalizer(attachment, func(self *FileHandleSerialPortAttachment) {
-		self.Release()
-	})
-	return attachment, nil
-}
+	config.portsPtr = C.portsVZVirtioConsoleDeviceConfiguration(config.Ptr())
 
-var _ SerialPortAttachment = (*FileSerialPortAttachment)(nil)
-
-// FileSerialPortAttachment defines a serial port attachment from a file.
-//
-// Any data sent by the guest on the serial interface is written to the file.
-// No data is sent to the guest over serial with this attachment.
-// see: https://developer.apple.com/documentation/virtualization/vzfileserialportattachment?language=objc
-type FileSerialPortAttachment struct {
-	pointer
-
-	*baseSerialPortAttachment
-}
-
-// NewFileSerialPortAttachment initialize the FileSerialPortAttachment from a path of a file.
-// If error is not nil, used to report errors if intialization fails.
-//
-//   - path of the file for the attachment on the local file system.
-//   - shouldAppend True if the file should be opened in append mode, false otherwise.
-//     When a file is opened in append mode, writing to that file will append to the end of it.
-//
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
-// be returned on older versions.
-func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPortAttachment, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
-	}
-
-	cpath := charWithGoString(path)
-	defer cpath.Free()
-
-	nserr := newNSErrorAsNil()
-	nserrPtr := nserr.Ptr()
-	attachment := &FileSerialPortAttachment{
-		pointer: pointer{
-			ptr: C.newVZFileSerialPortAttachment(
-				cpath.CString(),
-				C.bool(shouldAppend),
-				&nserrPtr,
-			),
-		},
-	}
-	if err := newNSError(nserrPtr); err != nil {
-		return nil, err
-	}
-	runtime.SetFinalizer(attachment, func(self *FileSerialPortAttachment) {
-		self.Release()
-	})
-	return attachment, nil
-}
-
-// VirtioConsoleDeviceSerialPortConfiguration represents Virtio Console Serial Port Device.
-//
-// The device creates a console which enables communication between the host and the guest through the Virtio interface.
-// The device sets up a single port on the Virtio console device.
-// see: https://developer.apple.com/documentation/virtualization/vzvirtioconsoledeviceserialportconfiguration?language=objc
-type VirtioConsoleDeviceSerialPortConfiguration struct {
-	pointer
-}
-
-// NewVirtioConsoleDeviceSerialPortConfiguration creates a new NewVirtioConsoleDeviceSerialPortConfiguration.
-//
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
-// be returned on older versions.
-func NewVirtioConsoleDeviceSerialPortConfiguration(attachment SerialPortAttachment) (*VirtioConsoleDeviceSerialPortConfiguration, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
-	}
-
-	config := &VirtioConsoleDeviceSerialPortConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioConsoleDeviceSerialPortConfiguration(
-				attachment.Ptr(),
-			),
-		},
-	}
-	runtime.SetFinalizer(config, func(self *VirtioConsoleDeviceSerialPortConfiguration) {
+	runtime.SetFinalizer(config, func(self *VirtioConsoleDeviceConfiguration) {
 		self.Release()
 	})
 	return config, nil
+}
+
+// MaximumPortCount returns the maximum number of ports allocated by this device.
+// The default is the number of ports attached to this device.
+func (v *VirtioConsoleDeviceConfiguration) MaximumPortCount() uint32 {
+	return uint32(C.maximumPortCountVZVirtioConsolePortConfigurationArray(v.portsPtr))
+}
+
+func (v *VirtioConsoleDeviceConfiguration) SetVirtioConsolePortConfiguration(idx int, portConfig *VirtioConsolePortConfiguration) {
+	C.setObjectAtIndexedSubscriptVZVirtioConsolePortConfigurationArray(
+		v.portsPtr,
+		portConfig.Ptr(),
+		C.int(idx),
+	)
+
+	// to mark as currently reachable.
+	// This ensures that the object is not freed, and its finalizer is not run
+	v.consolePorts[idx] = portConfig
+}
+
+type ConsolePortConfiguration interface {
+	NSObject
+
+	consolePortConfiguration()
+}
+
+type baseConsolePortConfiguration struct{}
+
+func (*baseConsolePortConfiguration) consolePortConfiguration() {}
+
+// VirtioConsolePortConfiguration is Virtio Console Port
+//
+// A console port is a two-way communication channel between a host VZSerialPortAttachment and
+// a virtual machine console port. One or more console ports are attached to a Virtio console device.
+type VirtioConsolePortConfiguration struct {
+	pointer
+
+	*baseConsolePortConfiguration
+
+	isConsole  bool
+	name       string
+	attachment SerialPortAttachment
+}
+
+var _ ConsolePortConfiguration = (*VirtioConsolePortConfiguration)(nil)
+
+// NewVirtioConsolePortConfigurationOption is an option type to initialize a new VirtioConsolePortConfiguration
+type NewVirtioConsolePortConfigurationOption func(*VirtioConsolePortConfiguration)
+
+// WithVirtioConsolePortConfigurationName sets the console port's name.
+// The default behavior is to not use a name unless set.
+func WithVirtioConsolePortConfigurationName(name string) NewVirtioConsolePortConfigurationOption {
+	return func(vcpc *VirtioConsolePortConfiguration) {
+		consolePortName := charWithGoString(name)
+		defer consolePortName.Free()
+		C.setNameVZVirtioConsolePortConfiguration(
+			vcpc.Ptr(),
+			consolePortName.CString(),
+		)
+		vcpc.name = name
+	}
+}
+
+// WithVirtioConsolePortConfigurationIsConsole sets the console port may be marked
+// for use as the system console. The default is false.
+func WithVirtioConsolePortConfigurationIsConsole(isConsole bool) NewVirtioConsolePortConfigurationOption {
+	return func(vcpc *VirtioConsolePortConfiguration) {
+		C.setIsConsoleVZVirtioConsolePortConfiguration(
+			vcpc.Ptr(),
+			C.bool(isConsole),
+		)
+		vcpc.isConsole = isConsole
+	}
+}
+
+// WithVirtioConsolePortConfigurationAttachment sets the console port attachment.
+// The default is nil.
+func WithVirtioConsolePortConfigurationAttachment(attachment SerialPortAttachment) NewVirtioConsolePortConfigurationOption {
+	return func(vcpc *VirtioConsolePortConfiguration) {
+		C.setAttachmentVZVirtioConsolePortConfiguration(
+			vcpc.Ptr(),
+			attachment.Ptr(),
+		)
+		vcpc.attachment = attachment
+	}
+}
+
+// NewVirtioConsolePortConfiguration creates a new VirtioConsolePortConfiguration.
+//
+// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewVirtioConsolePortConfiguration(opts ...NewVirtioConsolePortConfigurationOption) (*VirtioConsolePortConfiguration, error) {
+	if macosMajorVersionLessThan(13) {
+		return nil, ErrUnsupportedOSVersion
+	}
+	vcpc := &VirtioConsolePortConfiguration{
+		pointer: pointer{
+			ptr: C.newVZVirtioConsolePortConfiguration(),
+		},
+	}
+	for _, optFunc := range opts {
+		optFunc(vcpc)
+	}
+	runtime.SetFinalizer(vcpc, func(self *VirtioConsolePortConfiguration) {
+		self.Release()
+	})
+	return vcpc, nil
+}
+
+// Name returns the console port's name.
+func (v *VirtioConsolePortConfiguration) Name() string { return v.name }
+
+// IsConsole returns the console port may be marked for use as the system console.
+func (v *VirtioConsolePortConfiguration) IsConsole() bool { return v.isConsole }
+
+// Attachment returns the console port attachment.
+func (v *VirtioConsolePortConfiguration) Attachment() SerialPortAttachment {
+	return v.attachment
 }

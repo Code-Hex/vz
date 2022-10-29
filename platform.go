@@ -4,9 +4,14 @@ package vz
 #cgo darwin CFLAGS: -x objective-c -fno-objc-arc
 #cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
 # include "virtualization.h"
+# include "virtualization_13.h"
 */
 import "C"
-import "runtime"
+import (
+	"os"
+	"runtime"
+	"unsafe"
+)
 
 // PlatformConfiguration is an interface for a platform configuration.
 type PlatformConfiguration interface {
@@ -24,6 +29,13 @@ type GenericPlatformConfiguration struct {
 	pointer
 
 	*basePlatformConfiguration
+
+	machineIdentifier *GenericMachineIdentifier
+}
+
+// MachineIdentifier returns the machine identifier.
+func (m *GenericPlatformConfiguration) MachineIdentifier() *GenericMachineIdentifier {
+	return m.machineIdentifier
 }
 
 var _ PlatformConfiguration = (*GenericPlatformConfiguration)(nil)
@@ -32,7 +44,7 @@ var _ PlatformConfiguration = (*GenericPlatformConfiguration)(nil)
 //
 // This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
 // be returned on older versions.
-func NewGenericPlatformConfiguration() (*GenericPlatformConfiguration, error) {
+func NewGenericPlatformConfiguration(opts ...GenericPlatformConfigurationOption) (*GenericPlatformConfiguration, error) {
 	if macosMajorVersionLessThan(12) {
 		return nil, ErrUnsupportedOSVersion
 	}
@@ -42,8 +54,101 @@ func NewGenericPlatformConfiguration() (*GenericPlatformConfiguration, error) {
 			ptr: C.newVZGenericPlatformConfiguration(),
 		},
 	}
+	for _, optFunc := range opts {
+		if err := optFunc(platformConfig); err != nil {
+			return nil, err
+		}
+	}
 	runtime.SetFinalizer(platformConfig, func(self *GenericPlatformConfiguration) {
 		self.Release()
 	})
 	return platformConfig, nil
+}
+
+// GenericMachineIdentifier is a struct that represents a unique identifier
+// for a virtual machine.
+type GenericMachineIdentifier struct {
+	pointer
+
+	dataRepresentation []byte
+}
+
+// NewGenericMachineIdentifierWithDataPath initialize a new machine identifier described by the specified pathname.
+//
+// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewGenericMachineIdentifierWithDataPath(pathname string) (*GenericMachineIdentifier, error) {
+	b, err := os.ReadFile(pathname)
+	if err != nil {
+		return nil, err
+	}
+	return NewGenericMachineIdentifierWithData(b)
+}
+
+// NewGenericMachineIdentifierWithData initialize a new machine identifier described by the specified data representation.
+//
+// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewGenericMachineIdentifierWithData(b []byte) (*GenericMachineIdentifier, error) {
+	if macosMajorVersionLessThan(13) {
+		return nil, ErrUnsupportedOSVersion
+	}
+
+	ptr := C.newVZGenericMachineIdentifierWithBytes(
+		unsafe.Pointer(&b[0]),
+		C.int(len(b)),
+	)
+	return newGenericMachineIdentifier(ptr), nil
+}
+
+// NewGenericMachineIdentifier initialize a new machine identifier is used by guests to uniquely
+// identify the virtual hardware.
+//
+// Two virtual machines running concurrently should not use the same identifier.
+//
+// If the virtual machine is serialized to disk, the identifier can be preserved in a binary representation through
+// DataRepresentation method.
+// The identifier can then be recreated with NewGenericMachineIdentifierWithData function from the binary representation.
+//
+// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func NewGenericMachineIdentifier() (*GenericMachineIdentifier, error) {
+	if macosMajorVersionLessThan(13) {
+		return nil, ErrUnsupportedOSVersion
+	}
+	return newGenericMachineIdentifier(C.newVZGenericMachineIdentifier()), nil
+}
+
+func newGenericMachineIdentifier(ptr unsafe.Pointer) *GenericMachineIdentifier {
+	dataRepresentation := C.getVZGenericMachineIdentifierDataRepresentation(ptr)
+	bytePointer := (*byte)(unsafe.Pointer(dataRepresentation.ptr))
+	return &GenericMachineIdentifier{
+		pointer: pointer{
+			ptr: ptr,
+		},
+		// https://github.com/golang/go/wiki/cgo#turning-c-arrays-into-go-slices
+		dataRepresentation: unsafe.Slice(bytePointer, dataRepresentation.len),
+	}
+}
+
+// DataRepresentation opaque data representation of the machine identifier.
+// This can be used to recreate the same machine identifier with NewGenericMachineIdentifierWithData function.
+func (g *GenericMachineIdentifier) DataRepresentation() []byte { return g.dataRepresentation }
+
+// GenericPlatformConfigurationOption is an optional function to create its configuration.
+type GenericPlatformConfigurationOption func(*GenericPlatformConfiguration) error
+
+// WithGenericMachineIdentifier is an option to create a new GenericPlatformConfiguration.
+//
+// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func WithGenericMachineIdentifier(m *GenericMachineIdentifier) GenericPlatformConfigurationOption {
+	return func(mpc *GenericPlatformConfiguration) error {
+		if macosMajorVersionLessThan(13) {
+			return ErrUnsupportedOSVersion
+		}
+		mpc.machineIdentifier = m
+		C.setMachineIdentifierVZGenericPlatformConfiguration(mpc.Ptr(), m.Ptr())
+		return nil
+	}
 }

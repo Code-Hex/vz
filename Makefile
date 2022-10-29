@@ -6,7 +6,7 @@ KERNEL_DOWNLOAD_URL := https://github.com/Code-Hex/puipui-linux/releases/downloa
 
 .PHONY: fmt
 fmt:
-	@ls | grep -E '\.(h|m)$$' | xargs clang-format -i
+	@ls | grep -E '\.(h|m)$$' | xargs clang-format -i --verbose
 
 .PHONY: test
 test:

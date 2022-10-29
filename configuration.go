@@ -4,6 +4,7 @@ package vz
 #cgo darwin CFLAGS: -x objective-c -fno-objc-arc
 #cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
 # include "virtualization.h"
+# include "virtualization_13.h"
 */
 import "C"
 import "runtime"
@@ -176,7 +177,12 @@ func (v *VirtualMachineConfiguration) SetStorageDevicesVirtualMachineConfigurati
 }
 
 // SetDirectorySharingDevicesVirtualMachineConfiguration sets list of directory sharing devices. Empty by default.
+//
+// This is only supported on macOS 12 and newer. Older versions do nothing.
 func (v *VirtualMachineConfiguration) SetDirectorySharingDevicesVirtualMachineConfiguration(cs []DirectorySharingDeviceConfiguration) {
+	if macosMajorVersionLessThan(12) {
+		return
+	}
 	ptrs := make([]NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
@@ -186,12 +192,22 @@ func (v *VirtualMachineConfiguration) SetDirectorySharingDevicesVirtualMachineCo
 }
 
 // SetPlatformVirtualMachineConfiguration sets the hardware platform to use. Defaults to GenericPlatformConfiguration.
+//
+// This is only supported on macOS 12 and newer. Older versions do nothing.
 func (v *VirtualMachineConfiguration) SetPlatformVirtualMachineConfiguration(c PlatformConfiguration) {
+	if macosMajorVersionLessThan(12) {
+		return
+	}
 	C.setPlatformVZVirtualMachineConfiguration(v.Ptr(), c.Ptr())
 }
 
 // SetGraphicsDevicesVirtualMachineConfiguration sets list of graphics devices. Empty by default.
+//
+// This is only supported on macOS 12 and newer. Older versions do nothing.
 func (v *VirtualMachineConfiguration) SetGraphicsDevicesVirtualMachineConfiguration(cs []GraphicsDeviceConfiguration) {
+	if macosMajorVersionLessThan(12) {
+		return
+	}
 	ptrs := make([]NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
@@ -201,7 +217,12 @@ func (v *VirtualMachineConfiguration) SetGraphicsDevicesVirtualMachineConfigurat
 }
 
 // SetPointingDevicesVirtualMachineConfiguration sets list of pointing devices. Empty by default.
+//
+// This is only supported on macOS 12 and newer. Older versions do nothing.
 func (v *VirtualMachineConfiguration) SetPointingDevicesVirtualMachineConfiguration(cs []PointingDeviceConfiguration) {
+	if macosMajorVersionLessThan(12) {
+		return
+	}
 	ptrs := make([]NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
@@ -211,7 +232,12 @@ func (v *VirtualMachineConfiguration) SetPointingDevicesVirtualMachineConfigurat
 }
 
 // SetKeyboardsVirtualMachineConfiguration sets list of keyboards. Empty by default.
+//
+// This is only supported on macOS 12 and newer. Older versions do nothing.
 func (v *VirtualMachineConfiguration) SetKeyboardsVirtualMachineConfiguration(cs []KeyboardConfiguration) {
+	if macosMajorVersionLessThan(12) {
+		return
+	}
 	ptrs := make([]NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
@@ -221,13 +247,33 @@ func (v *VirtualMachineConfiguration) SetKeyboardsVirtualMachineConfiguration(cs
 }
 
 // SetAudioDevicesVirtualMachineConfiguration sets list of audio devices. Empty by default.
+//
+// This is only supported on macOS 12 and newer. Older versions do nothing.
 func (v *VirtualMachineConfiguration) SetAudioDevicesVirtualMachineConfiguration(cs []AudioDeviceConfiguration) {
+	if macosMajorVersionLessThan(12) {
+		return
+	}
 	ptrs := make([]NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
 	}
 	array := convertToNSMutableArray(ptrs)
 	C.setAudioDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+}
+
+// SetConsoleDevicesVirtualMachineConfiguration sets list of console devices. Empty by default.
+//
+// This is only supported on macOS 13 and newer. Older versions do nothing.
+func (v *VirtualMachineConfiguration) SetConsoleDevicesVirtualMachineConfiguration(cs []ConsoleDeviceConfiguration) {
+	if macosMajorVersionLessThan(13) {
+		return
+	}
+	ptrs := make([]NSObject, len(cs))
+	for i, val := range cs {
+		ptrs[i] = val
+	}
+	array := convertToNSMutableArray(ptrs)
+	C.setConsoleDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
 }
 
 // VirtualMachineConfigurationMinimumAllowedMemorySize returns minimum

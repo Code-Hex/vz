@@ -4,6 +4,7 @@ package vz
 #cgo darwin CFLAGS: -x objective-c -fno-objc-arc
 #cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
 # include "virtualization.h"
+# include "virtualization_13.h"
 */
 import "C"
 import (
@@ -117,6 +118,9 @@ type SingleDirectoryShare struct {
 }
 
 // NewSingleDirectoryShare creates a new single directory share.
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
 func NewSingleDirectoryShare(share *SharedDirectory) (*SingleDirectoryShare, error) {
 	if macosMajorVersionLessThan(12) {
 		return nil, ErrUnsupportedOSVersion
@@ -142,6 +146,9 @@ type MultipleDirectoryShare struct {
 var _ DirectoryShare = (*MultipleDirectoryShare)(nil)
 
 // NewMultipleDirectoryShare creates a new multiple directories share.
+//
+// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
 func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) (*MultipleDirectoryShare, error) {
 	if macosMajorVersionLessThan(12) {
 		return nil, ErrUnsupportedOSVersion

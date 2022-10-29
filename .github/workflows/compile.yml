@@ -35,11 +35,12 @@ jobs:
         - 1.19
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: ${{ matrix.go }}
+          cache: true
       - name: Download Linux kernel
         run: make download_kernel
       - name: Unit Test

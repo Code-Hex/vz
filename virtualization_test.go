@@ -321,3 +321,49 @@ func TestStop(t *testing.T) {
 	waitState(t, timeout, vm, vz.VirtualMachineStateStopping)
 	waitState(t, timeout, vm, vz.VirtualMachineStateStopped)
 }
+
+func TestVirtualMachineStateString(t *testing.T) {
+	cases := []struct {
+		state vz.VirtualMachineState
+		want  string
+	}{
+		{
+			state: vz.VirtualMachineStateStopped,
+			want:  "VirtualMachineStateStopped",
+		},
+		{
+			state: vz.VirtualMachineStateRunning,
+			want:  "VirtualMachineStateRunning",
+		},
+		{
+			state: vz.VirtualMachineStatePaused,
+			want:  "VirtualMachineStatePaused",
+		},
+		{
+			state: vz.VirtualMachineStateError,
+			want:  "VirtualMachineStateError",
+		},
+		{
+			state: vz.VirtualMachineStateStarting,
+			want:  "VirtualMachineStateStarting",
+		},
+		{
+			state: vz.VirtualMachineStatePausing,
+			want:  "VirtualMachineStatePausing",
+		},
+		{
+			state: vz.VirtualMachineStateResuming,
+			want:  "VirtualMachineStateResuming",
+		},
+		{
+			state: vz.VirtualMachineStateStopping,
+			want:  "VirtualMachineStateStopping",
+		},
+	}
+	for _, tc := range cases {
+		got := tc.state.String()
+		if tc.want != got {
+			t.Fatalf("want %q but got %q", tc.want, got)
+		}
+	}
+}

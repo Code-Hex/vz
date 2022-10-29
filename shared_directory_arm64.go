@@ -74,7 +74,7 @@ func NewLinuxRosettaDirectoryShare() (*LinuxRosettaDirectoryShare, error) {
 	runtime.SetFinalizer(ds, func(self *LinuxRosettaDirectoryShare) {
 		self.Release()
 	})
-	return nil, nil
+	return ds, nil
 }
 
 // LinuxRosettaDirectoryShareInstallRosetta download and install Rosetta support

@@ -17,7 +17,7 @@ import (
 
 // LinuxRosettaAvailability represents an availability of Rosetta support for Linux binaries.
 //
-//go:generate stringer -type=LinuxRosettaAvailability
+//go:generate go run ./cmd/addtags -tags=darwin,arm64 -file linuxrosettaavailability_string_arm64.go stringer -type=LinuxRosettaAvailability -output=linuxrosettaavailability_string_arm64.go
 type LinuxRosettaAvailability int
 
 const (

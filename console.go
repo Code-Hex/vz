@@ -157,7 +157,7 @@ func NewVirtioConsolePortConfiguration(opts ...NewVirtioConsolePortConfiguration
 	runtime.SetFinalizer(vcpc, func(self *VirtioConsolePortConfiguration) {
 		self.Release()
 	})
-	return nil, nil
+	return vcpc, nil
 }
 
 // Name returns the console port's name.

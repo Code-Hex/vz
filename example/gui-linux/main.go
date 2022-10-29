@@ -361,6 +361,14 @@ func createVirtualMachineConfig(installerISOPath string, needsInstall bool) (*vz
 	disks = append(disks, mainDisk)
 	config.SetStorageDevicesVirtualMachineConfiguration(disks)
 
+	consoleDeviceConfig, err := createSpiceAgentConsoleDeviceConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create console device configuration: %w", err)
+	}
+	config.SetConsoleDevicesVirtualMachineConfiguration([]vz.ConsoleDeviceConfiguration{
+		consoleDeviceConfig,
+	})
+
 	// Set network device
 	networkDeviceConfig, err := createNetworkDeviceConfiguration()
 	if err != nil {

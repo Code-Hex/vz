@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -409,6 +410,18 @@ func createVirtualMachineConfig(installerISOPath string, needsInstall bool) (*vz
 	config.SetKeyboardsVirtualMachineConfiguration([]vz.KeyboardConfiguration{
 		keyboardDeviceConfig,
 	})
+
+	// Set rosetta directory share
+	directorySharingConfigs := make([]vz.DirectorySharingDeviceConfiguration, 0)
+	directorySharingDeviceConfig, err := createRosettaDirectoryShareConfiguration()
+	if err != nil && !errors.Is(err, errIgnoreInstall) {
+		return nil, err
+	}
+	if directorySharingDeviceConfig != nil {
+		directorySharingConfigs = append(directorySharingConfigs, directorySharingDeviceConfig)
+	}
+
+	config.SetDirectorySharingDevicesVirtualMachineConfiguration(directorySharingConfigs)
 
 	validated, err := config.Validate()
 	if err != nil {

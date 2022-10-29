@@ -10,7 +10,7 @@ fmt:
 
 .PHONY: test
 test:
-	go test -exec "go run $(PWD)/cmd/codesign" -count=1 ./... -timeout 60s -v
+	go test -exec "go run $(PWD)/cmd/codesign" ./... -timeout 60s -v
 
 .PHONY: download_kernel
 download_kernel:
@@ -21,6 +21,10 @@ ifeq ($(ARCH),arm64)
 else
 	@mv testdata/bzImage testdata/Image
 endif
+
+.PHONY: install/stringer
+install/stringer:
+	@go install golang.org/x/tools/cmd/stringer@latest
 
 .PHONY: clean
 clean:

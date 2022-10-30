@@ -7,7 +7,6 @@
 #pragma once
 
 #import "virtualization_helper.h"
-#import <Foundation/Foundation.h>
 #import <Virtualization/Virtualization.h>
 
 /* macOS 13 API */
@@ -41,3 +40,5 @@ void setAttachmentVZVirtioConsolePortConfiguration(void *consolePortConfig, void
 void *newVZSpiceAgentPortAttachment();
 void setSharesClipboardVZSpiceAgentPortAttachment(void *attachment, bool sharesClipboard);
 const char *getSpiceAgentPortName();
+
+void startWithOptionsCompletionHandler(void *machine, void *queue, void *options, void *completionHandler);

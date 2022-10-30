@@ -5,7 +5,6 @@
 //
 
 #import "virtualization.h"
-#import "virtualization_helper.h"
 #import "virtualization_view.h"
 
 char *copyCString(NSString *nss)
@@ -1073,15 +1072,6 @@ void *makeDispatchQueue(const char *label)
     dispatch_queue_t queue = dispatch_queue_create(label, DISPATCH_QUEUE_SERIAL);
     // dispatch_retain(queue);
     return queue;
-}
-
-typedef void (^vm_completion_handler_t)(NSError *);
-
-vm_completion_handler_t makeVMCompletionHandler(void *completionHandler)
-{
-    return Block_copy(^(NSError *err) {
-        virtualMachineCompletionHandler(completionHandler, err);
-    });
 }
 
 void startWithCompletionHandler(void *machine, void *queue, void *completionHandler)

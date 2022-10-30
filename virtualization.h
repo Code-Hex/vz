@@ -6,11 +6,10 @@
 
 #pragma once
 
-#import <Foundation/Foundation.h>
+#import "virtualization_helper.h"
 #import <Virtualization/Virtualization.h>
 
 /* exported from cgo */
-void virtualMachineCompletionHandler(void *cgoHandler, void *errPtr);
 void connectionHandler(void *connection, void *err, void *cgoHandlerPtr);
 void changeStateOnObserver(int state, void *cgoHandler);
 bool shouldAcceptNewConnectionHandler(void *cgoHandler, void *connection, void *socketDevice);

@@ -4,6 +4,7 @@ package vz
 #cgo darwin CFLAGS: -x objective-c -fno-objc-arc
 #cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization -framework Cocoa
 # include "virtualization.h"
+# include "virtualization_13.h"
 */
 import "C"
 import (
@@ -240,26 +241,47 @@ func makeHandler() (func(error), chan error) {
 	}, ch
 }
 
+type virtualMachineStartOptions struct {
+	macOSVirtualMachineStartOptionsPtr unsafe.Pointer
+}
+
+// VirtualMachineStartOption is an option for virtual machine start.
+type VirtualMachineStartOption func(*virtualMachineStartOptions) error
+
 // Start a virtual machine that is in either Stopped or Error state.
 //
 // If you want to listen status change events, use the "StateChangedNotify" method.
 //
-// This is only supported on macOS 11 and newer, on older versions fn will be called immediately
-// with ErrUnsupportedOSVersion.
-func (v *VirtualMachine) Start() error {
+// If options are specified, also checks whether these options are
+// available in use your macOS version available.
+func (v *VirtualMachine) Start(opts ...VirtualMachineStartOption) error {
+	o := &virtualMachineStartOptions{}
+	for _, optFunc := range opts {
+		if err := optFunc(o); err != nil {
+			return err
+		}
+	}
+
 	h, errCh := makeHandler()
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()
-	C.startWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
+
+	if o.macOSVirtualMachineStartOptionsPtr != nil {
+		C.startWithOptionsCompletionHandler(
+			v.Ptr(),
+			v.dispatchQueue,
+			o.macOSVirtualMachineStartOptionsPtr,
+			unsafe.Pointer(&handler),
+		)
+	} else {
+		C.startWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
+	}
 	return <-errCh
 }
 
 // Pause a virtual machine that is in Running state.
 //
 // If you want to listen status change events, use the "StateChangedNotify" method.
-//
-// This is only supported on macOS 11 and newer, on older versions fn will be called immediately
-// with ErrUnsupportedOSVersion.
 func (v *VirtualMachine) Pause() error {
 	h, errCh := makeHandler()
 	handler := cgo.NewHandle(h)
@@ -271,9 +293,6 @@ func (v *VirtualMachine) Pause() error {
 // Resume a virtual machine that is in the Paused state.
 //
 // If you want to listen status change events, use the "StateChangedNotify" method.
-//
-// This is only supported on macOS 11 and newer, on older versions fn will be called immediately
-// with ErrUnsupportedOSVersion.
 func (v *VirtualMachine) Resume() error {
 	h, errCh := makeHandler()
 	handler := cgo.NewHandle(h)
@@ -286,9 +305,6 @@ func (v *VirtualMachine) Resume() error {
 //
 // If returned error is not nil, assigned with the error if the request failed.
 // Returns true if the request was made successfully.
-//
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
-// be returned on older versions.
 func (v *VirtualMachine) RequestStop() (bool, error) {
 	nserr := newNSErrorAsNil()
 	nserrPtr := nserr.Ptr()

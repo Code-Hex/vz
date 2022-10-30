@@ -53,3 +53,18 @@ int availabilityVZLinuxRosettaDirectoryShare()
 #endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
+
+/*!
+ @abstract Options controlling startup behavior of a virtual machine using VZMacOSBootLoader.
+ */
+void *newVZMacOSVirtualMachineStartOptions(bool startUpFromMacOSRecovery)
+{
+#ifdef INCLUDE_TARGET_OSX_13
+    if (@available(macOS 13, *)) {
+        VZMacOSVirtualMachineStartOptions *opts = [[VZMacOSVirtualMachineStartOptions alloc] init];
+        [opts setStartUpFromMacOSRecovery:(BOOL)startUpFromMacOSRecovery];
+        return opts;
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}

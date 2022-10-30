@@ -1,6 +1,7 @@
 #pragma once
 
 #import <Availability.h>
+#import <Foundation/Foundation.h>
 
 #define RAISE_UNSUPPORTED_MACOS_EXCEPTION()                                                       \
     do {                                                                                          \
@@ -18,3 +19,15 @@ typedef struct nbyteslice {
     void *ptr;
     int len;
 } nbyteslice;
+
+/* exported from cgo */
+void virtualMachineCompletionHandler(void *cgoHandler, void *errPtr);
+
+typedef void (^vm_completion_handler_t)(NSError *);
+
+static inline vm_completion_handler_t makeVMCompletionHandler(void *completionHandler)
+{
+    return Block_copy(^(NSError *err) {
+        virtualMachineCompletionHandler(completionHandler, err);
+    });
+}

@@ -177,15 +177,14 @@ func WithCreatingEFIVariableStore() NewEFIVariableStoreOption {
 		cpath := charWithGoString(es.path)
 		defer cpath.Free()
 
-		nserr := objc.NewNSErrorAsNil()
-		nserrPtr := objc.Ptr(nserr)
+		nserrPtr := newNSErrorAsNil()
 		es.pointer = objc.NewPointer(
 			C.newCreatingVZEFIVariableStoreAtPath(
 				cpath.CString(),
 				&nserrPtr,
 			),
 		)
-		if err := objc.NewNSError(nserrPtr); err != nil {
+		if err := newNSError(nserrPtr); err != nil {
 			return err
 		}
 		return nil

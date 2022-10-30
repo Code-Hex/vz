@@ -78,10 +78,9 @@ func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize 
 // Return true if the configuration is valid.
 // If error is not nil, assigned with the validation error if the validation failed.
 func (v *VirtualMachineConfiguration) Validate() (bool, error) {
-	nserr := objc.NewNSErrorAsNil()
-	nserrPtr := objc.Ptr(nserr)
+	nserrPtr := newNSErrorAsNil()
 	ret := C.validateVZVirtualMachineConfiguration(objc.Ptr(v), &nserrPtr)
-	err := objc.NewNSError(nserrPtr)
+	err := newNSError(nserrPtr)
 	if err != nil {
 		return false, err
 	}

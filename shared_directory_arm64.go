@@ -39,7 +39,7 @@ func linuxInstallRosettaWithCompletionHandler(cgoHandlerPtr, errPtr unsafe.Point
 
 	handler := cgoHandler.Value().(func(error))
 
-	if err := objc.NewNSError(errPtr); err != nil {
+	if err := newNSError(errPtr); err != nil {
 		handler(err)
 	} else {
 		handler(nil)
@@ -65,14 +65,13 @@ func NewLinuxRosettaDirectoryShare() (*LinuxRosettaDirectoryShare, error) {
 	if macosMajorVersionLessThan(13) {
 		return nil, ErrUnsupportedOSVersion
 	}
-	nserr := objc.NewNSErrorAsNil()
-	nserrPtr := objc.Ptr(nserr)
+	nserrPtr := newNSErrorAsNil()
 	ds := &LinuxRosettaDirectoryShare{
 		pointer: objc.NewPointer(
 			C.newVZLinuxRosettaDirectoryShare(&nserrPtr),
 		),
 	}
-	if err := objc.NewNSError(nserrPtr); err != nil {
+	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	runtime.SetFinalizer(ds, func(self *LinuxRosettaDirectoryShare) {

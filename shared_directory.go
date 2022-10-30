@@ -47,15 +47,13 @@ func NewVirtioFileSystemDeviceConfiguration(tag string) (*VirtioFileSystemDevice
 	tagChar := charWithGoString(tag)
 	defer tagChar.Free()
 
-	nserr := objc.NewNSErrorAsNil()
-	nserrPtr := objc.Ptr(nserr)
-
+	nserrPtr := newNSErrorAsNil()
 	fsdConfig := &VirtioFileSystemDeviceConfiguration{
 		pointer: objc.NewPointer(
 			C.newVZVirtioFileSystemDeviceConfiguration(tagChar.CString(), &nserrPtr),
 		),
 	}
-	if err := objc.NewNSError(nserrPtr); err != nil {
+	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	runtime.SetFinalizer(fsdConfig, func(self *VirtioFileSystemDeviceConfiguration) {

@@ -127,7 +127,7 @@ func connectionHandler(connPtr, errPtr, cgoHandlerPtr unsafe.Pointer) {
 	handler := cgoHandler.Value().(func(*VirtioSocketConnection, error))
 	defer cgoHandler.Delete()
 	// see: startHandler
-	if err := objc.NewNSError(errPtr); err != nil {
+	if err := newNSError(errPtr); err != nil {
 		handler(nil, err)
 	} else {
 		conn, err := newVirtioSocketConnection(connPtr)

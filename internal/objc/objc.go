@@ -5,48 +5,6 @@ package objc
 #cgo darwin LDFLAGS: -lobjc -framework Foundation
 #import <Foundation/Foundation.h>
 
-const char *getNSErrorLocalizedDescription(void *err)
-{
-	NSString *ld = (NSString *)[(NSError *)err localizedDescription];
-	return [ld UTF8String];
-}
-
-const char *getNSErrorDomain(void *err)
-{
-	NSString *domain = (NSString *)[(NSError *)err domain];
-	return [domain UTF8String];
-}
-
-const char *getNSErrorUserInfo(void *err)
-{
-	NSDictionary<NSErrorUserInfoKey, id> *ui = [(NSError *)err userInfo];
-	NSString *uis = [NSString stringWithFormat:@"%@", ui];
-	return [uis UTF8String];
-}
-
-NSInteger getNSErrorCode(void *err)
-{
-	return (NSInteger)[(NSError *)err code];
-}
-
-typedef struct NSErrorFlat {
-	const char *domain;
-    const char *localizedDescription;
-	const char *userinfo;
-    int code;
-} NSErrorFlat;
-
-NSErrorFlat convertNSError2Flat(void *err)
-{
-	NSErrorFlat ret;
-	ret.domain = getNSErrorDomain(err);
-	ret.localizedDescription = getNSErrorLocalizedDescription(err);
-	ret.userinfo = getNSErrorUserInfo(err);
-	ret.code = (int)getNSErrorCode(err);
-
-	return ret;
-}
-
 void *makeNSMutableArray(unsigned long cap)
 {
 	return [[NSMutableArray alloc] initWithCapacity:(NSUInteger)cap];
@@ -66,17 +24,6 @@ void insertNSMutableDictionary(void *dict, char *key, void *val)
 {
 	NSString *nskey = [NSString stringWithUTF8String: key];
 	[(NSMutableDictionary *)dict setValue:(NSObject *)val forKey:nskey];
-}
-
-void *newNSError()
-{
-	NSError *err = nil;
-	return err;
-}
-
-bool hasError(void *err)
-{
-	return (NSError *)err != nil;
 }
 
 void releaseNSObject(void* o)
@@ -110,7 +57,6 @@ const char *getUUID()
 */
 import "C"
 import (
-	"fmt"
 	"runtime"
 	"unsafe"
 )
@@ -180,53 +126,6 @@ func (n *NSArray) ToPointerSlice() []unsafe.Pointer {
 	return ret
 }
 
-// NSError indicates NSError.
-type NSError struct {
-	Domain               string
-	Code                 int
-	LocalizedDescription string
-	UserInfo             string
-	Pointer
-}
-
-// NewNSErrorAsNil makes nil NSError in objective-c world.
-func NewNSErrorAsNil() *Pointer {
-	return &Pointer{
-		_ptr: unsafe.Pointer(C.newNSError()),
-	}
-}
-
-// HasNSError checks passed pointer is NSError or not.
-func HasNSError(nserrPtr unsafe.Pointer) bool {
-	return (bool)(C.hasError(nserrPtr))
-}
-
-func (n *NSError) Error() string {
-	if n == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf(
-		"Error Domain=%s Code=%d Description=%q UserInfo=%s",
-		n.Domain,
-		n.Code,
-		n.LocalizedDescription,
-		n.UserInfo,
-	)
-}
-
-func NewNSError(p unsafe.Pointer) *NSError {
-	if !HasNSError(p) {
-		return nil
-	}
-	nsError := C.convertNSError2Flat(p)
-	return &NSError{
-		Domain:               (*char)(nsError.domain).String(),
-		Code:                 int((nsError.code)),
-		LocalizedDescription: (*char)(nsError.localizedDescription).String(),
-		UserInfo:             (*char)(nsError.userinfo).String(), // NOTE(codehex): maybe we can convert to map[string]interface{}
-	}
-}
-
 // ConvertToNSMutableArray converts to NSMutableArray from NSObject slice in Go world.
 func ConvertToNSMutableArray(s []NSObject) *Pointer {
 	ln := len(s)
@@ -245,9 +144,9 @@ func ConvertToNSMutableArray(s []NSObject) *Pointer {
 func ConvertToNSMutableDictionary(d map[string]NSObject) *Pointer {
 	dict := C.makeNSMutableDictionary()
 	for key, value := range d {
-		cs := charWithGoString(key)
-		C.insertNSMutableDictionary(dict, cs.CString(), value.ptr())
-		cs.Free()
+		cs := (*C.char)(C.CString(key))
+		C.insertNSMutableDictionary(dict, cs, value.ptr())
+		C.free(unsafe.Pointer(cs))
 	}
 	p := NewPointer(dict)
 	runtime.SetFinalizer(p, func(self *Pointer) {
@@ -258,27 +157,4 @@ func ConvertToNSMutableDictionary(d map[string]NSObject) *Pointer {
 
 func GetUUID() *C.char {
 	return C.getUUID()
-}
-
-// CharWithGoString makes *Char which is *C.Char wrapper from Go string.
-func charWithGoString(s string) *char {
-	return (*char)(unsafe.Pointer(C.CString(s)))
-}
-
-// Char is a wrapper of C.char
-type char C.char
-
-// CString converts *C.char from *Char
-func (c *char) CString() *C.char {
-	return (*C.char)(c)
-}
-
-// String converts Go string from *Char
-func (c *char) String() string {
-	return C.GoString((*C.char)(c))
-}
-
-// Free frees allocated *C.char in Go code
-func (c *char) Free() {
-	C.free(unsafe.Pointer(c))
 }

@@ -188,8 +188,7 @@ func WithCreatingStorage(hardwareModel *MacHardwareModel) NewMacAuxiliaryStorage
 		cpath := charWithGoString(mas.storagePath)
 		defer cpath.Free()
 
-		nserr := objc.NewNSErrorAsNil()
-		nserrPtr := objc.Ptr(nserr)
+		nserrPtr := newNSErrorAsNil()
 		mas.pointer = objc.NewPointer(
 			C.newVZMacAuxiliaryStorageWithCreating(
 				cpath.CString(),
@@ -197,7 +196,7 @@ func WithCreatingStorage(hardwareModel *MacHardwareModel) NewMacAuxiliaryStorage
 				&nserrPtr,
 			),
 		)
-		if err := objc.NewNSError(nserrPtr); err != nil {
+		if err := newNSError(nserrPtr); err != nil {
 			return err
 		}
 		return nil
@@ -338,7 +337,7 @@ func macOSRestoreImageCompletionHandler(cgoHandlerPtr, restoreImagePtr, errPtr u
 		mostFeaturefulSupportedConfigurationPtr: restoreImageStruct.mostFeaturefulSupportedConfiguration,
 	}
 
-	if err := objc.NewNSError(errPtr); err != nil {
+	if err := newNSError(errPtr); err != nil {
 		handler(restoreImage, err)
 	} else {
 		handler(restoreImage, nil)
@@ -512,7 +511,7 @@ func macOSInstallCompletionHandler(cgoHandlerPtr, errPtr unsafe.Pointer) {
 	handler := cgoHandler.Value().(func(error))
 	defer cgoHandler.Delete()
 
-	if err := objc.NewNSError(errPtr); err != nil {
+	if err := newNSError(errPtr); err != nil {
 		handler(err)
 	} else {
 		handler(nil)

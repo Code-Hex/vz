@@ -226,7 +226,7 @@ func virtualMachineCompletionHandler(cgoHandlerPtr, errPtr unsafe.Pointer) {
 
 	handler := cgoHandler.Value().(func(error))
 
-	if err := objc.NewNSError(errPtr); err != nil {
+	if err := newNSError(errPtr); err != nil {
 		handler(err)
 	} else {
 		handler(nil)
@@ -306,10 +306,9 @@ func (v *VirtualMachine) Resume() error {
 // If returned error is not nil, assigned with the error if the request failed.
 // Returns true if the request was made successfully.
 func (v *VirtualMachine) RequestStop() (bool, error) {
-	nserr := objc.NewNSErrorAsNil()
-	nserrPtr := objc.Ptr(nserr)
+	nserrPtr := newNSErrorAsNil()
 	ret := (bool)(C.requestStopVirtualMachine(objc.Ptr(v), v.dispatchQueue, &nserrPtr))
-	if err := objc.NewNSError(nserrPtr); err != nil {
+	if err := newNSError(nserrPtr); err != nil {
 		return ret, err
 	}
 	return ret, nil

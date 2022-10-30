@@ -94,8 +94,7 @@ func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPor
 	cpath := charWithGoString(path)
 	defer cpath.Free()
 
-	nserr := objc.NewNSErrorAsNil()
-	nserrPtr := objc.Ptr(nserr)
+	nserrPtr := newNSErrorAsNil()
 	attachment := &FileSerialPortAttachment{
 		pointer: objc.NewPointer(
 			C.newVZFileSerialPortAttachment(
@@ -105,7 +104,7 @@ func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPor
 			),
 		),
 	}
-	if err := objc.NewNSError(nserrPtr); err != nil {
+	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	runtime.SetFinalizer(attachment, func(self *FileSerialPortAttachment) {

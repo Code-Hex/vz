@@ -8,6 +8,7 @@ package vz
 #cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
 # include "virtualization.h"
 # include "virtualization_arm64.h"
+# include "virtualization_13_arm64.h"
 */
 import "C"
 import (
@@ -24,6 +25,23 @@ import (
 
 	"github.com/Code-Hex/vz/v2/internal/progress"
 )
+
+// WithStartUpFromMacOSRecovery is an option to specifiy whether to start up
+// from macOS Recovery for macOS VM.
+//
+// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func WithStartUpFromMacOSRecovery(startInRecovery bool) VirtualMachineStartOption {
+	return func(vmso *virtualMachineStartOptions) error {
+		if macosMajorVersionLessThan(13) {
+			return ErrUnsupportedOSVersion
+		}
+		vmso.macOSVirtualMachineStartOptionsPtr = C.newVZMacOSVirtualMachineStartOptions(
+			C.bool(startInRecovery),
+		)
+		return nil
+	}
+}
 
 // MacHardwareModel describes a specific virtual Mac hardware model.
 type MacHardwareModel struct {

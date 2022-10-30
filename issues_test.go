@@ -44,7 +44,7 @@ func TestIssue50(t *testing.T) {
 
 	t.Run("check for segmentation faults", func(t *testing.T) {
 		cases := map[string]func() error{
-			"start handler":  m.Start,
+			"start handler":  func() error { return m.Start() },
 			"pause handler":  m.Pause,
 			"resume handler": m.Resume,
 			"stop handler":   m.Stop,

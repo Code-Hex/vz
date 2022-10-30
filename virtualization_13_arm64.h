@@ -13,7 +13,6 @@
 #define NSURLComponents NSURLComponents
 
 #import "virtualization_helper.h"
-#import <Foundation/Foundation.h>
 #import <Virtualization/Virtualization.h>
 
 /* exported from cgo */
@@ -22,5 +21,7 @@ void linuxInstallRosettaWithCompletionHandler(void *cgoHandler, void *errPtr);
 void *newVZLinuxRosettaDirectoryShare(void **error);
 void linuxInstallRosetta(void *cgoHandler);
 int availabilityVZLinuxRosettaDirectoryShare();
+
+void *newVZMacOSVirtualMachineStartOptions(bool startUpFromMacOSRecovery);
 
 #endif

@@ -415,3 +415,27 @@ const char *getSpiceAgentPortName()
 #endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
+
+/*!
+ @abstract Start a virtual machine with options.
+ @discussion
+    Start a virtual machine that is in either Stopped or Error state.
+ @param options Options used to control how the virtual machine is started.
+ @param completionHandler Block called after the virtual machine has been successfully started or on error.
+    The error parameter passed to the block is nil if the start was successful.
+ @seealso VZMacOSVirtualMachineStartOptions
+ */
+void startWithOptionsCompletionHandler(void *machine, void *queue, void *options, void *completionHandler)
+{
+#ifdef INCLUDE_TARGET_OSX_13
+    if (@available(macOS 13, *)) {
+        vm_completion_handler_t handler = makeVMCompletionHandler(completionHandler);
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            [(VZVirtualMachine *)machine startWithOptions:options completionHandler:handler];
+        });
+        Block_release(handler);
+        return;
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}

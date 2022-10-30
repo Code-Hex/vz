@@ -24,4 +24,6 @@ int availabilityVZLinuxRosettaDirectoryShare();
 
 void *newVZMacOSVirtualMachineStartOptions(bool startUpFromMacOSRecovery);
 
+void *newVZMacTrackpadConfiguration();
+
 #endif

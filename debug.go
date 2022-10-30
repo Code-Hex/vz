@@ -9,11 +9,15 @@ package vz
 # include "virtualization_debug.h"
 */
 import "C"
-import "runtime"
+import (
+	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
+)
 
 // DebugStubConfiguration is an interface to debug configuration.
 type DebugStubConfiguration interface {
-	NSObject
+	objc.NSObject
 
 	debugStubConfiguration()
 }
@@ -24,7 +28,7 @@ func (*baseDebugStubConfiguration) debugStubConfiguration() {}
 
 // GDBDebugStubConfiguration is a configuration for gdb debugging.
 type GDBDebugStubConfiguration struct {
-	pointer
+	*pointer
 
 	*baseDebugStubConfiguration
 }
@@ -43,12 +47,12 @@ func NewGDBDebugStubConfiguration(port uint32) (*GDBDebugStubConfiguration, erro
 	}
 
 	config := &GDBDebugStubConfiguration{
-		pointer: pointer{
-			ptr: C.newVZGDBDebugStubConfiguration(C.uint32_t(port)),
-		},
+		pointer: objc.NewPointer(
+			C.newVZGDBDebugStubConfiguration(C.uint32_t(port)),
+		),
 	}
 	runtime.SetFinalizer(config, func(self *GDBDebugStubConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }
@@ -57,5 +61,5 @@ func NewGDBDebugStubConfiguration(port uint32) (*GDBDebugStubConfiguration, erro
 //
 // This API is not officially published and is subject to change without notice.
 func (v *VirtualMachineConfiguration) SetDebugStubVirtualMachineConfiguration(dc DebugStubConfiguration) {
-	C.setDebugStubVZVirtualMachineConfiguration(v.Ptr(), dc.Ptr())
+	C.setDebugStubVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(dc))
 }

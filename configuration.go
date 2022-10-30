@@ -7,7 +7,11 @@ package vz
 # include "virtualization_13.h"
 */
 import "C"
-import "runtime"
+import (
+	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
+)
 
 // VirtualMachineConfiguration defines the configuration of a VirtualMachine.
 //
@@ -33,7 +37,7 @@ import "runtime"
 type VirtualMachineConfiguration struct {
 	cpuCount   uint
 	memorySize uint64
-	pointer
+	*pointer
 }
 
 // NewVirtualMachineConfiguration creates a new configuration.
@@ -55,16 +59,16 @@ func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize 
 	config := &VirtualMachineConfiguration{
 		cpuCount:   cpu,
 		memorySize: memorySize,
-		pointer: pointer{
-			ptr: C.newVZVirtualMachineConfiguration(
-				bootLoader.Ptr(),
+		pointer: objc.NewPointer(
+			C.newVZVirtualMachineConfiguration(
+				objc.Ptr(bootLoader),
 				C.uint(cpu),
 				C.ulonglong(memorySize),
 			),
-		},
+		),
 	}
 	runtime.SetFinalizer(config, func(self *VirtualMachineConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }
@@ -74,10 +78,10 @@ func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize 
 // Return true if the configuration is valid.
 // If error is not nil, assigned with the validation error if the validation failed.
 func (v *VirtualMachineConfiguration) Validate() (bool, error) {
-	nserr := newNSErrorAsNil()
-	nserrPtr := nserr.Ptr()
-	ret := C.validateVZVirtualMachineConfiguration(v.Ptr(), &nserrPtr)
-	err := newNSError(nserrPtr)
+	nserr := objc.NewNSErrorAsNil()
+	nserrPtr := objc.Ptr(nserr)
+	ret := C.validateVZVirtualMachineConfiguration(objc.Ptr(v), &nserrPtr)
+	err := objc.NewNSError(nserrPtr)
 	if err != nil {
 		return false, err
 	}
@@ -86,42 +90,40 @@ func (v *VirtualMachineConfiguration) Validate() (bool, error) {
 
 // SetEntropyDevicesVirtualMachineConfiguration sets list of entropy devices. Empty by default.
 func (v *VirtualMachineConfiguration) SetEntropyDevicesVirtualMachineConfiguration(cs []*VirtioEntropyDeviceConfiguration) {
-	ptrs := make([]NSObject, len(cs))
+	ptrs := make([]objc.NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
 	}
-	array := convertToNSMutableArray(ptrs)
-	C.setEntropyDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setEntropyDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
 }
 
 // SetMemoryBalloonDevicesVirtualMachineConfiguration sets list of memory balloon devices. Empty by default.
 func (v *VirtualMachineConfiguration) SetMemoryBalloonDevicesVirtualMachineConfiguration(cs []MemoryBalloonDeviceConfiguration) {
-	ptrs := make([]NSObject, len(cs))
+	ptrs := make([]objc.NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
 	}
-	array := convertToNSMutableArray(ptrs)
-	C.setMemoryBalloonDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setMemoryBalloonDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
 }
 
 // SetNetworkDevicesVirtualMachineConfiguration sets list of network adapters. Empty by default.
 func (v *VirtualMachineConfiguration) SetNetworkDevicesVirtualMachineConfiguration(cs []*VirtioNetworkDeviceConfiguration) {
-	ptrs := make([]NSObject, len(cs))
+	ptrs := make([]objc.NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
 	}
-	array := convertToNSMutableArray(ptrs)
-	C.setNetworkDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setNetworkDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
 }
 
 // NetworkDevices return the list of network device configuration set in this virtual machine configuration.
 // Return an empty array if no network device configuration is set.
 func (v *VirtualMachineConfiguration) NetworkDevices() []*VirtioNetworkDeviceConfiguration {
-	nsArray := &NSArray{
-		pointer: pointer{
-			ptr: C.networkDevicesVZVirtualMachineConfiguration(v.Ptr()),
-		},
-	}
+	nsArray := objc.NewNSArray(
+		C.networkDevicesVZVirtualMachineConfiguration(objc.Ptr(v)),
+	)
 	ptrs := nsArray.ToPointerSlice()
 	networkDevices := make([]*VirtioNetworkDeviceConfiguration, len(ptrs))
 	for i, ptr := range ptrs {
@@ -132,32 +134,30 @@ func (v *VirtualMachineConfiguration) NetworkDevices() []*VirtioNetworkDeviceCon
 
 // SetSerialPortsVirtualMachineConfiguration sets list of serial ports. Empty by default.
 func (v *VirtualMachineConfiguration) SetSerialPortsVirtualMachineConfiguration(cs []*VirtioConsoleDeviceSerialPortConfiguration) {
-	ptrs := make([]NSObject, len(cs))
+	ptrs := make([]objc.NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
 	}
-	array := convertToNSMutableArray(ptrs)
-	C.setSerialPortsVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setSerialPortsVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
 }
 
 // SetSocketDevicesVirtualMachineConfiguration sets list of socket devices. Empty by default.
 func (v *VirtualMachineConfiguration) SetSocketDevicesVirtualMachineConfiguration(cs []SocketDeviceConfiguration) {
-	ptrs := make([]NSObject, len(cs))
+	ptrs := make([]objc.NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
 	}
-	array := convertToNSMutableArray(ptrs)
-	C.setSocketDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setSocketDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
 }
 
 // SocketDevices return the list of socket device configuration configured in this virtual machine configuration.
 // Return an empty array if no socket device configuration is set.
 func (v *VirtualMachineConfiguration) SocketDevices() []SocketDeviceConfiguration {
-	nsArray := &NSArray{
-		pointer: pointer{
-			ptr: C.socketDevicesVZVirtualMachineConfiguration(v.Ptr()),
-		},
-	}
+	nsArray := objc.NewNSArray(
+		C.socketDevicesVZVirtualMachineConfiguration(objc.Ptr(v)),
+	)
 	ptrs := nsArray.ToPointerSlice()
 	socketDevices := make([]SocketDeviceConfiguration, len(ptrs))
 	for i, ptr := range ptrs {
@@ -168,12 +168,12 @@ func (v *VirtualMachineConfiguration) SocketDevices() []SocketDeviceConfiguratio
 
 // SetStorageDevicesVirtualMachineConfiguration sets list of disk devices. Empty by default.
 func (v *VirtualMachineConfiguration) SetStorageDevicesVirtualMachineConfiguration(cs []StorageDeviceConfiguration) {
-	ptrs := make([]NSObject, len(cs))
+	ptrs := make([]objc.NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
 	}
-	array := convertToNSMutableArray(ptrs)
-	C.setStorageDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setStorageDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
 }
 
 // SetDirectorySharingDevicesVirtualMachineConfiguration sets list of directory sharing devices. Empty by default.
@@ -183,12 +183,12 @@ func (v *VirtualMachineConfiguration) SetDirectorySharingDevicesVirtualMachineCo
 	if macosMajorVersionLessThan(12) {
 		return
 	}
-	ptrs := make([]NSObject, len(cs))
+	ptrs := make([]objc.NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
 	}
-	array := convertToNSMutableArray(ptrs)
-	C.setDirectorySharingDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setDirectorySharingDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
 }
 
 // SetPlatformVirtualMachineConfiguration sets the hardware platform to use. Defaults to GenericPlatformConfiguration.
@@ -198,7 +198,7 @@ func (v *VirtualMachineConfiguration) SetPlatformVirtualMachineConfiguration(c P
 	if macosMajorVersionLessThan(12) {
 		return
 	}
-	C.setPlatformVZVirtualMachineConfiguration(v.Ptr(), c.Ptr())
+	C.setPlatformVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(c))
 }
 
 // SetGraphicsDevicesVirtualMachineConfiguration sets list of graphics devices. Empty by default.
@@ -208,12 +208,12 @@ func (v *VirtualMachineConfiguration) SetGraphicsDevicesVirtualMachineConfigurat
 	if macosMajorVersionLessThan(12) {
 		return
 	}
-	ptrs := make([]NSObject, len(cs))
+	ptrs := make([]objc.NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
 	}
-	array := convertToNSMutableArray(ptrs)
-	C.setGraphicsDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setGraphicsDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
 }
 
 // SetPointingDevicesVirtualMachineConfiguration sets list of pointing devices. Empty by default.
@@ -223,12 +223,12 @@ func (v *VirtualMachineConfiguration) SetPointingDevicesVirtualMachineConfigurat
 	if macosMajorVersionLessThan(12) {
 		return
 	}
-	ptrs := make([]NSObject, len(cs))
+	ptrs := make([]objc.NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
 	}
-	array := convertToNSMutableArray(ptrs)
-	C.setPointingDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setPointingDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
 }
 
 // SetKeyboardsVirtualMachineConfiguration sets list of keyboards. Empty by default.
@@ -238,12 +238,12 @@ func (v *VirtualMachineConfiguration) SetKeyboardsVirtualMachineConfiguration(cs
 	if macosMajorVersionLessThan(12) {
 		return
 	}
-	ptrs := make([]NSObject, len(cs))
+	ptrs := make([]objc.NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
 	}
-	array := convertToNSMutableArray(ptrs)
-	C.setKeyboardsVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setKeyboardsVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
 }
 
 // SetAudioDevicesVirtualMachineConfiguration sets list of audio devices. Empty by default.
@@ -253,12 +253,12 @@ func (v *VirtualMachineConfiguration) SetAudioDevicesVirtualMachineConfiguration
 	if macosMajorVersionLessThan(12) {
 		return
 	}
-	ptrs := make([]NSObject, len(cs))
+	ptrs := make([]objc.NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
 	}
-	array := convertToNSMutableArray(ptrs)
-	C.setAudioDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setAudioDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
 }
 
 // SetConsoleDevicesVirtualMachineConfiguration sets list of console devices. Empty by default.
@@ -268,12 +268,12 @@ func (v *VirtualMachineConfiguration) SetConsoleDevicesVirtualMachineConfigurati
 	if macosMajorVersionLessThan(13) {
 		return
 	}
-	ptrs := make([]NSObject, len(cs))
+	ptrs := make([]objc.NSObject, len(cs))
 	for i, val := range cs {
 		ptrs[i] = val
 	}
-	array := convertToNSMutableArray(ptrs)
-	C.setConsoleDevicesVZVirtualMachineConfiguration(v.Ptr(), array.Ptr())
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setConsoleDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
 }
 
 // VirtualMachineConfigurationMinimumAllowedMemorySize returns minimum

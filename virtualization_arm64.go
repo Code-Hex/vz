@@ -23,6 +23,7 @@ import (
 	"sync/atomic"
 	"unsafe"
 
+	"github.com/Code-Hex/vz/v2/internal/objc"
 	"github.com/Code-Hex/vz/v2/internal/progress"
 )
 
@@ -45,7 +46,7 @@ func WithStartUpFromMacOSRecovery(startInRecovery bool) VirtualMachineStartOptio
 
 // MacHardwareModel describes a specific virtual Mac hardware model.
 type MacHardwareModel struct {
-	pointer
+	*pointer
 
 	supported          bool
 	dataRepresentation []byte
@@ -78,7 +79,7 @@ func NewMacHardwareModelWithData(b []byte) (*MacHardwareModel, error) {
 	)
 	ret := newMacHardwareModel(ptr)
 	runtime.SetFinalizer(ret, func(self *MacHardwareModel) {
-		self.Release()
+		objc.Release(self)
 	})
 	return ret, nil
 }
@@ -88,9 +89,7 @@ func newMacHardwareModel(ptr unsafe.Pointer) *MacHardwareModel {
 	dataRepresentation := ret.dataRepresentation
 	bytePointer := (*byte)(unsafe.Pointer(dataRepresentation.ptr))
 	return &MacHardwareModel{
-		pointer: pointer{
-			ptr: ptr,
-		},
+		pointer:   objc.NewPointer(ptr),
 		supported: bool(ret.supported),
 		// https://github.com/golang/go/wiki/cgo#turning-c-arrays-into-go-slices
 		dataRepresentation: unsafe.Slice(bytePointer, dataRepresentation.len),
@@ -106,7 +105,7 @@ func (m *MacHardwareModel) DataRepresentation() []byte { return m.dataRepresenta
 
 // MacMachineIdentifier an identifier to make a virtual machine unique.
 type MacMachineIdentifier struct {
-	pointer
+	*pointer
 
 	dataRepresentation []byte
 }
@@ -161,9 +160,7 @@ func newMacMachineIdentifier(ptr unsafe.Pointer) *MacMachineIdentifier {
 	dataRepresentation := C.getVZMacMachineIdentifierDataRepresentation(ptr)
 	bytePointer := (*byte)(unsafe.Pointer(dataRepresentation.ptr))
 	return &MacMachineIdentifier{
-		pointer: pointer{
-			ptr: ptr,
-		},
+		pointer: objc.NewPointer(ptr),
 		// https://github.com/golang/go/wiki/cgo#turning-c-arrays-into-go-slices
 		dataRepresentation: unsafe.Slice(bytePointer, dataRepresentation.len),
 	}
@@ -176,7 +173,7 @@ func (m *MacMachineIdentifier) DataRepresentation() []byte { return m.dataRepres
 // MacAuxiliaryStorage is a struct that contains information the boot loader
 // needs for booting macOS as a guest operating system.
 type MacAuxiliaryStorage struct {
-	pointer
+	*pointer
 
 	storagePath string
 }
@@ -191,16 +188,16 @@ func WithCreatingStorage(hardwareModel *MacHardwareModel) NewMacAuxiliaryStorage
 		cpath := charWithGoString(mas.storagePath)
 		defer cpath.Free()
 
-		nserr := newNSErrorAsNil()
-		nserrPtr := nserr.Ptr()
-		mas.pointer = pointer{
-			ptr: C.newVZMacAuxiliaryStorageWithCreating(
+		nserr := objc.NewNSErrorAsNil()
+		nserrPtr := objc.Ptr(nserr)
+		mas.pointer = objc.NewPointer(
+			C.newVZMacAuxiliaryStorageWithCreating(
 				cpath.CString(),
-				hardwareModel.Ptr(),
+				objc.Ptr(hardwareModel),
 				&nserrPtr,
 			),
-		}
-		if err := newNSError(nserrPtr); err != nil {
+		)
+		if err := objc.NewNSError(nserrPtr); err != nil {
 			return err
 		}
 		return nil
@@ -224,12 +221,12 @@ func NewMacAuxiliaryStorage(storagePath string, opts ...NewMacAuxiliaryStorageOp
 		}
 	}
 
-	if storage.pointer.ptr == nil {
+	if objc.Ptr(storage) == nil {
 		cpath := charWithGoString(storagePath)
 		defer cpath.Free()
-		storage.pointer = pointer{
-			ptr: C.newVZMacAuxiliaryStorage(cpath.CString()),
-		}
+		storage.pointer = objc.NewPointer(
+			C.newVZMacAuxiliaryStorage(cpath.CString()),
+		)
 	}
 	return storage, nil
 }
@@ -341,7 +338,7 @@ func macOSRestoreImageCompletionHandler(cgoHandlerPtr, restoreImagePtr, errPtr u
 		mostFeaturefulSupportedConfigurationPtr: restoreImageStruct.mostFeaturefulSupportedConfiguration,
 	}
 
-	if err := newNSError(errPtr); err != nil {
+	if err := objc.NewNSError(errPtr); err != nil {
 		handler(restoreImage, err)
 	} else {
 		handler(restoreImage, nil)
@@ -463,8 +460,8 @@ func LoadMacOSRestoreImageFromPath(imagePath string) (retImage *MacOSRestoreImag
 
 // MacOSInstaller is a struct you use to install macOS on the specified virtual machine.
 type MacOSInstaller struct {
-	pointer
-	observerPointer pointer
+	*pointer
+	observerPointer *pointer
 
 	vm       *VirtualMachine
 	progress atomic.Value
@@ -491,19 +488,19 @@ func NewMacOSInstaller(vm *VirtualMachine, restoreImageIpsw string) (*MacOSInsta
 	cs := charWithGoString(restoreImageIpsw)
 	defer cs.Free()
 	ret := &MacOSInstaller{
-		pointer: pointer{
-			ptr: C.newVZMacOSInstaller(vm.Ptr(), vm.dispatchQueue, cs.CString()),
-		},
-		observerPointer: pointer{
-			ptr: C.newProgressObserverVZMacOSInstaller(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZMacOSInstaller(objc.Ptr(vm), vm.dispatchQueue, cs.CString()),
+		),
+		observerPointer: objc.NewPointer(
+			C.newProgressObserverVZMacOSInstaller(),
+		),
 		vm:     vm,
 		doneCh: make(chan struct{}),
 	}
 	ret.setFractionCompleted(0)
 	runtime.SetFinalizer(ret, func(self *MacOSInstaller) {
-		self.observerPointer.Release()
-		self.Release()
+		objc.Release(self.observerPointer)
+		objc.Release(self)
 	})
 	return ret, nil
 }
@@ -515,7 +512,7 @@ func macOSInstallCompletionHandler(cgoHandlerPtr, errPtr unsafe.Pointer) {
 	handler := cgoHandler.Value().(func(error))
 	defer cgoHandler.Delete()
 
-	if err := newNSError(errPtr); err != nil {
+	if err := objc.NewNSError(errPtr); err != nil {
 		handler(err)
 	} else {
 		handler(nil)
@@ -551,9 +548,9 @@ func (m *MacOSInstaller) Install(ctx context.Context) error {
 		})
 
 		C.installByVZMacOSInstaller(
-			m.Ptr(),
+			objc.Ptr(m),
 			m.vm.dispatchQueue,
-			m.observerPointer.Ptr(),
+			objc.Ptr(m.observerPointer),
 			unsafe.Pointer(&completionHandler),
 			unsafe.Pointer(&fractionCompletedHandler),
 		)
@@ -561,7 +558,7 @@ func (m *MacOSInstaller) Install(ctx context.Context) error {
 
 	select {
 	case <-ctx.Done():
-		C.cancelInstallVZMacOSInstaller(m.Ptr())
+		C.cancelInstallVZMacOSInstaller(objc.Ptr(m))
 		return ctx.Err()
 	case <-m.doneCh:
 	}

@@ -9,7 +9,11 @@ package vz
 # include "virtualization_13_arm64.h"
 */
 import "C"
-import "runtime"
+import (
+	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
+)
 
 // MacTrackpadConfiguration is a struct that defines the configuration
 // for a Mac trackpad.
@@ -22,7 +26,7 @@ import "runtime"
 //
 // see: https://developer.apple.com/documentation/virtualization/vzmactrackpadconfiguration?language=objc
 type MacTrackpadConfiguration struct {
-	pointer
+	*pointer
 
 	*basePointingDeviceConfiguration
 }
@@ -38,12 +42,12 @@ func NewMacTrackpadConfiguration() (*MacTrackpadConfiguration, error) {
 		return nil, ErrUnsupportedOSVersion
 	}
 	config := &MacTrackpadConfiguration{
-		pointer: pointer{
-			ptr: C.newVZMacTrackpadConfiguration(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZMacTrackpadConfiguration(),
+		),
 	}
 	runtime.SetFinalizer(config, func(self *MacTrackpadConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }

@@ -10,11 +10,13 @@ import "C"
 import (
 	"os"
 	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
 // DirectorySharingDeviceConfiguration for a directory sharing device configuration.
 type DirectorySharingDeviceConfiguration interface {
-	NSObject
+	objc.NSObject
 
 	directorySharingDeviceConfiguration()
 }
@@ -29,7 +31,7 @@ var _ DirectorySharingDeviceConfiguration = (*VirtioFileSystemDeviceConfiguratio
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiofilesystemdeviceconfiguration?language=objc
 type VirtioFileSystemDeviceConfiguration struct {
-	pointer
+	*pointer
 
 	*baseDirectorySharingDeviceConfiguration
 }
@@ -45,31 +47,31 @@ func NewVirtioFileSystemDeviceConfiguration(tag string) (*VirtioFileSystemDevice
 	tagChar := charWithGoString(tag)
 	defer tagChar.Free()
 
-	nserr := newNSErrorAsNil()
-	nserrPtr := nserr.Ptr()
+	nserr := objc.NewNSErrorAsNil()
+	nserrPtr := objc.Ptr(nserr)
 
 	fsdConfig := &VirtioFileSystemDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioFileSystemDeviceConfiguration(tagChar.CString(), &nserrPtr),
-		},
+		pointer: objc.NewPointer(
+			C.newVZVirtioFileSystemDeviceConfiguration(tagChar.CString(), &nserrPtr),
+		),
 	}
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objc.NewNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	runtime.SetFinalizer(fsdConfig, func(self *VirtioFileSystemDeviceConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return fsdConfig, nil
 }
 
 // SetDirectoryShare sets the directory share associated with this configuration.
 func (c *VirtioFileSystemDeviceConfiguration) SetDirectoryShare(share DirectoryShare) {
-	C.setVZVirtioFileSystemDeviceConfigurationShare(c.Ptr(), share.Ptr())
+	C.setVZVirtioFileSystemDeviceConfigurationShare(objc.Ptr(c), objc.Ptr(share))
 }
 
 // SharedDirectory is a shared directory.
 type SharedDirectory struct {
-	pointer
+	*pointer
 }
 
 // NewSharedDirectory creates a new shared directory.
@@ -87,19 +89,19 @@ func NewSharedDirectory(dirPath string, readOnly bool) (*SharedDirectory, error)
 	dirPathChar := charWithGoString(dirPath)
 	defer dirPathChar.Free()
 	sd := &SharedDirectory{
-		pointer: pointer{
-			ptr: C.newVZSharedDirectory(dirPathChar.CString(), C.bool(readOnly)),
-		},
+		pointer: objc.NewPointer(
+			C.newVZSharedDirectory(dirPathChar.CString(), C.bool(readOnly)),
+		),
 	}
 	runtime.SetFinalizer(sd, func(self *SharedDirectory) {
-		self.Release()
+		objc.Release(self)
 	})
 	return sd, nil
 }
 
 // DirectoryShare is the base interface for a directory share.
 type DirectoryShare interface {
-	NSObject
+	objc.NSObject
 
 	directoryShare()
 }
@@ -112,7 +114,7 @@ var _ DirectoryShare = (*SingleDirectoryShare)(nil)
 
 // SingleDirectoryShare defines the directory share for a single directory.
 type SingleDirectoryShare struct {
-	pointer
+	*pointer
 
 	*baseDirectoryShare
 }
@@ -126,19 +128,19 @@ func NewSingleDirectoryShare(share *SharedDirectory) (*SingleDirectoryShare, err
 		return nil, ErrUnsupportedOSVersion
 	}
 	config := &SingleDirectoryShare{
-		pointer: pointer{
-			ptr: C.newVZSingleDirectoryShare(share.Ptr()),
-		},
+		pointer: objc.NewPointer(
+			C.newVZSingleDirectoryShare(objc.Ptr(share)),
+		),
 	}
 	runtime.SetFinalizer(config, func(self *SingleDirectoryShare) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }
 
 // MultipleDirectoryShare defines the directory share for multiple directories.
 type MultipleDirectoryShare struct {
-	pointer
+	*pointer
 
 	*baseDirectoryShare
 }
@@ -153,20 +155,20 @@ func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) (*MultipleDir
 	if macosMajorVersionLessThan(12) {
 		return nil, ErrUnsupportedOSVersion
 	}
-	directories := make(map[string]NSObject, len(shares))
+	directories := make(map[string]objc.NSObject, len(shares))
 	for k, v := range shares {
 		directories[k] = v
 	}
 
-	dict := convertToNSMutableDictionary(directories)
+	dict := objc.ConvertToNSMutableDictionary(directories)
 
 	config := &MultipleDirectoryShare{
-		pointer: pointer{
-			ptr: C.newVZMultipleDirectoryShare(dict.Ptr()),
-		},
+		pointer: objc.NewPointer(
+			C.newVZMultipleDirectoryShare(objc.Ptr(dict)),
+		),
 	}
 	runtime.SetFinalizer(config, func(self *MultipleDirectoryShare) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }

@@ -6,11 +6,15 @@ package vz
 # include "virtualization.h"
 */
 import "C"
-import "runtime"
+import (
+	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
+)
 
 // KeyboardConfiguration interface for a keyboard configuration.
 type KeyboardConfiguration interface {
-	NSObject
+	objc.NSObject
 
 	keyboardConfiguration()
 }
@@ -21,7 +25,7 @@ func (*baseKeyboardConfiguration) keyboardConfiguration() {}
 
 // USBKeyboardConfiguration is a device that defines the configuration for a USB keyboard.
 type USBKeyboardConfiguration struct {
-	pointer
+	*pointer
 
 	*baseKeyboardConfiguration
 }
@@ -37,12 +41,10 @@ func NewUSBKeyboardConfiguration() (*USBKeyboardConfiguration, error) {
 		return nil, ErrUnsupportedOSVersion
 	}
 	config := &USBKeyboardConfiguration{
-		pointer: pointer{
-			ptr: C.newVZUSBKeyboardConfiguration(),
-		},
+		pointer: objc.NewPointer(C.newVZUSBKeyboardConfiguration()),
 	}
 	runtime.SetFinalizer(config, func(self *USBKeyboardConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }

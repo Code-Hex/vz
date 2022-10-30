@@ -11,6 +11,8 @@ package vz
 import "C"
 import (
 	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
 // MacPlatformConfiguration is the platform configuration for booting macOS on Apple silicon.
@@ -28,7 +30,7 @@ import (
 //
 // If you create multiple VMs from the same configuration, each should have a unique auxiliaryStorage and machineIdentifier.
 type MacPlatformConfiguration struct {
-	pointer
+	*pointer
 
 	*basePlatformConfiguration
 
@@ -46,7 +48,7 @@ type MacPlatformConfigurationOption func(*MacPlatformConfiguration)
 func WithHardwareModel(m *MacHardwareModel) MacPlatformConfigurationOption {
 	return func(mpc *MacPlatformConfiguration) {
 		mpc.hardwareModel = m
-		C.setHardwareModelVZMacPlatformConfiguration(mpc.Ptr(), m.Ptr())
+		C.setHardwareModelVZMacPlatformConfiguration(objc.Ptr(mpc), objc.Ptr(m))
 	}
 }
 
@@ -54,7 +56,7 @@ func WithHardwareModel(m *MacHardwareModel) MacPlatformConfigurationOption {
 func WithMachineIdentifier(m *MacMachineIdentifier) MacPlatformConfigurationOption {
 	return func(mpc *MacPlatformConfiguration) {
 		mpc.machineIdentifier = m
-		C.setMachineIdentifierVZMacPlatformConfiguration(mpc.Ptr(), m.Ptr())
+		C.setMachineIdentifierVZMacPlatformConfiguration(objc.Ptr(mpc), objc.Ptr(m))
 	}
 }
 
@@ -62,7 +64,7 @@ func WithMachineIdentifier(m *MacMachineIdentifier) MacPlatformConfigurationOpti
 func WithAuxiliaryStorage(m *MacAuxiliaryStorage) MacPlatformConfigurationOption {
 	return func(mpc *MacPlatformConfiguration) {
 		mpc.auxiliaryStorage = m
-		C.setAuxiliaryStorageVZMacPlatformConfiguration(mpc.Ptr(), m.Ptr())
+		C.setAuxiliaryStorageVZMacPlatformConfiguration(objc.Ptr(mpc), objc.Ptr(m))
 	}
 }
 
@@ -76,15 +78,15 @@ func NewMacPlatformConfiguration(opts ...MacPlatformConfigurationOption) (*MacPl
 	}
 
 	platformConfig := &MacPlatformConfiguration{
-		pointer: pointer{
-			ptr: C.newVZMacPlatformConfiguration(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZMacPlatformConfiguration(),
+		),
 	}
 	for _, optFunc := range opts {
 		optFunc(platformConfig)
 	}
 	runtime.SetFinalizer(platformConfig, func(self *MacPlatformConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return platformConfig, nil
 }

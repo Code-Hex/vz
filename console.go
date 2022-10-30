@@ -9,11 +9,13 @@ import "C"
 import (
 	"runtime"
 	"unsafe"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
 // ConsoleDeviceConfiguration interface for an console device configuration.
 type ConsoleDeviceConfiguration interface {
-	NSObject
+	objc.NSObject
 
 	consoleDeviceConfiguration()
 }
@@ -24,7 +26,7 @@ func (*baseConsoleDeviceConfiguration) consoleDeviceConfiguration() {}
 
 // VirtioConsoleDeviceConfiguration is Virtio Console Device.
 type VirtioConsoleDeviceConfiguration struct {
-	pointer
+	*pointer
 	portsPtr unsafe.Pointer
 
 	*baseConsoleDeviceConfiguration
@@ -40,15 +42,15 @@ func NewVirtioConsoleDeviceConfiguration() (*VirtioConsoleDeviceConfiguration, e
 		return nil, ErrUnsupportedOSVersion
 	}
 	config := &VirtioConsoleDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioConsoleDeviceConfiguration(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZVirtioConsoleDeviceConfiguration(),
+		),
 		consolePorts: make(map[int]*VirtioConsolePortConfiguration),
 	}
-	config.portsPtr = C.portsVZVirtioConsoleDeviceConfiguration(config.Ptr())
+	config.portsPtr = C.portsVZVirtioConsoleDeviceConfiguration(objc.Ptr(config))
 
 	runtime.SetFinalizer(config, func(self *VirtioConsoleDeviceConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }
@@ -62,7 +64,7 @@ func (v *VirtioConsoleDeviceConfiguration) MaximumPortCount() uint32 {
 func (v *VirtioConsoleDeviceConfiguration) SetVirtioConsolePortConfiguration(idx int, portConfig *VirtioConsolePortConfiguration) {
 	C.setObjectAtIndexedSubscriptVZVirtioConsolePortConfigurationArray(
 		v.portsPtr,
-		portConfig.Ptr(),
+		objc.Ptr(portConfig),
 		C.int(idx),
 	)
 
@@ -72,7 +74,7 @@ func (v *VirtioConsoleDeviceConfiguration) SetVirtioConsolePortConfiguration(idx
 }
 
 type ConsolePortConfiguration interface {
-	NSObject
+	objc.NSObject
 
 	consolePortConfiguration()
 }
@@ -86,7 +88,7 @@ func (*baseConsolePortConfiguration) consolePortConfiguration() {}
 // A console port is a two-way communication channel between a host VZSerialPortAttachment and
 // a virtual machine console port. One or more console ports are attached to a Virtio console device.
 type VirtioConsolePortConfiguration struct {
-	pointer
+	*pointer
 
 	*baseConsolePortConfiguration
 
@@ -107,7 +109,7 @@ func WithVirtioConsolePortConfigurationName(name string) NewVirtioConsolePortCon
 		consolePortName := charWithGoString(name)
 		defer consolePortName.Free()
 		C.setNameVZVirtioConsolePortConfiguration(
-			vcpc.Ptr(),
+			objc.Ptr(vcpc),
 			consolePortName.CString(),
 		)
 		vcpc.name = name
@@ -119,7 +121,7 @@ func WithVirtioConsolePortConfigurationName(name string) NewVirtioConsolePortCon
 func WithVirtioConsolePortConfigurationIsConsole(isConsole bool) NewVirtioConsolePortConfigurationOption {
 	return func(vcpc *VirtioConsolePortConfiguration) {
 		C.setIsConsoleVZVirtioConsolePortConfiguration(
-			vcpc.Ptr(),
+			objc.Ptr(vcpc),
 			C.bool(isConsole),
 		)
 		vcpc.isConsole = isConsole
@@ -131,8 +133,8 @@ func WithVirtioConsolePortConfigurationIsConsole(isConsole bool) NewVirtioConsol
 func WithVirtioConsolePortConfigurationAttachment(attachment SerialPortAttachment) NewVirtioConsolePortConfigurationOption {
 	return func(vcpc *VirtioConsolePortConfiguration) {
 		C.setAttachmentVZVirtioConsolePortConfiguration(
-			vcpc.Ptr(),
-			attachment.Ptr(),
+			objc.Ptr(vcpc),
+			objc.Ptr(attachment),
 		)
 		vcpc.attachment = attachment
 	}
@@ -147,15 +149,15 @@ func NewVirtioConsolePortConfiguration(opts ...NewVirtioConsolePortConfiguration
 		return nil, ErrUnsupportedOSVersion
 	}
 	vcpc := &VirtioConsolePortConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioConsolePortConfiguration(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZVirtioConsolePortConfiguration(),
+		),
 	}
 	for _, optFunc := range opts {
 		optFunc(vcpc)
 	}
 	runtime.SetFinalizer(vcpc, func(self *VirtioConsolePortConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return vcpc, nil
 }

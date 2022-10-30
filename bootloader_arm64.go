@@ -9,11 +9,15 @@ package vz
 # include "virtualization_arm64.h"
 */
 import "C"
-import "runtime"
+import (
+	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
+)
 
 // MacOSBootLoader is a boot loader configuration for booting macOS on Apple Silicon.
 type MacOSBootLoader struct {
-	pointer
+	*pointer
 
 	*baseBootLoader
 }
@@ -30,12 +34,12 @@ func NewMacOSBootLoader() (*MacOSBootLoader, error) {
 	}
 
 	bootLoader := &MacOSBootLoader{
-		pointer: pointer{
-			ptr: C.newVZMacOSBootLoader(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZMacOSBootLoader(),
+		),
 	}
 	runtime.SetFinalizer(bootLoader, func(self *MacOSBootLoader) {
-		self.Release()
+		objc.Release(self)
 	})
 	return bootLoader, nil
 }

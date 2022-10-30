@@ -6,7 +6,11 @@ package vz
 # include "virtualization.h"
 */
 import "C"
-import "runtime"
+import (
+	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
+)
 
 // VirtioEntropyDeviceConfiguration is used to expose a source of entropy for the guest operating system’s random-number generator.
 // When you create this object and add it to your virtual machine’s configuration, the virtual machine configures a Virtio-compliant
@@ -14,7 +18,7 @@ import "runtime"
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtioentropydeviceconfiguration?language=objc
 type VirtioEntropyDeviceConfiguration struct {
-	pointer
+	*pointer
 }
 
 // NewVirtioEntropyDeviceConfiguration creates a new Virtio Entropy Device confiuration.
@@ -27,12 +31,12 @@ func NewVirtioEntropyDeviceConfiguration() (*VirtioEntropyDeviceConfiguration, e
 	}
 
 	config := &VirtioEntropyDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioEntropyDeviceConfiguration(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZVirtioEntropyDeviceConfiguration(),
+		),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioEntropyDeviceConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }

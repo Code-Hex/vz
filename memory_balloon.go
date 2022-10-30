@@ -6,11 +6,15 @@ package vz
 # include "virtualization.h"
 */
 import "C"
-import "runtime"
+import (
+	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
+)
 
 // MemoryBalloonDeviceConfiguration for a memory balloon device configuration.
 type MemoryBalloonDeviceConfiguration interface {
-	NSObject
+	objc.NSObject
 
 	memoryBalloonDeviceConfiguration()
 }
@@ -25,7 +29,7 @@ var _ MemoryBalloonDeviceConfiguration = (*VirtioTraditionalMemoryBalloonDeviceC
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiotraditionalmemoryballoondeviceconfiguration?language=objc
 type VirtioTraditionalMemoryBalloonDeviceConfiguration struct {
-	pointer
+	*pointer
 
 	*baseMemoryBalloonDeviceConfiguration
 }
@@ -40,12 +44,12 @@ func NewVirtioTraditionalMemoryBalloonDeviceConfiguration() (*VirtioTraditionalM
 	}
 
 	config := &VirtioTraditionalMemoryBalloonDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioTraditionalMemoryBalloonDeviceConfiguration(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZVirtioTraditionalMemoryBalloonDeviceConfiguration(),
+		),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioTraditionalMemoryBalloonDeviceConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }

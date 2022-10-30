@@ -11,11 +11,13 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
 // BootLoader is the interface of boot loader definitions.
 type BootLoader interface {
-	NSObject
+	objc.NSObject
 
 	bootLoader()
 }
@@ -32,7 +34,7 @@ type LinuxBootLoader struct {
 	vmlinuzPath string
 	initrdPath  string
 	cmdLine     string
-	pointer
+	*pointer
 
 	*baseBootLoader
 }
@@ -55,7 +57,7 @@ func WithCommandLine(cmdLine string) LinuxBootLoaderOption {
 		b.cmdLine = cmdLine
 		cs := charWithGoString(cmdLine)
 		defer cs.Free()
-		C.setCommandLineVZLinuxBootLoader(b.Ptr(), cs.CString())
+		C.setCommandLineVZLinuxBootLoader(objc.Ptr(b), cs.CString())
 		return nil
 	}
 }
@@ -69,7 +71,7 @@ func WithInitrd(initrdPath string) LinuxBootLoaderOption {
 		b.initrdPath = initrdPath
 		cs := charWithGoString(initrdPath)
 		defer cs.Free()
-		C.setInitialRamdiskURLVZLinuxBootLoader(b.Ptr(), cs.CString())
+		C.setInitialRamdiskURLVZLinuxBootLoader(objc.Ptr(b), cs.CString())
 		return nil
 	}
 }
@@ -90,14 +92,12 @@ func NewLinuxBootLoader(vmlinuz string, opts ...LinuxBootLoaderOption) (*LinuxBo
 	defer vmlinuzPath.Free()
 	bootLoader := &LinuxBootLoader{
 		vmlinuzPath: vmlinuz,
-		pointer: pointer{
-			ptr: C.newVZLinuxBootLoader(
-				vmlinuzPath.CString(),
-			),
-		},
+		pointer: objc.NewPointer(
+			C.newVZLinuxBootLoader(vmlinuzPath.CString()),
+		),
 	}
 	runtime.SetFinalizer(bootLoader, func(self *LinuxBootLoader) {
-		self.Release()
+		objc.Release(self)
 	})
 	for _, opt := range opts {
 		if err := opt(bootLoader); err != nil {
@@ -112,7 +112,7 @@ var _ BootLoader = (*LinuxBootLoader)(nil)
 // EFIBootLoader Boot loader configuration for booting guest operating systems expecting an EFI ROM.
 // see: https://developer.apple.com/documentation/virtualization/vzefibootloader?language=objc
 type EFIBootLoader struct {
-	pointer
+	*pointer
 
 	*baseBootLoader
 
@@ -125,7 +125,7 @@ type NewEFIBootLoaderOption func(b *EFIBootLoader)
 // WithEFIVariableStore sets the optional EFI variable store.
 func WithEFIVariableStore(variableStore *EFIVariableStore) NewEFIBootLoaderOption {
 	return func(e *EFIBootLoader) {
-		C.setVariableStoreVZEFIBootLoader(e.Ptr(), variableStore.Ptr())
+		C.setVariableStoreVZEFIBootLoader(objc.Ptr(e), objc.Ptr(variableStore))
 		e.variableStore = variableStore
 	}
 }
@@ -139,15 +139,15 @@ func NewEFIBootLoader(opts ...NewEFIBootLoaderOption) (*EFIBootLoader, error) {
 		return nil, ErrUnsupportedOSVersion
 	}
 	bootLoader := &EFIBootLoader{
-		pointer: pointer{
-			ptr: C.newVZEFIBootLoader(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZEFIBootLoader(),
+		),
 	}
 	for _, optFunc := range opts {
 		optFunc(bootLoader)
 	}
 	runtime.SetFinalizer(bootLoader, func(self *EFIBootLoader) {
-		self.Release()
+		objc.Release(self)
 	})
 	return bootLoader, nil
 }
@@ -162,7 +162,7 @@ func (e *EFIBootLoader) VariableStore() *EFIVariableStore {
 //
 // see: https://developer.apple.com/documentation/virtualization/vzefivariablestore?language=objc
 type EFIVariableStore struct {
-	pointer
+	*pointer
 
 	path string
 }
@@ -177,15 +177,15 @@ func WithCreatingEFIVariableStore() NewEFIVariableStoreOption {
 		cpath := charWithGoString(es.path)
 		defer cpath.Free()
 
-		nserr := newNSErrorAsNil()
-		nserrPtr := nserr.Ptr()
-		es.pointer = pointer{
-			ptr: C.newCreatingVZEFIVariableStoreAtPath(
+		nserr := objc.NewNSErrorAsNil()
+		nserrPtr := objc.Ptr(nserr)
+		es.pointer = objc.NewPointer(
+			C.newCreatingVZEFIVariableStoreAtPath(
 				cpath.CString(),
 				&nserrPtr,
 			),
-		}
-		if err := newNSError(nserrPtr); err != nil {
+		)
+		if err := objc.NewNSError(nserrPtr); err != nil {
 			return err
 		}
 		return nil
@@ -207,18 +207,18 @@ func NewEFIVariableStore(path string, opts ...NewEFIVariableStoreOption) (*EFIVa
 			return nil, err
 		}
 	}
-	if variableStore.pointer.ptr == nil {
+	if objc.Ptr(variableStore) == nil {
 		if _, err := os.Stat(path); err != nil {
 			return nil, err
 		}
 		cpath := charWithGoString(path)
 		defer cpath.Free()
-		variableStore.pointer = pointer{
-			ptr: C.newVZEFIVariableStorePath(cpath.CString()),
-		}
+		variableStore.pointer = objc.NewPointer(
+			C.newVZEFIVariableStorePath(cpath.CString()),
+		)
 	}
 	runtime.SetFinalizer(variableStore, func(self *EFIVariableStore) {
-		self.Release()
+		objc.Release(self)
 	})
 	return variableStore, nil
 }

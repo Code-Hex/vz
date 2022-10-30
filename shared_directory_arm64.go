@@ -13,6 +13,8 @@ import (
 	"runtime"
 	"runtime/cgo"
 	"unsafe"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
 // LinuxRosettaAvailability represents an availability of Rosetta support for Linux binaries.
@@ -37,7 +39,7 @@ func linuxInstallRosettaWithCompletionHandler(cgoHandlerPtr, errPtr unsafe.Point
 
 	handler := cgoHandler.Value().(func(error))
 
-	if err := newNSError(errPtr); err != nil {
+	if err := objc.NewNSError(errPtr); err != nil {
 		handler(err)
 	} else {
 		handler(nil)
@@ -47,7 +49,7 @@ func linuxInstallRosettaWithCompletionHandler(cgoHandlerPtr, errPtr unsafe.Point
 // LinuxRosettaDirectoryShare directory share to enable Rosetta support for Linux binaries.
 // see: https://developer.apple.com/documentation/virtualization/vzlinuxrosettadirectoryshare?language=objc
 type LinuxRosettaDirectoryShare struct {
-	pointer
+	*pointer
 
 	*baseDirectoryShare
 }
@@ -63,18 +65,18 @@ func NewLinuxRosettaDirectoryShare() (*LinuxRosettaDirectoryShare, error) {
 	if macosMajorVersionLessThan(13) {
 		return nil, ErrUnsupportedOSVersion
 	}
-	nserr := newNSErrorAsNil()
-	nserrPtr := nserr.Ptr()
+	nserr := objc.NewNSErrorAsNil()
+	nserrPtr := objc.Ptr(nserr)
 	ds := &LinuxRosettaDirectoryShare{
-		pointer: pointer{
-			ptr: C.newVZLinuxRosettaDirectoryShare(&nserrPtr),
-		},
+		pointer: objc.NewPointer(
+			C.newVZLinuxRosettaDirectoryShare(&nserrPtr),
+		),
 	}
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objc.NewNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	runtime.SetFinalizer(ds, func(self *LinuxRosettaDirectoryShare) {
-		self.Release()
+		objc.Release(self)
 	})
 	return ds, nil
 }

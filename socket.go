@@ -15,11 +15,13 @@ import (
 	"sync"
 	"time"
 	"unsafe"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
 // SocketDeviceConfiguration for a socket device configuration.
 type SocketDeviceConfiguration interface {
-	NSObject
+	objc.NSObject
 
 	socketDeviceConfiguration()
 }
@@ -36,7 +38,7 @@ var _ SocketDeviceConfiguration = (*VirtioSocketDeviceConfiguration)(nil)
 // Only one Virtio socket device can be used per virtual machine.
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdeviceconfiguration?language=objc
 type VirtioSocketDeviceConfiguration struct {
-	pointer
+	*pointer
 
 	*baseSocketDeviceConfiguration
 }
@@ -53,16 +55,14 @@ func NewVirtioSocketDeviceConfiguration() (*VirtioSocketDeviceConfiguration, err
 	config := newVirtioSocketDeviceConfiguration(C.newVZVirtioSocketDeviceConfiguration())
 
 	runtime.SetFinalizer(config, func(self *VirtioSocketDeviceConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }
 
 func newVirtioSocketDeviceConfiguration(ptr unsafe.Pointer) *VirtioSocketDeviceConfiguration {
 	return &VirtioSocketDeviceConfiguration{
-		pointer: pointer{
-			ptr: ptr,
-		},
+		pointer: objc.NewPointer(ptr),
 	}
 }
 
@@ -73,15 +73,13 @@ func newVirtioSocketDeviceConfiguration(ptr unsafe.Pointer) *VirtioSocketDeviceC
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdevice?language=objc
 type VirtioSocketDevice struct {
 	dispatchQueue unsafe.Pointer
-	pointer
+	*pointer
 }
 
 func newVirtioSocketDevice(ptr, dispatchQueue unsafe.Pointer) *VirtioSocketDevice {
 	return &VirtioSocketDevice{
 		dispatchQueue: dispatchQueue,
-		pointer: pointer{
-			ptr: ptr,
-		},
+		pointer:       objc.NewPointer(ptr),
 	}
 }
 
@@ -106,9 +104,7 @@ func (v *VirtioSocketDevice) Listen(port uint32) (*VirtioSocketListener, error) 
 		unsafe.Pointer(&handler),
 	)
 	listener := &VirtioSocketListener{
-		pointer: pointer{
-			ptr: ptr,
-		},
+		pointer:     objc.NewPointer(ptr),
 		vsockDevice: v,
 		port:        port,
 		handler:     handler,
@@ -116,9 +112,9 @@ func (v *VirtioSocketDevice) Listen(port uint32) (*VirtioSocketListener, error) 
 	}
 
 	C.VZVirtioSocketDevice_setSocketListenerForPort(
-		v.Ptr(),
+		objc.Ptr(v),
 		v.dispatchQueue,
-		listener.Ptr(),
+		objc.Ptr(listener),
 		C.uint32_t(port),
 	)
 
@@ -131,7 +127,7 @@ func connectionHandler(connPtr, errPtr, cgoHandlerPtr unsafe.Pointer) {
 	handler := cgoHandler.Value().(func(*VirtioSocketConnection, error))
 	defer cgoHandler.Delete()
 	// see: startHandler
-	if err := newNSError(errPtr); err != nil {
+	if err := objc.NewNSError(errPtr); err != nil {
 		handler(nil, err)
 	} else {
 		conn, err := newVirtioSocketConnection(connPtr)
@@ -152,7 +148,12 @@ func (v *VirtioSocketDevice) Connect(port uint32) (*VirtioSocketConnection, erro
 		ch <- connResults{conn, err}
 		close(ch)
 	})
-	C.VZVirtioSocketDevice_connectToPort(v.Ptr(), v.dispatchQueue, C.uint32_t(port), unsafe.Pointer(&cgoHandler))
+	C.VZVirtioSocketDevice_connectToPort(
+		objc.Ptr(v),
+		v.dispatchQueue,
+		C.uint32_t(port),
+		unsafe.Pointer(&cgoHandler),
+	)
 	result := <-ch
 	runtime.KeepAlive(v)
 	return result.conn, result.err
@@ -167,7 +168,7 @@ type connResults struct {
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketlistener?language=objc
 type VirtioSocketListener struct {
-	pointer
+	*pointer
 	vsockDevice *VirtioSocketDevice
 	handler     cgo.Handle
 	port        uint32
@@ -192,7 +193,7 @@ func (v *VirtioSocketListener) AcceptVirtioSocketConnection() (*VirtioSocketConn
 func (v *VirtioSocketListener) Close() error {
 	v.closeOnce.Do(func() {
 		C.VZVirtioSocketDevice_removeSocketListenerForPort(
-			v.vsockDevice.Ptr(),
+			objc.Ptr(v.vsockDevice),
 			v.vsockDevice.dispatchQueue,
 			C.uint32_t(v.port),
 		)

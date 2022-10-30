@@ -11,11 +11,13 @@ import (
 	"os"
 	"runtime"
 	"unsafe"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
 // PlatformConfiguration is an interface for a platform configuration.
 type PlatformConfiguration interface {
-	NSObject
+	objc.NSObject
 
 	platformConfiguration()
 }
@@ -26,7 +28,7 @@ func (*basePlatformConfiguration) platformConfiguration() {}
 
 // GenericPlatformConfiguration is the platform configuration for a generic Intel or ARM virtual machine.
 type GenericPlatformConfiguration struct {
-	pointer
+	*pointer
 
 	*basePlatformConfiguration
 
@@ -50,9 +52,9 @@ func NewGenericPlatformConfiguration(opts ...GenericPlatformConfigurationOption)
 	}
 
 	platformConfig := &GenericPlatformConfiguration{
-		pointer: pointer{
-			ptr: C.newVZGenericPlatformConfiguration(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZGenericPlatformConfiguration(),
+		),
 	}
 	for _, optFunc := range opts {
 		if err := optFunc(platformConfig); err != nil {
@@ -60,7 +62,7 @@ func NewGenericPlatformConfiguration(opts ...GenericPlatformConfigurationOption)
 		}
 	}
 	runtime.SetFinalizer(platformConfig, func(self *GenericPlatformConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return platformConfig, nil
 }
@@ -68,7 +70,7 @@ func NewGenericPlatformConfiguration(opts ...GenericPlatformConfigurationOption)
 // GenericMachineIdentifier is a struct that represents a unique identifier
 // for a virtual machine.
 type GenericMachineIdentifier struct {
-	pointer
+	*pointer
 
 	dataRepresentation []byte
 }
@@ -123,9 +125,7 @@ func newGenericMachineIdentifier(ptr unsafe.Pointer) *GenericMachineIdentifier {
 	dataRepresentation := C.getVZGenericMachineIdentifierDataRepresentation(ptr)
 	bytePointer := (*byte)(unsafe.Pointer(dataRepresentation.ptr))
 	return &GenericMachineIdentifier{
-		pointer: pointer{
-			ptr: ptr,
-		},
+		pointer: objc.NewPointer(ptr),
 		// https://github.com/golang/go/wiki/cgo#turning-c-arrays-into-go-slices
 		dataRepresentation: unsafe.Slice(bytePointer, dataRepresentation.len),
 	}
@@ -148,7 +148,7 @@ func WithGenericMachineIdentifier(m *GenericMachineIdentifier) GenericPlatformCo
 			return ErrUnsupportedOSVersion
 		}
 		mpc.machineIdentifier = m
-		C.setMachineIdentifierVZGenericPlatformConfiguration(mpc.Ptr(), m.Ptr())
+		C.setMachineIdentifierVZGenericPlatformConfiguration(objc.Ptr(mpc), objc.Ptr(m))
 		return nil
 	}
 }

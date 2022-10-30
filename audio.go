@@ -6,11 +6,15 @@ package vz
 # include "virtualization.h"
 */
 import "C"
-import "runtime"
+import (
+	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
+)
 
 // AudioDeviceConfiguration interface for an audio device configuration.
 type AudioDeviceConfiguration interface {
-	NSObject
+	objc.NSObject
 
 	audioDeviceConfiguration()
 }
@@ -28,7 +32,7 @@ func (*baseAudioDeviceConfiguration) audioDeviceConfiguration() {}
 // After creating and configuring a VirtioSoundDeviceConfiguration struct, assign it to the
 // SetAudioDevicesVirtualMachineConfiguration method of your VM’s configuration.
 type VirtioSoundDeviceConfiguration struct {
-	pointer
+	*pointer
 
 	*baseAudioDeviceConfiguration
 }
@@ -44,29 +48,31 @@ func NewVirtioSoundDeviceConfiguration() (*VirtioSoundDeviceConfiguration, error
 		return nil, ErrUnsupportedOSVersion
 	}
 	config := &VirtioSoundDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioSoundDeviceConfiguration(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZVirtioSoundDeviceConfiguration(),
+		),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioSoundDeviceConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }
 
 // SetStreams sets the list of audio streams exposed by this device.
 func (v *VirtioSoundDeviceConfiguration) SetStreams(streams ...VirtioSoundDeviceStreamConfiguration) {
-	ptrs := make([]NSObject, len(streams))
+	ptrs := make([]objc.NSObject, len(streams))
 	for i, val := range streams {
 		ptrs[i] = val
 	}
-	array := convertToNSMutableArray(ptrs)
-	C.setStreamsVZVirtioSoundDeviceConfiguration(v.Ptr(), array.Ptr())
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setStreamsVZVirtioSoundDeviceConfiguration(
+		objc.Ptr(v), objc.Ptr(array),
+	)
 }
 
 // VirtioSoundDeviceStreamConfiguration interface for Virtio Sound Device Stream Configuration.
 type VirtioSoundDeviceStreamConfiguration interface {
-	NSObject
+	objc.NSObject
 
 	virtioSoundDeviceStreamConfiguration()
 }
@@ -78,7 +84,7 @@ func (*baseVirtioSoundDeviceStreamConfiguration) virtioSoundDeviceStreamConfigur
 // VirtioSoundDeviceHostInputStreamConfiguration is a PCM stream of input audio data,
 // such as from a microphone via host.
 type VirtioSoundDeviceHostInputStreamConfiguration struct {
-	pointer
+	*pointer
 
 	*baseVirtioSoundDeviceStreamConfiguration
 }
@@ -94,12 +100,12 @@ func NewVirtioSoundDeviceHostInputStreamConfiguration() (*VirtioSoundDeviceHostI
 		return nil, ErrUnsupportedOSVersion
 	}
 	config := &VirtioSoundDeviceHostInputStreamConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioSoundDeviceHostInputStreamConfiguration(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZVirtioSoundDeviceHostInputStreamConfiguration(),
+		),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioSoundDeviceHostInputStreamConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }
@@ -109,7 +115,7 @@ func NewVirtioSoundDeviceHostInputStreamConfiguration() (*VirtioSoundDeviceHostI
 //
 // A PCM stream of output audio data, such as to a speaker from host.
 type VirtioSoundDeviceHostOutputStreamConfiguration struct {
-	pointer
+	*pointer
 
 	*baseVirtioSoundDeviceStreamConfiguration
 }
@@ -125,12 +131,12 @@ func NewVirtioSoundDeviceHostOutputStreamConfiguration() (*VirtioSoundDeviceHost
 		return nil, ErrUnsupportedOSVersion
 	}
 	config := &VirtioSoundDeviceHostOutputStreamConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioSoundDeviceHostOutputStreamConfiguration(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZVirtioSoundDeviceHostOutputStreamConfiguration(),
+		),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioSoundDeviceHostOutputStreamConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }

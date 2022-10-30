@@ -1,9 +1,9 @@
-package vz
+package objc
 
 /*
 #cgo darwin CFLAGS: -x objective-c
-#cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
-# include "virtualization.h"
+#cgo darwin LDFLAGS: -lobjc -framework Foundation
+#import <Foundation/Foundation.h>
 
 const char *getNSErrorLocalizedDescription(void *err)
 {
@@ -115,9 +115,149 @@ import (
 	"unsafe"
 )
 
-// releaseDispatch releases allocated dispatch_queue_t
-func releaseDispatch(p unsafe.Pointer) {
+// ReleaseDispatch releases allocated dispatch_queue_t
+func ReleaseDispatch(p unsafe.Pointer) {
 	C.releaseDispatch(p)
+}
+
+// Pointer indicates any pointers which are allocated in objective-c world.
+type Pointer struct {
+	_ptr unsafe.Pointer
+}
+
+// NewPointer creates a new Pointer for objc
+func NewPointer(p unsafe.Pointer) *Pointer {
+	return &Pointer{_ptr: p}
+}
+
+// release releases allocated resources in objective-c world.
+func (p *Pointer) release() {
+	C.releaseNSObject(p._ptr)
+	runtime.KeepAlive(p)
+}
+
+// Ptr returns raw pointer.
+func (o *Pointer) ptr() unsafe.Pointer {
+	if o == nil {
+		return nil
+	}
+	return o._ptr
+}
+
+// NSObject indicates NSObject
+type NSObject interface {
+	ptr() unsafe.Pointer
+	release()
+}
+
+// Release releases allocated resources in objective-c world.
+func Release(o NSObject) {
+	o.release()
+}
+
+// Ptr returns unsafe.Pointer of the NSObject
+func Ptr(o NSObject) unsafe.Pointer {
+	return o.ptr()
+}
+
+// NSArray indicates NSArray
+type NSArray struct {
+	*Pointer
+}
+
+// NewNSArray creates a new NSArray from pointer.
+func NewNSArray(p unsafe.Pointer) *NSArray {
+	return &NSArray{NewPointer(p)}
+}
+
+// ToPointerSlice method returns slice of the obj-c object as unsafe.Pointer.
+func (n *NSArray) ToPointerSlice() []unsafe.Pointer {
+	count := int(C.getNSArrayCount(n.ptr()))
+	ret := make([]unsafe.Pointer, count)
+	for i := 0; i < count; i++ {
+		ret[i] = C.getNSArrayItem(n.ptr(), C.int(i))
+	}
+	return ret
+}
+
+// NSError indicates NSError.
+type NSError struct {
+	Domain               string
+	Code                 int
+	LocalizedDescription string
+	UserInfo             string
+	Pointer
+}
+
+// NewNSErrorAsNil makes nil NSError in objective-c world.
+func NewNSErrorAsNil() *Pointer {
+	return &Pointer{
+		_ptr: unsafe.Pointer(C.newNSError()),
+	}
+}
+
+// HasNSError checks passed pointer is NSError or not.
+func HasNSError(nserrPtr unsafe.Pointer) bool {
+	return (bool)(C.hasError(nserrPtr))
+}
+
+func (n *NSError) Error() string {
+	if n == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf(
+		"Error Domain=%s Code=%d Description=%q UserInfo=%s",
+		n.Domain,
+		n.Code,
+		n.LocalizedDescription,
+		n.UserInfo,
+	)
+}
+
+func NewNSError(p unsafe.Pointer) *NSError {
+	if !HasNSError(p) {
+		return nil
+	}
+	nsError := C.convertNSError2Flat(p)
+	return &NSError{
+		Domain:               (*char)(nsError.domain).String(),
+		Code:                 int((nsError.code)),
+		LocalizedDescription: (*char)(nsError.localizedDescription).String(),
+		UserInfo:             (*char)(nsError.userinfo).String(), // NOTE(codehex): maybe we can convert to map[string]interface{}
+	}
+}
+
+// ConvertToNSMutableArray converts to NSMutableArray from NSObject slice in Go world.
+func ConvertToNSMutableArray(s []NSObject) *Pointer {
+	ln := len(s)
+	ary := C.makeNSMutableArray(C.ulong(ln))
+	for _, v := range s {
+		C.addNSMutableArrayVal(ary, v.ptr())
+	}
+	p := NewPointer(ary)
+	runtime.SetFinalizer(p, func(self *Pointer) {
+		self.release()
+	})
+	return p
+}
+
+// ConvertToNSMutableDictionary converts to NSMutableDictionary from map[string]NSObject in Go world.
+func ConvertToNSMutableDictionary(d map[string]NSObject) *Pointer {
+	dict := C.makeNSMutableDictionary()
+	for key, value := range d {
+		cs := charWithGoString(key)
+		C.insertNSMutableDictionary(dict, cs.CString(), value.ptr())
+		cs.Free()
+	}
+	p := NewPointer(dict)
+	runtime.SetFinalizer(p, func(self *Pointer) {
+		self.release()
+	})
+	return p
+}
+
+func GetUUID() *C.char {
+	return C.getUUID()
 }
 
 // CharWithGoString makes *Char which is *C.Char wrapper from Go string.
@@ -141,123 +281,4 @@ func (c *char) String() string {
 // Free frees allocated *C.char in Go code
 func (c *char) Free() {
 	C.free(unsafe.Pointer(c))
-}
-
-// pointer indicates any pointers which are allocated in objective-c world.
-type pointer struct {
-	ptr unsafe.Pointer
-}
-
-// Release releases allocated resources in objective-c world.
-func (p *pointer) Release() {
-	C.releaseNSObject(p.Ptr())
-	runtime.KeepAlive(p)
-}
-
-// Ptr returns raw pointer.
-func (o *pointer) Ptr() unsafe.Pointer {
-	if o == nil {
-		return nil
-	}
-	return o.ptr
-}
-
-// NSObject indicates NSObject
-type NSObject interface {
-	Ptr() unsafe.Pointer
-}
-
-// NSArray indicates NSArray
-type NSArray struct {
-	pointer
-}
-
-// ToPointerSlice method returns slice of the obj-c object as unsafe.Pointer.
-func (n *NSArray) ToPointerSlice() []unsafe.Pointer {
-	count := int(C.getNSArrayCount(n.Ptr()))
-	ret := make([]unsafe.Pointer, count)
-	for i := 0; i < count; i++ {
-		ret[i] = C.getNSArrayItem(n.Ptr(), C.int(i))
-	}
-	return ret
-}
-
-// NSError indicates NSError.
-type NSError struct {
-	Domain               string
-	Code                 int
-	LocalizedDescription string
-	UserInfo             string
-	pointer
-}
-
-// newNSErrorAsNil makes nil NSError in objective-c world.
-func newNSErrorAsNil() *pointer {
-	p := &pointer{
-		ptr: unsafe.Pointer(C.newNSError()),
-	}
-	return p
-}
-
-// hasNSError checks passed pointer is NSError or not.
-func hasNSError(nserrPtr unsafe.Pointer) bool {
-	return (bool)(C.hasError(nserrPtr))
-}
-
-func (n *NSError) Error() string {
-	if n == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf(
-		"Error Domain=%s Code=%d Description=%q UserInfo=%s",
-		n.Domain,
-		n.Code,
-		n.LocalizedDescription,
-		n.UserInfo,
-	)
-}
-
-func newNSError(p unsafe.Pointer) *NSError {
-	if !hasNSError(p) {
-		return nil
-	}
-	nsError := C.convertNSError2Flat(p)
-	return &NSError{
-		Domain:               (*char)(nsError.domain).String(),
-		Code:                 int((nsError.code)),
-		LocalizedDescription: (*char)(nsError.localizedDescription).String(),
-		UserInfo:             (*char)(nsError.userinfo).String(), // NOTE(codehex): maybe we can convert to map[string]interface{}
-	}
-}
-
-// convertToNSMutableArray converts to NSMutableArray from NSObject slice in Go world.
-func convertToNSMutableArray(s []NSObject) *pointer {
-	ln := len(s)
-	ary := C.makeNSMutableArray(C.ulong(ln))
-	for _, v := range s {
-		C.addNSMutableArrayVal(ary, v.Ptr())
-	}
-	p := &pointer{ptr: ary}
-	runtime.SetFinalizer(p, func(self *pointer) {
-		self.Release()
-	})
-	return p
-}
-
-func convertToNSMutableDictionary(d map[string]NSObject) *pointer {
-	dict := C.makeNSMutableDictionary()
-	for key, value := range d {
-		cs := charWithGoString(key)
-		C.insertNSMutableDictionary(dict, cs.CString(), value.Ptr())
-		cs.Free()
-	}
-	p := &pointer{ptr: dict}
-	runtime.SetFinalizer(p, func(self *pointer) {
-		self.Release()
-	})
-	return p
-}
-
-func getUUID() *char {
-	return (*char)(C.getUUID())
 }

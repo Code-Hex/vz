@@ -10,6 +10,8 @@ import "C"
 import (
 	"os"
 	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
 type baseStorageDeviceAttachment struct{}
@@ -21,7 +23,7 @@ func (*baseStorageDeviceAttachment) storageDeviceAttachment() {}
 // A storage device attachment defines how a virtual machine storage device interfaces with the host system.
 // see: https://developer.apple.com/documentation/virtualization/vzstoragedeviceattachment?language=objc
 type StorageDeviceAttachment interface {
-	NSObject
+	objc.NSObject
 
 	storageDeviceAttachment()
 }
@@ -34,7 +36,7 @@ var _ StorageDeviceAttachment = (*DiskImageStorageDeviceAttachment)(nil)
 // Only raw data disk images are supported.
 // see: https://developer.apple.com/documentation/virtualization/vzdiskimagestoragedeviceattachment?language=objc
 type DiskImageStorageDeviceAttachment struct {
-	pointer
+	*pointer
 
 	*baseStorageDeviceAttachment
 }
@@ -55,32 +57,32 @@ func NewDiskImageStorageDeviceAttachment(diskPath string, readOnly bool) (*DiskI
 		return nil, err
 	}
 
-	nserr := newNSErrorAsNil()
-	nserrPtr := nserr.Ptr()
+	nserr := objc.NewNSErrorAsNil()
+	nserrPtr := objc.Ptr(nserr)
 
 	diskPathChar := charWithGoString(diskPath)
 	defer diskPathChar.Free()
 	attachment := &DiskImageStorageDeviceAttachment{
-		pointer: pointer{
-			ptr: C.newVZDiskImageStorageDeviceAttachment(
+		pointer: objc.NewPointer(
+			C.newVZDiskImageStorageDeviceAttachment(
 				diskPathChar.CString(),
 				C.bool(readOnly),
 				&nserrPtr,
 			),
-		},
+		),
 	}
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objc.NewNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	runtime.SetFinalizer(attachment, func(self *DiskImageStorageDeviceAttachment) {
-		self.Release()
+		objc.Release(self)
 	})
 	return attachment, nil
 }
 
 // StorageDeviceConfiguration for a storage device configuration.
 type StorageDeviceConfiguration interface {
-	NSObject
+	objc.NSObject
 
 	storageDeviceConfiguration()
 }
@@ -100,7 +102,7 @@ var _ StorageDeviceConfiguration = (*VirtioBlockDeviceConfiguration)(nil)
 // like VZDiskImageStorageDeviceAttachment.
 // see: https://developer.apple.com/documentation/virtualization/vzvirtioblockdeviceconfiguration?language=objc
 type VirtioBlockDeviceConfiguration struct {
-	pointer
+	*pointer
 
 	*baseStorageDeviceConfiguration
 }
@@ -117,14 +119,14 @@ func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) (*Vir
 	}
 
 	config := &VirtioBlockDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioBlockDeviceConfiguration(
-				attachment.Ptr(),
+		pointer: objc.NewPointer(
+			C.newVZVirtioBlockDeviceConfiguration(
+				objc.Ptr(attachment),
 			),
-		},
+		),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioBlockDeviceConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }
@@ -135,7 +137,7 @@ func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) (*Vir
 //
 // see: https://developer.apple.com/documentation/virtualization/vzusbmassstoragedeviceconfiguration?language=objc
 type USBMassStorageDeviceConfiguration struct {
-	pointer
+	*pointer
 
 	*baseStorageDeviceConfiguration
 
@@ -154,13 +156,13 @@ func NewUSBMassStorageDeviceConfiguration(attachment StorageDeviceAttachment) (*
 		return nil, ErrUnsupportedOSVersion
 	}
 	usbMass := &USBMassStorageDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZUSBMassStorageDeviceConfiguration(attachment.Ptr()),
-		},
+		pointer: objc.NewPointer(
+			C.newVZUSBMassStorageDeviceConfiguration(objc.Ptr(attachment)),
+		),
 		attachment: attachment,
 	}
 	runtime.SetFinalizer(usbMass, func(self *USBMassStorageDeviceConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return usbMass, nil
 }

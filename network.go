@@ -11,6 +11,8 @@ import (
 	"os"
 	"runtime"
 	"unsafe"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
 // BridgedNetwork defines a network interface that bridges a physical interface with a virtual machine.
@@ -22,7 +24,7 @@ import (
 // TODO(codehex): implement...
 // see: https://developer.apple.com/documentation/virtualization/vzbridgednetworkinterface?language=objc
 type BridgedNetwork interface {
-	NSObject
+	objc.NSObject
 
 	// NetworkInterfaces returns the list of network interfaces available for bridging.
 	NetworkInterfaces() []BridgedNetwork
@@ -41,7 +43,7 @@ type BridgedNetwork interface {
 // for accesses to outside networks.
 // see: https://developer.apple.com/documentation/virtualization/vznatnetworkdeviceattachment?language=objc
 type NATNetworkDeviceAttachment struct {
-	pointer
+	*pointer
 
 	*baseNetworkDeviceAttachment
 }
@@ -58,12 +60,10 @@ func NewNATNetworkDeviceAttachment() (*NATNetworkDeviceAttachment, error) {
 	}
 
 	attachment := &NATNetworkDeviceAttachment{
-		pointer: pointer{
-			ptr: C.newVZNATNetworkDeviceAttachment(),
-		},
+		pointer: objc.NewPointer(C.newVZNATNetworkDeviceAttachment()),
 	}
 	runtime.SetFinalizer(attachment, func(self *NATNetworkDeviceAttachment) {
-		self.Release()
+		objc.Release(self)
 	})
 	return attachment, nil
 }
@@ -79,7 +79,7 @@ func NewNATNetworkDeviceAttachment() (*NATNetworkDeviceAttachment, error) {
 //
 // see: https://developer.apple.com/documentation/virtualization/vzbridgednetworkdeviceattachment?language=objc
 type BridgedNetworkDeviceAttachment struct {
-	pointer
+	*pointer
 
 	*baseNetworkDeviceAttachment
 }
@@ -96,14 +96,14 @@ func NewBridgedNetworkDeviceAttachment(networkInterface BridgedNetwork) (*Bridge
 	}
 
 	attachment := &BridgedNetworkDeviceAttachment{
-		pointer: pointer{
-			ptr: C.newVZBridgedNetworkDeviceAttachment(
-				networkInterface.Ptr(),
+		pointer: objc.NewPointer(
+			C.newVZBridgedNetworkDeviceAttachment(
+				objc.Ptr(networkInterface),
 			),
-		},
+		),
 	}
 	runtime.SetFinalizer(attachment, func(self *BridgedNetworkDeviceAttachment) {
-		self.Release()
+		objc.Release(self)
 	})
 	return attachment, nil
 }
@@ -114,7 +114,7 @@ func NewBridgedNetworkDeviceAttachment(networkInterface BridgedNetwork) (*Bridge
 // The data transmitted through this attachment is at the level of the data link layer.
 // see: https://developer.apple.com/documentation/virtualization/vzfilehandlenetworkdeviceattachment?language=objc
 type FileHandleNetworkDeviceAttachment struct {
-	pointer
+	*pointer
 
 	*baseNetworkDeviceAttachment
 }
@@ -133,14 +133,14 @@ func NewFileHandleNetworkDeviceAttachment(file *os.File) (*FileHandleNetworkDevi
 	}
 
 	attachment := &FileHandleNetworkDeviceAttachment{
-		pointer: pointer{
-			ptr: C.newVZFileHandleNetworkDeviceAttachment(
+		pointer: objc.NewPointer(
+			C.newVZFileHandleNetworkDeviceAttachment(
 				C.int(file.Fd()),
 			),
-		},
+		),
 	}
 	runtime.SetFinalizer(attachment, func(self *FileHandleNetworkDeviceAttachment) {
-		self.Release()
+		objc.Release(self)
 	})
 	return attachment, nil
 }
@@ -148,7 +148,7 @@ func NewFileHandleNetworkDeviceAttachment(file *os.File) (*FileHandleNetworkDevi
 // NetworkDeviceAttachment for a network device attachment.
 // see: https://developer.apple.com/documentation/virtualization/vznetworkdeviceattachment?language=objc
 type NetworkDeviceAttachment interface {
-	NSObject
+	objc.NSObject
 
 	networkDeviceAttachment()
 }
@@ -166,7 +166,7 @@ func (*baseNetworkDeviceAttachment) networkDeviceAttachment() {}
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtionetworkdeviceconfiguration?language=objc
 type VirtioNetworkDeviceConfiguration struct {
-	pointer
+	*pointer
 }
 
 // NewVirtioNetworkDeviceConfiguration creates a new VirtioNetworkDeviceConfiguration with NetworkDeviceAttachment.
@@ -180,31 +180,29 @@ func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) (*V
 
 	config := newVirtioNetworkDeviceConfiguration(
 		C.newVZVirtioNetworkDeviceConfiguration(
-			attachment.Ptr(),
+			objc.Ptr(attachment),
 		),
 	)
 	runtime.SetFinalizer(config, func(self *VirtioNetworkDeviceConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }
 
 func newVirtioNetworkDeviceConfiguration(ptr unsafe.Pointer) *VirtioNetworkDeviceConfiguration {
 	return &VirtioNetworkDeviceConfiguration{
-		pointer: pointer{
-			ptr: ptr,
-		},
+		pointer: objc.NewPointer(ptr),
 	}
 }
 
 func (v *VirtioNetworkDeviceConfiguration) SetMACAddress(macAddress *MACAddress) {
-	C.setNetworkDevicesVZMACAddress(v.Ptr(), macAddress.Ptr())
+	C.setNetworkDevicesVZMACAddress(objc.Ptr(v), objc.Ptr(macAddress))
 }
 
 // MACAddress represents a media access control address (MAC address), the 48-bit ethernet address.
 // see: https://developer.apple.com/documentation/virtualization/vzmacaddress?language=objc
 type MACAddress struct {
-	pointer
+	*pointer
 }
 
 // NewMACAddress creates a new MACAddress with net.HardwareAddr (MAC address).
@@ -219,12 +217,12 @@ func NewMACAddress(macAddr net.HardwareAddr) (*MACAddress, error) {
 	macAddrChar := charWithGoString(macAddr.String())
 	defer macAddrChar.Free()
 	ma := &MACAddress{
-		pointer: pointer{
-			ptr: C.newVZMACAddress(macAddrChar.CString()),
-		},
+		pointer: objc.NewPointer(
+			C.newVZMACAddress(macAddrChar.CString()),
+		),
 	}
 	runtime.SetFinalizer(ma, func(self *MACAddress) {
-		self.Release()
+		objc.Release(self)
 	})
 	return ma, nil
 }
@@ -239,18 +237,18 @@ func NewRandomLocallyAdministeredMACAddress() (*MACAddress, error) {
 	}
 
 	ma := &MACAddress{
-		pointer: pointer{
-			ptr: C.newRandomLocallyAdministeredVZMACAddress(),
-		},
+		pointer: objc.NewPointer(
+			C.newRandomLocallyAdministeredVZMACAddress(),
+		),
 	}
 	runtime.SetFinalizer(ma, func(self *MACAddress) {
-		self.Release()
+		objc.Release(self)
 	})
 	return ma, nil
 }
 
 func (m *MACAddress) String() string {
-	cstring := (*char)(C.getVZMACAddressString(m.Ptr()))
+	cstring := (*char)(C.getVZMACAddressString(objc.Ptr(m)))
 	return cstring.String()
 }
 

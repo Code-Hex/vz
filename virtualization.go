@@ -13,6 +13,8 @@ import (
 	"runtime/cgo"
 	"sync"
 	"unsafe"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
 // ErrUnsupportedOSVersion is returned when calling a method which is only
@@ -79,7 +81,7 @@ type VirtualMachine struct {
 	// The validation error of the VirtualMachineConfiguration provides more information about why virtualization is unavailable.
 	supported bool
 
-	pointer
+	*pointer
 	dispatchQueue unsafe.Pointer
 	status        cgo.Handle
 
@@ -106,7 +108,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 	}
 
 	// should not call Free function for this string.
-	cs := getUUID()
+	cs := (*char)(objc.GetUUID())
 	dispatchQueue := C.makeDispatchQueue(cs.CString())
 
 	status := cgo.NewHandle(&machineStatus{
@@ -116,21 +118,21 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 
 	v := &VirtualMachine{
 		id: cs.String(),
-		pointer: pointer{
-			ptr: C.newVZVirtualMachineWithDispatchQueue(
-				config.Ptr(),
+		pointer: objc.NewPointer(
+			C.newVZVirtualMachineWithDispatchQueue(
+				objc.Ptr(config),
 				dispatchQueue,
 				unsafe.Pointer(&status),
 			),
-		},
+		),
 		dispatchQueue: dispatchQueue,
 		status:        status,
 	}
 
 	runtime.SetFinalizer(v, func(self *VirtualMachine) {
 		self.status.Delete()
-		releaseDispatch(self.dispatchQueue)
-		self.Release()
+		objc.ReleaseDispatch(self.dispatchQueue)
+		objc.Release(self)
 	})
 	return v, nil
 }
@@ -142,11 +144,9 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 // it will always return VirtioSocketDevice.
 // see: https://developer.apple.com/documentation/virtualization/vzvirtualmachine/3656702-socketdevices?language=objc
 func (v *VirtualMachine) SocketDevices() []*VirtioSocketDevice {
-	nsArray := &NSArray{
-		pointer: pointer{
-			ptr: C.VZVirtualMachine_socketDevices(v.Ptr()),
-		},
-	}
+	nsArray := objc.NewNSArray(
+		C.VZVirtualMachine_socketDevices(objc.Ptr(v)),
+	)
 	ptrs := nsArray.ToPointerSlice()
 	socketDevices := make([]*VirtioSocketDevice, len(ptrs))
 	for i, ptr := range ptrs {
@@ -191,22 +191,22 @@ func (v *VirtualMachine) StateChangedNotify() <-chan VirtualMachineState {
 
 // CanStart returns true if the machine is in a state that can be started.
 func (v *VirtualMachine) CanStart() bool {
-	return bool(C.vmCanStart(v.Ptr(), v.dispatchQueue))
+	return bool(C.vmCanStart(objc.Ptr(v), v.dispatchQueue))
 }
 
 // CanPause returns true if the machine is in a state that can be paused.
 func (v *VirtualMachine) CanPause() bool {
-	return bool(C.vmCanPause(v.Ptr(), v.dispatchQueue))
+	return bool(C.vmCanPause(objc.Ptr(v), v.dispatchQueue))
 }
 
 // CanResume returns true if the machine is in a state that can be resumed.
 func (v *VirtualMachine) CanResume() bool {
-	return (bool)(C.vmCanResume(v.Ptr(), v.dispatchQueue))
+	return (bool)(C.vmCanResume(objc.Ptr(v), v.dispatchQueue))
 }
 
 // CanRequestStop returns whether the machine is in a state where the guest can be asked to stop.
 func (v *VirtualMachine) CanRequestStop() bool {
-	return (bool)(C.vmCanRequestStop(v.Ptr(), v.dispatchQueue))
+	return (bool)(C.vmCanRequestStop(objc.Ptr(v), v.dispatchQueue))
 }
 
 // CanStop returns whether the machine is in a state that can be stopped.
@@ -217,7 +217,7 @@ func (v *VirtualMachine) CanStop() bool {
 	if macosMajorVersionLessThan(12) {
 		return false
 	}
-	return (bool)(C.vmCanStop(v.Ptr(), v.dispatchQueue))
+	return (bool)(C.vmCanStop(objc.Ptr(v), v.dispatchQueue))
 }
 
 //export virtualMachineCompletionHandler
@@ -226,7 +226,7 @@ func virtualMachineCompletionHandler(cgoHandlerPtr, errPtr unsafe.Pointer) {
 
 	handler := cgoHandler.Value().(func(error))
 
-	if err := newNSError(errPtr); err != nil {
+	if err := objc.NewNSError(errPtr); err != nil {
 		handler(err)
 	} else {
 		handler(nil)
@@ -268,13 +268,13 @@ func (v *VirtualMachine) Start(opts ...VirtualMachineStartOption) error {
 
 	if o.macOSVirtualMachineStartOptionsPtr != nil {
 		C.startWithOptionsCompletionHandler(
-			v.Ptr(),
+			objc.Ptr(v),
 			v.dispatchQueue,
 			o.macOSVirtualMachineStartOptionsPtr,
 			unsafe.Pointer(&handler),
 		)
 	} else {
-		C.startWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
+		C.startWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, unsafe.Pointer(&handler))
 	}
 	return <-errCh
 }
@@ -286,7 +286,7 @@ func (v *VirtualMachine) Pause() error {
 	h, errCh := makeHandler()
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()
-	C.pauseWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
+	C.pauseWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, unsafe.Pointer(&handler))
 	return <-errCh
 }
 
@@ -297,7 +297,7 @@ func (v *VirtualMachine) Resume() error {
 	h, errCh := makeHandler()
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()
-	C.resumeWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
+	C.resumeWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, unsafe.Pointer(&handler))
 	return <-errCh
 }
 
@@ -306,10 +306,10 @@ func (v *VirtualMachine) Resume() error {
 // If returned error is not nil, assigned with the error if the request failed.
 // Returns true if the request was made successfully.
 func (v *VirtualMachine) RequestStop() (bool, error) {
-	nserr := newNSErrorAsNil()
-	nserrPtr := nserr.Ptr()
-	ret := (bool)(C.requestStopVirtualMachine(v.Ptr(), v.dispatchQueue, &nserrPtr))
-	if err := newNSError(nserrPtr); err != nil {
+	nserr := objc.NewNSErrorAsNil()
+	nserrPtr := objc.Ptr(nserr)
+	ret := (bool)(C.requestStopVirtualMachine(objc.Ptr(v), v.dispatchQueue, &nserrPtr))
+	if err := objc.NewNSError(nserrPtr); err != nil {
 		return ret, err
 	}
 	return ret, nil
@@ -334,7 +334,7 @@ func (v *VirtualMachine) Stop() error {
 	h, errCh := makeHandler()
 	handler := cgo.NewHandle(h)
 	defer handler.Delete()
-	C.stopWithCompletionHandler(v.Ptr(), v.dispatchQueue, unsafe.Pointer(&handler))
+	C.stopWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, unsafe.Pointer(&handler))
 	return <-errCh
 }
 
@@ -348,6 +348,6 @@ func (v *VirtualMachine) StartGraphicApplication(width, height float64) error {
 	if macosMajorVersionLessThan(12) {
 		return ErrUnsupportedOSVersion
 	}
-	C.startVirtualMachineWindow(v.Ptr(), C.double(width), C.double(height))
+	C.startVirtualMachineWindow(objc.Ptr(v), C.double(width), C.double(height))
 	return nil
 }

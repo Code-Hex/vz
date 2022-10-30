@@ -9,13 +9,15 @@ import "C"
 import (
 	"os"
 	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
 // SerialPortAttachment interface for a serial port attachment.
 //
 // A serial port attachment defines how the virtual machine's serial port interfaces with the host system.
 type SerialPortAttachment interface {
-	NSObject
+	objc.NSObject
 
 	serialPortAttachment()
 }
@@ -31,7 +33,7 @@ var _ SerialPortAttachment = (*FileHandleSerialPortAttachment)(nil)
 // Data written to fileHandleForReading goes to the guest. Data sent from the guest appears on fileHandleForWriting.
 // see: https://developer.apple.com/documentation/virtualization/vzfilehandleserialportattachment?language=objc
 type FileHandleSerialPortAttachment struct {
-	pointer
+	*pointer
 
 	*baseSerialPortAttachment
 }
@@ -49,15 +51,15 @@ func NewFileHandleSerialPortAttachment(read, write *os.File) (*FileHandleSerialP
 	}
 
 	attachment := &FileHandleSerialPortAttachment{
-		pointer: pointer{
-			ptr: C.newVZFileHandleSerialPortAttachment(
+		pointer: objc.NewPointer(
+			C.newVZFileHandleSerialPortAttachment(
 				C.int(read.Fd()),
 				C.int(write.Fd()),
 			),
-		},
+		),
 	}
 	runtime.SetFinalizer(attachment, func(self *FileHandleSerialPortAttachment) {
-		self.Release()
+		objc.Release(self)
 	})
 	return attachment, nil
 }
@@ -70,7 +72,7 @@ var _ SerialPortAttachment = (*FileSerialPortAttachment)(nil)
 // No data is sent to the guest over serial with this attachment.
 // see: https://developer.apple.com/documentation/virtualization/vzfileserialportattachment?language=objc
 type FileSerialPortAttachment struct {
-	pointer
+	*pointer
 
 	*baseSerialPortAttachment
 }
@@ -92,22 +94,22 @@ func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPor
 	cpath := charWithGoString(path)
 	defer cpath.Free()
 
-	nserr := newNSErrorAsNil()
-	nserrPtr := nserr.Ptr()
+	nserr := objc.NewNSErrorAsNil()
+	nserrPtr := objc.Ptr(nserr)
 	attachment := &FileSerialPortAttachment{
-		pointer: pointer{
-			ptr: C.newVZFileSerialPortAttachment(
+		pointer: objc.NewPointer(
+			C.newVZFileSerialPortAttachment(
 				cpath.CString(),
 				C.bool(shouldAppend),
 				&nserrPtr,
 			),
-		},
+		),
 	}
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objc.NewNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	runtime.SetFinalizer(attachment, func(self *FileSerialPortAttachment) {
-		self.Release()
+		objc.Release(self)
 	})
 	return attachment, nil
 }
@@ -118,7 +120,7 @@ func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPor
 // The device sets up a single port on the Virtio console device.
 // see: https://developer.apple.com/documentation/virtualization/vzvirtioconsoledeviceserialportconfiguration?language=objc
 type VirtioConsoleDeviceSerialPortConfiguration struct {
-	pointer
+	*pointer
 }
 
 // NewVirtioConsoleDeviceSerialPortConfiguration creates a new NewVirtioConsoleDeviceSerialPortConfiguration.
@@ -131,14 +133,14 @@ func NewVirtioConsoleDeviceSerialPortConfiguration(attachment SerialPortAttachme
 	}
 
 	config := &VirtioConsoleDeviceSerialPortConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioConsoleDeviceSerialPortConfiguration(
-				attachment.Ptr(),
+		pointer: objc.NewPointer(
+			C.newVZVirtioConsoleDeviceSerialPortConfiguration(
+				objc.Ptr(attachment),
 			),
-		},
+		),
 	}
 	runtime.SetFinalizer(config, func(self *VirtioConsoleDeviceSerialPortConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }

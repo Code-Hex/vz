@@ -9,11 +9,15 @@ package vz
 # include "virtualization_arm64.h"
 */
 import "C"
-import "runtime"
+import (
+	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
+)
 
 // MacGraphicsDeviceConfiguration is a configuration for a display attached to a Mac graphics device.
 type MacGraphicsDeviceConfiguration struct {
-	pointer
+	*pointer
 
 	*baseGraphicsDeviceConfiguration
 }
@@ -30,29 +34,29 @@ func NewMacGraphicsDeviceConfiguration() (*MacGraphicsDeviceConfiguration, error
 	}
 
 	graphicsConfiguration := &MacGraphicsDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZMacGraphicsDeviceConfiguration(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZMacGraphicsDeviceConfiguration(),
+		),
 	}
 	runtime.SetFinalizer(graphicsConfiguration, func(self *MacGraphicsDeviceConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return graphicsConfiguration, nil
 }
 
 // SetDisplays sets the displays associated with this graphics device.
 func (m *MacGraphicsDeviceConfiguration) SetDisplays(displayConfigs ...*MacGraphicsDisplayConfiguration) {
-	ptrs := make([]NSObject, len(displayConfigs))
+	ptrs := make([]objc.NSObject, len(displayConfigs))
 	for i, val := range displayConfigs {
 		ptrs[i] = val
 	}
-	array := convertToNSMutableArray(ptrs)
-	C.setDisplaysVZMacGraphicsDeviceConfiguration(m.Ptr(), array.Ptr())
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setDisplaysVZMacGraphicsDeviceConfiguration(objc.Ptr(m), objc.Ptr(array))
 }
 
 // MacGraphicsDisplayConfiguration is the configuration for a Mac graphics device.
 type MacGraphicsDisplayConfiguration struct {
-	pointer
+	*pointer
 }
 
 // NewMacGraphicsDisplayConfiguration creates a new MacGraphicsDisplayConfiguration.
@@ -67,16 +71,16 @@ func NewMacGraphicsDisplayConfiguration(widthInPixels int64, heightInPixels int6
 	}
 
 	graphicsDisplayConfiguration := &MacGraphicsDisplayConfiguration{
-		pointer: pointer{
-			ptr: C.newVZMacGraphicsDisplayConfiguration(
+		pointer: objc.NewPointer(
+			C.newVZMacGraphicsDisplayConfiguration(
 				C.NSInteger(widthInPixels),
 				C.NSInteger(heightInPixels),
 				C.NSInteger(pixelsPerInch),
 			),
-		},
+		),
 	}
 	runtime.SetFinalizer(graphicsDisplayConfiguration, func(self *MacGraphicsDisplayConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return graphicsDisplayConfiguration, nil
 }

@@ -6,11 +6,15 @@ package vz
 # include "virtualization_13.h"
 */
 import "C"
-import "runtime"
+import (
+	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
+)
 
 // GraphicsDeviceConfiguration is an interface for a graphics device configuration.
 type GraphicsDeviceConfiguration interface {
-	NSObject
+	objc.NSObject
 
 	graphicsDeviceConfiguration()
 }
@@ -27,7 +31,7 @@ func (*baseGraphicsDeviceConfiguration) graphicsDeviceConfiguration() {}
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiographicsdeviceconfiguration?language=objc
 type VirtioGraphicsDeviceConfiguration struct {
-	pointer
+	*pointer
 
 	*baseGraphicsDeviceConfiguration
 }
@@ -43,12 +47,12 @@ func NewVirtioGraphicsDeviceConfiguration() (*VirtioGraphicsDeviceConfiguration,
 		return nil, ErrUnsupportedOSVersion
 	}
 	graphicsConfiguration := &VirtioGraphicsDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioGraphicsDeviceConfiguration(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZVirtioGraphicsDeviceConfiguration(),
+		),
 	}
 	runtime.SetFinalizer(graphicsConfiguration, func(self *VirtioGraphicsDeviceConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return graphicsConfiguration, nil
 }
@@ -57,19 +61,19 @@ func NewVirtioGraphicsDeviceConfiguration() (*VirtioGraphicsDeviceConfiguration,
 //
 // Maximum of one scanout is supported.
 func (v *VirtioGraphicsDeviceConfiguration) SetScanouts(scanoutConfigs ...*VirtioGraphicsScanoutConfiguration) {
-	ptrs := make([]NSObject, len(scanoutConfigs))
+	ptrs := make([]objc.NSObject, len(scanoutConfigs))
 	for i, val := range scanoutConfigs {
 		ptrs[i] = val
 	}
-	array := convertToNSMutableArray(ptrs)
-	C.setScanoutsVZVirtioGraphicsDeviceConfiguration(v.Ptr(), array.Ptr())
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setScanoutsVZVirtioGraphicsDeviceConfiguration(objc.Ptr(v), objc.Ptr(array))
 }
 
 // VirtioGraphicsScanoutConfiguration is the configuration for a Virtio graphics device
 // that configures the dimensions of the graphics device for a Linux VM.
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiographicsscanoutconfiguration?language=objc
 type VirtioGraphicsScanoutConfiguration struct {
-	pointer
+	*pointer
 }
 
 // NewVirtioGraphicsScanoutConfiguration creates a Virtio graphics device with the specified dimensions.
@@ -82,15 +86,15 @@ func NewVirtioGraphicsScanoutConfiguration(widthInPixels int64, heightInPixels i
 	}
 
 	graphicsScanoutConfiguration := &VirtioGraphicsScanoutConfiguration{
-		pointer: pointer{
-			ptr: C.newVZVirtioGraphicsScanoutConfiguration(
+		pointer: objc.NewPointer(
+			C.newVZVirtioGraphicsScanoutConfiguration(
 				C.NSInteger(widthInPixels),
 				C.NSInteger(heightInPixels),
 			),
-		},
+		),
 	}
 	runtime.SetFinalizer(graphicsScanoutConfiguration, func(self *VirtioGraphicsScanoutConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return graphicsScanoutConfiguration, nil
 }

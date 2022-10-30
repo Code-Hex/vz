@@ -6,14 +6,18 @@ package vz
 # include "virtualization_13.h"
 */
 import "C"
-import "runtime"
+import (
+	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
+)
 
 // SpiceAgentPortAttachment is an attachment point that enables
 // the Spice clipboard sharing capability.
 //
 // see: https://developer.apple.com/documentation/virtualization/vzspiceagentportattachment?language=objc
 type SpiceAgentPortAttachment struct {
-	pointer
+	*pointer
 
 	*baseSerialPortAttachment
 
@@ -31,13 +35,13 @@ func NewSpiceAgentPortAttachment() (*SpiceAgentPortAttachment, error) {
 		return nil, ErrUnsupportedOSVersion
 	}
 	spiceAgent := &SpiceAgentPortAttachment{
-		pointer: pointer{
-			ptr: C.newVZSpiceAgentPortAttachment(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZSpiceAgentPortAttachment(),
+		),
 		enabledSharesClipboard: true,
 	}
 	runtime.SetFinalizer(spiceAgent, func(self *SpiceAgentPortAttachment) {
-		self.Release()
+		objc.Release(self)
 	})
 	return spiceAgent, nil
 }
@@ -45,7 +49,7 @@ func NewSpiceAgentPortAttachment() (*SpiceAgentPortAttachment, error) {
 // SetSharesClipboard sets enable the Spice agent clipboard sharing capability.
 func (s *SpiceAgentPortAttachment) SetSharesClipboard(enable bool) {
 	C.setSharesClipboardVZSpiceAgentPortAttachment(
-		s.Ptr(),
+		objc.Ptr(s),
 		C.bool(enable),
 	)
 	s.enabledSharesClipboard = enable

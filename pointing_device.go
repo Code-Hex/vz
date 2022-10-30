@@ -6,11 +6,15 @@ package vz
 # include "virtualization.h"
 */
 import "C"
-import "runtime"
+import (
+	"runtime"
+
+	"github.com/Code-Hex/vz/v2/internal/objc"
+)
 
 // PointingDeviceConfiguration is an interface for a pointing device configuration.
 type PointingDeviceConfiguration interface {
-	NSObject
+	objc.NSObject
 
 	pointingDeviceConfiguration()
 }
@@ -22,7 +26,7 @@ func (*basePointingDeviceConfiguration) pointingDeviceConfiguration() {}
 // USBScreenCoordinatePointingDeviceConfiguration is a struct that defines the configuration
 // for a USB pointing device that reports absolute coordinates.
 type USBScreenCoordinatePointingDeviceConfiguration struct {
-	pointer
+	*pointer
 
 	*basePointingDeviceConfiguration
 }
@@ -38,12 +42,12 @@ func NewUSBScreenCoordinatePointingDeviceConfiguration() (*USBScreenCoordinatePo
 		return nil, ErrUnsupportedOSVersion
 	}
 	config := &USBScreenCoordinatePointingDeviceConfiguration{
-		pointer: pointer{
-			ptr: C.newVZUSBScreenCoordinatePointingDeviceConfiguration(),
-		},
+		pointer: objc.NewPointer(
+			C.newVZUSBScreenCoordinatePointingDeviceConfiguration(),
+		),
 	}
 	runtime.SetFinalizer(config, func(self *USBScreenCoordinatePointingDeviceConfiguration) {
-		self.Release()
+		objc.Release(self)
 	})
 	return config, nil
 }

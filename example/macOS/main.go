@@ -186,7 +186,6 @@ func createAudioDeviceConfiguration() (*vz.VirtioSoundDeviceConfiguration, error
 	if err != nil {
 		return nil, fmt.Errorf("failed to create input stream configuration: %w", err)
 	}
-
 	outputStream, err := vz.NewVirtioSoundDeviceHostOutputStreamConfiguration()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create output stream configuration: %w", err)

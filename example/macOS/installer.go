@@ -3,13 +3,26 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/Code-Hex/vz/v2"
 )
 
 func installMacOS(ctx context.Context) error {
+	if err := CreateVMBundle(); err != nil {
+		return fmt.Errorf("failed to VM.bundle in home directory: %w", err)
+	}
+
 	restoreImagePath := GetRestoreImagePath()
+	if _, err := os.Stat(restoreImagePath); err != nil {
+		if !os.IsNotExist(err) {
+			return err
+		}
+		if err := downloadRestoreImage(ctx, restoreImagePath); err != nil {
+			return fmt.Errorf("failed to download restore image: %w", err)
+		}
+	}
 	restoreImage, err := vz.LoadMacOSRestoreImageFromPath(restoreImagePath)
 	if err != nil {
 		return fmt.Errorf("failed to load restore image: %w", err)
@@ -46,7 +59,7 @@ func installMacOS(ctx context.Context) error {
 				fmt.Println("install has been completed")
 				return
 			case <-ticker.C:
-				fmt.Printf("install: %d\r", int(installer.FractionCompleted()*100))
+				fmt.Printf("install: %.3f%%\r", installer.FractionCompleted()*100)
 			}
 		}
 	}()
@@ -94,4 +107,27 @@ func createMacInstallerPlatformConfiguration(macOSConfiguration *vz.MacOSConfigu
 		vz.WithHardwareModel(hardwareModel),
 		vz.WithMachineIdentifier(machineIdentifier),
 	)
+}
+
+func downloadRestoreImage(ctx context.Context, destPath string) error {
+	progress, err := vz.FetchLatestSupportedMacOSRestoreImage(ctx, destPath)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("download restore image in %q\n", destPath)
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Println("download has been cancelled")
+			return ctx.Err()
+		case <-progress.Finished():
+			fmt.Println("download has been completed")
+			return progress.Err()
+		case <-ticker.C:
+			fmt.Printf("download: %.3f%%\r", progress.FractionCompleted()*100)
+		}
+	}
 }

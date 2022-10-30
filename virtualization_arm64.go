@@ -216,9 +216,6 @@ func NewMacAuxiliaryStorage(storagePath string, opts ...NewMacAuxiliaryStorageOp
 	if macosMajorVersionLessThan(12) {
 		return nil, ErrUnsupportedOSVersion
 	}
-	if _, err := os.Stat(storagePath); err != nil {
-		return nil, err
-	}
 
 	storage := &MacAuxiliaryStorage{storagePath: storagePath}
 	for _, opt := range opts {

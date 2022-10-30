@@ -439,3 +439,17 @@ void startWithOptionsCompletionHandler(void *machine, void *queue, void *options
 #endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
+
+/*!
+ @abstract The macOS automount tag.
+ @discussion A device configured with this tag will be automatically mounted in a macOS guest.
+ */
+const char *getMacOSGuestAutomountTag()
+{
+#ifdef INCLUDE_TARGET_OSX_13
+    if (@available(macOS 13, *)) {
+        return [[VZVirtioFileSystemDeviceConfiguration macOSGuestAutomountTag] UTF8String];
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}

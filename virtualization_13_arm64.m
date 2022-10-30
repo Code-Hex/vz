@@ -68,3 +68,22 @@ void *newVZMacOSVirtualMachineStartOptions(bool startUpFromMacOSRecovery)
 #endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
+
+/*!
+ @abstract Configuration for a Mac trackpad.
+ @discussion
+    This device can be used by VZVirtualMachineView to send pointer events and multi-touch trackpad gestures to the virtual machine.
+    Note: this device is only recognized by virtual machines running macOS 13.0 and later. In order to support both macOS 13.0 and earlier
+    guests, VZVirtualMachineConfiguration.pointingDevices can be set to an array containing both a VZMacTrackpadConfiguration and
+    a VZUSBScreenCoordinatePointingDeviceConfiguration object. macOS 13.0 and later guests will use the multi-touch trackpad device,
+    while earlier versions of macOS will use the USB pointing device.
+ */
+void *newVZMacTrackpadConfiguration()
+{
+#ifdef INCLUDE_TARGET_OSX_13
+    if (@available(macOS 13, *)) {
+        return [[VZMacTrackpadConfiguration alloc] init];
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}

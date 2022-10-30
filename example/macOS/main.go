@@ -173,10 +173,6 @@ func createNetworkDeviceConfiguration() (*vz.VirtioNetworkDeviceConfiguration, e
 	return vz.NewVirtioNetworkDeviceConfiguration(natAttachment)
 }
 
-func createPointingDeviceConfiguration() (*vz.USBScreenCoordinatePointingDeviceConfiguration, error) {
-	return vz.NewUSBScreenCoordinatePointingDeviceConfiguration()
-}
-
 func createKeyboardConfiguration() (*vz.USBKeyboardConfiguration, error) {
 	return vz.NewUSBKeyboardConfiguration()
 }
@@ -262,13 +258,17 @@ func setupVMConfiguration(platformConfig vz.PlatformConfiguration) (*vz.VirtualM
 		networkDeviceConfig,
 	})
 
-	pointingDeviceConfig, err := createPointingDeviceConfiguration()
+	usbScreenPointingDevice, err := vz.NewUSBScreenCoordinatePointingDeviceConfiguration()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create pointing device configuration: %w", err)
 	}
-	config.SetPointingDevicesVirtualMachineConfiguration([]vz.PointingDeviceConfiguration{
-		pointingDeviceConfig,
-	})
+	pointingDevices := []vz.PointingDeviceConfiguration{usbScreenPointingDevice}
+
+	trackpad, err := vz.NewMacTrackpadConfiguration()
+	if err == nil {
+		pointingDevices = append(pointingDevices, trackpad)
+	}
+	config.SetPointingDevicesVirtualMachineConfiguration(pointingDevices)
 
 	keyboardDeviceConfig, err := createKeyboardConfiguration()
 	if err != nil {

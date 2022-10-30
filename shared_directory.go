@@ -170,3 +170,16 @@ func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) (*MultipleDir
 	})
 	return config, nil
 }
+
+// MacOSGuestAutomountTag returns the macOS automount tag.
+//
+// A device configured with this tag will be automatically mounted in a macOS guest.
+// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func MacOSGuestAutomountTag() (string, error) {
+	if macosMajorVersionLessThan(13) {
+		return "", ErrUnsupportedOSVersion
+	}
+	cstring := (*char)(C.getMacOSGuestAutomountTag())
+	return cstring.String(), nil
+}

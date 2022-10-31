@@ -6,6 +6,7 @@
 
 #pragma once
 
+#import <Availability.h>
 #import <Cocoa/Cocoa.h>
 #import <Virtualization/Virtualization.h>
 
@@ -22,6 +23,7 @@
 - (instancetype)init;
 @end
 
+API_AVAILABLE(macos(12.0))
 @interface AppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate, VZVirtualMachineDelegate>
 - (instancetype)initWithVirtualMachine:(VZVirtualMachine *)virtualMachine
                            windowWidth:(CGFloat)windowWidth

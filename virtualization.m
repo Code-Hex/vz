@@ -1207,13 +1207,16 @@ void sharedApplication()
 
 void startVirtualMachineWindow(void *machine, double width, double height)
 {
-    @autoreleasepool {
-        AppDelegate *appDelegate = [[[AppDelegate alloc]
-            initWithVirtualMachine:(VZVirtualMachine *)machine
-                       windowWidth:(CGFloat)width
-                      windowHeight:(CGFloat)height] autorelease];
+    if (@available(macOS 12, *)) {
+        @autoreleasepool {
+            AppDelegate *appDelegate = [[[AppDelegate alloc]
+                initWithVirtualMachine:(VZVirtualMachine *)machine
+                           windowWidth:(CGFloat)width
+                          windowHeight:(CGFloat)height] autorelease];
 
-        NSApp.delegate = appDelegate;
-        [NSApp run];
+            NSApp.delegate = appDelegate;
+            [NSApp run];
+        }
     }
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }

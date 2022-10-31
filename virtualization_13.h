@@ -44,3 +44,5 @@ const char *getSpiceAgentPortName();
 void startWithOptionsCompletionHandler(void *machine, void *queue, void *options, void *completionHandler);
 
 const char *getMacOSGuestAutomountTag();
+
+void setMaximumTransmissionUnitVZFileHandleNetworkDeviceAttachment(void *attachment, NSInteger mtu);

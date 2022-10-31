@@ -4,6 +4,7 @@ package vz
 #cgo darwin CFLAGS: -x objective-c -fno-objc-arc
 #cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
 # include "virtualization.h"
+# include "virtualization_13.h"
 */
 import "C"
 import (
@@ -117,6 +118,8 @@ type FileHandleNetworkDeviceAttachment struct {
 	*pointer
 
 	*baseNetworkDeviceAttachment
+
+	mtu int
 }
 
 var _ NetworkDeviceAttachment = (*FileHandleNetworkDeviceAttachment)(nil)
@@ -138,11 +141,42 @@ func NewFileHandleNetworkDeviceAttachment(file *os.File) (*FileHandleNetworkDevi
 				C.int(file.Fd()),
 			),
 		),
+		mtu: 1500, // The default MTU is 1500.
 	}
 	runtime.SetFinalizer(attachment, func(self *FileHandleNetworkDeviceAttachment) {
 		objc.Release(self)
 	})
 	return attachment, nil
+}
+
+// SetMaximumTransmissionUnit sets the maximum transmission unit (MTU) associated with this attachment.
+//
+// The maximum MTU allowed is 65535, and the minimum MTU allowed is 1500. An invalid MTU value will result in an invalid
+// virtual machine configuration.
+//
+// The client side of the associated datagram socket must be properly configured with the appropriate values
+// for SO_SNDBUF, and SO_RCVBUF. Set these using the setsockopt(_:_:_:_:_:) system call. The system expects
+// the value of SO_RCVBUF to be at least double the value of SO_SNDBUF, and for optimal performance, the
+// recommended value of SO_RCVBUF is four times the value of SO_SNDBUF.
+//
+// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// be returned on older versions.
+func (f *FileHandleNetworkDeviceAttachment) SetMaximumTransmissionUnit(mtu int) error {
+	if macosMajorVersionLessThan(13) {
+		return ErrUnsupportedOSVersion
+	}
+	C.setMaximumTransmissionUnitVZFileHandleNetworkDeviceAttachment(
+		objc.Ptr(f),
+		C.NSInteger(mtu),
+	)
+	f.mtu = mtu
+	return nil
+}
+
+// MaximumTransmissionUnit returns the maximum transmission unit (MTU) associated with this attachment.
+// The default MTU is 1500.
+func (f *FileHandleNetworkDeviceAttachment) MaximumTransmissionUnit() int {
+	return f.mtu
 }
 
 // NetworkDeviceAttachment for a network device attachment.

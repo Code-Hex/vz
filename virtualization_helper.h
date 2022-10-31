@@ -3,10 +3,19 @@
 #import <Availability.h>
 #import <Foundation/Foundation.h>
 
-#define RAISE_UNSUPPORTED_MACOS_EXCEPTION()                                                       \
-    do {                                                                                          \
-        [[NSException exceptionWithName:@"UnhandledException" reason:@"bug" userInfo:nil] raise]; \
-        __builtin_unreachable();                                                                  \
+NSDictionary *dumpProcessinfo();
+
+#define RAISE_REASON_MESSAGE                                                                               \
+    "This may possibly be a bug due to library handling errors.\n"                                         \
+    "I would appreciate it if you could report it to https://github.com/Code-Hex/vz/issues/new/choose\n\n" \
+    "Information: %@\n"
+
+#define RAISE_UNSUPPORTED_MACOS_EXCEPTION()                   \
+    do {                                                      \
+        [NSException                                          \
+             raise:@"UnhandledAvailabilityException"          \
+            format:@RAISE_REASON_MESSAGE, dumpProcessinfo()]; \
+        __builtin_unreachable();                              \
     } while (0)
 
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 130000

@@ -164,16 +164,16 @@ func validateDatagramSocket(fd int) error {
 	if err != nil {
 		return os.NewSyscallError("getsockopt", err)
 	}
-	if sotype == syscall.SOCK_DGRAM && isInet(fd) {
+	if sotype == syscall.SOCK_DGRAM && isAvailableDatagram(fd) {
 		return nil
 	}
 	return fmt.Errorf("The fileHandle must be a datagram socket")
 }
 
-func isInet(fd int) bool {
+func isAvailableDatagram(fd int) bool {
 	lsa, _ := syscall.Getsockname(fd)
 	switch lsa.(type) {
-	case *syscall.SockaddrInet4, *syscall.SockaddrInet6:
+	case *syscall.SockaddrInet4, *syscall.SockaddrInet6, *syscall.SockaddrUnix:
 		return true
 	}
 	return false

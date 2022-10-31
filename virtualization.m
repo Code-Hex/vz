@@ -1216,6 +1216,7 @@ void startVirtualMachineWindow(void *machine, double width, double height)
 
             NSApp.delegate = appDelegate;
             [NSApp run];
+            return;
         }
     }
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();

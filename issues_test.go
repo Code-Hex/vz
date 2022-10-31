@@ -231,3 +231,28 @@ func TestIssue96(t *testing.T) {
 		}
 	})
 }
+
+// unixgram must be supported
+func TestIssue98(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+	path := filepath.Join(dir, "issue98.sock")
+	ln, err := net.ListenUnixgram("unixgram", &net.UnixAddr{
+		Name: path,
+		Net:  "unix",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer ln.Close()
+
+	f, err := ln.File()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = NewFileHandleNetworkDeviceAttachment(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

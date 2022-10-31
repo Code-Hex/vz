@@ -8,9 +8,11 @@ package vz
 */
 import "C"
 import (
+	"fmt"
 	"net"
 	"os"
 	"runtime"
+	"syscall"
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v2/internal/objc"
@@ -134,6 +136,10 @@ func NewFileHandleNetworkDeviceAttachment(file *os.File) (*FileHandleNetworkDevi
 	if macosMajorVersionLessThan(11) {
 		return nil, ErrUnsupportedOSVersion
 	}
+	err := validateDatagramSocket(int(file.Fd()))
+	if err != nil {
+		return nil, err
+	}
 
 	attachment := &FileHandleNetworkDeviceAttachment{
 		pointer: objc.NewPointer(
@@ -147,6 +153,30 @@ func NewFileHandleNetworkDeviceAttachment(file *os.File) (*FileHandleNetworkDevi
 		objc.Release(self)
 	})
 	return attachment, nil
+}
+
+func validateDatagramSocket(fd int) error {
+	sotype, err := syscall.GetsockoptInt(
+		fd,
+		syscall.SOL_SOCKET,
+		syscall.SO_TYPE,
+	)
+	if err != nil {
+		return os.NewSyscallError("getsockopt", err)
+	}
+	if sotype == syscall.SOCK_DGRAM && isInet(fd) {
+		return nil
+	}
+	return fmt.Errorf("The fileHandle must be a datagram socket")
+}
+
+func isInet(fd int) bool {
+	lsa, _ := syscall.Getsockname(fd)
+	switch lsa.(type) {
+	case *syscall.SockaddrInet4, *syscall.SockaddrInet6:
+		return true
+	}
+	return false
 }
 
 // SetMaximumTransmissionUnit sets the maximum transmission unit (MTU) associated with this attachment.

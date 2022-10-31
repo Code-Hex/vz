@@ -2,7 +2,9 @@ package vz
 
 import (
 	"errors"
+	"net"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -166,6 +168,66 @@ func TestIssue81(t *testing.T) {
 		networkDevs = config.NetworkDevices()
 		if len(networkDevs) != 1 {
 			t.Errorf("unexpected number of virtio-vsock devices: got %d, expected 1", len(networkDevs))
+		}
+	})
+}
+
+func TestIssue96(t *testing.T) {
+	t.Run("non-network fd", func(t *testing.T) {
+		t.Parallel()
+		f, err := os.CreateTemp("", "*")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = NewFileHandleNetworkDeviceAttachment(f)
+		if err == nil {
+			t.Fatal("want error")
+		}
+	})
+
+	t.Run("unix socket", func(t *testing.T) {
+		t.Parallel()
+		dir := t.TempDir()
+		path := filepath.Join(dir, "issue96.sock")
+		ln, err := net.ListenUnix("unix", &net.UnixAddr{
+			Name: path,
+			Net:  "unix",
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer ln.Close()
+
+		f, err := ln.File()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = NewFileHandleNetworkDeviceAttachment(f)
+		if err == nil {
+			t.Fatal("want error")
+		}
+	})
+
+	t.Run("TCP socket", func(t *testing.T) {
+		t.Parallel()
+		ln, err := net.ListenTCP("tcp", &net.TCPAddr{
+			Port: 0,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer ln.Close()
+
+		f, err := ln.File()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, err = NewFileHandleNetworkDeviceAttachment(f)
+		if err == nil {
+			t.Fatal("want error")
 		}
 	})
 }

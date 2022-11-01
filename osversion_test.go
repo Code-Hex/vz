@@ -14,14 +14,14 @@ type nopDoer struct{}
 func (*nopDoer) Do(func()) {}
 
 func TestAvailableVersion(t *testing.T) {
-	majorVersionOnce = &nopDoer{}
+	majorMinorVersionOnce = &nopDoer{}
 	defer func() {
-		majorVersion = 0
-		majorVersionOnce = &sync.Once{}
+		majorMinorVersion = 0
+		majorMinorVersionOnce = &sync.Once{}
 	}()
 
 	t.Run("macOS 11", func(t *testing.T) {
-		majorVersion = 10
+		majorMinorVersion = 10
 		cases := map[string]func() error{
 			"NewLinuxBootLoader": func() error {
 				_, err := NewLinuxBootLoader("")
@@ -105,7 +105,7 @@ func TestAvailableVersion(t *testing.T) {
 	})
 
 	t.Run("macOS 12", func(t *testing.T) {
-		majorVersion = 11
+		majorMinorVersion = 11
 		cases := map[string]func() error{
 			"NewVirtioSoundDeviceConfiguration": func() error {
 				_, err := NewVirtioSoundDeviceConfiguration()
@@ -222,6 +222,11 @@ func Test_fetchMajorMinorVersion(t *testing.T) {
 }
 
 func Test_macOSBuildTargetAvailable(t *testing.T) {
+	maxAllowedVersionOnce = &nopDoer{}
+	defer func() {
+		maxAllowedVersionOnce = &sync.Once{}
+	}()
+
 	cases := []struct {
 		// version is specified only 11, 12, 12.3, 13
 		version           float64
@@ -308,11 +313,9 @@ func Test_macOSBuildTargetAvailable(t *testing.T) {
 			tc.version,
 		)
 		t.Run(name, func(t *testing.T) {
-			_maxAllowedVersion := maxAllowedVersion
-			defer func() { maxAllowedVersion = _maxAllowedVersion }()
-			maxAllowedVersion = func() int {
-				return tc.maxAllowedVersion
-			}
+			tmp := maxAllowedVersion
+			defer func() { maxAllowedVersion = tmp }()
+			maxAllowedVersion = tc.maxAllowedVersion
 
 			err := macOSBuildTargetAvailable(tc.version)
 			if (err != nil) != tc.wantErr {

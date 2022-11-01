@@ -34,13 +34,9 @@ func macOSAvailable(version float64) error {
 	return macOSBuildTargetAvailable(version)
 }
 
-func macosMajorVersionLessThan(major float64) bool {
-	return macOSMajorMinorVersion() < major
-}
-
 var (
-	majorVersion     float64
-	majorVersionOnce interface{ Do(func()) } = &sync.Once{}
+	majorMinorVersion     float64
+	majorMinorVersionOnce interface{ Do(func()) } = &sync.Once{}
 
 	// This can be replaced in the test code to enable mock.
 	// It will not be changed in production.
@@ -62,23 +58,35 @@ func fetchMajorMinorVersion() (float64, error) {
 }
 
 func macOSMajorMinorVersion() float64 {
-	majorVersionOnce.Do(func() {
+	majorMinorVersionOnce.Do(func() {
 		version, err := fetchMajorMinorVersion()
 		if err != nil {
 			panic(err)
 		}
-		majorVersion = version
+		majorMinorVersion = version
 	})
-	return majorVersion
+	return majorMinorVersion
 }
 
-var maxAllowedVersion = func() int {
-	return int(C.mac_os_x_version_max_allowed())
+var (
+	maxAllowedVersion     int
+	maxAllowedVersionOnce interface{ Do(func()) } = &sync.Once{}
+
+	getMaxAllowedVersion = func() int {
+		return int(C.mac_os_x_version_max_allowed())
+	}
+)
+
+func fetchMaxAllowedVersion() int {
+	maxAllowedVersionOnce.Do(func() {
+		maxAllowedVersion = getMaxAllowedVersion()
+	})
+	return maxAllowedVersion
 }
 
 // macOSBuildTargetAvailable checks whether the API available in a given version has been compiled.
 func macOSBuildTargetAvailable(version float64) error {
-	allowedVersion := maxAllowedVersion()
+	allowedVersion := fetchMaxAllowedVersion()
 	if allowedVersion == 0 {
 		return fmt.Errorf("undefined __MAC_OS_X_VERSION_MAX_ALLOWED: %w", ErrBuildTargetOSVersion)
 	}

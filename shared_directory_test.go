@@ -13,7 +13,7 @@ import (
 )
 
 func TestVirtioFileSystemDeviceConfigurationTag(t *testing.T) {
-	if vz.MacosMajorVersionLessThan(12) {
+	if vz.Available(12) {
 		t.Skip("VirtioFileSystemDeviceConfiguration is supported from macOS 12")
 	}
 
@@ -32,7 +32,7 @@ func TestVirtioFileSystemDeviceConfigurationTag(t *testing.T) {
 }
 
 func TestSingleDirectoryShare(t *testing.T) {
-	if vz.MacosMajorVersionLessThan(12) {
+	if vz.Available(12) {
 		t.Skip("SingleDirectoryShare is supported from macOS 12")
 	}
 
@@ -146,7 +146,7 @@ func TestSingleDirectoryShare(t *testing.T) {
 }
 
 func TestMultipleDirectoryShare(t *testing.T) {
-	if vz.MacosMajorVersionLessThan(12) {
+	if vz.Available(12) {
 		t.Skip("MultipleDirectoryShare is supported from macOS 12")
 	}
 

@@ -8,7 +8,7 @@ import (
 )
 
 func TestFileHandleNetworkDeviceAttachmentMTU(t *testing.T) {
-	if vz.MacosMajorVersionLessThan(13) {
+	if vz.Available(13) {
 		t.Skip("FileHandleNetworkDeviceAttachment.SetMaximumTransmissionUnit is supported from macOS 13")
 	}
 

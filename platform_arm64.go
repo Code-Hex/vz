@@ -44,24 +44,24 @@ var _ PlatformConfiguration = (*MacPlatformConfiguration)(nil)
 // MacPlatformConfigurationOption is an optional function to create its configuration.
 type MacPlatformConfigurationOption func(*MacPlatformConfiguration)
 
-// WithHardwareModel is an option to create a new MacPlatformConfiguration.
-func WithHardwareModel(m *MacHardwareModel) MacPlatformConfigurationOption {
+// WithMacHardwareModel is an option to create a new MacPlatformConfiguration.
+func WithMacHardwareModel(m *MacHardwareModel) MacPlatformConfigurationOption {
 	return func(mpc *MacPlatformConfiguration) {
 		mpc.hardwareModel = m
 		C.setHardwareModelVZMacPlatformConfiguration(objc.Ptr(mpc), objc.Ptr(m))
 	}
 }
 
-// WithMachineIdentifier is an option to create a new MacPlatformConfiguration.
-func WithMachineIdentifier(m *MacMachineIdentifier) MacPlatformConfigurationOption {
+// WithMacMachineIdentifier is an option to create a new MacPlatformConfiguration.
+func WithMacMachineIdentifier(m *MacMachineIdentifier) MacPlatformConfigurationOption {
 	return func(mpc *MacPlatformConfiguration) {
 		mpc.machineIdentifier = m
 		C.setMachineIdentifierVZMacPlatformConfiguration(objc.Ptr(mpc), objc.Ptr(m))
 	}
 }
 
-// WithAuxiliaryStorage is an option to create a new MacPlatformConfiguration.
-func WithAuxiliaryStorage(m *MacAuxiliaryStorage) MacPlatformConfigurationOption {
+// WithMacAuxiliaryStorage is an option to create a new MacPlatformConfiguration.
+func WithMacAuxiliaryStorage(m *MacAuxiliaryStorage) MacPlatformConfigurationOption {
 	return func(mpc *MacPlatformConfiguration) {
 		mpc.auxiliaryStorage = m
 		C.setAuxiliaryStorageVZMacPlatformConfiguration(objc.Ptr(mpc), objc.Ptr(m))

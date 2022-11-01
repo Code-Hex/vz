@@ -181,9 +181,9 @@ type MacAuxiliaryStorage struct {
 // NewMacAuxiliaryStorageOption is an option type to initialize a new Mac auxiliary storage
 type NewMacAuxiliaryStorageOption func(*MacAuxiliaryStorage) error
 
-// WithCreatingStorage is an option when initialize a new Mac auxiliary storage with data creation
+// WithCreatingMacAuxiliaryStorage is an option when initialize a new Mac auxiliary storage with data creation
 // to you specified storage path.
-func WithCreatingStorage(hardwareModel *MacHardwareModel) NewMacAuxiliaryStorageOption {
+func WithCreatingMacAuxiliaryStorage(hardwareModel *MacHardwareModel) NewMacAuxiliaryStorageOption {
 	return func(mas *MacAuxiliaryStorage) error {
 		cpath := charWithGoString(mas.storagePath)
 		defer cpath.Free()

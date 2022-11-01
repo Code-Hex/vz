@@ -48,6 +48,7 @@ func (b *LinuxBootLoader) String() string {
 	)
 }
 
+// LinuxBootLoaderOption is an option for LinuxBootLoader.
 type LinuxBootLoaderOption func(b *LinuxBootLoader) error
 
 // WithCommandLine sets the command-line parameters.

@@ -3,7 +3,7 @@ package vz
 /*
 #cgo darwin CFLAGS: -x objective-c -fno-objc-arc
 #cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
-# include "virtualization.h"
+# include "virtualization_11.h"
 */
 import "C"
 import (

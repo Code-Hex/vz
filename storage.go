@@ -4,6 +4,7 @@ package vz
 #cgo darwin CFLAGS: -x objective-c -fno-objc-arc
 #cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
 # include "virtualization.h"
+# include "virtualization_12_3.h"
 # include "virtualization_13.h"
 */
 import "C"
@@ -104,6 +105,8 @@ type VirtioBlockDeviceConfiguration struct {
 	*pointer
 
 	*baseStorageDeviceConfiguration
+
+	blockDeviceIdentifier string
 }
 
 // NewVirtioBlockDeviceConfiguration initialize a VZVirtioBlockDeviceConfiguration with a device attachment.
@@ -128,6 +131,48 @@ func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) (*Vir
 		objc.Release(self)
 	})
 	return config, nil
+}
+
+// BlockDeviceIdentifier returns the device identifier is a string identifying the Virtio block device.
+// Empty string by default.
+//
+// The identifier can be retrieved in the guest via a VIRTIO_BLK_T_GET_ID request.
+//
+// This is only supported on macOS 12.3 and newer, error will be returned on older versions.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzvirtioblockdeviceconfiguration/3917717-blockdeviceidentifier
+func (v *VirtioBlockDeviceConfiguration) BlockDeviceIdentifier() (string, error) {
+	if err := macOSAvailable(12.3); err != nil {
+		return "", err
+	}
+	return v.blockDeviceIdentifier, nil
+}
+
+// SetBlockDeviceIdentifier sets the device identifier is a string identifying the Virtio block device.
+//
+// The device identifier must be at most 20 bytes in length and ASCII-encodable.
+//
+// This is only supported on macOS 12.3 and newer, error will be returned on older versions.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzvirtioblockdeviceconfiguration/3917717-blockdeviceidentifier
+func (v *VirtioBlockDeviceConfiguration) SetBlockDeviceIdentifier(identifier string) error {
+	if err := macOSAvailable(12.3); err != nil {
+		return err
+	}
+	idChar := charWithGoString(identifier)
+	defer idChar.Free()
+
+	nserrPtr := newNSErrorAsNil()
+	C.setBlockDeviceIdentifierVZVirtioBlockDeviceConfiguration(
+		objc.Ptr(v),
+		idChar.CString(),
+		&nserrPtr,
+	)
+	if err := newNSError(nserrPtr); err != nil {
+		return err
+	}
+	v.blockDeviceIdentifier = identifier
+	return nil
 }
 
 // USBMassStorageDeviceConfiguration is a configuration of a USB Mass Storage storage device.

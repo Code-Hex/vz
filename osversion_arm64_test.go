@@ -71,4 +71,23 @@ func TestAvailableVersionArm64(t *testing.T) {
 			}
 		}
 	})
+
+	t.Run("macOS 13", func(t *testing.T) {
+		majorMinorVersion = 12.3
+		cases := map[string]func() error{
+			"WithStartUpFromMacOSRecovery": func() error {
+				return (*VirtualMachine)(nil).Start(WithStartUpFromMacOSRecovery(true))
+			},
+			"MacOSGuestAutomountTag": func() error {
+				_, err := MacOSGuestAutomountTag()
+				return err
+			},
+		}
+		for name, fn := range cases {
+			err := fn()
+			if !errors.Is(err, ErrUnsupportedOSVersion) {
+				t.Fatalf("unexpected error %v in %s", err, name)
+			}
+		}
+	})
 }

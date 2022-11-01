@@ -180,6 +180,100 @@ func TestAvailableVersion(t *testing.T) {
 			}
 		}
 	})
+
+	t.Run("macOS 13", func(t *testing.T) {
+		majorMinorVersion = 12.3
+		cases := map[string]func() error{
+			"NewEFIBootLoader": func() error {
+				_, err := NewEFIBootLoader()
+				return err
+			},
+			"WithEFIVariableStore": func() error {
+				_, err := NewEFIBootLoader(WithEFIVariableStore(nil))
+				return err
+			},
+			"NewEFIVariableStore": func() error {
+				_, err := NewEFIVariableStore("")
+				return err
+			},
+			"WithCreatingEFIVariableStore": func() error {
+				_, err := NewEFIVariableStore(
+					"",
+					WithCreatingEFIVariableStore(),
+				)
+				return err
+			},
+			"NewGenericMachineIdentifierWithData": func() error {
+				_, err := NewGenericMachineIdentifierWithData(nil)
+				return err
+			},
+			"NewGenericMachineIdentifier": func() error {
+				_, err := NewGenericMachineIdentifier()
+				return err
+			},
+			"WithGenericMachineIdentifier": func() error {
+				_, err := NewGenericPlatformConfiguration(
+					WithGenericMachineIdentifier(nil),
+				)
+				return err
+			},
+			"NewUSBMassStorageDeviceConfiguration": func() error {
+				_, err := NewUSBMassStorageDeviceConfiguration(nil)
+				return err
+			},
+			"NewVirtioGraphicsDeviceConfiguration": func() error {
+				_, err := NewVirtioGraphicsDeviceConfiguration()
+				return err
+			},
+			"NewVirtioGraphicsScanoutConfiguration": func() error {
+				_, err := NewVirtioGraphicsScanoutConfiguration(0, 0)
+				return err
+			},
+			"NewVirtioConsoleDeviceConfiguration": func() error {
+				_, err := NewVirtioConsoleDeviceConfiguration()
+				return err
+			},
+			"NewVirtioConsolePortConfiguration": func() error {
+				_, err := NewVirtioConsolePortConfiguration()
+				return err
+			},
+			"WithVirtioConsolePortConfigurationName": func() error {
+				_, err := NewVirtioConsolePortConfiguration(
+					WithVirtioConsolePortConfigurationName(""),
+				)
+				return err
+			},
+			"WithVirtioConsolePortConfigurationIsConsole": func() error {
+				_, err := NewVirtioConsolePortConfiguration(
+					WithVirtioConsolePortConfigurationIsConsole(false),
+				)
+				return err
+			},
+			"WithVirtioConsolePortConfigurationAttachment": func() error {
+				_, err := NewVirtioConsolePortConfiguration(
+					WithVirtioConsolePortConfigurationAttachment(nil),
+				)
+				return err
+			},
+			"NewSpiceAgentPortAttachment": func() error {
+				_, err := NewSpiceAgentPortAttachment()
+				return err
+			},
+			"SpiceAgentPortAttachmentName": func() error {
+				_, err := SpiceAgentPortAttachmentName()
+				return err
+			},
+			"SetMaximumTransmissionUnit": func() error {
+				return (*FileHandleNetworkDeviceAttachment)(nil).SetMaximumTransmissionUnit(0)
+			},
+		}
+		for name, fn := range cases {
+			err := fn()
+			if !errors.Is(err, ErrUnsupportedOSVersion) {
+				t.Fatalf("unexpected error %v in %s", err, name)
+			}
+		}
+	})
 }
 
 func Test_fetchMajorMinorVersion(t *testing.T) {

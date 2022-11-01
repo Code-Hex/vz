@@ -97,10 +97,12 @@ func TestAvailableVersion(t *testing.T) {
 			},
 		}
 		for name, fn := range cases {
-			err := fn()
-			if !errors.Is(err, ErrUnsupportedOSVersion) {
-				t.Fatalf("unexpected error %v in %s", err, name)
-			}
+			t.Run(name, func(t *testing.T) {
+				err := fn()
+				if !errors.Is(err, ErrUnsupportedOSVersion) {
+					t.Fatalf("unexpected error %v in %s", err, name)
+				}
+			})
 		}
 	})
 
@@ -155,10 +157,12 @@ func TestAvailableVersion(t *testing.T) {
 			},
 		}
 		for name, fn := range cases {
-			err := fn()
-			if !errors.Is(err, ErrUnsupportedOSVersion) {
-				t.Fatalf("unexpected error %v in %s", err, name)
-			}
+			t.Run(name, func(t *testing.T) {
+				err := fn()
+				if !errors.Is(err, ErrUnsupportedOSVersion) {
+					t.Fatalf("unexpected error %v in %s", err, name)
+				}
+			})
 		}
 	})
 
@@ -174,10 +178,12 @@ func TestAvailableVersion(t *testing.T) {
 			},
 		}
 		for name, fn := range cases {
-			err := fn()
-			if !errors.Is(err, ErrUnsupportedOSVersion) {
-				t.Fatalf("unexpected error %v in %s", err, name)
-			}
+			t.Run(name, func(t *testing.T) {
+				err := fn()
+				if !errors.Is(err, ErrUnsupportedOSVersion) {
+					t.Fatalf("unexpected error %v in %s", err, name)
+				}
+			})
 		}
 	})
 
@@ -268,10 +274,12 @@ func TestAvailableVersion(t *testing.T) {
 			},
 		}
 		for name, fn := range cases {
-			err := fn()
-			if !errors.Is(err, ErrUnsupportedOSVersion) {
-				t.Fatalf("unexpected error %v in %s", err, name)
-			}
+			t.Run(name, func(t *testing.T) {
+				err := fn()
+				if !errors.Is(err, ErrUnsupportedOSVersion) {
+					t.Fatalf("unexpected error %v in %s", err, name)
+				}
+			})
 		}
 	})
 }

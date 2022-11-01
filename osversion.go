@@ -1,14 +1,41 @@
 package vz
 
+/*
+#cgo darwin CFLAGS: -x objective-c -fno-objc-arc
+#cgo darwin LDFLAGS: -lobjc -framework Foundation
+# include "virtualization_helper.h"
+*/
+import "C"
 import (
+	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"sync"
 	"syscall"
+
+	"golang.org/x/mod/semver"
 )
 
+var (
+	// ErrUnsupportedOSVersion is returned when calling a method which is only
+	// available in newer macOS versions.
+	ErrUnsupportedOSVersion = errors.New("unsupported macOS version")
+
+	// ErrBuildTargetOSVersion indicates that the API is available but the
+	// running program has disabled it.
+	ErrBuildTargetOSVersion = errors.New("unsupported build target macOS version")
+)
+
+func macOSAvailable(version float64) error {
+	if macOSMajorMinorVersion() < version {
+		return ErrUnsupportedOSVersion
+	}
+	return macOSBuildTargetAvailable(version)
+}
+
 func macosMajorVersionLessThan(major float64) bool {
-	return macOSMajorVersion() < major
+	return macOSMajorMinorVersion() < major
 }
 
 var (
@@ -20,26 +47,57 @@ var (
 	sysctl = syscall.Sysctl
 )
 
-func fetchMajorVersion() (float64, error) {
+func fetchMajorMinorVersion() (float64, error) {
 	osver, err := sysctl("kern.osproductversion")
 	if err != nil {
 		return 0, err
 	}
-	osverArray := strings.SplitAfterN(osver, ".", 1)
-	version, err := strconv.ParseFloat(osverArray[0], 64)
+	prefix := "v"
+	majorMinor := strings.TrimPrefix(semver.MajorMinor(prefix+osver), prefix)
+	version, err := strconv.ParseFloat(majorMinor, 64)
 	if err != nil {
 		return 0, err
 	}
 	return version, nil
 }
 
-func macOSMajorVersion() float64 {
+func macOSMajorMinorVersion() float64 {
 	majorVersionOnce.Do(func() {
-		version, err := fetchMajorVersion()
+		version, err := fetchMajorMinorVersion()
 		if err != nil {
 			panic(err)
 		}
 		majorVersion = version
 	})
 	return majorVersion
+}
+
+var maxAllowedVersion = func() int {
+	return int(C.mac_os_x_version_max_allowed())
+}
+
+// macOSBuildTargetAvailable checks whether the API available in a given version has been compiled.
+func macOSBuildTargetAvailable(version float64) error {
+	allowedVersion := maxAllowedVersion()
+	if allowedVersion == 0 {
+		return fmt.Errorf("undefined __MAC_OS_X_VERSION_MAX_ALLOWED: %w", ErrBuildTargetOSVersion)
+	}
+
+	// FIXME(codehex): smart way
+	// This list from AvailabilityVersions.h
+	var target int
+	switch version {
+	case 11:
+		target = 110000 // __MAC_11_0
+	case 12:
+		target = 120000 // __MAC_12_0
+	case 12.3:
+		target = 120300 // __MAC_12_3
+	case 13:
+		target = 130000 // __MAC_13_0
+	}
+	if allowedVersion < target {
+		return fmt.Errorf("%w for %.1f", ErrBuildTargetOSVersion, version)
+	}
+	return nil
 }

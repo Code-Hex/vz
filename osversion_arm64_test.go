@@ -73,6 +73,10 @@ func TestAvailableVersionArm64(t *testing.T) {
 	})
 
 	t.Run("macOS 13", func(t *testing.T) {
+		if macOSBuildTargetAvailable(13) != nil {
+			t.Skip("disabled build target for macOS 13")
+		}
+
 		majorMinorVersion = 12.3
 		cases := map[string]func() error{
 			"WithStartUpFromMacOSRecovery": func() error {

@@ -8,6 +8,7 @@
 
 void setBlockDeviceIdentifierVZVirtioBlockDeviceConfiguration(void *blockDeviceConfig, const char *identifier, void **error)
 {
+#ifdef INCLUDE_TARGET_OSX_12_3
     if (@available(macOS 12.3, *)) {
         NSString *identifierNSString = [NSString stringWithUTF8String:identifier];
         BOOL valid = [VZVirtioBlockDeviceConfiguration
@@ -19,6 +20,6 @@ void setBlockDeviceIdentifierVZVirtioBlockDeviceConfiguration(void *blockDeviceC
         [(VZVirtioBlockDeviceConfiguration *)blockDeviceConfig setBlockDeviceIdentifier:identifierNSString];
         return;
     }
-
+#endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }

@@ -52,17 +52,6 @@ void setSocketDevicesVZVirtualMachineConfiguration(void *config,
 void *socketDevicesVZVirtualMachineConfiguration(void *config);
 void setStorageDevicesVZVirtualMachineConfiguration(void *config,
     void *storageDevices);
-void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void *directorySharingDevices);
-void setPlatformVZVirtualMachineConfiguration(void *config,
-    void *platform);
-void setGraphicsDevicesVZVirtualMachineConfiguration(void *config,
-    void *graphicsDevices);
-void setPointingDevicesVZVirtualMachineConfiguration(void *config,
-    void *pointingDevices);
-void setKeyboardsVZVirtualMachineConfiguration(void *config,
-    void *keyboards);
-void setAudioDevicesVZVirtualMachineConfiguration(void *config,
-    void *audioDevices);
 
 /* Configurations */
 void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileDescriptor);
@@ -82,24 +71,10 @@ void *newVZMACAddress(const char *macAddress);
 void *newRandomLocallyAdministeredVZMACAddress();
 const char *getVZMACAddressString(void *macAddress);
 void *newVZVirtioSocketListener(void *cgoHandlerPtr);
-void *newVZSharedDirectory(const char *dirPath, bool readOnly);
-void *newVZSingleDirectoryShare(void *sharedDirectory);
-void *newVZMultipleDirectoryShare(void *sharedDirectories);
-void *newVZVirtioFileSystemDeviceConfiguration(const char *tag, void **error);
-void setVZVirtioFileSystemDeviceConfigurationShare(void *config, void *share);
 void *VZVirtualMachine_socketDevices(void *machine);
 void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQueue, void *listener, uint32_t port);
 void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *vmQueue, uint32_t port);
 void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, void *cgoHandlerPtr);
-void *newVZUSBScreenCoordinatePointingDeviceConfiguration();
-void *newVZUSBKeyboardConfiguration();
-void *newVZVirtioSoundDeviceConfiguration();
-void setStreamsVZVirtioSoundDeviceConfiguration(void *audioDeviceConfiguration, void *streams);
-void *newVZVirtioSoundDeviceInputStreamConfiguration();
-void *newVZVirtioSoundDeviceHostInputStreamConfiguration(); // use in Go
-void *newVZVirtioSoundDeviceOutputStreamConfiguration();
-void *newVZVirtioSoundDeviceHostOutputStreamConfiguration(); // use in Go
-void *newVZGenericPlatformConfiguration();
 
 /* VirtualMachine */
 void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, void *statusHandler);
@@ -107,12 +82,10 @@ bool requestStopVirtualMachine(void *machine, void *queue, void **error);
 void startWithCompletionHandler(void *machine, void *queue, void *completionHandler);
 void pauseWithCompletionHandler(void *machine, void *queue, void *completionHandler);
 void resumeWithCompletionHandler(void *machine, void *queue, void *completionHandler);
-void stopWithCompletionHandler(void *machine, void *queue, void *completionHandler);
 bool vmCanStart(void *machine, void *queue);
 bool vmCanPause(void *machine, void *queue);
 bool vmCanResume(void *machine, void *queue);
 bool vmCanRequestStop(void *machine, void *queue);
-bool vmCanStop(void *machine, void *queue);
 
 void *makeDispatchQueue(const char *label);
 
@@ -124,6 +97,3 @@ typedef struct VZVirtioSocketConnectionFlat {
 } VZVirtioSocketConnectionFlat;
 
 VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connection);
-
-void sharedApplication();
-void startVirtualMachineWindow(void *machine, double width, double height);

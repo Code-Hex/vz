@@ -59,11 +59,11 @@ var _ DirectoryShare = (*LinuxRosettaDirectoryShare)(nil)
 // NewLinuxRosettaDirectoryShare creates a new Rosetta directory share if Rosetta support
 // for Linux binaries is installed.
 //
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func NewLinuxRosettaDirectoryShare() (*LinuxRosettaDirectoryShare, error) {
-	if macosMajorVersionLessThan(13) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(13); err != nil {
+		return nil, err
 	}
 	nserrPtr := newNSErrorAsNil()
 	ds := &LinuxRosettaDirectoryShare{
@@ -83,11 +83,11 @@ func NewLinuxRosettaDirectoryShare() (*LinuxRosettaDirectoryShare, error) {
 // LinuxRosettaDirectoryShareInstallRosetta download and install Rosetta support
 // for Linux binaries if necessary.
 //
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func LinuxRosettaDirectoryShareInstallRosetta() error {
-	if macosMajorVersionLessThan(13) {
-		return ErrUnsupportedOSVersion
+	if err := macOSAvailable(13); err != nil {
+		return err
 	}
 	errCh := make(chan error, 1)
 	cgoHandler := cgo.NewHandle(func(err error) {
@@ -103,7 +103,7 @@ func LinuxRosettaDirectoryShareInstallRosetta() error {
 // This is only supported on macOS 13 and newer, LinuxRosettaAvailabilityNotSupported will
 // be returned on older versions.
 func LinuxRosettaDirectoryShareAvailability() LinuxRosettaAvailability {
-	if macosMajorVersionLessThan(13) {
+	if err := macOSAvailable(13); err != nil {
 		return LinuxRosettaAvailabilityNotSupported
 	}
 	return LinuxRosettaAvailability(C.availabilityVZLinuxRosettaDirectoryShare())

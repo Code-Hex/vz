@@ -38,11 +38,11 @@ type VirtioFileSystemDeviceConfiguration struct {
 
 // NewVirtioFileSystemDeviceConfiguration create a new VirtioFileSystemDeviceConfiguration.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewVirtioFileSystemDeviceConfiguration(tag string) (*VirtioFileSystemDeviceConfiguration, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 	tagChar := charWithGoString(tag)
 	defer tagChar.Free()
@@ -74,11 +74,11 @@ type SharedDirectory struct {
 
 // NewSharedDirectory creates a new shared directory.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewSharedDirectory(dirPath string, readOnly bool) (*SharedDirectory, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 	if _, err := os.Stat(dirPath); err != nil {
 		return nil, err
@@ -119,11 +119,11 @@ type SingleDirectoryShare struct {
 
 // NewSingleDirectoryShare creates a new single directory share.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewSingleDirectoryShare(share *SharedDirectory) (*SingleDirectoryShare, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 	config := &SingleDirectoryShare{
 		pointer: objc.NewPointer(
@@ -147,11 +147,11 @@ var _ DirectoryShare = (*MultipleDirectoryShare)(nil)
 
 // NewMultipleDirectoryShare creates a new multiple directories share.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) (*MultipleDirectoryShare, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 	directories := make(map[string]objc.NSObject, len(shares))
 	for k, v := range shares {
@@ -174,11 +174,10 @@ func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) (*MultipleDir
 // MacOSGuestAutomountTag returns the macOS automount tag.
 //
 // A device configured with this tag will be automatically mounted in a macOS guest.
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
-// be returned on older versions.
+// This is only supported on macOS 13 and newer, error will be returned on older versions.
 func MacOSGuestAutomountTag() (string, error) {
-	if macosMajorVersionLessThan(13) {
-		return "", ErrUnsupportedOSVersion
+	if err := macOSAvailable(13); err != nil {
+		return "", err
 	}
 	cstring := (*char)(C.getMacOSGuestAutomountTag())
 	return cstring.String(), nil

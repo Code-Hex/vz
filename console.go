@@ -38,8 +38,8 @@ var _ ConsoleDeviceConfiguration = (*VirtioConsoleDeviceConfiguration)(nil)
 
 // NewVirtioConsoleDeviceConfiguration creates a new VirtioConsoleDeviceConfiguration.
 func NewVirtioConsoleDeviceConfiguration() (*VirtioConsoleDeviceConfiguration, error) {
-	if macosMajorVersionLessThan(13) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(13); err != nil {
+		return nil, err
 	}
 	config := &VirtioConsoleDeviceConfiguration{
 		pointer: objc.NewPointer(
@@ -142,11 +142,11 @@ func WithVirtioConsolePortConfigurationAttachment(attachment SerialPortAttachmen
 
 // NewVirtioConsolePortConfiguration creates a new VirtioConsolePortConfiguration.
 //
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func NewVirtioConsolePortConfiguration(opts ...NewVirtioConsolePortConfigurationOption) (*VirtioConsolePortConfiguration, error) {
-	if macosMajorVersionLessThan(13) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(13); err != nil {
+		return nil, err
 	}
 	vcpc := &VirtioConsolePortConfiguration{
 		pointer: objc.NewPointer(

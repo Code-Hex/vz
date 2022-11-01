@@ -45,11 +45,11 @@ type VirtioSocketDeviceConfiguration struct {
 
 // NewVirtioSocketDeviceConfiguration creates a new VirtioSocketDeviceConfiguration.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewVirtioSocketDeviceConfiguration() (*VirtioSocketDeviceConfiguration, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	config := newVirtioSocketDeviceConfiguration(C.newVZVirtioSocketDeviceConfiguration())
@@ -88,11 +88,11 @@ func newVirtioSocketDevice(ptr, dispatchQueue unsafe.Pointer) *VirtioSocketDevic
 //
 // Be sure to close the listener by calling `VirtioSocketListener.Close` after used this one.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func (v *VirtioSocketDevice) Listen(port uint32) (*VirtioSocketListener, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	ch := make(chan connResults, 1) // should I increase more caps?

@@ -36,11 +36,11 @@ type VirtioTraditionalMemoryBalloonDeviceConfiguration struct {
 
 // NewVirtioTraditionalMemoryBalloonDeviceConfiguration creates a new VirtioTraditionalMemoryBalloonDeviceConfiguration.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewVirtioTraditionalMemoryBalloonDeviceConfiguration() (*VirtioTraditionalMemoryBalloonDeviceConfiguration, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	config := &VirtioTraditionalMemoryBalloonDeviceConfiguration{

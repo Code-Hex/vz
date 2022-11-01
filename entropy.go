@@ -23,11 +23,11 @@ type VirtioEntropyDeviceConfiguration struct {
 
 // NewVirtioEntropyDeviceConfiguration creates a new Virtio Entropy Device confiuration.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewVirtioEntropyDeviceConfiguration() (*VirtioEntropyDeviceConfiguration, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	config := &VirtioEntropyDeviceConfiguration{

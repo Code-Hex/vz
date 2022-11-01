@@ -34,11 +34,11 @@ var _ KeyboardConfiguration = (*USBKeyboardConfiguration)(nil)
 
 // NewUSBKeyboardConfiguration creates a new USB keyboard configuration.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewUSBKeyboardConfiguration() (*USBKeyboardConfiguration, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 	config := &USBKeyboardConfiguration{
 		pointer: objc.NewPointer(C.newVZUSBKeyboardConfiguration()),

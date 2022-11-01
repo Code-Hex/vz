@@ -8,7 +8,6 @@ package vz
 */
 import "C"
 import (
-	"errors"
 	"runtime"
 	"runtime/cgo"
 	"sync"
@@ -16,10 +15,6 @@ import (
 
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
-
-// ErrUnsupportedOSVersion is returned when calling a method which is only
-// available in newer macOS versions.
-var ErrUnsupportedOSVersion = errors.New("unsupported macOS version")
 
 func init() {
 	C.sharedApplication()
@@ -100,11 +95,11 @@ type machineStatus struct {
 // The configuration must be valid. Validation can be performed at runtime with (*VirtualMachineConfiguration).Validate() method.
 // The configuration is copied by the initializer.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	// should not call Free function for this string.
@@ -214,7 +209,7 @@ func (v *VirtualMachine) CanRequestStop() bool {
 // This is only supported on macOS 12 and newer, false will always be returned
 // on older versions.
 func (v *VirtualMachine) CanStop() bool {
-	if macosMajorVersionLessThan(12) {
+	if err := macOSAvailable(12); err != nil {
 		return false
 	}
 	return (bool)(C.vmCanStop(objc.Ptr(v), v.dispatchQueue))
@@ -324,11 +319,10 @@ func (v *VirtualMachine) RequestStop() (bool, error) {
 // Warning: This is a destructive operation. It stops the VM without
 // giving the guest a chance to stop cleanly.
 //
-// This is only supported on macOS 12 and newer, on older versions fn will be called immediately
-// with ErrUnsupportedOSVersion.
+// This is only supported on macOS 12 and newer, error will be returned on older versions.
 func (v *VirtualMachine) Stop() error {
-	if macosMajorVersionLessThan(12) {
-		return ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return err
 	}
 	h, errCh := makeHandler()
 	handler := cgo.NewHandle(h)
@@ -341,11 +335,10 @@ func (v *VirtualMachine) Stop() error {
 //
 // You must to call runtime.LockOSThread before calling this method.
 //
-// This is only supported on macOS 12 and newer, on older versions fn will be called immediately
-// with ErrUnsupportedOSVersion.
+// This is only supported on macOS 12 and newer, error will be returned on older versions.
 func (v *VirtualMachine) StartGraphicApplication(width, height float64) error {
-	if macosMajorVersionLessThan(12) {
-		return ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return err
 	}
 	C.startVirtualMachineWindow(objc.Ptr(v), C.double(width), C.double(height))
 	return nil

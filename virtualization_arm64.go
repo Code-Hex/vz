@@ -30,12 +30,12 @@ import (
 // WithStartUpFromMacOSRecovery is an option to specifiy whether to start up
 // from macOS Recovery for macOS VM.
 //
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func WithStartUpFromMacOSRecovery(startInRecovery bool) VirtualMachineStartOption {
 	return func(vmso *virtualMachineStartOptions) error {
-		if macosMajorVersionLessThan(13) {
-			return ErrUnsupportedOSVersion
+		if err := macOSAvailable(13); err != nil {
+			return err
 		}
 		vmso.macOSVirtualMachineStartOptionsPtr = C.newVZMacOSVirtualMachineStartOptions(
 			C.bool(startInRecovery),
@@ -54,7 +54,7 @@ type MacHardwareModel struct {
 
 // NewMacHardwareModelWithDataPath initialize a new hardware model described by the specified pathname.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewMacHardwareModelWithDataPath(pathname string) (*MacHardwareModel, error) {
 	b, err := os.ReadFile(pathname)
@@ -66,11 +66,11 @@ func NewMacHardwareModelWithDataPath(pathname string) (*MacHardwareModel, error)
 
 // NewMacHardwareModelWithData initialize a new hardware model described by the specified data representation.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewMacHardwareModelWithData(b []byte) (*MacHardwareModel, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 
 	ptr := C.newVZMacHardwareModelWithBytes(
@@ -112,7 +112,7 @@ type MacMachineIdentifier struct {
 
 // NewMacMachineIdentifierWithDataPath initialize a new machine identifier described by the specified pathname.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewMacMachineIdentifierWithDataPath(pathname string) (*MacMachineIdentifier, error) {
 	b, err := os.ReadFile(pathname)
@@ -124,11 +124,11 @@ func NewMacMachineIdentifierWithDataPath(pathname string) (*MacMachineIdentifier
 
 // NewMacMachineIdentifierWithData initialize a new machine identifier described by the specified data representation.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewMacMachineIdentifierWithData(b []byte) (*MacMachineIdentifier, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 
 	ptr := C.newVZMacMachineIdentifierWithBytes(
@@ -147,11 +147,11 @@ func NewMacMachineIdentifierWithData(b []byte) (*MacMachineIdentifier, error) {
 // DataRepresentation method.
 // The identifier can then be recreated with NewMacMachineIdentifierWithData function from the binary representation.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewMacMachineIdentifier() (*MacMachineIdentifier, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 	return newMacMachineIdentifier(C.newVZMacMachineIdentifier()), nil
 }
@@ -206,11 +206,11 @@ func WithCreatingStorage(hardwareModel *MacHardwareModel) NewMacAuxiliaryStorage
 // NewMacAuxiliaryStorage creates a new MacAuxiliaryStorage is based Mac auxiliary storage data from the storagePath
 // of an existing file by default.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewMacAuxiliaryStorage(storagePath string, opts ...NewMacAuxiliaryStorageOption) (*MacAuxiliaryStorage, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 
 	storage := &MacAuxiliaryStorage{storagePath: storagePath}
@@ -396,11 +396,11 @@ func downloadRestoreImage(ctx context.Context, url string, destPath string) (*pr
 // After downloading the restore image, you can initialize a MacOSInstaller using LoadMacOSRestoreImageFromPath function
 // with the local restore image file.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func FetchLatestSupportedMacOSRestoreImage(ctx context.Context, destPath string) (*progress.Reader, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 
 	waitCh := make(chan struct{})
@@ -432,11 +432,11 @@ func FetchLatestSupportedMacOSRestoreImage(ctx context.Context, destPath string)
 //
 // If the imagePath parameter doesn’t refer to a local file, the system raises an exception via Objective-C.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func LoadMacOSRestoreImageFromPath(imagePath string) (retImage *MacOSRestoreImage, retErr error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 	if _, err := os.Stat(imagePath); err != nil {
 		return nil, err
@@ -474,11 +474,11 @@ type MacOSInstaller struct {
 // A param vm is the virtual machine that the operating system will be installed onto.
 // A param restoreImageIpsw is a file path indicating the macOS restore image to install.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewMacOSInstaller(vm *VirtualMachine, restoreImageIpsw string) (*MacOSInstaller, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 	if _, err := os.Stat(restoreImageIpsw); err != nil {
 		return nil, err

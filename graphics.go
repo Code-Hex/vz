@@ -40,11 +40,11 @@ var _ GraphicsDeviceConfiguration = (*VirtioGraphicsDeviceConfiguration)(nil)
 
 // NewVirtioGraphicsDeviceConfiguration creates a new Virtio graphics device.
 //
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func NewVirtioGraphicsDeviceConfiguration() (*VirtioGraphicsDeviceConfiguration, error) {
-	if macosMajorVersionLessThan(13) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(13); err != nil {
+		return nil, err
 	}
 	graphicsConfiguration := &VirtioGraphicsDeviceConfiguration{
 		pointer: objc.NewPointer(
@@ -78,11 +78,11 @@ type VirtioGraphicsScanoutConfiguration struct {
 
 // NewVirtioGraphicsScanoutConfiguration creates a Virtio graphics device with the specified dimensions.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewVirtioGraphicsScanoutConfiguration(widthInPixels int64, heightInPixels int64) (*VirtioGraphicsScanoutConfiguration, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 
 	graphicsScanoutConfiguration := &VirtioGraphicsScanoutConfiguration{

@@ -70,11 +70,11 @@ func WithAuxiliaryStorage(m *MacAuxiliaryStorage) MacPlatformConfigurationOption
 
 // NewMacPlatformConfiguration creates a new MacPlatformConfiguration. see also it's document.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewMacPlatformConfiguration(opts ...MacPlatformConfigurationOption) (*MacPlatformConfiguration, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 
 	platformConfig := &MacPlatformConfiguration{

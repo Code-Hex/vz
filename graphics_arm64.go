@@ -26,11 +26,11 @@ var _ GraphicsDeviceConfiguration = (*MacGraphicsDeviceConfiguration)(nil)
 
 // NewMacGraphicsDeviceConfiguration creates a new MacGraphicsDeviceConfiguration.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewMacGraphicsDeviceConfiguration() (*MacGraphicsDeviceConfiguration, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 
 	graphicsConfiguration := &MacGraphicsDeviceConfiguration{
@@ -63,11 +63,11 @@ type MacGraphicsDisplayConfiguration struct {
 //
 // Creates a display configuration with the specified pixel dimensions and pixel density.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewMacGraphicsDisplayConfiguration(widthInPixels int64, heightInPixels int64, pixelsPerInch int64) (*MacGraphicsDisplayConfiguration, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 
 	graphicsDisplayConfiguration := &MacGraphicsDisplayConfiguration{

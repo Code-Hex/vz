@@ -43,11 +43,11 @@ type FileHandleSerialPortAttachment struct {
 // read parameter is an *os.File for reading from the file.
 // write parameter is an *os.File for writing to the file.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewFileHandleSerialPortAttachment(read, write *os.File) (*FileHandleSerialPortAttachment, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	attachment := &FileHandleSerialPortAttachment{
@@ -84,11 +84,11 @@ type FileSerialPortAttachment struct {
 //   - shouldAppend True if the file should be opened in append mode, false otherwise.
 //     When a file is opened in append mode, writing to that file will append to the end of it.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPortAttachment, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	cpath := charWithGoString(path)
@@ -124,11 +124,11 @@ type VirtioConsoleDeviceSerialPortConfiguration struct {
 
 // NewVirtioConsoleDeviceSerialPortConfiguration creates a new NewVirtioConsoleDeviceSerialPortConfiguration.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewVirtioConsoleDeviceSerialPortConfiguration(attachment SerialPortAttachment) (*VirtioConsoleDeviceSerialPortConfiguration, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	config := &VirtioConsoleDeviceSerialPortConfiguration{

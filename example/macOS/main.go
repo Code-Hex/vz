@@ -215,9 +215,9 @@ func createMacPlatformConfiguration() (*vz.MacPlatformConfiguration, error) {
 		return nil, fmt.Errorf("failed to create a new machine identifier: %w", err)
 	}
 	return vz.NewMacPlatformConfiguration(
-		vz.WithAuxiliaryStorage(auxiliaryStorage),
-		vz.WithHardwareModel(hardwareModel),
-		vz.WithMachineIdentifier(machineIdentifier),
+		vz.WithMacAuxiliaryStorage(auxiliaryStorage),
+		vz.WithMacHardwareModel(hardwareModel),
+		vz.WithMacMachineIdentifier(machineIdentifier),
 	)
 }
 

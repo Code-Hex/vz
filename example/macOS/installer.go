@@ -97,15 +97,15 @@ func createMacInstallerPlatformConfiguration(macOSConfiguration *vz.MacOSConfigu
 
 	auxiliaryStorage, err := vz.NewMacAuxiliaryStorage(
 		GetAuxiliaryStoragePath(),
-		vz.WithCreatingStorage(hardwareModel),
+		vz.WithCreatingMacAuxiliaryStorage(hardwareModel),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a new mac auxiliary storage: %w", err)
 	}
 	return vz.NewMacPlatformConfiguration(
-		vz.WithAuxiliaryStorage(auxiliaryStorage),
-		vz.WithHardwareModel(hardwareModel),
-		vz.WithMachineIdentifier(machineIdentifier),
+		vz.WithMacAuxiliaryStorage(auxiliaryStorage),
+		vz.WithMacHardwareModel(hardwareModel),
+		vz.WithMacMachineIdentifier(machineIdentifier),
 	)
 }
 

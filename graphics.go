@@ -78,10 +78,10 @@ type VirtioGraphicsScanoutConfiguration struct {
 
 // NewVirtioGraphicsScanoutConfiguration creates a Virtio graphics device with the specified dimensions.
 //
-// This is only supported on macOS 12 and newer, error will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func NewVirtioGraphicsScanoutConfiguration(widthInPixels int64, heightInPixels int64) (*VirtioGraphicsScanoutConfiguration, error) {
-	if err := macOSAvailable(12); err != nil {
+	if err := macOSAvailable(13); err != nil {
 		return nil, err
 	}
 

@@ -161,6 +161,25 @@ func TestAvailableVersion(t *testing.T) {
 			}
 		}
 	})
+
+	t.Run("macOS 12.3", func(t *testing.T) {
+		majorMinorVersion = 12
+		cases := map[string]func() error{
+			"BlockDeviceIdentifier": func() error {
+				_, err := (*VirtioBlockDeviceConfiguration)(nil).BlockDeviceIdentifier()
+				return err
+			},
+			"SetBlockDeviceIdentifier": func() error {
+				return (*VirtioBlockDeviceConfiguration)(nil).SetBlockDeviceIdentifier("")
+			},
+		}
+		for name, fn := range cases {
+			err := fn()
+			if !errors.Is(err, ErrUnsupportedOSVersion) {
+				t.Fatalf("unexpected error %v in %s", err, name)
+			}
+		}
+	})
 }
 
 func Test_fetchMajorMinorVersion(t *testing.T) {

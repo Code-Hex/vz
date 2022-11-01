@@ -78,11 +78,11 @@ func WithInitrd(initrdPath string) LinuxBootLoaderOption {
 
 // NewLinuxBootLoader creates a LinuxBootLoader with the Linux kernel passed as Path.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewLinuxBootLoader(vmlinuz string, opts ...LinuxBootLoaderOption) (*LinuxBootLoader, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 	if _, err := os.Stat(vmlinuz); err != nil {
 		return nil, fmt.Errorf("invalid linux kernel path: %w", err)
@@ -132,11 +132,11 @@ func WithEFIVariableStore(variableStore *EFIVariableStore) NewEFIBootLoaderOptio
 
 // NewEFIBootLoader creates a new EFI boot loader.
 //
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func NewEFIBootLoader(opts ...NewEFIBootLoaderOption) (*EFIBootLoader, error) {
-	if macosMajorVersionLessThan(13) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(13); err != nil {
+		return nil, err
 	}
 	bootLoader := &EFIBootLoader{
 		pointer: objc.NewPointer(
@@ -194,11 +194,11 @@ func WithCreatingEFIVariableStore() NewEFIVariableStoreOption {
 // NewEFIVariableStore Initialize the variable store. If no options are specified,
 // it initialises from the paths that exist.
 //
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func NewEFIVariableStore(path string, opts ...NewEFIVariableStoreOption) (*EFIVariableStore, error) {
-	if macosMajorVersionLessThan(13) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(13); err != nil {
+		return nil, err
 	}
 	variableStore := &EFIVariableStore{path: path}
 	for _, optFunc := range opts {

@@ -172,7 +172,7 @@ func newVirtualizationMachine(
 	//
 	// This is a workaround. This version of the API does not immediately return an error and
 	// does not seem to have a connection timeout set.
-	if vz.MacosMajorVersionLessThan(12) {
+	if vz.Available(12) {
 		time.Sleep(5 * time.Second)
 	}
 
@@ -301,7 +301,7 @@ func TestRun(t *testing.T) {
 }
 
 func TestStop(t *testing.T) {
-	if vz.MacosMajorVersionLessThan(12) {
+	if vz.Available(12) {
 		t.Skip("Stop is supported from macOS 12")
 	}
 

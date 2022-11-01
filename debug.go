@@ -39,11 +39,11 @@ var _ DebugStubConfiguration = (*GDBDebugStubConfiguration)(nil)
 //
 // This API is not officially published and is subject to change without notice.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewGDBDebugStubConfiguration(port uint32) (*GDBDebugStubConfiguration, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	config := &GDBDebugStubConfiguration{

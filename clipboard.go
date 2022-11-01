@@ -28,11 +28,11 @@ var _ SerialPortAttachment = (*SpiceAgentPortAttachment)(nil)
 
 // NewSpiceAgentPortAttachment creates a new Spice agent port attachment.
 //
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func NewSpiceAgentPortAttachment() (*SpiceAgentPortAttachment, error) {
-	if macosMajorVersionLessThan(13) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(13); err != nil {
+		return nil, err
 	}
 	spiceAgent := &SpiceAgentPortAttachment{
 		pointer: objc.NewPointer(
@@ -60,8 +60,8 @@ func (s *SpiceAgentPortAttachment) SharesClipboard() bool { return s.enabledShar
 
 // SpiceAgentPortAttachmentName returns the Spice agent port name.
 func SpiceAgentPortAttachmentName() (string, error) {
-	if macosMajorVersionLessThan(13) {
-		return "", ErrUnsupportedOSVersion
+	if err := macOSAvailable(13); err != nil {
+		return "", err
 	}
 	cstring := (*char)(C.getSpiceAgentPortName())
 	return cstring.String(), nil

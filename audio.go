@@ -41,11 +41,11 @@ var _ AudioDeviceConfiguration = (*VirtioSoundDeviceConfiguration)(nil)
 
 // NewVirtioSoundDeviceConfiguration creates a new sound device configuration.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
-// be returned on older versions.
+// This is only supported on macOS 12 and newer, error will be returned
+// on older versions.
 func NewVirtioSoundDeviceConfiguration() (*VirtioSoundDeviceConfiguration, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 	config := &VirtioSoundDeviceConfiguration{
 		pointer: objc.NewPointer(
@@ -93,11 +93,11 @@ var _ VirtioSoundDeviceStreamConfiguration = (*VirtioSoundDeviceHostInputStreamC
 
 // NewVirtioSoundDeviceHostInputStreamConfiguration creates a new PCM stream configuration of input audio data from host.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
-// be returned on older versions.
+// This is only supported on macOS 12 and newer, error will be returned
+// on older versions.
 func NewVirtioSoundDeviceHostInputStreamConfiguration() (*VirtioSoundDeviceHostInputStreamConfiguration, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 	config := &VirtioSoundDeviceHostInputStreamConfiguration{
 		pointer: objc.NewPointer(
@@ -124,11 +124,11 @@ var _ VirtioSoundDeviceStreamConfiguration = (*VirtioSoundDeviceHostOutputStream
 
 // NewVirtioSoundDeviceHostOutputStreamConfiguration creates a new sounds device output stream configuration.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
-// be returned on older versions.
+// This is only supported on macOS 12 and newer, error will be returned
+// on older versions.
 func NewVirtioSoundDeviceHostOutputStreamConfiguration() (*VirtioSoundDeviceHostOutputStreamConfiguration, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 	config := &VirtioSoundDeviceHostOutputStreamConfiguration{
 		pointer: objc.NewPointer(

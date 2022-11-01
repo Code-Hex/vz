@@ -26,11 +26,11 @@ var _ BootLoader = (*MacOSBootLoader)(nil)
 
 // NewMacOSBootLoader creates a new MacOSBootLoader struct.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewMacOSBootLoader() (*MacOSBootLoader, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 
 	bootLoader := &MacOSBootLoader{

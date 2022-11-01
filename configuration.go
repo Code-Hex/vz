@@ -49,11 +49,11 @@ type VirtualMachineConfiguration struct {
 //     The memory size must be a multiple of a 1 megabyte (1024 * 1024 bytes) between
 //     VZVirtualMachineConfiguration.minimumAllowedMemorySize and VZVirtualMachineConfiguration.maximumAllowedMemorySize.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize uint64) (*VirtualMachineConfiguration, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	config := &VirtualMachineConfiguration{
@@ -179,7 +179,7 @@ func (v *VirtualMachineConfiguration) SetStorageDevicesVirtualMachineConfigurati
 //
 // This is only supported on macOS 12 and newer. Older versions do nothing.
 func (v *VirtualMachineConfiguration) SetDirectorySharingDevicesVirtualMachineConfiguration(cs []DirectorySharingDeviceConfiguration) {
-	if macosMajorVersionLessThan(12) {
+	if err := macOSAvailable(12); err != nil {
 		return
 	}
 	ptrs := make([]objc.NSObject, len(cs))
@@ -194,7 +194,7 @@ func (v *VirtualMachineConfiguration) SetDirectorySharingDevicesVirtualMachineCo
 //
 // This is only supported on macOS 12 and newer. Older versions do nothing.
 func (v *VirtualMachineConfiguration) SetPlatformVirtualMachineConfiguration(c PlatformConfiguration) {
-	if macosMajorVersionLessThan(12) {
+	if err := macOSAvailable(12); err != nil {
 		return
 	}
 	C.setPlatformVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(c))
@@ -204,7 +204,7 @@ func (v *VirtualMachineConfiguration) SetPlatformVirtualMachineConfiguration(c P
 //
 // This is only supported on macOS 12 and newer. Older versions do nothing.
 func (v *VirtualMachineConfiguration) SetGraphicsDevicesVirtualMachineConfiguration(cs []GraphicsDeviceConfiguration) {
-	if macosMajorVersionLessThan(12) {
+	if err := macOSAvailable(12); err != nil {
 		return
 	}
 	ptrs := make([]objc.NSObject, len(cs))
@@ -219,7 +219,7 @@ func (v *VirtualMachineConfiguration) SetGraphicsDevicesVirtualMachineConfigurat
 //
 // This is only supported on macOS 12 and newer. Older versions do nothing.
 func (v *VirtualMachineConfiguration) SetPointingDevicesVirtualMachineConfiguration(cs []PointingDeviceConfiguration) {
-	if macosMajorVersionLessThan(12) {
+	if err := macOSAvailable(12); err != nil {
 		return
 	}
 	ptrs := make([]objc.NSObject, len(cs))
@@ -234,7 +234,7 @@ func (v *VirtualMachineConfiguration) SetPointingDevicesVirtualMachineConfigurat
 //
 // This is only supported on macOS 12 and newer. Older versions do nothing.
 func (v *VirtualMachineConfiguration) SetKeyboardsVirtualMachineConfiguration(cs []KeyboardConfiguration) {
-	if macosMajorVersionLessThan(12) {
+	if err := macOSAvailable(12); err != nil {
 		return
 	}
 	ptrs := make([]objc.NSObject, len(cs))
@@ -249,7 +249,7 @@ func (v *VirtualMachineConfiguration) SetKeyboardsVirtualMachineConfiguration(cs
 //
 // This is only supported on macOS 12 and newer. Older versions do nothing.
 func (v *VirtualMachineConfiguration) SetAudioDevicesVirtualMachineConfiguration(cs []AudioDeviceConfiguration) {
-	if macosMajorVersionLessThan(12) {
+	if err := macOSAvailable(12); err != nil {
 		return
 	}
 	ptrs := make([]objc.NSObject, len(cs))
@@ -264,7 +264,7 @@ func (v *VirtualMachineConfiguration) SetAudioDevicesVirtualMachineConfiguration
 //
 // This is only supported on macOS 13 and newer. Older versions do nothing.
 func (v *VirtualMachineConfiguration) SetConsoleDevicesVirtualMachineConfiguration(cs []ConsoleDeviceConfiguration) {
-	if macosMajorVersionLessThan(13) {
+	if err := macOSAvailable(13); err != nil {
 		return
 	}
 	ptrs := make([]objc.NSObject, len(cs))

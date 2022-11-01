@@ -35,11 +35,11 @@ var _ PointingDeviceConfiguration = (*MacTrackpadConfiguration)(nil)
 
 // NewMacTrackpadConfiguration creates a new MacTrackpadConfiguration.
 //
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func NewMacTrackpadConfiguration() (*MacTrackpadConfiguration, error) {
-	if macosMajorVersionLessThan(13) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(13); err != nil {
+		return nil, err
 	}
 	config := &MacTrackpadConfiguration{
 		pointer: objc.NewPointer(

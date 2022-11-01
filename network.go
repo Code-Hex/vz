@@ -55,11 +55,11 @@ var _ NetworkDeviceAttachment = (*NATNetworkDeviceAttachment)(nil)
 
 // NewNATNetworkDeviceAttachment creates a new NATNetworkDeviceAttachment.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewNATNetworkDeviceAttachment() (*NATNetworkDeviceAttachment, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	attachment := &NATNetworkDeviceAttachment{
@@ -91,11 +91,11 @@ var _ NetworkDeviceAttachment = (*BridgedNetworkDeviceAttachment)(nil)
 
 // NewBridgedNetworkDeviceAttachment creates a new BridgedNetworkDeviceAttachment with networkInterface.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewBridgedNetworkDeviceAttachment(networkInterface BridgedNetwork) (*BridgedNetworkDeviceAttachment, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	attachment := &BridgedNetworkDeviceAttachment{
@@ -130,11 +130,11 @@ var _ NetworkDeviceAttachment = (*FileHandleNetworkDeviceAttachment)(nil)
 //
 // file parameter is holding a connected datagram socket.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewFileHandleNetworkDeviceAttachment(file *os.File) (*FileHandleNetworkDeviceAttachment, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 	err := validateDatagramSocket(int(file.Fd()))
 	if err != nil {
@@ -189,11 +189,11 @@ func isAvailableDatagram(fd int) bool {
 // the value of SO_RCVBUF to be at least double the value of SO_SNDBUF, and for optimal performance, the
 // recommended value of SO_RCVBUF is four times the value of SO_SNDBUF.
 //
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func (f *FileHandleNetworkDeviceAttachment) SetMaximumTransmissionUnit(mtu int) error {
-	if macosMajorVersionLessThan(13) {
-		return ErrUnsupportedOSVersion
+	if err := macOSAvailable(13); err != nil {
+		return err
 	}
 	C.setMaximumTransmissionUnitVZFileHandleNetworkDeviceAttachment(
 		objc.Ptr(f),
@@ -235,11 +235,11 @@ type VirtioNetworkDeviceConfiguration struct {
 
 // NewVirtioNetworkDeviceConfiguration creates a new VirtioNetworkDeviceConfiguration with NetworkDeviceAttachment.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) (*VirtioNetworkDeviceConfiguration, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	config := newVirtioNetworkDeviceConfiguration(
@@ -271,11 +271,11 @@ type MACAddress struct {
 
 // NewMACAddress creates a new MACAddress with net.HardwareAddr (MAC address).
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewMACAddress(macAddr net.HardwareAddr) (*MACAddress, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	macAddrChar := charWithGoString(macAddr.String())
@@ -293,11 +293,11 @@ func NewMACAddress(macAddr net.HardwareAddr) (*MACAddress, error) {
 
 // NewRandomLocallyAdministeredMACAddress creates a valid, random, unicast, locally administered address.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewRandomLocallyAdministeredMACAddress() (*MACAddress, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	ma := &MACAddress{

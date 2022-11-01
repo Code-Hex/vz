@@ -2,7 +2,10 @@ package vz
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 	"sync"
+	"syscall"
 	"testing"
 )
 
@@ -11,14 +14,14 @@ type nopDoer struct{}
 func (*nopDoer) Do(func()) {}
 
 func TestAvailableVersion(t *testing.T) {
-	majorVersionOnce = &nopDoer{}
+	majorMinorVersionOnce = &nopDoer{}
 	defer func() {
-		majorVersion = 0
-		majorVersionOnce = &sync.Once{}
+		majorMinorVersion = 0
+		majorMinorVersionOnce = &sync.Once{}
 	}()
 
 	t.Run("macOS 11", func(t *testing.T) {
-		majorVersion = 10
+		majorMinorVersion = 10
 		cases := map[string]func() error{
 			"NewLinuxBootLoader": func() error {
 				_, err := NewLinuxBootLoader("")
@@ -102,7 +105,7 @@ func TestAvailableVersion(t *testing.T) {
 	})
 
 	t.Run("macOS 12", func(t *testing.T) {
-		majorVersion = 11
+		majorMinorVersion = 11
 		cases := map[string]func() error{
 			"NewVirtioSoundDeviceConfiguration": func() error {
 				_, err := NewVirtioSoundDeviceConfiguration()
@@ -158,4 +161,175 @@ func TestAvailableVersion(t *testing.T) {
 			}
 		}
 	})
+}
+
+func Test_fetchMajorMinorVersion(t *testing.T) {
+	tests := []struct {
+		name    string
+		sysctl  func(string) (string, error)
+		want    float64
+		wantErr bool
+	}{
+		{
+			name: "valid 12.0",
+			sysctl: func(s string) (string, error) {
+				return "12.0", nil
+			},
+			want:    12,
+			wantErr: false,
+		},
+		{
+			name: "valid 12.3",
+			sysctl: func(s string) (string, error) {
+				return "12.3", nil
+			},
+			want:    12.3,
+			wantErr: false,
+		},
+		{
+			name: "valid 12.3.1",
+			sysctl: func(s string) (string, error) {
+				return "12.3.1", nil
+			},
+			want:    12.3,
+			wantErr: false,
+		},
+		{
+			name: "invalid unknown",
+			sysctl: func(s string) (string, error) {
+				return "unknown", nil
+			},
+			want:    0,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sysctl = tt.sysctl
+			defer func() {
+				sysctl = syscall.Sysctl
+			}()
+
+			version, err := fetchMajorMinorVersion()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("fetchMajorMinorVersion() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if version != tt.want {
+				t.Errorf("want version %.3f but got %.3f", tt.want, version)
+			}
+		})
+	}
+}
+
+func Test_macOSBuildTargetAvailable(t *testing.T) {
+	maxAllowedVersionOnce = &nopDoer{}
+	defer func() {
+		maxAllowedVersionOnce = &sync.Once{}
+	}()
+
+	cases := []struct {
+		// version is specified only 11, 12, 12.3, 13
+		version           float64
+		maxAllowedVersion int
+		wantErr           bool
+		wantErrMsg        string
+	}{
+		{
+			version:           11,
+			maxAllowedVersion: 0, // undefined case
+			wantErr:           true,
+			wantErrMsg:        "undefined __MAC_OS_X_VERSION_MAX_ALLOWED",
+		},
+		{
+			version:           11,
+			maxAllowedVersion: 100000,
+			wantErr:           true,
+			wantErrMsg:        "for 11.0",
+		},
+		{
+			version:           11,
+			maxAllowedVersion: 110000,
+		},
+		{
+			version:           12,
+			maxAllowedVersion: 110000,
+			wantErr:           true,
+			wantErrMsg:        "for 12.0",
+		},
+		{
+			version:           12,
+			maxAllowedVersion: 120000,
+		},
+		{
+			version:           12,
+			maxAllowedVersion: 120100, // __MAC_12_1
+		},
+		{
+			version:           12,
+			maxAllowedVersion: 120200, // __MAC_12_2
+		},
+		{
+			version:           12,
+			maxAllowedVersion: 120300, // __MAC_12_3
+		},
+		{
+			version:           12,
+			maxAllowedVersion: 130000, // __MAC_13_0
+		},
+		{
+			version:           12.3,
+			maxAllowedVersion: 120000,
+			wantErr:           true,
+			wantErrMsg:        "for 12.3",
+		},
+		{
+			version:           12.3,
+			maxAllowedVersion: 120300, // __MAC_12_3
+		},
+		{
+			version:           12.3,
+			maxAllowedVersion: 130000, // __MAC_13_0
+		},
+		{
+			version:           13,
+			maxAllowedVersion: 120300,
+			wantErr:           true,
+			wantErrMsg:        "for 13.0",
+		},
+		{
+			version:           13,
+			maxAllowedVersion: 130000, // __MAC_13_0
+		},
+	}
+	for _, tc := range cases {
+		prefix := "valid"
+		if tc.wantErr {
+			prefix = "invalid"
+		}
+		name := fmt.Sprintf(
+			"%s maxAllowedVersion is %d and API target %.1f",
+			prefix,
+			tc.maxAllowedVersion,
+			tc.version,
+		)
+		t.Run(name, func(t *testing.T) {
+			tmp := maxAllowedVersion
+			defer func() { maxAllowedVersion = tmp }()
+			maxAllowedVersion = tc.maxAllowedVersion
+
+			err := macOSBuildTargetAvailable(tc.version)
+			if (err != nil) != tc.wantErr {
+				t.Fatalf("macOSBuildTargetAvailable(%.1f) error = %v, wantErr %v", tc.version, err, tc.wantErr)
+			}
+			if tc.wantErr {
+				got := err.Error()
+				if !strings.Contains(got, tc.wantErrMsg) {
+					t.Errorf("want msg %q but got %q", tc.wantErrMsg, got)
+				}
+				if !errors.Is(err, ErrBuildTargetOSVersion) {
+					t.Errorf("unexpected unwrap error: %v", err)
+				}
+			}
+		})
+	}
 }

@@ -47,11 +47,11 @@ type DiskImageStorageDeviceAttachment struct {
 // - diskPath is local file URL to the disk image in RAW format.
 // - readOnly if YES, the device attachment is read-only, otherwise the device can write data to the disk image.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewDiskImageStorageDeviceAttachment(diskPath string, readOnly bool) (*DiskImageStorageDeviceAttachment, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 	if _, err := os.Stat(diskPath); err != nil {
 		return nil, err
@@ -110,11 +110,11 @@ type VirtioBlockDeviceConfiguration struct {
 //
 // - attachment The storage device attachment. This defines how the virtualized device operates on the host side.
 //
-// This is only supported on macOS 11 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) (*VirtioBlockDeviceConfiguration, error) {
-	if macosMajorVersionLessThan(11) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
 	}
 
 	config := &VirtioBlockDeviceConfiguration{
@@ -148,11 +148,11 @@ type USBMassStorageDeviceConfiguration struct {
 // NewUSBMassStorageDeviceConfiguration initialize a USBMassStorageDeviceConfiguration
 // with a device attachment.
 //
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func NewUSBMassStorageDeviceConfiguration(attachment StorageDeviceAttachment) (*USBMassStorageDeviceConfiguration, error) {
-	if macosMajorVersionLessThan(13) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(13); err != nil {
+		return nil, err
 	}
 	usbMass := &USBMassStorageDeviceConfiguration{
 		pointer: objc.NewPointer(

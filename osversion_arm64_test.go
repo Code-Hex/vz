@@ -11,13 +11,13 @@ import (
 )
 
 func TestAvailableVersionArm64(t *testing.T) {
-	majorVersionOnce = &nopDoer{}
+	majorMinorVersionOnce = &nopDoer{}
 	defer func() {
-		majorVersion = 0
-		majorVersionOnce = &sync.Once{}
+		majorMinorVersion = 0
+		majorMinorVersionOnce = &sync.Once{}
 	}()
 	t.Run("macOS 12", func(t *testing.T) {
-		majorVersion = 11
+		majorMinorVersion = 11
 		cases := map[string]func() error{
 			"NewMacOSBootLoader": func() error {
 				_, err := NewMacOSBootLoader()

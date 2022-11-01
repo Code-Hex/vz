@@ -44,11 +44,11 @@ var _ PlatformConfiguration = (*GenericPlatformConfiguration)(nil)
 
 // NewGenericPlatformConfiguration creates a new generic platform configuration.
 //
-// This is only supported on macOS 12 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
 func NewGenericPlatformConfiguration(opts ...GenericPlatformConfigurationOption) (*GenericPlatformConfiguration, error) {
-	if macosMajorVersionLessThan(12) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
 	}
 
 	platformConfig := &GenericPlatformConfiguration{
@@ -77,7 +77,7 @@ type GenericMachineIdentifier struct {
 
 // NewGenericMachineIdentifierWithDataPath initialize a new machine identifier described by the specified pathname.
 //
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func NewGenericMachineIdentifierWithDataPath(pathname string) (*GenericMachineIdentifier, error) {
 	b, err := os.ReadFile(pathname)
@@ -89,11 +89,11 @@ func NewGenericMachineIdentifierWithDataPath(pathname string) (*GenericMachineId
 
 // NewGenericMachineIdentifierWithData initialize a new machine identifier described by the specified data representation.
 //
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func NewGenericMachineIdentifierWithData(b []byte) (*GenericMachineIdentifier, error) {
-	if macosMajorVersionLessThan(13) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(13); err != nil {
+		return nil, err
 	}
 
 	ptr := C.newVZGenericMachineIdentifierWithBytes(
@@ -112,11 +112,11 @@ func NewGenericMachineIdentifierWithData(b []byte) (*GenericMachineIdentifier, e
 // DataRepresentation method.
 // The identifier can then be recreated with NewGenericMachineIdentifierWithData function from the binary representation.
 //
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func NewGenericMachineIdentifier() (*GenericMachineIdentifier, error) {
-	if macosMajorVersionLessThan(13) {
-		return nil, ErrUnsupportedOSVersion
+	if err := macOSAvailable(13); err != nil {
+		return nil, err
 	}
 	return newGenericMachineIdentifier(C.newVZGenericMachineIdentifier()), nil
 }
@@ -140,12 +140,12 @@ type GenericPlatformConfigurationOption func(*GenericPlatformConfiguration) erro
 
 // WithGenericMachineIdentifier is an option to create a new GenericPlatformConfiguration.
 //
-// This is only supported on macOS 13 and newer, ErrUnsupportedOSVersion will
+// This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
 func WithGenericMachineIdentifier(m *GenericMachineIdentifier) GenericPlatformConfigurationOption {
 	return func(mpc *GenericPlatformConfiguration) error {
-		if macosMajorVersionLessThan(13) {
-			return ErrUnsupportedOSVersion
+		if err := macOSAvailable(13); err != nil {
+			return err
 		}
 		mpc.machineIdentifier = m
 		C.setMachineIdentifierVZGenericPlatformConfiguration(objc.Ptr(mpc), objc.Ptr(m))

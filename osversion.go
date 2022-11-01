@@ -1,37 +1,111 @@
 package vz
 
+/*
+#cgo darwin CFLAGS: -x objective-c -fno-objc-arc
+#cgo darwin LDFLAGS: -lobjc -framework Foundation
+# include "virtualization_helper.h"
+*/
+import "C"
 import (
+	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"sync"
 	"syscall"
+
+	"golang.org/x/mod/semver"
 )
 
-func macosMajorVersionLessThan(major int) bool {
-	return macOSMajorVersion() < major
+var (
+	// ErrUnsupportedOSVersion is returned when calling a method which is only
+	// available in newer macOS versions.
+	ErrUnsupportedOSVersion = errors.New("unsupported macOS version")
+
+	// ErrBuildTargetOSVersion indicates that the API is available but the
+	// running program has disabled it.
+	ErrBuildTargetOSVersion = errors.New("unsupported build target macOS version")
+)
+
+func macOSAvailable(version float64) error {
+	if macOSMajorMinorVersion() < version {
+		return ErrUnsupportedOSVersion
+	}
+	return macOSBuildTargetAvailable(version)
 }
 
 var (
-	majorVersion     int
-	majorVersionOnce interface{ Do(func()) } = &sync.Once{}
+	majorMinorVersion     float64
+	majorMinorVersionOnce interface{ Do(func()) } = &sync.Once{}
+
+	// This can be replaced in the test code to enable mock.
+	// It will not be changed in production.
+	sysctl = syscall.Sysctl
 )
 
-// This can be replaced in the test code to enable mock.
-// It will not be changed in production.
-var fetchMajorVersion = func() {
-	osver, err := syscall.Sysctl("kern.osproductversion")
+func fetchMajorMinorVersion() (float64, error) {
+	osver, err := sysctl("kern.osproductversion")
 	if err != nil {
-		panic(err)
+		return 0, err
 	}
-	osverArray := strings.Split(osver, ".")
-	major, err := strconv.Atoi(osverArray[0])
+	prefix := "v"
+	majorMinor := strings.TrimPrefix(semver.MajorMinor(prefix+osver), prefix)
+	version, err := strconv.ParseFloat(majorMinor, 64)
 	if err != nil {
-		panic(err)
+		return 0, err
 	}
-	majorVersion = major
+	return version, nil
 }
 
-func macOSMajorVersion() int {
-	majorVersionOnce.Do(fetchMajorVersion)
-	return majorVersion
+func macOSMajorMinorVersion() float64 {
+	majorMinorVersionOnce.Do(func() {
+		version, err := fetchMajorMinorVersion()
+		if err != nil {
+			panic(err)
+		}
+		majorMinorVersion = version
+	})
+	return majorMinorVersion
+}
+
+var (
+	maxAllowedVersion     int
+	maxAllowedVersionOnce interface{ Do(func()) } = &sync.Once{}
+
+	getMaxAllowedVersion = func() int {
+		return int(C.mac_os_x_version_max_allowed())
+	}
+)
+
+func fetchMaxAllowedVersion() int {
+	maxAllowedVersionOnce.Do(func() {
+		maxAllowedVersion = getMaxAllowedVersion()
+	})
+	return maxAllowedVersion
+}
+
+// macOSBuildTargetAvailable checks whether the API available in a given version has been compiled.
+func macOSBuildTargetAvailable(version float64) error {
+	allowedVersion := fetchMaxAllowedVersion()
+	if allowedVersion == 0 {
+		return fmt.Errorf("undefined __MAC_OS_X_VERSION_MAX_ALLOWED: %w", ErrBuildTargetOSVersion)
+	}
+
+	// FIXME(codehex): smart way
+	// This list from AvailabilityVersions.h
+	var target int
+	switch version {
+	case 11:
+		target = 110000 // __MAC_11_0
+	case 12:
+		target = 120000 // __MAC_12_0
+	case 12.3:
+		target = 120300 // __MAC_12_3
+	case 13:
+		target = 130000 // __MAC_13_0
+	}
+	if allowedVersion < target {
+		return fmt.Errorf("%w for %.1f", ErrBuildTargetOSVersion, version)
+	}
+	return nil
 }

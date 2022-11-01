@@ -3,6 +3,7 @@ package vz
 import (
 	"errors"
 	"sync"
+	"syscall"
 	"testing"
 )
 
@@ -158,4 +159,54 @@ func TestAvailableVersion(t *testing.T) {
 			}
 		}
 	})
+}
+
+func Test_fetchMajorVersion(t *testing.T) {
+	tests := []struct {
+		name    string
+		sysctl  func(string) (string, error)
+		want    float64
+		wantErr bool
+	}{
+		{
+			name: "valid 12.0",
+			sysctl: func(s string) (string, error) {
+				return "12.0", nil
+			},
+			want:    12,
+			wantErr: false,
+		},
+		{
+			name: "valid 12.3",
+			sysctl: func(s string) (string, error) {
+				return "12.3", nil
+			},
+			want:    12.3,
+			wantErr: false,
+		},
+		{
+			name: "invalid unknown",
+			sysctl: func(s string) (string, error) {
+				return "unknown", nil
+			},
+			want:    0,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sysctl = tt.sysctl
+			defer func() {
+				sysctl = syscall.Sysctl
+			}()
+
+			version, err := fetchMajorVersion()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("fetchMajorVersion() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if version != tt.want {
+				t.Errorf("want version %.3f but got %.3f", tt.want, version)
+			}
+		})
+	}
 }

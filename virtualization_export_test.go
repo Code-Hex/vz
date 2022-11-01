@@ -1,5 +1,5 @@
 package vz
 
-func MacosMajorVersionLessThan(version int) bool {
+func MacosMajorVersionLessThan(version float64) bool {
 	return macosMajorVersionLessThan(version)
 }

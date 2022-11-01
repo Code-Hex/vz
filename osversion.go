@@ -7,31 +7,39 @@ import (
 	"syscall"
 )
 
-func macosMajorVersionLessThan(major int) bool {
+func macosMajorVersionLessThan(major float64) bool {
 	return macOSMajorVersion() < major
 }
 
 var (
-	majorVersion     int
+	majorVersion     float64
 	majorVersionOnce interface{ Do(func()) } = &sync.Once{}
+
+	// This can be replaced in the test code to enable mock.
+	// It will not be changed in production.
+	sysctl = syscall.Sysctl
 )
 
-// This can be replaced in the test code to enable mock.
-// It will not be changed in production.
-var fetchMajorVersion = func() {
-	osver, err := syscall.Sysctl("kern.osproductversion")
+func fetchMajorVersion() (float64, error) {
+	osver, err := sysctl("kern.osproductversion")
 	if err != nil {
-		panic(err)
+		return 0, err
 	}
-	osverArray := strings.Split(osver, ".")
-	major, err := strconv.Atoi(osverArray[0])
+	osverArray := strings.SplitAfterN(osver, ".", 1)
+	version, err := strconv.ParseFloat(osverArray[0], 64)
 	if err != nil {
-		panic(err)
+		return 0, err
 	}
-	majorVersion = major
+	return version, nil
 }
 
-func macOSMajorVersion() int {
-	majorVersionOnce.Do(fetchMajorVersion)
+func macOSMajorVersion() float64 {
+	majorVersionOnce.Do(func() {
+		version, err := fetchMajorVersion()
+		if err != nil {
+			panic(err)
+		}
+		majorVersion = version
+	})
 	return majorVersion
 }

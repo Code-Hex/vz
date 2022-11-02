@@ -8,8 +8,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
-
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
@@ -53,7 +51,7 @@ func NewVirtioSoundDeviceConfiguration() (*VirtioSoundDeviceConfiguration, error
 			C.newVZVirtioSoundDeviceConfiguration(),
 		),
 	}
-	runtime.SetFinalizer(config, func(self *VirtioSoundDeviceConfiguration) {
+	objc.SetFinalizer(config, func(self *VirtioSoundDeviceConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil
@@ -105,7 +103,7 @@ func NewVirtioSoundDeviceHostInputStreamConfiguration() (*VirtioSoundDeviceHostI
 			C.newVZVirtioSoundDeviceHostInputStreamConfiguration(),
 		),
 	}
-	runtime.SetFinalizer(config, func(self *VirtioSoundDeviceHostInputStreamConfiguration) {
+	objc.SetFinalizer(config, func(self *VirtioSoundDeviceHostInputStreamConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil
@@ -136,7 +134,7 @@ func NewVirtioSoundDeviceHostOutputStreamConfiguration() (*VirtioSoundDeviceHost
 			C.newVZVirtioSoundDeviceHostOutputStreamConfiguration(),
 		),
 	}
-	runtime.SetFinalizer(config, func(self *VirtioSoundDeviceHostOutputStreamConfiguration) {
+	objc.SetFinalizer(config, func(self *VirtioSoundDeviceHostOutputStreamConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil

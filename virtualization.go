@@ -9,7 +9,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
 	"runtime/cgo"
 	"sync"
 	"unsafe"
@@ -125,7 +124,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 		status:        status,
 	}
 
-	runtime.SetFinalizer(v, func(self *VirtualMachine) {
+	objc.SetFinalizer(v, func(self *VirtualMachine) {
 		self.status.Delete()
 		objc.ReleaseDispatch(self.dispatchQueue)
 		objc.Release(self)

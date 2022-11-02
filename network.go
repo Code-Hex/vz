@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"runtime"
 	"syscall"
 	"unsafe"
 
@@ -65,7 +64,7 @@ func NewNATNetworkDeviceAttachment() (*NATNetworkDeviceAttachment, error) {
 	attachment := &NATNetworkDeviceAttachment{
 		pointer: objc.NewPointer(C.newVZNATNetworkDeviceAttachment()),
 	}
-	runtime.SetFinalizer(attachment, func(self *NATNetworkDeviceAttachment) {
+	objc.SetFinalizer(attachment, func(self *NATNetworkDeviceAttachment) {
 		objc.Release(self)
 	})
 	return attachment, nil
@@ -105,7 +104,7 @@ func NewBridgedNetworkDeviceAttachment(networkInterface BridgedNetwork) (*Bridge
 			),
 		),
 	}
-	runtime.SetFinalizer(attachment, func(self *BridgedNetworkDeviceAttachment) {
+	objc.SetFinalizer(attachment, func(self *BridgedNetworkDeviceAttachment) {
 		objc.Release(self)
 	})
 	return attachment, nil
@@ -149,7 +148,7 @@ func NewFileHandleNetworkDeviceAttachment(file *os.File) (*FileHandleNetworkDevi
 		),
 		mtu: 1500, // The default MTU is 1500.
 	}
-	runtime.SetFinalizer(attachment, func(self *FileHandleNetworkDeviceAttachment) {
+	objc.SetFinalizer(attachment, func(self *FileHandleNetworkDeviceAttachment) {
 		objc.Release(self)
 	})
 	return attachment, nil
@@ -247,7 +246,7 @@ func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) (*V
 			objc.Ptr(attachment),
 		),
 	)
-	runtime.SetFinalizer(config, func(self *VirtioNetworkDeviceConfiguration) {
+	objc.SetFinalizer(config, func(self *VirtioNetworkDeviceConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil
@@ -285,7 +284,7 @@ func NewMACAddress(macAddr net.HardwareAddr) (*MACAddress, error) {
 			C.newVZMACAddress(macAddrChar.CString()),
 		),
 	}
-	runtime.SetFinalizer(ma, func(self *MACAddress) {
+	objc.SetFinalizer(ma, func(self *MACAddress) {
 		objc.Release(self)
 	})
 	return ma, nil
@@ -305,7 +304,7 @@ func NewRandomLocallyAdministeredMACAddress() (*MACAddress, error) {
 			C.newRandomLocallyAdministeredVZMACAddress(),
 		),
 	}
-	runtime.SetFinalizer(ma, func(self *MACAddress) {
+	objc.SetFinalizer(ma, func(self *MACAddress) {
 		objc.Release(self)
 	})
 	return ma, nil

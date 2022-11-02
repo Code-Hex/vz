@@ -8,7 +8,6 @@ package vz
 import "C"
 import (
 	"os"
-	"runtime"
 
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
@@ -58,7 +57,7 @@ func NewFileHandleSerialPortAttachment(read, write *os.File) (*FileHandleSerialP
 			),
 		),
 	}
-	runtime.SetFinalizer(attachment, func(self *FileHandleSerialPortAttachment) {
+	objc.SetFinalizer(attachment, func(self *FileHandleSerialPortAttachment) {
 		objc.Release(self)
 	})
 	return attachment, nil
@@ -107,7 +106,7 @@ func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPor
 	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
 	}
-	runtime.SetFinalizer(attachment, func(self *FileSerialPortAttachment) {
+	objc.SetFinalizer(attachment, func(self *FileSerialPortAttachment) {
 		objc.Release(self)
 	})
 	return attachment, nil
@@ -138,7 +137,7 @@ func NewVirtioConsoleDeviceSerialPortConfiguration(attachment SerialPortAttachme
 			),
 		),
 	}
-	runtime.SetFinalizer(config, func(self *VirtioConsoleDeviceSerialPortConfiguration) {
+	objc.SetFinalizer(config, func(self *VirtioConsoleDeviceSerialPortConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil

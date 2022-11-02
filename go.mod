@@ -1,6 +1,6 @@
 module github.com/Code-Hex/vz/v2
 
-go 1.17
+go 1.19
 
 require (
 	golang.org/x/crypto v0.1.0

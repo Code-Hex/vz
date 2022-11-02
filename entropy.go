@@ -7,8 +7,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
-
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
@@ -35,7 +33,7 @@ func NewVirtioEntropyDeviceConfiguration() (*VirtioEntropyDeviceConfiguration, e
 			C.newVZVirtioEntropyDeviceConfiguration(),
 		),
 	}
-	runtime.SetFinalizer(config, func(self *VirtioEntropyDeviceConfiguration) {
+	objc.SetFinalizer(config, func(self *VirtioEntropyDeviceConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil

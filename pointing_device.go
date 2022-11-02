@@ -8,8 +8,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
-
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
@@ -47,7 +45,7 @@ func NewUSBScreenCoordinatePointingDeviceConfiguration() (*USBScreenCoordinatePo
 			C.newVZUSBScreenCoordinatePointingDeviceConfiguration(),
 		),
 	}
-	runtime.SetFinalizer(config, func(self *USBScreenCoordinatePointingDeviceConfiguration) {
+	objc.SetFinalizer(config, func(self *USBScreenCoordinatePointingDeviceConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil

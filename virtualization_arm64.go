@@ -17,7 +17,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"runtime"
 	"runtime/cgo"
 	"sync"
 	"sync/atomic"
@@ -78,7 +77,7 @@ func NewMacHardwareModelWithData(b []byte) (*MacHardwareModel, error) {
 		C.int(len(b)),
 	)
 	ret := newMacHardwareModel(ptr)
-	runtime.SetFinalizer(ret, func(self *MacHardwareModel) {
+	objc.SetFinalizer(ret, func(self *MacHardwareModel) {
 		objc.Release(self)
 	})
 	return ret, nil
@@ -497,7 +496,7 @@ func NewMacOSInstaller(vm *VirtualMachine, restoreImageIpsw string) (*MacOSInsta
 		doneCh: make(chan struct{}),
 	}
 	ret.setFractionCompleted(0)
-	runtime.SetFinalizer(ret, func(self *MacOSInstaller) {
+	objc.SetFinalizer(ret, func(self *MacOSInstaller) {
 		objc.Release(self.observerPointer)
 		objc.Release(self)
 	})

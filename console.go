@@ -7,7 +7,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v2/internal/objc"
@@ -49,7 +48,7 @@ func NewVirtioConsoleDeviceConfiguration() (*VirtioConsoleDeviceConfiguration, e
 	}
 	config.portsPtr = C.portsVZVirtioConsoleDeviceConfiguration(objc.Ptr(config))
 
-	runtime.SetFinalizer(config, func(self *VirtioConsoleDeviceConfiguration) {
+	objc.SetFinalizer(config, func(self *VirtioConsoleDeviceConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil
@@ -156,7 +155,7 @@ func NewVirtioConsolePortConfiguration(opts ...NewVirtioConsolePortConfiguration
 	for _, optFunc := range opts {
 		optFunc(vcpc)
 	}
-	runtime.SetFinalizer(vcpc, func(self *VirtioConsolePortConfiguration) {
+	objc.SetFinalizer(vcpc, func(self *VirtioConsolePortConfiguration) {
 		objc.Release(self)
 	})
 	return vcpc, nil

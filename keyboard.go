@@ -8,8 +8,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
-
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
@@ -44,7 +42,7 @@ func NewUSBKeyboardConfiguration() (*USBKeyboardConfiguration, error) {
 	config := &USBKeyboardConfiguration{
 		pointer: objc.NewPointer(C.newVZUSBKeyboardConfiguration()),
 	}
-	runtime.SetFinalizer(config, func(self *USBKeyboardConfiguration) {
+	objc.SetFinalizer(config, func(self *USBKeyboardConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil

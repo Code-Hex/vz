@@ -7,8 +7,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
-
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
@@ -51,7 +49,7 @@ func NewVirtioGraphicsDeviceConfiguration() (*VirtioGraphicsDeviceConfiguration,
 			C.newVZVirtioGraphicsDeviceConfiguration(),
 		),
 	}
-	runtime.SetFinalizer(graphicsConfiguration, func(self *VirtioGraphicsDeviceConfiguration) {
+	objc.SetFinalizer(graphicsConfiguration, func(self *VirtioGraphicsDeviceConfiguration) {
 		objc.Release(self)
 	})
 	return graphicsConfiguration, nil
@@ -93,7 +91,7 @@ func NewVirtioGraphicsScanoutConfiguration(widthInPixels int64, heightInPixels i
 			),
 		),
 	}
-	runtime.SetFinalizer(graphicsScanoutConfiguration, func(self *VirtioGraphicsScanoutConfiguration) {
+	objc.SetFinalizer(graphicsScanoutConfiguration, func(self *VirtioGraphicsScanoutConfiguration) {
 		objc.Release(self)
 	})
 	return graphicsScanoutConfiguration, nil

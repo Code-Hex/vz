@@ -10,7 +10,6 @@ package vz
 import "C"
 import (
 	"os"
-	"runtime"
 
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
@@ -74,7 +73,7 @@ func NewDiskImageStorageDeviceAttachment(diskPath string, readOnly bool) (*DiskI
 	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
 	}
-	runtime.SetFinalizer(attachment, func(self *DiskImageStorageDeviceAttachment) {
+	objc.SetFinalizer(attachment, func(self *DiskImageStorageDeviceAttachment) {
 		objc.Release(self)
 	})
 	return attachment, nil
@@ -127,7 +126,7 @@ func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) (*Vir
 			),
 		),
 	}
-	runtime.SetFinalizer(config, func(self *VirtioBlockDeviceConfiguration) {
+	objc.SetFinalizer(config, func(self *VirtioBlockDeviceConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil
@@ -205,7 +204,7 @@ func NewUSBMassStorageDeviceConfiguration(attachment StorageDeviceAttachment) (*
 		),
 		attachment: attachment,
 	}
-	runtime.SetFinalizer(usbMass, func(self *USBMassStorageDeviceConfiguration) {
+	objc.SetFinalizer(usbMass, func(self *USBMassStorageDeviceConfiguration) {
 		objc.Release(self)
 	})
 	return usbMass, nil

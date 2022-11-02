@@ -54,7 +54,7 @@ func NewVirtioSocketDeviceConfiguration() (*VirtioSocketDeviceConfiguration, err
 
 	config := newVirtioSocketDeviceConfiguration(C.newVZVirtioSocketDeviceConfiguration())
 
-	runtime.SetFinalizer(config, func(self *VirtioSocketDeviceConfiguration) {
+	objc.SetFinalizer(config, func(self *VirtioSocketDeviceConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil

@@ -10,8 +10,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
-
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
@@ -38,7 +36,7 @@ func NewMacGraphicsDeviceConfiguration() (*MacGraphicsDeviceConfiguration, error
 			C.newVZMacGraphicsDeviceConfiguration(),
 		),
 	}
-	runtime.SetFinalizer(graphicsConfiguration, func(self *MacGraphicsDeviceConfiguration) {
+	objc.SetFinalizer(graphicsConfiguration, func(self *MacGraphicsDeviceConfiguration) {
 		objc.Release(self)
 	})
 	return graphicsConfiguration, nil
@@ -79,7 +77,7 @@ func NewMacGraphicsDisplayConfiguration(widthInPixels int64, heightInPixels int6
 			),
 		),
 	}
-	runtime.SetFinalizer(graphicsDisplayConfiguration, func(self *MacGraphicsDisplayConfiguration) {
+	objc.SetFinalizer(graphicsDisplayConfiguration, func(self *MacGraphicsDisplayConfiguration) {
 		objc.Release(self)
 	})
 	return graphicsDisplayConfiguration, nil

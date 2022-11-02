@@ -10,8 +10,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
-
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
@@ -46,7 +44,7 @@ func NewMacTrackpadConfiguration() (*MacTrackpadConfiguration, error) {
 			C.newVZMacTrackpadConfiguration(),
 		),
 	}
-	runtime.SetFinalizer(config, func(self *MacTrackpadConfiguration) {
+	objc.SetFinalizer(config, func(self *MacTrackpadConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil

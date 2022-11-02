@@ -10,7 +10,6 @@ import "C"
 import (
 	"fmt"
 	"os"
-	"runtime"
 
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
@@ -97,7 +96,7 @@ func NewLinuxBootLoader(vmlinuz string, opts ...LinuxBootLoaderOption) (*LinuxBo
 			C.newVZLinuxBootLoader(vmlinuzPath.CString()),
 		),
 	}
-	runtime.SetFinalizer(bootLoader, func(self *LinuxBootLoader) {
+	objc.SetFinalizer(bootLoader, func(self *LinuxBootLoader) {
 		objc.Release(self)
 	})
 	for _, opt := range opts {
@@ -147,7 +146,7 @@ func NewEFIBootLoader(opts ...NewEFIBootLoaderOption) (*EFIBootLoader, error) {
 	for _, optFunc := range opts {
 		optFunc(bootLoader)
 	}
-	runtime.SetFinalizer(bootLoader, func(self *EFIBootLoader) {
+	objc.SetFinalizer(bootLoader, func(self *EFIBootLoader) {
 		objc.Release(self)
 	})
 	return bootLoader, nil
@@ -217,7 +216,7 @@ func NewEFIVariableStore(path string, opts ...NewEFIVariableStoreOption) (*EFIVa
 			C.newVZEFIVariableStorePath(cpath.CString()),
 		)
 	}
-	runtime.SetFinalizer(variableStore, func(self *EFIVariableStore) {
+	objc.SetFinalizer(variableStore, func(self *EFIVariableStore) {
 		objc.Release(self)
 	})
 	return variableStore, nil

@@ -10,7 +10,6 @@ package vz
 import "C"
 import (
 	"os"
-	"runtime"
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v2/internal/objc"
@@ -62,7 +61,7 @@ func NewGenericPlatformConfiguration(opts ...GenericPlatformConfigurationOption)
 			return nil, err
 		}
 	}
-	runtime.SetFinalizer(platformConfig, func(self *GenericPlatformConfiguration) {
+	objc.SetFinalizer(platformConfig, func(self *GenericPlatformConfiguration) {
 		objc.Release(self)
 	})
 	return platformConfig, nil

@@ -7,8 +7,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
-
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
@@ -48,7 +46,7 @@ func NewVirtioTraditionalMemoryBalloonDeviceConfiguration() (*VirtioTraditionalM
 			C.newVZVirtioTraditionalMemoryBalloonDeviceConfiguration(),
 		),
 	}
-	runtime.SetFinalizer(config, func(self *VirtioTraditionalMemoryBalloonDeviceConfiguration) {
+	objc.SetFinalizer(config, func(self *VirtioTraditionalMemoryBalloonDeviceConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil

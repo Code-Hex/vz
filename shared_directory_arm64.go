@@ -10,7 +10,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
 	"runtime/cgo"
 	"unsafe"
 
@@ -74,7 +73,7 @@ func NewLinuxRosettaDirectoryShare() (*LinuxRosettaDirectoryShare, error) {
 	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
 	}
-	runtime.SetFinalizer(ds, func(self *LinuxRosettaDirectoryShare) {
+	objc.SetFinalizer(ds, func(self *LinuxRosettaDirectoryShare) {
 		objc.Release(self)
 	})
 	return ds, nil

@@ -51,7 +51,7 @@ func NewGDBDebugStubConfiguration(port uint32) (*GDBDebugStubConfiguration, erro
 			C.newVZGDBDebugStubConfiguration(C.uint32_t(port)),
 		),
 	}
-	runtime.SetFinalizer(config, func(self *GDBDebugStubConfiguration) {
+	objc.SetFinalizer(config, func(self *GDBDebugStubConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil

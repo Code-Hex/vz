@@ -7,8 +7,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
-
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
@@ -40,7 +38,7 @@ func NewSpiceAgentPortAttachment() (*SpiceAgentPortAttachment, error) {
 		),
 		enabledSharesClipboard: true,
 	}
-	runtime.SetFinalizer(spiceAgent, func(self *SpiceAgentPortAttachment) {
+	objc.SetFinalizer(spiceAgent, func(self *SpiceAgentPortAttachment) {
 		objc.Release(self)
 	})
 	return spiceAgent, nil

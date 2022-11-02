@@ -10,8 +10,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
-
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
@@ -85,7 +83,7 @@ func NewMacPlatformConfiguration(opts ...MacPlatformConfigurationOption) (*MacPl
 	for _, optFunc := range opts {
 		optFunc(platformConfig)
 	}
-	runtime.SetFinalizer(platformConfig, func(self *MacPlatformConfiguration) {
+	objc.SetFinalizer(platformConfig, func(self *MacPlatformConfiguration) {
 		objc.Release(self)
 	})
 	return platformConfig, nil

@@ -10,7 +10,6 @@ package vz
 import "C"
 import (
 	"os"
-	"runtime"
 
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
@@ -57,7 +56,7 @@ func NewVirtioFileSystemDeviceConfiguration(tag string) (*VirtioFileSystemDevice
 	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
 	}
-	runtime.SetFinalizer(fsdConfig, func(self *VirtioFileSystemDeviceConfiguration) {
+	objc.SetFinalizer(fsdConfig, func(self *VirtioFileSystemDeviceConfiguration) {
 		objc.Release(self)
 	})
 	return fsdConfig, nil
@@ -92,7 +91,7 @@ func NewSharedDirectory(dirPath string, readOnly bool) (*SharedDirectory, error)
 			C.newVZSharedDirectory(dirPathChar.CString(), C.bool(readOnly)),
 		),
 	}
-	runtime.SetFinalizer(sd, func(self *SharedDirectory) {
+	objc.SetFinalizer(sd, func(self *SharedDirectory) {
 		objc.Release(self)
 	})
 	return sd, nil
@@ -131,7 +130,7 @@ func NewSingleDirectoryShare(share *SharedDirectory) (*SingleDirectoryShare, err
 			C.newVZSingleDirectoryShare(objc.Ptr(share)),
 		),
 	}
-	runtime.SetFinalizer(config, func(self *SingleDirectoryShare) {
+	objc.SetFinalizer(config, func(self *SingleDirectoryShare) {
 		objc.Release(self)
 	})
 	return config, nil
@@ -166,7 +165,7 @@ func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) (*MultipleDir
 			C.newVZMultipleDirectoryShare(objc.Ptr(dict)),
 		),
 	}
-	runtime.SetFinalizer(config, func(self *MultipleDirectoryShare) {
+	objc.SetFinalizer(config, func(self *MultipleDirectoryShare) {
 		objc.Release(self)
 	})
 	return config, nil

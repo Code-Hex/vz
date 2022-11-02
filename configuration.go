@@ -9,8 +9,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
-
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
@@ -68,7 +66,7 @@ func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize 
 			),
 		),
 	}
-	runtime.SetFinalizer(config, func(self *VirtualMachineConfiguration) {
+	objc.SetFinalizer(config, func(self *VirtualMachineConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil

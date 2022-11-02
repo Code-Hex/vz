@@ -10,8 +10,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
-
 	"github.com/Code-Hex/vz/v2/internal/objc"
 )
 
@@ -38,7 +36,7 @@ func NewMacOSBootLoader() (*MacOSBootLoader, error) {
 			C.newVZMacOSBootLoader(),
 		),
 	}
-	runtime.SetFinalizer(bootLoader, func(self *MacOSBootLoader) {
+	objc.SetFinalizer(bootLoader, func(self *MacOSBootLoader) {
 		objc.Release(self)
 	})
 	return bootLoader, nil

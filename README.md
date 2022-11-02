@@ -7,16 +7,14 @@ vz provides the power of the Apple Virtualization.framework in Go. Put here is b
 
 > The Virtualization framework provides high-level APIs for creating and managing virtual machines (VM) on Apple silicon and Intel-based Mac computers. Use this framework to boot and run macOS or Linux-based operating systems in custom environments that you define. The framework supports the [Virtual I/O Device (VIRTIO)](https://docs.oasis-open.org/virtio/virtio/v1.1/csprd01/virtio-v1.1-csprd01.html) specification, which defines standard interfaces for many device types, including network, socket, serial port, storage, entropy, and memory-balloon devices.
 
-## USAGE
+## Usage
 
 Please see the [example](https://github.com/Code-Hex/vz/tree/main/example) directory.
 
-## REQUIREMENTS
+## Requirements
 
 - Higher or equal to macOS Big Sur (11.0.0).
 - Latest version of vz supports last two Go major [releases](https://go.dev/doc/devel/release) and might work with older versions.
-
-Deprecated older versions (v1, v2).
 
 ## Installation
 
@@ -25,6 +23,8 @@ Initialize your project by creating a folder and then running `go mod init githu
 ```
 $ go get github.com/Code-Hex/vz/v3
 ```
+
+Deprecated older versions (v1, v2).
 
 ## Feature Overview
 
@@ -40,7 +40,7 @@ $ go get github.com/Code-Hex/vz/v3
 - ✅ [Virtio Sockets](https://github.com/Code-Hex/vz/wiki/Sockets)
 - ✅ Less dependent (only under golang.org/x/*)
 
-## IMPORTANT
+## Important
 
 For binaries used in this package, you need to create an entitlements file like the one below and apply the following command.
 
@@ -89,6 +89,26 @@ If you want to build a binary that can use the API on all operating systems, mak
 You can check the version of the Xcode SDK available for each macOS on this site.
 
 https://xcodereleases.com/
+
+## Version compatibility check
+
+The package provides a mechanism for checking the availability of the respective API through error handling:
+
+```go
+bootLoader, err := vz.NewEFIBootLoader()
+if errors.Is(err, vz.ErrUnsupportedOSVersion) || errors.Is(err, ErrBuildTargetOSVersion) {
+  return fallbackBootLoader()
+}
+if err != nil {
+  return nil, err
+}
+return bootLoader, nil
+```
+
+There are two items to check.
+
+1. API is compatible with the version of macOS
+2. The binary was built with the API enabled
 
 ## Knowledge for the Apple Virtualization.framework
 

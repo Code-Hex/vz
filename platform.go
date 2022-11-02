@@ -12,7 +12,7 @@ import (
 	"os"
 	"unsafe"
 
-	"github.com/Code-Hex/vz/v2/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
 // PlatformConfiguration is an interface for a platform configuration.

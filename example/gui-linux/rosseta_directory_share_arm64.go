@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/Code-Hex/vz/v2"
+	"github.com/Code-Hex/vz/v3"
 	"github.com/Songmu/prompter"
 )
 

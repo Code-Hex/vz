@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Code-Hex/vz/v2"
+	"github.com/Code-Hex/vz/v3"
 	"golang.org/x/crypto/ssh"
 )
 

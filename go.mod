@@ -1,4 +1,4 @@
-module github.com/Code-Hex/vz/v2
+module github.com/Code-Hex/vz/v3
 
 go 1.19
 

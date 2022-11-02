@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/Code-Hex/vz/v2"
+	"github.com/Code-Hex/vz/v3"
 )
 
 func installMacOS(ctx context.Context) error {

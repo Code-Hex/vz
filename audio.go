@@ -8,7 +8,7 @@ package vz
 */
 import "C"
 import (
-	"github.com/Code-Hex/vz/v2/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
 // AudioDeviceConfiguration interface for an audio device configuration.

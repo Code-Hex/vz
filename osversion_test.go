@@ -168,7 +168,7 @@ func TestAvailableVersion(t *testing.T) {
 
 	t.Run("macOS 12.3", func(t *testing.T) {
 		if macOSBuildTargetAvailable(12.3) != nil {
-			t.Skip("disabled build target for macOS 13")
+			t.Skip("disabled build target for macOS 12.3")
 		}
 
 		majorMinorVersion = 12

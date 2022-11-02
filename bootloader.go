@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/Code-Hex/vz/v2/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
 // BootLoader is the interface of boot loader definitions.

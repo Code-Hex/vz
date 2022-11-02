@@ -7,7 +7,7 @@ package vz
 */
 import "C"
 import (
-	"github.com/Code-Hex/vz/v2/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
 // SpiceAgentPortAttachment is an attachment point that enables

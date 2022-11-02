@@ -14,7 +14,7 @@ import (
 	"syscall"
 	"unsafe"
 
-	"github.com/Code-Hex/vz/v2/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
 // BridgedNetwork defines a network interface that bridges a physical interface with a virtual machine.

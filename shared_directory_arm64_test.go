@@ -6,7 +6,7 @@ package vz_test
 import (
 	"testing"
 
-	"github.com/Code-Hex/vz/v2"
+	"github.com/Code-Hex/vz/v3"
 )
 
 func TestLinuxRosettaAvailabilityString(t *testing.T) {

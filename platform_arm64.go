@@ -10,7 +10,7 @@ package vz
 */
 import "C"
 import (
-	"github.com/Code-Hex/vz/v2/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
 // MacPlatformConfiguration is the platform configuration for booting macOS on Apple silicon.

@@ -22,8 +22,8 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	"github.com/Code-Hex/vz/v2/internal/objc"
-	"github.com/Code-Hex/vz/v2/internal/progress"
+	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/progress"
 )
 
 // WithStartUpFromMacOSRecovery is an option to specifiy whether to start up

@@ -64,7 +64,7 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/Code-Hex/vz/v2/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
 // pointer is a type alias which is able to use as embedded type and

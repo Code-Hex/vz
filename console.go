@@ -9,7 +9,7 @@ import "C"
 import (
 	"unsafe"
 
-	"github.com/Code-Hex/vz/v2/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
 // ConsoleDeviceConfiguration interface for an console device configuration.

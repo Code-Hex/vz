@@ -72,7 +72,7 @@ If you want to use [`VZBridgedNetworkDeviceAttachment`](https://developer.apple.
 
 If you compile using an older Xcode SDK, you will get the following warnings.
 
-This example warns that macOS 12.3 API and macOS 13 API are not available in the binary build. Running this binary on a modern OS (macOS 12.3 or macOS 13) means that these APIs are not available. This means these APIs are not available even if you are running this binary on a modern OS (macOS 12.3 or macOS 13). 
+This example warns that macOS 12.3 API and macOS 13 API are not available in the binary build. This means these APIs are not available even if you are running this binary on a modern OS (macOS 12.3 or macOS 13). 
 
 ```
 $ go build .

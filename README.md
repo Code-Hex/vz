@@ -96,7 +96,7 @@ The package provides a mechanism for checking the availability of the respective
 
 ```go
 bootLoader, err := vz.NewEFIBootLoader()
-if errors.Is(err, vz.ErrUnsupportedOSVersion) || errors.Is(err, ErrBuildTargetOSVersion) {
+if errors.Is(err, vz.ErrUnsupportedOSVersion) || errors.Is(err, vz.ErrBuildTargetOSVersion) {
   return fallbackBootLoader()
 }
 if err != nil {

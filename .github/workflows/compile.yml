@@ -40,11 +40,13 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
           cache: true
+      - name: vet
+        run: go vet ./...
       - name: Download Linux kernel
         run: make download_kernel
       - name: Unit Test
         run: make test
-      - name: Build
-        run: cd example/linux && make
-      - name: vet
-        run: go vet ./...
+      - name: Build Linux
+        run: make -C example/linux
+      - name: Build GUI Linux
+        run: make -C example/gui-linux

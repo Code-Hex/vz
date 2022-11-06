@@ -48,7 +48,5 @@ jobs:
         run: make test
       - name: Build Linux
         run: make -C example/linux
-      - name: Build macOS
-        run: make -C example/macOS
       - name: Build GUI Linux
         run: make -C example/gui-linux

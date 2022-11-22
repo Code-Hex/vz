@@ -356,6 +356,10 @@ func Test_macOSBuildTargetAvailable(t *testing.T) {
 		maxAllowedVersionOnce = &sync.Once{}
 	}()
 
+	wantErrMsgFor := func(version float64, maxAllowedVersion int) string {
+		return fmt.Sprintf("for %.1f (the binary was built with __MAC_OS_X_VERSION_MAX_ALLOWED=%d; needs recompilation)", version, maxAllowedVersion)
+	}
+
 	cases := []struct {
 		// version is specified only 11, 12, 12.3, 13
 		version           float64
@@ -373,7 +377,7 @@ func Test_macOSBuildTargetAvailable(t *testing.T) {
 			version:           11,
 			maxAllowedVersion: 100000,
 			wantErr:           true,
-			wantErrMsg:        "for 11.0",
+			wantErrMsg:        wantErrMsgFor(11, 100000),
 		},
 		{
 			version:           11,
@@ -383,7 +387,7 @@ func Test_macOSBuildTargetAvailable(t *testing.T) {
 			version:           12,
 			maxAllowedVersion: 110000,
 			wantErr:           true,
-			wantErrMsg:        "for 12.0",
+			wantErrMsg:        wantErrMsgFor(12, 110000),
 		},
 		{
 			version:           12,
@@ -409,7 +413,7 @@ func Test_macOSBuildTargetAvailable(t *testing.T) {
 			version:           12.3,
 			maxAllowedVersion: 120000,
 			wantErr:           true,
-			wantErrMsg:        "for 12.3",
+			wantErrMsg:        wantErrMsgFor(12.3, 120000),
 		},
 		{
 			version:           12.3,
@@ -423,7 +427,7 @@ func Test_macOSBuildTargetAvailable(t *testing.T) {
 			version:           13,
 			maxAllowedVersion: 120300,
 			wantErr:           true,
-			wantErrMsg:        "for 13.0",
+			wantErrMsg:        wantErrMsgFor(13, 120300),
 		},
 		{
 			version:           13,

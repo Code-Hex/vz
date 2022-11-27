@@ -44,5 +44,4 @@ void setKeyboardsVZVirtualMachineConfiguration(void *config,
 void setAudioDevicesVZVirtualMachineConfiguration(void *config,
     void *audioDevices);
 
-void sharedApplication();
 void startVirtualMachineWindow(void *machine, double width, double height);

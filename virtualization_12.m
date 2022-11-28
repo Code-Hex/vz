@@ -318,16 +318,12 @@ void *newVZUSBKeyboardConfiguration()
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
-void sharedApplication()
+void startVirtualMachineWindow(void *machine, double width, double height)
 {
     // Create a shared app instance.
     // This will initialize the global variable
     // 'NSApp' with the application instance.
     [VZApplication sharedApplication];
-}
-
-void startVirtualMachineWindow(void *machine, double width, double height)
-{
     if (@available(macOS 12, *)) {
         @autoreleasepool {
             AppDelegate *appDelegate = [[[AppDelegate alloc]

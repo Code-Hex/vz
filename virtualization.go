@@ -16,10 +16,6 @@ import (
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
-func init() {
-	C.sharedApplication()
-}
-
 // VirtualMachineState represents execution state of the virtual machine.
 //
 //go:generate stringer -type=VirtualMachineState

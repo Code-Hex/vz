@@ -4,6 +4,7 @@ package vz
 #cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
 #cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
 # include "virtualization_11.h"
+# include "virtualization_12.h"
 # include "virtualization_12_3.h"
 # include "virtualization_13.h"
 */
@@ -41,6 +42,28 @@ type DiskImageStorageDeviceAttachment struct {
 	*baseStorageDeviceAttachment
 }
 
+// DiskImageCachingMode describes the disk image caching mode.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzdiskimagecachingmode?language=objc
+type DiskImageCachingMode int
+
+const (
+	DiskImageCachingModeAutomatic DiskImageCachingMode = iota
+	DiskImageCachingModeUncached
+	DiskImageCachingModeCached
+)
+
+// DiskImageSynchronizationMode describes the disk image synchronization mode.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzdiskimagesynchronizationmode?language=objc
+type DiskImageSynchronizationMode int
+
+const (
+	DiskImageSynchronizationModeFull DiskImageSynchronizationMode = 1 + iota
+	DiskImageSynchronizationModeFsync
+	DiskImageSynchronizationModeNone
+)
+
 // NewDiskImageStorageDeviceAttachment initialize the attachment from a local file path.
 // Returns error is not nil, assigned with the error if the initialization failed.
 //
@@ -66,6 +89,48 @@ func NewDiskImageStorageDeviceAttachment(diskPath string, readOnly bool) (*DiskI
 			C.newVZDiskImageStorageDeviceAttachment(
 				diskPathChar.CString(),
 				C.bool(readOnly),
+				&nserrPtr,
+			),
+		),
+	}
+	if err := newNSError(nserrPtr); err != nil {
+		return nil, err
+	}
+	objc.SetFinalizer(attachment, func(self *DiskImageStorageDeviceAttachment) {
+		objc.Release(self)
+	})
+	return attachment, nil
+}
+
+// NewDiskImageStorageDeviceAttachmentWithCacheAndSync initialize the attachment from a local file path.
+// Returns error is not nil, assigned with the error if the initialization failed.
+//
+// - diskPath is local file URL to the disk image in RAW format.
+// - readOnly if YES, the device attachment is read-only, otherwise the device can write data to the disk image.
+// - cachingMode is one of the available DiskImageCachingMode options.
+// - syncMode is to define how the disk image synchronizes with the underlying storage when the guest operating system flushes data, described by one of the available DiskImageSynchronizationMode modes.
+//
+// This is only supported on macOS 12 and newer, error will
+// be returned on older versions.
+func NewDiskImageStorageDeviceAttachmentWithCacheAndSync(diskPath string, readOnly bool, cachingMode DiskImageCachingMode, syncMode DiskImageSynchronizationMode) (*DiskImageStorageDeviceAttachment, error) {
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
+	}
+	if _, err := os.Stat(diskPath); err != nil {
+		return nil, err
+	}
+
+	nserrPtr := newNSErrorAsNil()
+
+	diskPathChar := charWithGoString(diskPath)
+	defer diskPathChar.Free()
+	attachment := &DiskImageStorageDeviceAttachment{
+		pointer: objc.NewPointer(
+			C.newVZDiskImageStorageDeviceAttachmentWithCacheAndSyncMode(
+				diskPathChar.CString(),
+				C.bool(readOnly),
+				C.int(cachingMode),
+				C.int(syncMode),
 				&nserrPtr,
 			),
 		),

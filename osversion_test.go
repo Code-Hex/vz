@@ -155,6 +155,10 @@ func TestAvailableVersion(t *testing.T) {
 			"(*VirtualMachine).StartGraphicApplication": func() error {
 				return (*VirtualMachine)(nil).StartGraphicApplication(0, 0)
 			},
+			"NewDiskImageStorageDeviceAttachmentWithCacheAndSync": func() error {
+				_, err := NewDiskImageStorageDeviceAttachmentWithCacheAndSync("test", false, DiskImageCachingModeAutomatic, DiskImageSynchronizationModeFsync)
+				return err
+			},
 		}
 		for name, fn := range cases {
 			t.Run(name, func(t *testing.T) {

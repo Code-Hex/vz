@@ -211,6 +211,31 @@ void *newVZVirtioSoundDeviceHostOutputStreamConfiguration()
 }
 
 /*!
+ @abstract Initialize the attachment from a local file url.
+ @param diskPath Local file path to the disk image in RAW format.
+ @param readOnly If YES, the device attachment is read-only, otherwise the device can write data to the disk image.
+ @param cacheMode The caching mode from one of the available VZDiskImageCachingMode options.
+ @param syncMode How the disk image synchronizes with the underlying storage when the guest operating system flushes data, described by one of the available VZDiskImageSynchronizationMode modes.
+ @param error If not nil, assigned with the error if the initialization failed.
+ @return A VZDiskImageStorageDeviceAttachment on success. Nil otherwise and the error parameter is populated if set.
+ */
+void *newVZDiskImageStorageDeviceAttachmentWithCacheAndSyncMode(const char *diskPath, bool readOnly,  int cacheMode, int syncMode, void **error)
+{
+    if (@available(macOS 12, *)) {
+        NSString *diskPathNSString = [NSString stringWithUTF8String:diskPath];
+        NSURL *diskURL = [NSURL fileURLWithPath:diskPathNSString];
+        return [[VZDiskImageStorageDeviceAttachment alloc]
+            initWithURL:diskURL
+               readOnly:(BOOL)readOnly
+               cachingMode:(VZDiskImageCachingMode)cacheMode
+               synchronizationMode: (VZDiskImageSynchronizationMode)syncMode
+                  error:(NSError *_Nullable *_Nullable)error];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+/*!
  @abstract Initialize the VZSharedDirectory from the directory path and read only option.
  @param dirPath
     The directory path that will be share.

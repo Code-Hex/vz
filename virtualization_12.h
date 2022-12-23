@@ -21,6 +21,7 @@ void *newVZVirtioSoundDeviceHostInputStreamConfiguration(); // use in Go
 void *newVZVirtioSoundDeviceOutputStreamConfiguration();
 void *newVZVirtioSoundDeviceHostOutputStreamConfiguration(); // use in Go
 
+void *newVZDiskImageStorageDeviceAttachmentWithCacheAndSyncMode(const char *diskPath, bool readOnly, int cacheMode, int syncMode, void **error);
 void *newVZUSBScreenCoordinatePointingDeviceConfiguration();
 void *newVZUSBKeyboardConfiguration();
 void *newVZVirtioSoundDeviceConfiguration();

@@ -62,3 +62,39 @@ func TestBlockDeviceIdentifier(t *testing.T) {
 		t.Fatalf("want %q but got %q", want, got2)
 	}
 }
+
+func TestBlockDeviceWithCacheAndSyncMode(t *testing.T) {
+	if vz.Available(12) {
+		t.Skip("vz.NewDiskImageStorageDeviceAttachmentWithCacheAndSync is supported from macOS 12")
+	}
+
+	container := newVirtualizationMachine(t,
+		func(vmc *vz.VirtualMachineConfiguration) error {
+			dir := t.TempDir()
+			path := filepath.Join(dir, "disk.img")
+			if err := vz.CreateDiskImage(path, 512); err != nil {
+				t.Fatal(err)
+			}
+
+			attachment, err := vz.NewDiskImageStorageDeviceAttachmentWithCacheAndSync(path, false, vz.DiskImageCachingModeAutomatic, vz.DiskImageSynchronizationModeFsync)
+			if err != nil {
+				t.Fatal(err)
+			}
+			config, err := vz.NewVirtioBlockDeviceConfiguration(attachment)
+			if err != nil {
+				t.Fatal(err)
+			}
+			vmc.SetStorageDevicesVirtualMachineConfiguration([]vz.StorageDeviceConfiguration{
+				config,
+			})
+			return nil
+		},
+	)
+	defer container.Close()
+
+	vm := container.VirtualMachine
+
+	if got := vm.State(); vz.VirtualMachineStateRunning != got {
+		t.Fatalf("want state %v but got %v", vz.VirtualMachineStateRunning, got)
+	}
+}

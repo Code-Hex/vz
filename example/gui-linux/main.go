@@ -114,7 +114,7 @@ func createMainDiskImage(diskPath string) error {
 }
 
 func createBlockDeviceConfiguration(diskPath string) (*vz.VirtioBlockDeviceConfiguration, error) {
-	attachment, err := vz.NewDiskImageStorageDeviceAttachment(diskPath, false)
+	attachment, err := vz.NewDiskImageStorageDeviceAttachmentWithCacheAndSync(diskPath, false, vz.DiskImageCachingModeAutomatic, vz.DiskImageSynchronizationModeFsync)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a new disk image storage device attachment: %w", err)
 	}

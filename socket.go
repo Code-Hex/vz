@@ -13,7 +13,6 @@ import (
 	"runtime"
 	"runtime/cgo"
 	"sync"
-	"time"
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
@@ -258,7 +257,7 @@ func shouldAcceptNewConnectionHandler(cgoHandlerPtr, connPtr, devicePtr unsafe.P
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketconnection?language=objc
 type VirtioSocketConnection struct {
-	rawConn         net.Conn
+	net.Conn
 	destinationPort uint32
 	sourcePort      uint32
 }
@@ -274,49 +273,11 @@ func newVirtioSocketConnection(ptr unsafe.Pointer) (*VirtioSocketConnection, err
 		return nil, err
 	}
 	conn := &VirtioSocketConnection{
-		rawConn:         rawConn,
+		Conn:            rawConn,
 		destinationPort: (uint32)(vzVirtioSocketConnection.destinationPort),
 		sourcePort:      (uint32)(vzVirtioSocketConnection.sourcePort),
 	}
 	return conn, nil
-}
-
-// Read reads data from connection of the vsock protocol.
-func (v *VirtioSocketConnection) Read(b []byte) (n int, err error) { return v.rawConn.Read(b) }
-
-// Write writes data to the connection of the vsock protocol.
-func (v *VirtioSocketConnection) Write(b []byte) (n int, err error) { return v.rawConn.Write(b) }
-
-// Close will be called when caused something error in socket.
-func (v *VirtioSocketConnection) Close() error {
-	return v.rawConn.Close()
-}
-
-// LocalAddr returns the local network address.
-func (v *VirtioSocketConnection) LocalAddr() net.Addr { return v.rawConn.LocalAddr() }
-
-// RemoteAddr returns the remote network address.
-func (v *VirtioSocketConnection) RemoteAddr() net.Addr { return v.rawConn.RemoteAddr() }
-
-// SetDeadline sets the read and write deadlines associated
-// with the connection. It is equivalent to calling both
-// SetReadDeadline and SetWriteDeadline.
-func (v *VirtioSocketConnection) SetDeadline(t time.Time) error { return v.rawConn.SetDeadline(t) }
-
-// SetReadDeadline sets the deadline for future Read calls
-// and any currently-blocked Read call.
-// A zero value for t means Read will not time out.
-func (v *VirtioSocketConnection) SetReadDeadline(t time.Time) error {
-	return v.rawConn.SetReadDeadline(t)
-}
-
-// SetWriteDeadline sets the deadline for future Write calls
-// and any currently-blocked Write call.
-// Even if write times out, it may return n > 0, indicating that
-// some of the data was successfully written.
-// A zero value for t means Write will not time out.
-func (v *VirtioSocketConnection) SetWriteDeadline(t time.Time) error {
-	return v.rawConn.SetWriteDeadline(t)
 }
 
 // DestinationPort returns the destination port number of the connection.

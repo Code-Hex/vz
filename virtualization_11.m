@@ -6,14 +6,6 @@
 
 #import "virtualization_11.h"
 
-char *copyCString(NSString *nss)
-{
-    const char *cc = [nss UTF8String];
-    char *c = calloc([nss length] + 1, 1);
-    strncpy(c, cc, [nss length]);
-    return c;
-}
-
 @implementation Observer
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
 {

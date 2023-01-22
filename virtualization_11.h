@@ -13,9 +13,17 @@
 void connectionHandler(void *connection, void *err, void *cgoHandlerPtr);
 void changeStateOnObserver(int state, void *cgoHandler);
 bool shouldAcceptNewConnectionHandler(void *cgoHandler, void *connection, void *socketDevice);
+void deleteStateHandler(void *cgoHandlerPtr);
 
 @interface Observer : NSObject
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
+@end
+
+@interface ObservableVZVirtualMachine : VZVirtualMachine
+- (instancetype)initWithConfiguration:(VZVirtualMachineConfiguration *)configuration
+                                queue:(dispatch_queue_t)queue
+                        statusHandler:(void *)statusHandler;
+- (void)dealloc;
 @end
 
 /* VZVirtioSocketListener */

@@ -3,14 +3,13 @@ package vz_test
 import (
 	"errors"
 	"fmt"
-	"io"
-	"net"
 	"os"
 	"syscall"
 	"testing"
 	"time"
 
 	"github.com/Code-Hex/vz/v3"
+	"github.com/Code-Hex/vz/v3/internal/testhelper"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -107,7 +106,7 @@ func (c *Container) NewSession(t *testing.T) *ssh.Session {
 	if err != nil {
 		t.Fatal(err)
 	}
-	setKeepAlive(t, sshSession)
+	testhelper.SetKeepAlive(t, sshSession)
 	return sshSession
 }
 
@@ -162,11 +161,7 @@ func newVirtualizationMachine(
 	waitState(t, 3*time.Second, vm, vz.VirtualMachineStateStarting)
 	waitState(t, 3*time.Second, vm, vz.VirtualMachineStateRunning)
 
-	sshConfig := &ssh.ClientConfig{
-		User:            "root",
-		Auth:            []ssh.AuthMethod{ssh.Password("passwd")},
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-	}
+	sshConfig := testhelper.NewSshConfig("root", "passwd")
 
 	// Workaround for macOS 11
 	//
@@ -192,7 +187,7 @@ RETRY:
 			t.Fatalf("failed to connect vsock: %v", err)
 		}
 
-		sshClient, err := newSshClient(conn, ":22", sshConfig)
+		sshClient, err := testhelper.NewSshClient(conn, ":22", sshConfig)
 		if err != nil {
 			conn.Close()
 			t.Fatalf("failed to create a new ssh client: %v", err)
@@ -215,26 +210,6 @@ func waitState(t *testing.T, wait time.Duration, vm *vz.VirtualMachine, want vz.
 	case <-time.After(wait):
 		t.Fatal("failed to wait state changed notification")
 	}
-}
-
-func newSshClient(conn net.Conn, addr string, config *ssh.ClientConfig) (*ssh.Client, error) {
-	c, chans, reqs, err := ssh.NewClientConn(conn, addr, config)
-	if err != nil {
-		return nil, err
-	}
-	return ssh.NewClient(c, chans, reqs), nil
-}
-
-func setKeepAlive(t *testing.T, session *ssh.Session) {
-	go func() {
-		for range time.Tick(5 * time.Second) {
-			_, err := session.SendRequest("keepalive@codehex.vz", true, nil)
-			if err != nil && err != io.EOF {
-				t.Logf("failed to send keep-alive request: %v", err)
-				return
-			}
-		}
-	}()
 }
 
 func TestRun(t *testing.T) {

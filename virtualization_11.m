@@ -6,14 +6,6 @@
 
 #import "virtualization_11.h"
 
-char *copyCString(NSString *nss)
-{
-    const char *cc = [nss UTF8String];
-    char *c = calloc([nss length] + 1, 1);
-    strncpy(c, cc, [nss length]);
-    return c;
-}
-
 @implementation Observer
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
 {
@@ -31,6 +23,32 @@ char *copyCString(NSString *nss)
             // free(key);
         }
     }
+}
+@end
+
+@implementation ObservableVZVirtualMachine {
+    Observer *_observer;
+    void *_stateHandler;
+};
+- (instancetype)initWithConfiguration:(VZVirtualMachineConfiguration *)configuration
+                                queue:(dispatch_queue_t)queue
+                        statusHandler:(void *)statusHandler
+{
+    self = [super initWithConfiguration:configuration queue:queue];
+    _observer = [[Observer alloc] init];
+    [self addObserver:_observer
+           forKeyPath:@"state"
+              options:NSKeyValueObservingOptionNew
+              context:statusHandler];
+    return self;
+}
+
+- (void)dealloc
+{
+    [self removeObserver:_observer forKeyPath:@"state"];
+    deleteStateHandler(_stateHandler);
+    [_observer release];
+    [super dealloc];
 }
 @end
 
@@ -671,16 +689,10 @@ VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connecti
 void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, void *statusHandler)
 {
     if (@available(macOS 11, *)) {
-        VZVirtualMachine *vm = [[VZVirtualMachine alloc]
+        ObservableVZVirtualMachine *vm = [[ObservableVZVirtualMachine alloc]
             initWithConfiguration:(VZVirtualMachineConfiguration *)config
-                            queue:(dispatch_queue_t)queue];
-        @autoreleasepool {
-            Observer *o = [[Observer alloc] init];
-            [vm addObserver:o
-                 forKeyPath:@"state"
-                    options:NSKeyValueObservingOptionNew
-                    context:statusHandler];
-        }
+                            queue:(dispatch_queue_t)queue
+                    statusHandler:statusHandler];
         return vm;
     }
 

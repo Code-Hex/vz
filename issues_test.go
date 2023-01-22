@@ -2,11 +2,14 @@ package vz
 
 import (
 	"errors"
+	"fmt"
 	"net"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
 func newTestConfig(t *testing.T) *VirtualMachineConfiguration {
@@ -255,4 +258,82 @@ func TestIssue98(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestIssue119(t *testing.T) {
+	vmlinuz := "./testdata/Image"
+	initramfs := "./testdata/initramfs.cpio.gz"
+	bootLoader, err := NewLinuxBootLoader(
+		vmlinuz,
+		WithCommandLine("console=hvc0"),
+		WithInitrd(initramfs),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	config, err := setupIssue119Config(bootLoader)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	vm, err := NewVirtualMachine(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if canStart := vm.CanStart(); !canStart {
+		t.Fatal("want CanStart is true")
+	}
+
+	if err := vm.Start(); err != nil {
+		t.Fatal(err)
+	}
+
+	if got := vm.State(); VirtualMachineStateRunning != got {
+		t.Fatalf("want state %v but got %v", VirtualMachineStateRunning, got)
+	}
+
+	// Simulates Go's VirtualMachine struct has been destructured but
+	// Objective-C VZVirtualMachine object has not been destructured.
+	objc.Retain(vm.pointer)
+	vm.finalize()
+
+	// sshSession.Run("poweroff")
+	vm.Pause()
+}
+
+func setupIssue119Config(bootLoader *LinuxBootLoader) (*VirtualMachineConfiguration, error) {
+	config, err := NewVirtualMachineConfiguration(
+		bootLoader,
+		1,
+		512*1024*1024,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create a new virtual machine config: %w", err)
+	}
+
+	// entropy device
+	entropyConfig, err := NewVirtioEntropyDeviceConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create entropy device config: %w", err)
+	}
+	config.SetEntropyDevicesVirtualMachineConfiguration([]*VirtioEntropyDeviceConfiguration{
+		entropyConfig,
+	})
+
+	// memory balloon device
+	memoryBalloonDevice, err := NewVirtioTraditionalMemoryBalloonDeviceConfiguration()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create memory balloon device config: %w", err)
+	}
+	config.SetMemoryBalloonDevicesVirtualMachineConfiguration([]MemoryBalloonDeviceConfiguration{
+		memoryBalloonDevice,
+	})
+
+	if _, err := config.Validate(); err != nil {
+		return nil, err
+	}
+
+	return config, nil
 }

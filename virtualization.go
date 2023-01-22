@@ -9,7 +9,6 @@ package vz
 */
 import "C"
 import (
-	"log"
 	"runtime/cgo"
 	"sync"
 	"unsafe"
@@ -130,8 +129,6 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 
 func (v *VirtualMachine) finalize() {
 	v.finalizeOnce.Do(func() {
-		v.stateHandle.Delete()
-		// deleteStateHandler(unsafe.Pointer(&v.stateHandle))
 		objc.ReleaseDispatch(v.dispatchQueue)
 		objc.Release(v)
 	})
@@ -163,7 +160,6 @@ func changeStateOnObserver(newStateRaw C.int, cgoHandlerPtr unsafe.Pointer) {
 	v, _ := stateHandler.Value().(*machineState)
 	v.mu.Lock()
 	newState := VirtualMachineState(newStateRaw)
-	log.Println(newState.String())
 	v.state = newState
 	// for non-blocking
 	go func() { v.stateNotify <- newState }()

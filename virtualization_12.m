@@ -219,17 +219,17 @@ void *newVZVirtioSoundDeviceHostOutputStreamConfiguration()
  @param error If not nil, assigned with the error if the initialization failed.
  @return A VZDiskImageStorageDeviceAttachment on success. Nil otherwise and the error parameter is populated if set.
  */
-void *newVZDiskImageStorageDeviceAttachmentWithCacheAndSyncMode(const char *diskPath, bool readOnly,  int cacheMode, int syncMode, void **error)
+void *newVZDiskImageStorageDeviceAttachmentWithCacheAndSyncMode(const char *diskPath, bool readOnly, int cacheMode, int syncMode, void **error)
 {
     if (@available(macOS 12, *)) {
         NSString *diskPathNSString = [NSString stringWithUTF8String:diskPath];
         NSURL *diskURL = [NSURL fileURLWithPath:diskPathNSString];
         return [[VZDiskImageStorageDeviceAttachment alloc]
-            initWithURL:diskURL
-               readOnly:(BOOL)readOnly
-               cachingMode:(VZDiskImageCachingMode)cacheMode
-               synchronizationMode: (VZDiskImageSynchronizationMode)syncMode
-                  error:(NSError *_Nullable *_Nullable)error];
+                    initWithURL:diskURL
+                       readOnly:(BOOL)readOnly
+                    cachingMode:(VZDiskImageCachingMode)cacheMode
+            synchronizationMode:(VZDiskImageSynchronizationMode)syncMode
+                          error:(NSError *_Nullable *_Nullable)error];
     }
 
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();

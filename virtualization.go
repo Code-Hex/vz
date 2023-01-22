@@ -9,6 +9,7 @@ package vz
 */
 import "C"
 import (
+	"log"
 	"runtime/cgo"
 	"sync"
 	"unsafe"
@@ -74,12 +75,13 @@ type VirtualMachine struct {
 
 	*pointer
 	dispatchQueue unsafe.Pointer
-	status        cgo.Handle
+	stateHandle   cgo.Handle
 
-	mu sync.Mutex
+	mu           *sync.Mutex
+	finalizeOnce sync.Once
 }
 
-type machineStatus struct {
+type machineState struct {
 	state       VirtualMachineState
 	stateNotify chan VirtualMachineState
 
@@ -102,7 +104,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 	cs := (*char)(objc.GetUUID())
 	dispatchQueue := C.makeDispatchQueue(cs.CString())
 
-	status := cgo.NewHandle(&machineStatus{
+	stateHandle := cgo.NewHandle(&machineState{
 		state:       VirtualMachineState(0),
 		stateNotify: make(chan VirtualMachineState),
 	})
@@ -113,19 +115,26 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 			C.newVZVirtualMachineWithDispatchQueue(
 				objc.Ptr(config),
 				dispatchQueue,
-				unsafe.Pointer(&status),
+				unsafe.Pointer(&stateHandle),
 			),
 		),
 		dispatchQueue: dispatchQueue,
-		status:        status,
+		stateHandle:   stateHandle,
 	}
 
 	objc.SetFinalizer(v, func(self *VirtualMachine) {
-		self.status.Delete()
-		objc.ReleaseDispatch(self.dispatchQueue)
-		objc.Release(self)
+		self.finalize()
 	})
 	return v, nil
+}
+
+func (v *VirtualMachine) finalize() {
+	v.finalizeOnce.Do(func() {
+		v.stateHandle.Delete()
+		// deleteStateHandler(unsafe.Pointer(&v.stateHandle))
+		objc.ReleaseDispatch(v.dispatchQueue)
+		objc.Release(v)
+	})
 }
 
 // SocketDevices return the list of socket devices configured on this virtual machine.
@@ -147,24 +156,31 @@ func (v *VirtualMachine) SocketDevices() []*VirtioSocketDevice {
 }
 
 //export changeStateOnObserver
-func changeStateOnObserver(state C.int, cgoHandlerPtr unsafe.Pointer) {
-	status := *(*cgo.Handle)(cgoHandlerPtr)
+func changeStateOnObserver(newStateRaw C.int, cgoHandlerPtr unsafe.Pointer) {
+	stateHandler := *(*cgo.Handle)(cgoHandlerPtr)
 	// I expected it will not cause panic.
 	// if caused panic, that's unexpected behavior.
-	v, _ := status.Value().(*machineStatus)
+	v, _ := stateHandler.Value().(*machineState)
 	v.mu.Lock()
-	newState := VirtualMachineState(state)
+	newState := VirtualMachineState(newStateRaw)
+	log.Println(newState.String())
 	v.state = newState
 	// for non-blocking
 	go func() { v.stateNotify <- newState }()
 	v.mu.Unlock()
 }
 
+//export deleteStateHandler
+func deleteStateHandler(cgoHandlerPtr unsafe.Pointer) {
+	stateHandler := *(*cgo.Handle)(cgoHandlerPtr)
+	stateHandler.Delete()
+}
+
 // State represents execution state of the virtual machine.
 func (v *VirtualMachine) State() VirtualMachineState {
 	// I expected it will not cause panic.
 	// if caused panic, that's unexpected behavior.
-	val, _ := v.status.Value().(*machineStatus)
+	val, _ := v.stateHandle.Value().(*machineState)
 	val.mu.RLock()
 	defer val.mu.RUnlock()
 	return val.state
@@ -174,7 +190,7 @@ func (v *VirtualMachine) State() VirtualMachineState {
 func (v *VirtualMachine) StateChangedNotify() <-chan VirtualMachineState {
 	// I expected it will not cause panic.
 	// if caused panic, that's unexpected behavior.
-	val, _ := v.status.Value().(*machineStatus)
+	val, _ := v.stateHandle.Value().(*machineState)
 	val.mu.RLock()
 	defer val.mu.RUnlock()
 	return val.stateNotify

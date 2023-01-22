@@ -138,7 +138,7 @@ func connectionHandler(connPtr, errPtr, cgoHandlerPtr unsafe.Pointer) {
 // Connect Initiates a connection to the specified port of the guest operating system.
 //
 // This method initiates the connection asynchronously, and executes the completion handler when the results are available.
-// If the guest operating system doesn’t listen for connections to the specifed port, this method does nothing.
+// If the guest operating system doesn’t listen for connections to the specified port, this method does nothing.
 //
 // For a successful connection, this method sets the sourcePort property of the resulting VZVirtioSocketConnection object to a random port number.
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdevice/3656677-connecttoport?language=objc

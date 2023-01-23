@@ -76,7 +76,6 @@ type VirtualMachine struct {
 	dispatchQueue unsafe.Pointer
 	stateHandle   cgo.Handle
 
-	mu           *sync.Mutex
 	finalizeOnce sync.Once
 }
 

@@ -10,18 +10,9 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
 {
 
-    @autoreleasepool {
-        if ([keyPath isEqualToString:@"state"]) {
-            int newState = (int)[change[NSKeyValueChangeNewKey] integerValue];
-            changeStateOnObserver(newState, context);
-        } else {
-            // bool canVal = (bool)[change[NSKeyValueChangeNewKey] boolValue];
-            // char *vmid = copyCString((NSString *)context);
-            // char *key = copyCString(keyPath);
-            // changeCanPropertyOnObserver(canVal, vmid, key);
-            // free(vmid);
-            // free(key);
-        }
+    if ([keyPath isEqualToString:@"state"]) {
+        int newState = (int)[change[NSKeyValueChangeNewKey] integerValue];
+        changeStateOnObserver(newState, context);
     }
 }
 @end
@@ -46,9 +37,9 @@
 - (void)dealloc
 {
     [self removeObserver:_observer forKeyPath:@"state"];
-    deleteStateHandler(_stateHandler);
     [_observer release];
     [super dealloc];
+    deleteStateHandler(_stateHandler);
 }
 @end
 

@@ -13,6 +13,7 @@ import (
 	"sync"
 	"unsafe"
 
+	infinity "github.com/Code-Hex/go-infinity-channel"
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
@@ -81,7 +82,7 @@ type VirtualMachine struct {
 
 type machineState struct {
 	state       VirtualMachineState
-	stateNotify chan VirtualMachineState
+	stateNotify *infinity.Channel[VirtualMachineState]
 
 	mu sync.RWMutex
 }
@@ -104,7 +105,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 
 	stateHandle := cgo.NewHandle(&machineState{
 		state:       VirtualMachineState(0),
-		stateNotify: make(chan VirtualMachineState),
+		stateNotify: infinity.NewChannel[VirtualMachineState](),
 	})
 
 	v := &VirtualMachine{
@@ -160,8 +161,7 @@ func changeStateOnObserver(newStateRaw C.int, cgoHandlerPtr unsafe.Pointer) {
 	v.mu.Lock()
 	newState := VirtualMachineState(newStateRaw)
 	v.state = newState
-	// for non-blocking
-	go func() { v.stateNotify <- newState }()
+	v.stateNotify.In() <- newState
 	v.mu.Unlock()
 }
 
@@ -188,7 +188,7 @@ func (v *VirtualMachine) StateChangedNotify() <-chan VirtualMachineState {
 	val, _ := v.stateHandle.Value().(*machineState)
 	val.mu.RLock()
 	defer val.mu.RUnlock()
-	return val.stateNotify
+	return val.stateNotify.Out()
 }
 
 // CanStart returns true if the machine is in a state that can be started.

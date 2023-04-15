@@ -10,4 +10,7 @@ require (
 	golang.org/x/sys v0.1.0
 )
 
-require golang.org/x/mod v0.6.0 // indirect
+require (
+	github.com/Code-Hex/go-infinity-channel v1.0.0 // indirect
+	golang.org/x/mod v0.6.0 // indirect
+)

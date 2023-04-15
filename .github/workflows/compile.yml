@@ -30,8 +30,9 @@ jobs:
         - macOS-11
         - macOS-12
         go:
-        - 1.18
-        - 1.19
+        - '^1.18'
+        - '^1.19'
+        - '^1.20'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3

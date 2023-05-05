@@ -75,7 +75,7 @@ type VirtualMachine struct {
 
 	*pointer
 	dispatchQueue unsafe.Pointer
-	stateHandle   cgo.Handle
+	stateHandle   *machineState
 
 	finalizeOnce sync.Once
 }
@@ -103,18 +103,19 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 	cs := (*char)(objc.GetUUID())
 	dispatchQueue := C.makeDispatchQueue(cs.CString())
 
-	stateHandle := cgo.NewHandle(&machineState{
+	stateHandle := &machineState{
 		state:       VirtualMachineState(0),
 		stateNotify: infinity.NewChannel[VirtualMachineState](),
-	})
+	}
 
+	stateHandlePtr := cgo.NewHandle(stateHandle)
 	v := &VirtualMachine{
 		id: cs.String(),
 		pointer: objc.NewPointer(
 			C.newVZVirtualMachineWithDispatchQueue(
 				objc.Ptr(config),
 				dispatchQueue,
-				unsafe.Pointer(&stateHandle),
+				unsafe.Pointer(&stateHandlePtr),
 			),
 		),
 		dispatchQueue: dispatchQueue,
@@ -123,6 +124,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 
 	objc.SetFinalizer(v, func(self *VirtualMachine) {
 		self.finalize()
+		stateHandlePtr.Delete()
 	})
 	return v, nil
 }
@@ -165,30 +167,18 @@ func changeStateOnObserver(newStateRaw C.int, cgoHandlerPtr unsafe.Pointer) {
 	v.mu.Unlock()
 }
 
-//export deleteStateHandler
-func deleteStateHandler(cgoHandlerPtr unsafe.Pointer) {
-	stateHandler := *(*cgo.Handle)(cgoHandlerPtr)
-	stateHandler.Delete()
-}
-
 // State represents execution state of the virtual machine.
 func (v *VirtualMachine) State() VirtualMachineState {
-	// I expected it will not cause panic.
-	// if caused panic, that's unexpected behavior.
-	val, _ := v.stateHandle.Value().(*machineState)
-	val.mu.RLock()
-	defer val.mu.RUnlock()
-	return val.state
+	v.stateHandle.mu.RLock()
+	defer v.stateHandle.mu.RUnlock()
+	return v.stateHandle.state
 }
 
 // StateChangedNotify gets notification is changed execution state of the virtual machine.
 func (v *VirtualMachine) StateChangedNotify() <-chan VirtualMachineState {
-	// I expected it will not cause panic.
-	// if caused panic, that's unexpected behavior.
-	val, _ := v.stateHandle.Value().(*machineState)
-	val.mu.RLock()
-	defer val.mu.RUnlock()
-	return val.stateNotify.Out()
+	v.stateHandle.mu.RLock()
+	defer v.stateHandle.mu.RUnlock()
+	return v.stateHandle.stateNotify.Out()
 }
 
 // CanStart returns true if the machine is in a state that can be started.

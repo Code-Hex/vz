@@ -13,7 +13,6 @@
 void connectionHandler(void *connection, void *err, void *cgoHandlerPtr);
 void changeStateOnObserver(int state, void *cgoHandler);
 bool shouldAcceptNewConnectionHandler(void *cgoHandler, void *connection, void *socketDevice);
-void deleteStateHandler(void *cgoHandlerPtr);
 
 @interface Observer : NSObject
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;

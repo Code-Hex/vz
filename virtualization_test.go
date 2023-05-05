@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"runtime"
 	"syscall"
 	"testing"
 	"time"
@@ -340,5 +341,73 @@ func TestVirtualMachineStateString(t *testing.T) {
 		if tc.want != got {
 			t.Fatalf("want %q but got %q", tc.want, got)
 		}
+	}
+}
+
+func TestRunIssue124(t *testing.T) {
+	if os.Getenv("TEST_ISSUE_124") != "1" {
+		t.Skip()
+	}
+	container := newVirtualizationMachine(t,
+		func(vmc *vz.VirtualMachineConfiguration) error {
+			return setupConsoleConfig(vmc)
+		},
+	)
+	defer container.Close()
+
+	sshSession := container.NewSession(t)
+	defer sshSession.Close()
+
+	vm := container.VirtualMachine
+
+	if got := vm.State(); vz.VirtualMachineStateRunning != got {
+		t.Fatalf("want state %v but got %v", vz.VirtualMachineStateRunning, got)
+	}
+	if got := vm.CanPause(); !got {
+		t.Fatal("want CanPause is true")
+	}
+	if err := vm.Pause(); err != nil {
+		t.Fatal(err)
+	}
+
+	timeout := 5 * time.Second
+	waitState(t, timeout, vm, vz.VirtualMachineStatePausing)
+	waitState(t, timeout, vm, vz.VirtualMachineStatePaused)
+
+	if got := vm.State(); vz.VirtualMachineStatePaused != got {
+		t.Fatalf("want state %v but got %v", vz.VirtualMachineStatePaused, got)
+	}
+	if got := vm.CanResume(); !got {
+		t.Fatal("want CanPause is true")
+	}
+	if err := vm.Resume(); err != nil {
+		t.Fatal(err)
+	}
+
+	waitState(t, timeout, vm, vz.VirtualMachineStateResuming)
+	waitState(t, timeout, vm, vz.VirtualMachineStateRunning)
+
+	if got := vm.CanRequestStop(); !got {
+		t.Fatal("want CanRequestStop is true")
+	}
+
+	ch := make(chan bool)
+	vm.SetMachineStateFinalizer(func() {
+		ch <- true
+	})
+
+	runtime.GC()
+	select {
+	case <-ch:
+		t.Errorf("expected finalizer do not run")
+	case <-time.After(4 * time.Minute):
+	}
+
+	runtime.GC()
+	sshSession.Run("poweroff")
+	waitState(t, timeout, vm, vz.VirtualMachineStateStopped)
+
+	if got := vm.State(); vz.VirtualMachineStateStopped != got {
+		t.Fatalf("want state %v but got %v", vz.VirtualMachineStateStopped, got)
 	}
 }

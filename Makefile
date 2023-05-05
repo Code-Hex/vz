@@ -12,6 +12,14 @@ fmt:
 test:
 	go test -exec "go run $(PWD)/cmd/codesign" ./... -timeout 60s -v
 
+.PHONY: test/run
+test/run:
+	go test -exec "go run $(PWD)/cmd/codesign" ./... -timeout 5m -v -run $(TARGET)
+
+.PHONY: test/run/124
+test/run/124:
+	TEST_ISSUE_124=1 $(MAKE) test/run TARGET=TestRunIssue124
+
 .PHONY: download_kernel
 download_kernel:
 	curl --output-dir testdata -LO $(KERNEL_DOWNLOAD_URL)

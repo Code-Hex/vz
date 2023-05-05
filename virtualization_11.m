@@ -39,7 +39,6 @@
     [self removeObserver:_observer forKeyPath:@"state"];
     [_observer release];
     [super dealloc];
-    deleteStateHandler(_stateHandler);
 }
 @end
 

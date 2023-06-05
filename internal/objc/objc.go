@@ -57,6 +57,16 @@ const char *getUUID()
 	NSString *uuid = [[NSUUID UUID] UUIDString];
 	return [uuid UTF8String];
 }
+
+const char *CStringFromNSString(void *ptr)
+{
+    return [(NSString *)ptr UTF8String];
+}
+
+int LengthFromNSString(void *ptr)
+{
+    return [(NSString *)ptr length];
+}
 */
 import "C"
 import (
@@ -140,6 +150,27 @@ func (n *NSArray) ToPointerSlice() []unsafe.Pointer {
 		ret[i] = C.getNSArrayItem(n.ptr(), C.int(i))
 	}
 	return ret
+}
+
+// NSString indicates NSString
+type NSString struct {
+	*Pointer
+}
+
+// NewNSString creates a new NSString from pointer.
+func NewNSString(p unsafe.Pointer) *NSString {
+	return &NSString{NewPointer(p)}
+}
+
+// CString converts *C.char from *NSString
+func (s *NSString) CString() *C.char {
+	return C.CStringFromNSString(s.ptr())
+}
+
+// String converts Go string from *NSString
+func (s *NSString) String() string {
+	length := C.LengthFromNSString(s.ptr())
+	return C.GoStringN(s.CString(), C.int(length))
 }
 
 // ConvertToNSMutableArray converts to NSMutableArray from NSObject slice in Go world.

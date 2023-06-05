@@ -393,6 +393,33 @@ void *newVZVirtioConsoleDeviceSerialPortConfiguration(void *attachment)
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
+void *VZBridgedNetworkInterface_networkInterfaces()
+{
+    if (@available(macOS 11, *)) {
+        return [VZBridgedNetworkInterface networkInterfaces]; // NSArray<VZBridgedNetworkInterface *>
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+void *VZBridgedNetworkInterface_identifier(void *networkInterface)
+{
+    if (@available(macOS 11, *)) {
+        return [(VZBridgedNetworkInterface *)networkInterface identifier]; // NSString *
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+void *VZBridgedNetworkInterface_localizedDisplayName(void *networkInterface)
+{
+    if (@available(macOS 11, *)) {
+        return [(VZBridgedNetworkInterface *)networkInterface localizedDisplayName]; // NSString *
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
 /*!
  @abstract Create a new Network device attachment bridging a host physical interface with a virtual network device.
  @param networkInterface a network interface that bridges a physical interface.

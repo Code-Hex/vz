@@ -39,6 +39,42 @@ type BridgedNetwork interface {
 	LocalizedDisplayName() string
 }
 
+func NetworkInterfaces() []BridgedNetwork {
+	nsArray := objc.NewNSArray(
+		C.VZBridgedNetworkInterface_networkInterfaces(),
+	)
+	ptrs := nsArray.ToPointerSlice()
+	networkInterfaces := make([]BridgedNetwork, len(ptrs))
+	for i, ptr := range ptrs {
+		networkInterfaces[i] = &baseBridgedNetwork{
+			pointer: objc.NewPointer(ptr),
+		}
+	}
+	return networkInterfaces
+}
+
+type baseBridgedNetwork struct {
+	*pointer
+}
+
+func (*baseBridgedNetwork) NetworkInterfaces() []BridgedNetwork {
+	return NetworkInterfaces()
+}
+
+func (b *baseBridgedNetwork) Identifier() string {
+	nsStirng := objc.NewNSString(
+		C.VZBridgedNetworkInterface_identifier(objc.Ptr(b)),
+	)
+	return nsStirng.String()
+}
+
+func (b *baseBridgedNetwork) LocalizedDisplayName() string {
+	nsStirng := objc.NewNSString(
+		C.VZBridgedNetworkInterface_localizedDisplayName(objc.Ptr(b)),
+	)
+	return nsStirng.String()
+}
+
 // Network device attachment using network address translation (NAT) with outside networks.
 //
 // Using the NAT attachment type, the host serves as router and performs network address translation

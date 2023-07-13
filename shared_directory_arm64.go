@@ -33,10 +33,10 @@ const (
 )
 
 //export linuxInstallRosettaWithCompletionHandler
-func linuxInstallRosettaWithCompletionHandler(cgoHandlerPtr, errPtr unsafe.Pointer) {
-	cgoHandler := *(*cgo.Handle)(cgoHandlerPtr)
+func linuxInstallRosettaWithCompletionHandler(cgoHandleUintptr C.uintptr_t, errPtr unsafe.Pointer) {
+	cgoHandle := cgo.Handle(cgoHandleUintptr)
 
-	handler := cgoHandler.Value().(func(error))
+	handler := cgoHandle.Value().(func(error))
 
 	if err := newNSError(errPtr); err != nil {
 		handler(err)
@@ -89,10 +89,10 @@ func LinuxRosettaDirectoryShareInstallRosetta() error {
 		return err
 	}
 	errCh := make(chan error, 1)
-	cgoHandler := cgo.NewHandle(func(err error) {
+	cgoHandle := cgo.NewHandle(func(err error) {
 		errCh <- err
 	})
-	C.linuxInstallRosetta(unsafe.Pointer(&cgoHandler))
+	C.linuxInstallRosetta(C.uintptr_t(cgoHandle))
 	return <-errCh
 }
 

@@ -5,7 +5,7 @@ import (
 )
 
 func (v *VirtualMachine) SetMachineStateFinalizer(f func()) {
-	runtime.SetFinalizer(v.stateHandle, func(self *machineState) {
+	runtime.SetFinalizer(v.machineState, func(self *machineState) {
 		f()
 	})
 }

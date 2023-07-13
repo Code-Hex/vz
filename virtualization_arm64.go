@@ -317,11 +317,11 @@ func (m *MacOSConfigurationRequirements) MinimumSupportedMemorySize() uint64 {
 type macOSRestoreImageHandler func(restoreImage *MacOSRestoreImage, err error)
 
 //export macOSRestoreImageCompletionHandler
-func macOSRestoreImageCompletionHandler(cgoHandlerPtr, restoreImagePtr, errPtr unsafe.Pointer) {
-	cgoHandler := *(*cgo.Handle)(cgoHandlerPtr)
+func macOSRestoreImageCompletionHandler(cgoHandleUintptr C.uintptr_t, restoreImagePtr, errPtr unsafe.Pointer) {
+	cgoHandle := cgo.Handle(cgoHandleUintptr)
 
-	handler := cgoHandler.Value().(macOSRestoreImageHandler)
-	defer cgoHandler.Delete()
+	handler := cgoHandle.Value().(macOSRestoreImageHandler)
+	defer cgoHandle.Delete()
 
 	restoreImageStruct := (*C.VZMacOSRestoreImageStruct)(restoreImagePtr)
 
@@ -412,9 +412,9 @@ func FetchLatestSupportedMacOSRestoreImage(ctx context.Context, destPath string)
 		fetchErr = err
 		defer close(waitCh)
 	})
-	cgoHandler := cgo.NewHandle(handler)
+	cgoHandle := cgo.NewHandle(handler)
 	C.fetchLatestSupportedMacOSRestoreImageWithCompletionHandler(
-		unsafe.Pointer(&cgoHandler),
+		C.uintptr_t(cgoHandle),
 	)
 	<-waitCh
 	if fetchErr != nil {
@@ -447,11 +447,11 @@ func LoadMacOSRestoreImageFromPath(imagePath string) (retImage *MacOSRestoreImag
 		retErr = err
 		close(waitCh)
 	})
-	cgoHandler := cgo.NewHandle(handler)
+	cgoHandle := cgo.NewHandle(handler)
 
 	cs := charWithGoString(imagePath)
 	defer cs.Free()
-	C.loadMacOSRestoreImageFile(cs.CString(), unsafe.Pointer(&cgoHandler))
+	C.loadMacOSRestoreImageFile(cs.CString(), C.uintptr_t(cgoHandle))
 	<-waitCh
 	return
 }
@@ -504,11 +504,11 @@ func NewMacOSInstaller(vm *VirtualMachine, restoreImageIpsw string) (*MacOSInsta
 }
 
 //export macOSInstallCompletionHandler
-func macOSInstallCompletionHandler(cgoHandlerPtr, errPtr unsafe.Pointer) {
-	cgoHandler := *(*cgo.Handle)(cgoHandlerPtr)
+func macOSInstallCompletionHandler(cgoHandleUintptr C.uintptr_t, errPtr unsafe.Pointer) {
+	cgoHandle := cgo.Handle(cgoHandleUintptr)
 
-	handler := cgoHandler.Value().(func(error))
-	defer cgoHandler.Delete()
+	handler := cgoHandle.Value().(func(error))
+	defer cgoHandle.Delete()
 
 	if err := newNSError(errPtr); err != nil {
 		handler(err)
@@ -518,10 +518,10 @@ func macOSInstallCompletionHandler(cgoHandlerPtr, errPtr unsafe.Pointer) {
 }
 
 //export macOSInstallFractionCompletedHandler
-func macOSInstallFractionCompletedHandler(cgoHandlerPtr unsafe.Pointer, completed C.double) {
-	cgoHandler := *(*cgo.Handle)(cgoHandlerPtr)
+func macOSInstallFractionCompletedHandler(cgoHandleUintptr C.uintptr_t, completed C.double) {
+	cgoHandle := cgo.Handle(cgoHandleUintptr)
 
-	handler := cgoHandler.Value().(func(float64))
+	handler := cgoHandle.Value().(func(float64))
 	handler(float64(completed))
 }
 
@@ -549,8 +549,8 @@ func (m *MacOSInstaller) Install(ctx context.Context) error {
 			objc.Ptr(m),
 			m.vm.dispatchQueue,
 			objc.Ptr(m.observerPointer),
-			unsafe.Pointer(&completionHandler),
-			unsafe.Pointer(&fractionCompletedHandler),
+			C.uintptr_t(completionHandler),
+			C.uintptr_t(fractionCompletedHandler),
 		)
 	})
 

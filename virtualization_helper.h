@@ -47,13 +47,13 @@ typedef struct nbyteslice {
 } nbyteslice;
 
 /* exported from cgo */
-void virtualMachineCompletionHandler(void *cgoHandler, void *errPtr);
+void virtualMachineCompletionHandler(uintptr_t cgoHandle, void *errPtr);
 
 typedef void (^vm_completion_handler_t)(NSError *);
 
-static inline vm_completion_handler_t makeVMCompletionHandler(void *completionHandler)
+static inline vm_completion_handler_t makeVMCompletionHandler(uintptr_t cgoHandle)
 {
     return Block_copy(^(NSError *err) {
-        virtualMachineCompletionHandler(completionHandler, err);
+        virtualMachineCompletionHandler(cgoHandle, err);
     });
 }

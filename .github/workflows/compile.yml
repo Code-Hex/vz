@@ -29,6 +29,7 @@ jobs:
         os:
         - macOS-11
         - macOS-12
+        - macOS-13
         go:
         - '^1.18'
         - '^1.19'

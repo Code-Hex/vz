@@ -333,12 +333,12 @@ VZMacOSRestoreImageStruct convertVZMacOSRestoreImage2Struct(void *restoreImagePt
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
-void fetchLatestSupportedMacOSRestoreImageWithCompletionHandler(void *cgoHandler)
+void fetchLatestSupportedMacOSRestoreImageWithCompletionHandler(uintptr_t cgoHandle)
 {
     if (@available(macOS 12, *)) {
         [VZMacOSRestoreImage fetchLatestSupportedWithCompletionHandler:^(VZMacOSRestoreImage *restoreImage, NSError *error) {
             VZMacOSRestoreImageStruct restoreImageStruct = convertVZMacOSRestoreImage2Struct(restoreImage);
-            macOSRestoreImageCompletionHandler(cgoHandler, &restoreImageStruct, error);
+            macOSRestoreImageCompletionHandler(cgoHandle, &restoreImageStruct, error);
         }];
         return;
     }
@@ -346,7 +346,7 @@ void fetchLatestSupportedMacOSRestoreImageWithCompletionHandler(void *cgoHandler
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
-void loadMacOSRestoreImageFile(const char *ipswPath, void *cgoHandler)
+void loadMacOSRestoreImageFile(const char *ipswPath, uintptr_t cgoHandle)
 {
     if (@available(macOS 12, *)) {
         NSString *ipswPathNSString = [NSString stringWithUTF8String:ipswPath];
@@ -354,7 +354,7 @@ void loadMacOSRestoreImageFile(const char *ipswPath, void *cgoHandler)
         [VZMacOSRestoreImage loadFileURL:ipswURL
                        completionHandler:^(VZMacOSRestoreImage *restoreImage, NSError *error) {
                            VZMacOSRestoreImageStruct restoreImageStruct = convertVZMacOSRestoreImage2Struct(restoreImage);
-                           macOSRestoreImageCompletionHandler(cgoHandler, &restoreImageStruct, error);
+                           macOSRestoreImageCompletionHandler(cgoHandle, &restoreImageStruct, error);
                        }];
         return;
     }

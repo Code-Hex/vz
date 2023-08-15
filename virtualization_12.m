@@ -19,10 +19,10 @@ bool vmCanStop(void *machine, void *queue)
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
-void stopWithCompletionHandler(void *machine, void *queue, void *completionHandler)
+void stopWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle)
 {
     if (@available(macOS 12, *)) {
-        vm_completion_handler_t handler = makeVMCompletionHandler(completionHandler);
+        vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
         dispatch_sync((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine stopWithCompletionHandler:handler];
         });

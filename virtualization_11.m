@@ -12,25 +12,24 @@
 
     if ([keyPath isEqualToString:@"state"]) {
         int newState = (int)[change[NSKeyValueChangeNewKey] integerValue];
-        changeStateOnObserver(newState, context);
+        changeStateOnObserver(newState, (uintptr_t)context);
     }
 }
 @end
 
 @implementation ObservableVZVirtualMachine {
     Observer *_observer;
-    void *_stateHandler;
 };
 - (instancetype)initWithConfiguration:(VZVirtualMachineConfiguration *)configuration
                                 queue:(dispatch_queue_t)queue
-                        statusHandler:(void *)statusHandler
+                   statusUpdateHandle:(uintptr_t)statusUpdateHandle
 {
     self = [super initWithConfiguration:configuration queue:queue];
     _observer = [[Observer alloc] init];
     [self addObserver:_observer
            forKeyPath:@"state"
               options:NSKeyValueObservingOptionNew
-              context:statusHandler];
+              context:(void *)statusUpdateHandle];
     return self;
 }
 
@@ -43,19 +42,19 @@
 @end
 
 @implementation VZVirtioSocketListenerDelegateImpl {
-    void *_cgoHandler;
+    uintptr_t _cgoHandle;
 }
 
-- (instancetype)initWithHandler:(void *)cgoHandler
+- (instancetype)initWithHandle:(uintptr_t)cgoHandle
 {
     self = [super init];
-    _cgoHandler = cgoHandler;
+    _cgoHandle = cgoHandle;
     return self;
 }
 
 - (BOOL)listener:(VZVirtioSocketListener *)listener shouldAcceptNewConnection:(VZVirtioSocketConnection *)connection fromSocketDevice:(VZVirtioSocketDevice *)socketDevice;
 {
-    return (BOOL)shouldAcceptNewConnectionHandler(_cgoHandler, connection, socketDevice);
+    return (BOOL)shouldAcceptNewConnectionHandler(_cgoHandle, connection, socketDevice);
 }
 @end
 
@@ -583,11 +582,11 @@ void *newVZVirtioSocketDeviceConfiguration()
  @see VZVirtioSocketDevice
  @see VZVirtioSocketListenerDelegate
  */
-void *newVZVirtioSocketListener(void *cgoHandlerPtr)
+void *newVZVirtioSocketListener(uintptr_t cgoHandle)
 {
     if (@available(macOS 11, *)) {
         VZVirtioSocketListener *ret = [[VZVirtioSocketListener alloc] init];
-        [ret setDelegate:[[VZVirtioSocketListenerDelegateImpl alloc] initWithHandler:cgoHandlerPtr]];
+        [ret setDelegate:[[VZVirtioSocketListenerDelegateImpl alloc] initWithHandle:cgoHandle]];
         return ret;
     }
 
@@ -639,13 +638,13 @@ void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *
  @param completionHandler Block called after the connection has been successfully established or on error.
     The error parameter passed to the block is nil if the connection was successful.
  */
-void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, void *cgoHandlerPtr)
+void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, uintptr_t cgoHandle)
 {
     if (@available(macOS 11, *)) {
         dispatch_async((dispatch_queue_t)vmQueue, ^{
             [(VZVirtioSocketDevice *)socketDevice connectToPort:port
                                               completionHandler:^(VZVirtioSocketConnection *connection, NSError *err) {
-                                                  connectionHandler(connection, err, cgoHandlerPtr);
+                                                  connectionHandler(connection, err, cgoHandle);
                                               }];
         });
         return;
@@ -676,13 +675,13 @@ VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connecti
     Every operation on the virtual machine must be done on that queue. The callbacks and delegate methods are invoked on that queue.
     If the queue is not serial, the behavior is undefined.
  */
-void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, void *statusHandler)
+void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, uintptr_t cgoHandle)
 {
     if (@available(macOS 11, *)) {
         ObservableVZVirtualMachine *vm = [[ObservableVZVirtualMachine alloc]
             initWithConfiguration:(VZVirtualMachineConfiguration *)config
                             queue:(dispatch_queue_t)queue
-                    statusHandler:statusHandler];
+               statusUpdateHandle:cgoHandle];
         return vm;
     }
 
@@ -791,10 +790,10 @@ void *makeDispatchQueue(const char *label)
     return queue;
 }
 
-void startWithCompletionHandler(void *machine, void *queue, void *completionHandler)
+void startWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle)
 {
     if (@available(macOS 11, *)) {
-        vm_completion_handler_t handler = makeVMCompletionHandler(completionHandler);
+        vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
         dispatch_sync((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine startWithCompletionHandler:handler];
         });
@@ -805,10 +804,10 @@ void startWithCompletionHandler(void *machine, void *queue, void *completionHand
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
-void pauseWithCompletionHandler(void *machine, void *queue, void *completionHandler)
+void pauseWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle)
 {
     if (@available(macOS 11, *)) {
-        vm_completion_handler_t handler = makeVMCompletionHandler(completionHandler);
+        vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
         dispatch_sync((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine pauseWithCompletionHandler:handler];
         });
@@ -819,10 +818,10 @@ void pauseWithCompletionHandler(void *machine, void *queue, void *completionHand
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
-void resumeWithCompletionHandler(void *machine, void *queue, void *completionHandler)
+void resumeWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle)
 {
     if (@available(macOS 11, *)) {
-        vm_completion_handler_t handler = makeVMCompletionHandler(completionHandler);
+        vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
         dispatch_sync((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine resumeWithCompletionHandler:handler];
         });

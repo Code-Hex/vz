@@ -12,7 +12,7 @@
 {
     if ([keyPath isEqualToString:@"fractionCompleted"] && [object isKindOfClass:[NSProgress class]]) {
         NSProgress *progress = (NSProgress *)object;
-        macOSInstallFractionCompletedHandler(context, progress.fractionCompleted);
+        macOSInstallFractionCompletedHandler((uintptr_t)context, progress.fractionCompleted);
         if (progress.finished) {
             [progress removeObserver:self forKeyPath:@"fractionCompleted"];
         }
@@ -423,7 +423,7 @@ void *newProgressObserverVZMacOSInstaller()
     return [[ProgressObserver alloc] init];
 }
 
-void installByVZMacOSInstaller(void *installerPtr, void *vmQueue, void *progressObserverPtr, void *completionHandler, void *fractionCompletedHandler)
+void installByVZMacOSInstaller(void *installerPtr, void *vmQueue, void *progressObserverPtr, uintptr_t completionHandler, uintptr_t fractionCompletedHandler)
 {
     if (@available(macOS 12, *)) {
         VZMacOSInstaller *installer = (VZMacOSInstaller *)installerPtr;
@@ -435,7 +435,7 @@ void installByVZMacOSInstaller(void *installerPtr, void *vmQueue, void *progress
                 addObserver:(ProgressObserver *)progressObserverPtr
                  forKeyPath:@"fractionCompleted"
                     options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
-                    context:fractionCompletedHandler];
+                    context:(void*)fractionCompletedHandler];
         });
         return;
     }

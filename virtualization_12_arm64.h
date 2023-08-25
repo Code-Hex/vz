@@ -70,7 +70,7 @@ VZMacHardwareModelStruct convertVZMacHardwareModel2Struct(void *hardwareModelPtr
 
 void *newVZMacOSInstaller(void *virtualMachine, void *vmQueue, const char *restoreImageFilePath);
 void *newProgressObserverVZMacOSInstaller();
-void installByVZMacOSInstaller(void *installerPtr, void *vmQueue, void *progressObserverPtr, void *completionHandler, void *fractionCompletedHandler);
+void installByVZMacOSInstaller(void *installerPtr, void *vmQueue, void *progressObserverPtr, uintptr_t completionHandler, uintptr_t fractionCompletedHandler);
 void cancelInstallVZMacOSInstaller(void *installerPtr);
 
 #endif

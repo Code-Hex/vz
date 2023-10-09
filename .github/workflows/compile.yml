@@ -23,6 +23,7 @@ jobs:
   build:
     needs: formatting-check
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 6
     strategy:
       fail-fast: false
       matrix:

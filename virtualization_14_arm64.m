@@ -6,7 +6,6 @@
 
 #import "virtualization_14_arm64.h"
 
-
 /*!
  @abstract Restore a virtual machine.
  @discussion
@@ -126,7 +125,6 @@ uint32_t maximumPathLengthVZLinuxRosettaUnixSocketCachingOptions()
 #endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
-
 
 void setOptionsVZLinuxRosettaDirectoryShare(void *rosetta, void *cachingOptions)
 {

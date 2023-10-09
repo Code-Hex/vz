@@ -435,7 +435,7 @@ void installByVZMacOSInstaller(void *installerPtr, void *vmQueue, void *progress
                 addObserver:(ProgressObserver *)progressObserverPtr
                  forKeyPath:@"fractionCompleted"
                     options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
-                    context:(void*)fractionCompletedHandler];
+                    context:(void *)fractionCompletedHandler];
         });
         return;
     }

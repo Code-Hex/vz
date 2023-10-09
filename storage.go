@@ -7,6 +7,7 @@ package vz
 # include "virtualization_12.h"
 # include "virtualization_12_3.h"
 # include "virtualization_13.h"
+# include "virtualization_14.h"
 */
 import "C"
 import (
@@ -273,4 +274,41 @@ func NewUSBMassStorageDeviceConfiguration(attachment StorageDeviceAttachment) (*
 		objc.Release(self)
 	})
 	return usbMass, nil
+}
+
+// NVMExpressControllerDeviceConfiguration is a configuration of an NVM Express Controller storage device.
+//
+// This device configuration creates a storage device that conforms to the NVM Express specification revision 1.1b.
+type NVMExpressControllerDeviceConfiguration struct {
+	*pointer
+
+	*baseStorageDeviceConfiguration
+
+	// marking as currently reachable.
+	// This ensures that the object is not freed, and its finalizer is not run
+	attachment StorageDeviceAttachment
+}
+
+// NewNVMExpressControllerDeviceConfiguration creates a new NVMExpressControllerDeviceConfiguration with
+// a device attachment.
+//
+// attachment is the storage device attachment. This defines how the virtualized device operates on the
+// host side.
+//
+// This is only supported on macOS 14 and newer, error will
+// be returned on older versions.
+func NewNVMExpressControllerDeviceConfiguration(attachment StorageDeviceAttachment) (*NVMExpressControllerDeviceConfiguration, error) {
+	if err := macOSAvailable(14); err != nil {
+		return nil, err
+	}
+	nvmExpress := &NVMExpressControllerDeviceConfiguration{
+		pointer: objc.NewPointer(
+			C.newVZNVMExpressControllerDeviceConfiguration(objc.Ptr(attachment)),
+		),
+		attachment: attachment,
+	}
+	objc.SetFinalizer(nvmExpress, func(self *NVMExpressControllerDeviceConfiguration) {
+		objc.Release(self)
+	})
+	return nvmExpress, nil
 }

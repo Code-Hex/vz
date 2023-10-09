@@ -312,3 +312,88 @@ func NewNVMExpressControllerDeviceConfiguration(attachment StorageDeviceAttachme
 	})
 	return nvmExpress, nil
 }
+
+// DiskSynchronizationMode describes the synchronization modes available to the guest OS.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzdisksynchronizationmode?language=objc
+type DiskSynchronizationMode int
+
+const (
+	// Perform all synchronization operations as requested by the guest OS.
+	//
+	// Using this mode, flush and barrier commands from the guest result in
+	// the system sending their counterpart synchronization commands to the
+	// underlying disk implementation.
+	DiskSynchronizationModeFull DiskSynchronizationMode = iota
+
+	// DiskSynchronizationModeNone don’t synchronize the data with the permanent storage.
+	//
+	// This option doesn’t guarantee data integrity if any error condition occurs such as
+	// disk full on the host, panic, power loss, and so on.
+	//
+	// This mode is useful when a VM is only run once to perform a task to completion or
+	// failure. In case of failure, the state of blocks on disk and their order isn’t defined.
+	//
+	// Using this mode may result in improved performance since no synchronization with the underlying
+	// storage is necessary.
+	DiskSynchronizationModeNone
+)
+
+// DiskBlockDeviceStorageDeviceAttachment is a storage device attachment that uses a disk to store data.
+//
+// The disk block device implements a storage attachment by using an actual disk rather than a disk image
+// on a file system.
+//
+// Warning: Handle the disk passed to this attachment with caution. If the disk has a file system formatted
+// on it, the guest can destroy data in a way that isn’t recoverable.
+//
+// By default, only the root user can access the disk file handle. Running virtual machines as root isn’t
+// recommended. The best practice is to open the file in a separate process that has root privileges, then
+// pass the open file descriptor using XPC or a Unix socket to a non-root process running Virtualization.
+type DiskBlockDeviceStorageDeviceAttachment struct {
+	*pointer
+
+	*baseStorageDeviceAttachment
+}
+
+var _ StorageDeviceAttachment = (*DiskBlockDeviceStorageDeviceAttachment)(nil)
+
+// NewDiskBlockDeviceStorageDeviceAttachment creates a new block storage device attachment from a file handle and with the
+// specified access mode, synchronization mode, and error object that you provide.
+//
+// - file is the *os.File to a block device to attach to this VM.
+// - readOnly is a boolean value that indicates whether this disk attachment is read-only; otherwise, if the file handle
+// allows writes, the device can write data into it. this parameter affects how the Virtualization framework exposes the
+// disk to the guest operating system by the storage controller. If you intend to use the disk in read-only mode, it’s
+// also a best practice to open the file handle as read-only.
+// - syncMode is one of the available DiskSynchronizationMode options.
+//
+// Note that the disk attachment retains the file handle, and the handle must be open when the virtual machine starts.
+//
+// This is only supported on macOS 14 and newer, error will
+// be returned on older versions.
+func NewDiskBlockDeviceStorageDeviceAttachment(file *os.File, readOnly bool, syncMode DiskSynchronizationMode) (*DiskBlockDeviceStorageDeviceAttachment, error) {
+	if err := macOSAvailable(14); err != nil {
+		return nil, err
+	}
+
+	nserrPtr := newNSErrorAsNil()
+
+	attachment := &DiskBlockDeviceStorageDeviceAttachment{
+		pointer: objc.NewPointer(
+			C.newVZDiskBlockDeviceStorageDeviceAttachment(
+				C.int(file.Fd()),
+				C.bool(readOnly),
+				C.int(syncMode),
+				&nserrPtr,
+			),
+		),
+	}
+	if err := newNSError(nserrPtr); err != nil {
+		return nil, err
+	}
+	objc.SetFinalizer(attachment, func(self *DiskBlockDeviceStorageDeviceAttachment) {
+		objc.Release(self)
+	})
+	return attachment, nil
+}

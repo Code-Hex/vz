@@ -84,3 +84,57 @@ void saveMachineStateToURLWithCompletionHandler(void *machine, void *queue, uint
 #endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
+
+void *newVZLinuxRosettaAbstractSocketCachingOptionsWithName(const char *name, void **error)
+{
+#ifdef INCLUDE_TARGET_OSX_14
+    if (@available(macOS 14, *)) {
+        NSString *nameNSString = [NSString stringWithUTF8String:name];
+        return [[VZLinuxRosettaAbstractSocketCachingOptions alloc] initWithName:nameNSString error:(NSError *_Nullable *_Nullable)error];
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+uint32_t maximumNameLengthVZLinuxRosettaAbstractSocketCachingOptions()
+{
+#ifdef INCLUDE_TARGET_OSX_14
+    if (@available(macOS 14, *)) {
+        return (uint32_t)[VZLinuxRosettaAbstractSocketCachingOptions maximumNameLength];
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+void *newVZLinuxRosettaUnixSocketCachingOptionsWithPath(const char *path, void **error)
+{
+#ifdef INCLUDE_TARGET_OSX_14
+    if (@available(macOS 14, *)) {
+        NSString *pathNSString = [NSString stringWithUTF8String:path];
+        return [[VZLinuxRosettaUnixSocketCachingOptions alloc] initWithPath:pathNSString error:(NSError *_Nullable *_Nullable)error];
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+uint32_t maximumPathLengthVZLinuxRosettaUnixSocketCachingOptions()
+{
+#ifdef INCLUDE_TARGET_OSX_14
+    if (@available(macOS 14, *)) {
+        return (uint32_t)[VZLinuxRosettaUnixSocketCachingOptions maximumPathLength];
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+
+void setOptionsVZLinuxRosettaDirectoryShare(void *rosetta, void *cachingOptions)
+{
+#ifdef INCLUDE_TARGET_OSX_14
+    if (@available(macOS 14, *)) {
+        [(VZLinuxRosettaDirectoryShare *)rosetta setOptions:(VZLinuxRosettaCachingOptions *)cachingOptions];
+        return;
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}

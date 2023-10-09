@@ -588,7 +588,13 @@ func (m *MacOSInstaller) Done() <-chan struct{} { return m.doneCh }
 // If this method is successful, the framework writes the file, and the VM state remains unchanged.
 //
 // If you want to listen status change events, use the "StateChangedNotify" method.
+//
+// This is only supported on macOS 14 and newer, error will
+// be returned on older versions.
 func (v *VirtualMachine) SaveMachineStateToPath(saveFilePath string) error {
+	if err := macOSAvailable(14); err != nil {
+		return err
+	}
 	cs := charWithGoString(saveFilePath)
 	defer cs.Free()
 	h, errCh := makeHandler()
@@ -610,7 +616,13 @@ func (v *VirtualMachine) SaveMachineStateToPath(saveFilePath string) error {
 // If this method is successful, the framework restores the VM and places it in the paused state.
 //
 // If you want to listen status change events, use the "StateChangedNotify" method.
+//
+// This is only supported on macOS 14 and newer, error will
+// be returned on older versions.
 func (v *VirtualMachine) RestoreMachineStateFromURL(saveFilePath string) error {
+	if err := macOSAvailable(14); err != nil {
+		return err
+	}
 	cs := charWithGoString(saveFilePath)
 	defer cs.Free()
 	h, errCh := makeHandler()

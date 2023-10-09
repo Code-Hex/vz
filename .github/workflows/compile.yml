@@ -49,6 +49,7 @@ jobs:
         run: make download_kernel
       - name: Unit Test
         run: make test
+        timeout-minutes: 3
       - name: Build Linux
         run: make -C example/linux
       - name: Build GUI Linux

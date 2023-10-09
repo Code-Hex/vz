@@ -47,9 +47,23 @@ const (
 	// This is the intermediate state between VirtualMachineStatePaused and VirtualMachineStateRunning.
 	VirtualMachineStateResuming
 
-	// VZVirtualMachineStateStopping The virtual machine is being stopped.
-	// This is the intermediate state between VZVirtualMachineStateRunning and VZVirtualMachineStateStop.
+	// VirtualMachineStateStopping The virtual machine is being stopped.
+	// This is the intermediate state between VirtualMachineStateRunning and VirtualMachineStateStop.
+	//
+	// Available on macOS 12.0 and above.
 	VirtualMachineStateStopping
+
+	// VirtualMachineStateSaving The virtual machine is being saved.
+	// This is the intermediate state between VirtualMachineStatePaused and VirtualMachineStatePaused
+	//
+	// Available on macOS 14.0 and above.
+	VirtualMachineStateSaving
+
+	// VirtualMachineStateRestoring	The virtual machine is being restored.
+	// This is the intermediate state between VirtualMachineStateStopped and either VirtualMachineStatePaused on success or VirtualMachineStateStopped on failure.
+	//
+	// Available on macOS 14.0 and above.
+	VirtualMachineStateRestoring
 )
 
 // VirtualMachine represents the entire state of a single virtual machine.

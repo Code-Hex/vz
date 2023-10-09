@@ -4,6 +4,9 @@
 package vz_test
 
 import (
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/Code-Hex/vz/v3"
@@ -33,4 +36,53 @@ func TestLinuxRosettaAvailabilityString(t *testing.T) {
 			t.Fatalf("want %q but got %q", tc.want, got)
 		}
 	}
+}
+
+func TestNewLinuxRosettaUnixSocketCachingOptions(t *testing.T) {
+	if vz.Available(14) {
+		t.Skip("NewLinuxRosettaUnixSocketCachingOptions is supported from macOS 14")
+	}
+	dir := t.TempDir()
+	t.Run("invalid filename length", func(t *testing.T) {
+		filename := filepath.Join(dir, strings.Repeat("a", 150)) + ".txt"
+		f, err := os.Create(filename)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer f.Close()
+
+		_, err = vz.NewLinuxRosettaUnixSocketCachingOptions(filename)
+		if err == nil {
+			t.Fatal("expected error")
+		}
+		if got := err.Error(); !strings.Contains(got, "maximum allowed length of") {
+			t.Fatalf("unexpected error: %q", got)
+		}
+	})
+	t.Run("invalid filename does not exists", func(t *testing.T) {
+		filename := "doesnotexists.txt"
+		_, err := vz.NewLinuxRosettaUnixSocketCachingOptions(filename)
+		if err == nil {
+			t.Fatal("expected error")
+		}
+		if got := err.Error(); !strings.Contains(got, "invalid path") {
+			t.Fatalf("unexpected error: %q", got)
+		}
+	})
+}
+
+func TestNewLinuxRosettaAbstractSocketCachingOptions(t *testing.T) {
+	if vz.Available(14) {
+		t.Skip("NewLinuxRosettaAbstractSocketCachingOptions is supported from macOS 14")
+	}
+	t.Run("invalid name length", func(t *testing.T) {
+		name := strings.Repeat("a", 350)
+		_, err := vz.NewLinuxRosettaAbstractSocketCachingOptions(name)
+		if err == nil {
+			t.Fatal("expected error")
+		}
+		if got := err.Error(); !strings.Contains(got, "maximum allowed length of") {
+			t.Fatalf("unexpected error: %q", got)
+		}
+	})
 }

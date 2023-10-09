@@ -9,6 +9,7 @@ package vz
 # include "virtualization_11.h"
 # include "virtualization_12_arm64.h"
 # include "virtualization_13_arm64.h"
+# include "virtualization_14_arm64.h"
 */
 import "C"
 import (
@@ -576,3 +577,57 @@ func (m *MacOSInstaller) FractionCompleted() float64 {
 
 // Done recieves a notification that indicates the install process is completed.
 func (m *MacOSInstaller) Done() <-chan struct{} { return m.doneCh }
+
+// SaveMachineStateToPath saves the state of a VM.
+//
+// You can use the contents of this file later to restore the state of the paused VM.
+// This call fails if the VM isn’t in a paused state or if the Virtualization framework can’t
+// save the VM. If this method fails, the framework returns an error, and the VM state remains
+// unchanged.
+//
+// If this method is successful, the framework writes the file, and the VM state remains unchanged.
+//
+// If you want to listen status change events, use the "StateChangedNotify" method.
+//
+// This is only supported on macOS 14 and newer, error will
+// be returned on older versions.
+func (v *VirtualMachine) SaveMachineStateToPath(saveFilePath string) error {
+	if err := macOSAvailable(14); err != nil {
+		return err
+	}
+	cs := charWithGoString(saveFilePath)
+	defer cs.Free()
+	h, errCh := makeHandler()
+	handle := cgo.NewHandle(h)
+	defer handle.Delete()
+	C.saveMachineStateToURLWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle), cs.CString())
+	return <-errCh
+}
+
+// RestoreMachineStateFromURL restores a VM from a previously saved state.
+//
+// The method fails if any of the following conditions are true:
+//   - The Virtualization framework can’t open or read the file.
+//   - The file contents are incompatible with the current configuration.
+//   - The VM you’re trying to restore isn’t in the VirtualMachineStateStopped state.
+//
+// If this method fails, the framework returns an error, and the VM state doesn’t change.
+//
+// If this method is successful, the framework restores the VM and places it in the paused state.
+//
+// If you want to listen status change events, use the "StateChangedNotify" method.
+//
+// This is only supported on macOS 14 and newer, error will
+// be returned on older versions.
+func (v *VirtualMachine) RestoreMachineStateFromURL(saveFilePath string) error {
+	if err := macOSAvailable(14); err != nil {
+		return err
+	}
+	cs := charWithGoString(saveFilePath)
+	defer cs.Free()
+	h, errCh := makeHandler()
+	handle := cgo.NewHandle(h)
+	defer handle.Delete()
+	C.restoreMachineStateFromURLWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle), cs.CString())
+	return <-errCh
+}

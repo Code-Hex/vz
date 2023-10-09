@@ -311,14 +311,6 @@ func TestAvailableVersion(t *testing.T) {
 
 		majorMinorVersion = 13
 		cases := map[string]func() error{
-			"NewLinuxRosettaUnixSocketCachingOptions": func() error {
-				_, err := NewLinuxRosettaUnixSocketCachingOptions(filename)
-				return err
-			},
-			"NewLinuxRosettaAbstractSocketCachingOptions": func() error {
-				_, err := NewLinuxRosettaAbstractSocketCachingOptions("datagram")
-				return err
-			},
 			"NewNVMExpressControllerDeviceConfiguration": func() error {
 				_, err := NewNVMExpressControllerDeviceConfiguration(nil)
 				return err
@@ -326,12 +318,6 @@ func TestAvailableVersion(t *testing.T) {
 			"NewDiskBlockDeviceStorageDeviceAttachment": func() error {
 				_, err := NewDiskBlockDeviceStorageDeviceAttachment(nil, false, DiskSynchronizationModeFull)
 				return err
-			},
-			"SaveMachineStateToPath": func() error {
-				return (*VirtualMachine)(nil).SaveMachineStateToPath(filename)
-			},
-			"RestoreMachineStateFromURL": func() error {
-				return (*VirtualMachine)(nil).RestoreMachineStateFromURL(filename)
 			},
 		}
 		for name, fn := range cases {

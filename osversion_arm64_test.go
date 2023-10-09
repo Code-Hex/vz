@@ -6,6 +6,8 @@ package vz
 import (
 	"context"
 	"errors"
+	"os"
+	"path/filepath"
 	"sync"
 	"testing"
 )
@@ -85,6 +87,44 @@ func TestAvailableVersionArm64(t *testing.T) {
 			"MacOSGuestAutomountTag": func() error {
 				_, err := MacOSGuestAutomountTag()
 				return err
+			},
+		}
+		for name, fn := range cases {
+			err := fn()
+			if !errors.Is(err, ErrUnsupportedOSVersion) {
+				t.Fatalf("unexpected error %v in %s", err, name)
+			}
+		}
+	})
+
+	t.Run("macOS 14", func(t *testing.T) {
+		if macOSBuildTargetAvailable(14) != nil {
+			t.Skip("disabled build target for macOS 13")
+		}
+
+		dir := t.TempDir()
+		filename := filepath.Join(dir, "tmpfile.txt")
+		f, err := os.Create(filename)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer f.Close()
+
+		majorMinorVersion = 13
+		cases := map[string]func() error{
+			"NewLinuxRosettaUnixSocketCachingOptions": func() error {
+				_, err := NewLinuxRosettaUnixSocketCachingOptions(filename)
+				return err
+			},
+			"NewLinuxRosettaAbstractSocketCachingOptions": func() error {
+				_, err := NewLinuxRosettaAbstractSocketCachingOptions("datagram")
+				return err
+			},
+			"SaveMachineStateToPath": func() error {
+				return (*VirtualMachine)(nil).SaveMachineStateToPath(filename)
+			},
+			"RestoreMachineStateFromURL": func() error {
+				return (*VirtualMachine)(nil).RestoreMachineStateFromURL(filename)
 			},
 		}
 		for name, fn := range cases {

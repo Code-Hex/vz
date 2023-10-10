@@ -170,6 +170,8 @@ func newVirtualizationMachine(
 	// does not seem to have a connection timeout set.
 	if vz.Available(12) {
 		time.Sleep(5 * time.Second)
+	} else {
+		time.Sleep(time.Second)
 	}
 
 	tempDelay := time.Second // how long to sleep on accept failure

@@ -605,7 +605,7 @@ void *newVZVirtioSocketListener(uintptr_t cgoHandle)
 void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQueue, void *listener, uint32_t port)
 {
     if (@available(macOS 11, *)) {
-        dispatch_sync((dispatch_queue_t)vmQueue, ^{
+        dispatch_async((dispatch_queue_t)vmQueue, ^{
             [(VZVirtioSocketDevice *)socketDevice setSocketListener:(VZVirtioSocketListener *)listener forPort:port];
         });
         return;

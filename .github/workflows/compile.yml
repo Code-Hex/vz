@@ -23,7 +23,7 @@ jobs:
   build:
     needs: formatting-check
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 6
+    timeout-minutes: 8
     strategy:
       fail-fast: false
       matrix:
@@ -38,10 +38,9 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go }}
-          cache: true
       - name: vet
         run: go vet ./...
       - name: Download Linux kernel

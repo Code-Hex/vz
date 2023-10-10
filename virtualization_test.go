@@ -178,7 +178,7 @@ RETRY:
 		conn, err := socketDevice.Connect(2222)
 		if err != nil {
 			var nserr *vz.NSError
-			if !errors.As(err, &nserr) || i > 5 {
+			if !errors.As(err, &nserr) || i > 8 {
 				t.Fatal(err)
 			}
 			if nserr.Code == int(syscall.ECONNRESET) {

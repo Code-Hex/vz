@@ -23,15 +23,15 @@ jobs:
   build:
     needs: formatting-check
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 6
     strategy:
       fail-fast: false
       matrix:
         os:
         - macOS-11
         - macOS-12
+        - macOS-13
         go:
-        - '^1.18'
-        - '^1.19'
         - '^1.20'
         - '^1.21'
     steps:
@@ -48,6 +48,7 @@ jobs:
         run: make download_kernel
       - name: Unit Test
         run: make test
+        timeout-minutes: 3
       - name: Build Linux
         run: make -C example/linux
       - name: Build GUI Linux

@@ -174,19 +174,20 @@ func newVirtualizationMachine(
 		time.Sleep(time.Second)
 	}
 
+	const max = 10
 	tempDelay := time.Second // how long to sleep on accept failure
 RETRY:
 	for i := 1; ; i++ {
 		conn, err := socketDevice.Connect(2222)
 		if err != nil {
 			var nserr *vz.NSError
-			if !errors.As(err, &nserr) || i > 8 {
+			if !errors.As(err, &nserr) || i > max {
 				t.Fatal(err)
 			}
 			if nserr.Code == int(syscall.ECONNRESET) {
 				t.Logf("retry vsock connect: %d", i)
 				time.Sleep(tempDelay)
-				tempDelay += time.Duration(i*10) * time.Millisecond
+				tempDelay += time.Duration(i) * time.Second
 				continue RETRY
 			}
 			t.Fatalf("failed to connect vsock: %v", err)

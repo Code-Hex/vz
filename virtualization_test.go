@@ -117,11 +117,12 @@ func newVirtualizationMachine(
 ) *Container {
 	t.Helper()
 RETRY:
-	for {
+	for i := 1; ; i++ {
 		container, err := newVirtualizationMachineErr(configs...)
 		if err != nil {
 			if isECONNRESET(err) {
 				time.Sleep(time.Second)
+				t.Logf("retry: %d", i)
 				continue RETRY
 			}
 			t.Fatal(err)

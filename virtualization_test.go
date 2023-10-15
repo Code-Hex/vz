@@ -272,7 +272,12 @@ func TestRun(t *testing.T) {
 	// waitState(t, 5*time.Second, vm, vz.VirtualMachineStateStopping)
 	// waitState(t, 5*time.Second, vm, vz.VirtualMachineStateStopped)
 
-	sshSession.Run("poweroff")
+	if vz.Available(12) {
+		sshSession.Run("poweroff")
+	} else {
+		vm.Stop()
+		waitState(t, timeout, vm, vz.VirtualMachineStateStopping)
+	}
 
 	waitState(t, timeout, vm, vz.VirtualMachineStateStopped)
 

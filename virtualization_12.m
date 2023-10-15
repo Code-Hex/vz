@@ -10,7 +10,7 @@ bool vmCanStop(void *machine, void *queue)
 {
     if (@available(macOS 12, *)) {
         __block BOOL result;
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             result = ((VZVirtualMachine *)machine).canStop;
         });
         return (bool)result;
@@ -23,7 +23,7 @@ void stopWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle)
 {
     if (@available(macOS 12, *)) {
         vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine stopWithCompletionHandler:handler];
         });
         Block_release(handler);

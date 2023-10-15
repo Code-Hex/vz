@@ -773,7 +773,7 @@ bool requestStopVirtualMachine(void *machine, void *queue, void **error)
 {
     if (@available(macOS 11, *)) {
         __block BOOL ret;
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             ret = [(VZVirtualMachine *)machine requestStopWithError:(NSError *_Nullable *_Nullable)error];
         });
         return (bool)ret;
@@ -794,7 +794,7 @@ void startWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle)
 {
     if (@available(macOS 11, *)) {
         vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine startWithCompletionHandler:handler];
         });
         Block_release(handler);
@@ -808,7 +808,7 @@ void pauseWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle)
 {
     if (@available(macOS 11, *)) {
         vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine pauseWithCompletionHandler:handler];
         });
         Block_release(handler);
@@ -822,7 +822,7 @@ void resumeWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle
 {
     if (@available(macOS 11, *)) {
         vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine resumeWithCompletionHandler:handler];
         });
         Block_release(handler);
@@ -837,7 +837,7 @@ bool vmCanStart(void *machine, void *queue)
 {
     if (@available(macOS 11, *)) {
         __block BOOL result;
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             result = ((VZVirtualMachine *)machine).canStart;
         });
         return (bool)result;
@@ -850,7 +850,7 @@ bool vmCanPause(void *machine, void *queue)
 {
     if (@available(macOS 11, *)) {
         __block BOOL result;
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             result = ((VZVirtualMachine *)machine).canPause;
         });
         return (bool)result;
@@ -863,7 +863,7 @@ bool vmCanResume(void *machine, void *queue)
 {
     if (@available(macOS 11, *)) {
         __block BOOL result;
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             result = ((VZVirtualMachine *)machine).canResume;
         });
         return (bool)result;
@@ -876,7 +876,7 @@ bool vmCanRequestStop(void *machine, void *queue)
 {
     if (@available(macOS 11, *)) {
         __block BOOL result;
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             result = ((VZVirtualMachine *)machine).canRequestStop;
         });
         return (bool)result;

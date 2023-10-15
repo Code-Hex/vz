@@ -193,6 +193,8 @@ RETRY:
 					waitState(t, 2*time.Second, vm, vz.VirtualMachineStateStopping)
 					waitState(t, 2*time.Second, vm, vz.VirtualMachineStateStopped)
 					vm.Start()
+					waitState(t, 2*time.Second, vm, vz.VirtualMachineStateStarting)
+					waitState(t, 2*time.Second, vm, vz.VirtualMachineStateRunning)
 					sleep()
 				}
 				continue RETRY

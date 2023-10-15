@@ -164,18 +164,20 @@ func newVirtualizationMachine(
 
 	sshConfig := testhelper.NewSshConfig("root", "passwd")
 
-	// Workaround for macOS 11
-	//
-	// This is a workaround. This version of the API does not immediately return an error and
-	// does not seem to have a connection timeout set.
-	if vz.Available(12) {
-		time.Sleep(5 * time.Second)
-	} else {
-		time.Sleep(time.Second)
+	sleep := func() {
+		// Workaround for macOS 11
+		//
+		// This is a workaround. This version of the API does not immediately return an error and
+		// does not seem to have a connection timeout set.
+		if vz.Available(12) {
+			time.Sleep(5 * time.Second)
+		} else {
+			time.Sleep(time.Second)
+		}
 	}
+	sleep()
 
-	const max = 10
-	tempDelay := time.Second // how long to sleep on accept failure
+	const max = 8
 RETRY:
 	for i := 1; ; i++ {
 		conn, err := socketDevice.Connect(2222)
@@ -186,8 +188,13 @@ RETRY:
 			}
 			if nserr.Code == int(syscall.ECONNRESET) {
 				t.Logf("retry vsock connect: %d", i)
-				time.Sleep(tempDelay)
-				tempDelay += time.Duration(i) * time.Second
+				if !vz.Available(12) {
+					vm.Stop()
+					waitState(t, 2*time.Second, vm, vz.VirtualMachineStateStopping)
+					waitState(t, 2*time.Second, vm, vz.VirtualMachineStateStopped)
+					vm.Start()
+					sleep()
+				}
 				continue RETRY
 			}
 			t.Fatalf("failed to connect vsock: %v", err)

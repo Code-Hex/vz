@@ -622,7 +622,7 @@ void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQ
 void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *vmQueue, uint32_t port)
 {
     if (@available(macOS 11, *)) {
-        dispatch_sync((dispatch_queue_t)vmQueue, ^{
+        dispatch_async((dispatch_queue_t)vmQueue, ^{
             [(VZVirtioSocketDevice *)socketDevice removeSocketListenerForPort:port];
         });
         return;
@@ -837,7 +837,7 @@ bool vmCanStart(void *machine, void *queue)
 {
     if (@available(macOS 11, *)) {
         __block BOOL result;
-        dispatch_async((dispatch_queue_t)queue, ^{
+        dispatch_sync((dispatch_queue_t)queue, ^{
             result = ((VZVirtualMachine *)machine).canStart;
         });
         return (bool)result;
@@ -850,7 +850,7 @@ bool vmCanPause(void *machine, void *queue)
 {
     if (@available(macOS 11, *)) {
         __block BOOL result;
-        dispatch_async((dispatch_queue_t)queue, ^{
+        dispatch_sync((dispatch_queue_t)queue, ^{
             result = ((VZVirtualMachine *)machine).canPause;
         });
         return (bool)result;
@@ -863,7 +863,7 @@ bool vmCanResume(void *machine, void *queue)
 {
     if (@available(macOS 11, *)) {
         __block BOOL result;
-        dispatch_async((dispatch_queue_t)queue, ^{
+        dispatch_sync((dispatch_queue_t)queue, ^{
             result = ((VZVirtualMachine *)machine).canResume;
         });
         return (bool)result;
@@ -876,7 +876,7 @@ bool vmCanRequestStop(void *machine, void *queue)
 {
     if (@available(macOS 11, *)) {
         __block BOOL result;
-        dispatch_async((dispatch_queue_t)queue, ^{
+        dispatch_sync((dispatch_queue_t)queue, ^{
             result = ((VZVirtualMachine *)machine).canRequestStop;
         });
         return (bool)result;

@@ -10,7 +10,7 @@ bool vmCanStop(void *machine, void *queue)
 {
     if (@available(macOS 12, *)) {
         __block BOOL result;
-        dispatch_async((dispatch_queue_t)queue, ^{
+        dispatch_sync((dispatch_queue_t)queue, ^{
             result = ((VZVirtualMachine *)machine).canStop;
         });
         return (bool)result;

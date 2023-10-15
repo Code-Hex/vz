@@ -345,7 +345,7 @@ func TestStop(t *testing.T) {
 	vm := container.VirtualMachine
 
 	if got := vm.CanStop(); !got {
-		t.Fatal("want CanRequestStop is true")
+		t.Fatal("want CanStop is true")
 	}
 	if err := vm.Stop(); err != nil {
 		t.Fatal(err)

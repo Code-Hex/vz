@@ -22,4 +22,5 @@ uint32_t maximumPathLengthVZLinuxRosettaUnixSocketCachingOptions();
 uint32_t maximumNameLengthVZLinuxRosettaAbstractSocketCachingOptions();
 void setOptionsVZLinuxRosettaDirectoryShare(void *rosetta, void *cachingOptions);
 void *newVZMacKeyboardConfiguration();
+bool validateSaveRestoreSupportWithError(void *config, void **error);
 #endif

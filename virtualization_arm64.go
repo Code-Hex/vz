@@ -587,6 +587,9 @@ func (m *MacOSInstaller) Done() <-chan struct{} { return m.doneCh }
 //
 // If this method is successful, the framework writes the file, and the VM state remains unchanged.
 //
+// Note that If you want to implement proper error handling, please make sure to call the
+// `(*VirtualMachineConfiguration).ValidateSaveRestoreSupport` method before calling this method.
+//
 // If you want to listen status change events, use the "StateChangedNotify" method.
 //
 // This is only supported on macOS 14 and newer, error will
@@ -614,6 +617,9 @@ func (v *VirtualMachine) SaveMachineStateToPath(saveFilePath string) error {
 // If this method fails, the framework returns an error, and the VM state doesn’t change.
 //
 // If this method is successful, the framework restores the VM and places it in the paused state.
+//
+// Note that If you want to implement proper error handling, please make sure to call the
+// `(*VirtualMachineConfiguration).ValidateSaveRestoreSupport` method before calling this method.
 //
 // If you want to listen status change events, use the "StateChangedNotify" method.
 //

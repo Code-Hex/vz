@@ -156,3 +156,23 @@ void *newVZMacKeyboardConfiguration()
 #endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
+
+/*!
+ @abstract Validate the configuration is savable.
+ @discussion
+    Verify that a virtual machine with this configuration is savable.
+    Not all configuration options can be safely saved and restored from file.
+    If this evaluates to NO, the caller should expect future calls to saveMachineStateToURL:completionHandler: to fail.
+ @param error If not nil, assigned with an error describing the unsupported configuration option.
+ @return YES if the configuration is savable.
+ */
+bool validateSaveRestoreSupportWithError(void *config, void **error)
+{
+#ifdef INCLUDE_TARGET_OSX_14
+    if (@available(macOS 14, *)) {
+        return (bool)[(VZVirtualMachineConfiguration *)config
+            validateSaveRestoreSupportWithError:(NSError *_Nullable *_Nullable)error];
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}

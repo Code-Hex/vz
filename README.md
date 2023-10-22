@@ -132,6 +132,12 @@ $ make download_kernel
 $ make test
 ```
 
+## Which projects use this library?
+
+- [vfkit](https://github.com/crc-org/vfkit) is a macOS command-line hypervisor for Apple and Intel CPUs that supports most of Apple's Virtualization Framework features.
+- [Lima](https://lima-vm.io/) launches Linux virtual machines with automatic file sharing and port forwarding (similar to WSL2).
+- [linuxkit](https://github.com/linuxkit/linuxkit) is a toolkit for building custom minimal, immutable Linux distributions.
+
 ## LICENSE
 
 MIT License

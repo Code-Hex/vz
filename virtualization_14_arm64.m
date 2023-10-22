@@ -151,7 +151,7 @@ void *newVZMacKeyboardConfiguration()
 {
 #ifdef INCLUDE_TARGET_OSX_14
     if (@available(macOS 14, *)) {
-        return [[VZMacTrackpadConfiguration alloc] init];
+        return [[VZMacKeyboardConfiguration alloc] init];
     }
 #endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();

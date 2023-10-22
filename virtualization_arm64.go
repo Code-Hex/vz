@@ -598,6 +598,9 @@ func (v *VirtualMachine) SaveMachineStateToPath(saveFilePath string) error {
 	if err := macOSAvailable(14); err != nil {
 		return err
 	}
+	if _, err := v.config.ValidateSaveRestoreSupport(); err != nil {
+		return err
+	}
 	cs := charWithGoString(saveFilePath)
 	defer cs.Free()
 	h, errCh := makeHandler()
@@ -627,6 +630,9 @@ func (v *VirtualMachine) SaveMachineStateToPath(saveFilePath string) error {
 // be returned on older versions.
 func (v *VirtualMachine) RestoreMachineStateFromURL(saveFilePath string) error {
 	if err := macOSAvailable(14); err != nil {
+		return err
+	}
+	if _, err := v.config.ValidateSaveRestoreSupport(); err != nil {
 		return err
 	}
 	cs := charWithGoString(saveFilePath)

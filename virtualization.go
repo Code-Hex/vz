@@ -92,6 +92,8 @@ type VirtualMachine struct {
 	machineState  *machineState
 
 	finalizeOnce sync.Once
+
+	config *VirtualMachineConfiguration
 }
 
 type machineState struct {
@@ -134,6 +136,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 		),
 		dispatchQueue: dispatchQueue,
 		machineState:  machineState,
+		config:        config,
 	}
 
 	objc.SetFinalizer(v, func(self *VirtualMachine) {

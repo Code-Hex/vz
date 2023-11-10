@@ -77,6 +77,17 @@ func run(ctx context.Context) error {
 		}
 	}()
 
+	go func() {
+		if !vm.CanStop() {
+			log.Println("cannot stop vm forcefully")
+			return
+		}
+		time.Sleep(10 * time.Second)
+		log.Println("calling vm.Stop()")
+
+		vm.Stop()
+	}()
+
 	// cleanup is this function is useful when finished graphic application.
 	cleanup := func() {
 		for i := 1; vm.CanRequestStop(); i++ {

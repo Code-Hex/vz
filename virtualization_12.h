@@ -12,7 +12,7 @@
 #define NSURLComponents NSURLComponents
 
 bool vmCanStop(void *machine, void *queue);
-void stopWithCompletionHandler(void *machine, void *queue, void *completionHandler);
+void stopWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle);
 
 void *newVZGenericPlatformConfiguration();
 

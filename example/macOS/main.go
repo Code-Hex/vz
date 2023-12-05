@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -85,7 +86,15 @@ func runVM(ctx context.Context) error {
 				log.Println("call stop")
 				if err := vm.Stop(); err != nil {
 					log.Println("stop with error", err)
+					return
 				}
+				// if err := vm.Pause(); err != nil {
+				// 	log.Println("pause with error", err)
+				// 	return
+				// }
+				// if err := vm.SaveMachineStateToPath("savestate"); err != nil {
+				// 	log.Println("save state with error", err)
+				// }
 			}
 		}
 		log.Println("finished cleanup")
@@ -173,8 +182,15 @@ func createNetworkDeviceConfiguration() (*vz.VirtioNetworkDeviceConfiguration, e
 	return vz.NewVirtioNetworkDeviceConfiguration(natAttachment)
 }
 
-func createKeyboardConfiguration() (*vz.USBKeyboardConfiguration, error) {
-	return vz.NewUSBKeyboardConfiguration()
+func createKeyboardConfiguration() (vz.KeyboardConfiguration, error) {
+	config, err := vz.NewMacKeyboardConfiguration()
+	if err != nil {
+		if errors.Is(err, vz.ErrUnsupportedOSVersion) {
+			return vz.NewUSBKeyboardConfiguration()
+		}
+		return nil, err
+	}
+	return config, nil
 }
 
 func createAudioDeviceConfiguration() (*vz.VirtioSoundDeviceConfiguration, error) {
@@ -292,6 +308,12 @@ func setupVMConfiguration(platformConfig vz.PlatformConfiguration) (*vz.VirtualM
 	if !validated {
 		return nil, fmt.Errorf("invalid configuration")
 	}
+
+	// If you want to try this one, you need to comment out a few of configs.
+	//
+	// if _, err := config.ValidateSaveRestoreSupport(); err != nil {
+	// 	return nil, fmt.Errorf("failed to validate save restore configuration: %w", err)
+	// }
 
 	return config, nil
 }

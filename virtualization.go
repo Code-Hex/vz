@@ -47,9 +47,23 @@ const (
 	// This is the intermediate state between VirtualMachineStatePaused and VirtualMachineStateRunning.
 	VirtualMachineStateResuming
 
-	// VZVirtualMachineStateStopping The virtual machine is being stopped.
-	// This is the intermediate state between VZVirtualMachineStateRunning and VZVirtualMachineStateStop.
+	// VirtualMachineStateStopping The virtual machine is being stopped.
+	// This is the intermediate state between VirtualMachineStateRunning and VirtualMachineStateStop.
+	//
+	// Available on macOS 12.0 and above.
 	VirtualMachineStateStopping
+
+	// VirtualMachineStateSaving The virtual machine is being saved.
+	// This is the intermediate state between VirtualMachineStatePaused and VirtualMachineStatePaused
+	//
+	// Available on macOS 14.0 and above.
+	VirtualMachineStateSaving
+
+	// VirtualMachineStateRestoring	The virtual machine is being restored.
+	// This is the intermediate state between VirtualMachineStateStopped and either VirtualMachineStatePaused on success or VirtualMachineStateStopped on failure.
+	//
+	// Available on macOS 14.0 and above.
+	VirtualMachineStateRestoring
 )
 
 // VirtualMachine represents the entire state of a single virtual machine.
@@ -75,9 +89,11 @@ type VirtualMachine struct {
 
 	*pointer
 	dispatchQueue unsafe.Pointer
-	stateHandle   *machineState
+	machineState  *machineState
 
 	finalizeOnce sync.Once
+
+	config *VirtualMachineConfiguration
 }
 
 type machineState struct {
@@ -103,28 +119,29 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 	cs := (*char)(objc.GetUUID())
 	dispatchQueue := C.makeDispatchQueue(cs.CString())
 
-	stateHandle := &machineState{
+	machineState := &machineState{
 		state:       VirtualMachineState(0),
 		stateNotify: infinity.NewChannel[VirtualMachineState](),
 	}
 
-	stateHandlePtr := cgo.NewHandle(stateHandle)
+	stateHandle := cgo.NewHandle(machineState)
 	v := &VirtualMachine{
 		id: cs.String(),
 		pointer: objc.NewPointer(
 			C.newVZVirtualMachineWithDispatchQueue(
 				objc.Ptr(config),
 				dispatchQueue,
-				unsafe.Pointer(&stateHandlePtr),
+				C.uintptr_t(stateHandle),
 			),
 		),
 		dispatchQueue: dispatchQueue,
-		stateHandle:   stateHandle,
+		machineState:  machineState,
+		config:        config,
 	}
 
 	objc.SetFinalizer(v, func(self *VirtualMachine) {
 		self.finalize()
-		stateHandlePtr.Delete()
+		stateHandle.Delete()
 	})
 	return v, nil
 }
@@ -155,11 +172,11 @@ func (v *VirtualMachine) SocketDevices() []*VirtioSocketDevice {
 }
 
 //export changeStateOnObserver
-func changeStateOnObserver(newStateRaw C.int, cgoHandlerPtr unsafe.Pointer) {
-	stateHandler := *(*cgo.Handle)(cgoHandlerPtr)
+func changeStateOnObserver(newStateRaw C.int, cgoHandleUintptr C.uintptr_t) {
+	stateHandle := cgo.Handle(cgoHandleUintptr)
 	// I expected it will not cause panic.
 	// if caused panic, that's unexpected behavior.
-	v, _ := stateHandler.Value().(*machineState)
+	v, _ := stateHandle.Value().(*machineState)
 	v.mu.Lock()
 	newState := VirtualMachineState(newStateRaw)
 	v.state = newState
@@ -169,16 +186,16 @@ func changeStateOnObserver(newStateRaw C.int, cgoHandlerPtr unsafe.Pointer) {
 
 // State represents execution state of the virtual machine.
 func (v *VirtualMachine) State() VirtualMachineState {
-	v.stateHandle.mu.RLock()
-	defer v.stateHandle.mu.RUnlock()
-	return v.stateHandle.state
+	v.machineState.mu.RLock()
+	defer v.machineState.mu.RUnlock()
+	return v.machineState.state
 }
 
 // StateChangedNotify gets notification is changed execution state of the virtual machine.
 func (v *VirtualMachine) StateChangedNotify() <-chan VirtualMachineState {
-	v.stateHandle.mu.RLock()
-	defer v.stateHandle.mu.RUnlock()
-	return v.stateHandle.stateNotify.Out()
+	v.machineState.mu.RLock()
+	defer v.machineState.mu.RUnlock()
+	return v.machineState.stateNotify.Out()
 }
 
 // CanStart returns true if the machine is in a state that can be started.
@@ -213,10 +230,10 @@ func (v *VirtualMachine) CanStop() bool {
 }
 
 //export virtualMachineCompletionHandler
-func virtualMachineCompletionHandler(cgoHandlerPtr, errPtr unsafe.Pointer) {
-	cgoHandler := *(*cgo.Handle)(cgoHandlerPtr)
+func virtualMachineCompletionHandler(cgoHandleUintptr C.uintptr_t, errPtr unsafe.Pointer) {
+	cgoHandle := cgo.Handle(cgoHandleUintptr)
 
-	handler := cgoHandler.Value().(func(error))
+	handler := cgoHandle.Value().(func(error))
 
 	if err := newNSError(errPtr); err != nil {
 		handler(err)
@@ -255,18 +272,18 @@ func (v *VirtualMachine) Start(opts ...VirtualMachineStartOption) error {
 	}
 
 	h, errCh := makeHandler()
-	handler := cgo.NewHandle(h)
-	defer handler.Delete()
+	handle := cgo.NewHandle(h)
+	defer handle.Delete()
 
 	if o.macOSVirtualMachineStartOptionsPtr != nil {
 		C.startWithOptionsCompletionHandler(
 			objc.Ptr(v),
 			v.dispatchQueue,
 			o.macOSVirtualMachineStartOptionsPtr,
-			unsafe.Pointer(&handler),
+			C.uintptr_t(handle),
 		)
 	} else {
-		C.startWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, unsafe.Pointer(&handler))
+		C.startWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
 	}
 	return <-errCh
 }
@@ -276,9 +293,9 @@ func (v *VirtualMachine) Start(opts ...VirtualMachineStartOption) error {
 // If you want to listen status change events, use the "StateChangedNotify" method.
 func (v *VirtualMachine) Pause() error {
 	h, errCh := makeHandler()
-	handler := cgo.NewHandle(h)
-	defer handler.Delete()
-	C.pauseWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, unsafe.Pointer(&handler))
+	handle := cgo.NewHandle(h)
+	defer handle.Delete()
+	C.pauseWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
 	return <-errCh
 }
 
@@ -287,9 +304,9 @@ func (v *VirtualMachine) Pause() error {
 // If you want to listen status change events, use the "StateChangedNotify" method.
 func (v *VirtualMachine) Resume() error {
 	h, errCh := makeHandler()
-	handler := cgo.NewHandle(h)
-	defer handler.Delete()
-	C.resumeWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, unsafe.Pointer(&handler))
+	handle := cgo.NewHandle(h)
+	defer handle.Delete()
+	C.resumeWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
 	return <-errCh
 }
 
@@ -322,9 +339,9 @@ func (v *VirtualMachine) Stop() error {
 		return err
 	}
 	h, errCh := makeHandler()
-	handler := cgo.NewHandle(h)
-	defer handler.Delete()
-	C.stopWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, unsafe.Pointer(&handler))
+	handle := cgo.NewHandle(h)
+	defer handle.Delete()
+	C.stopWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
 	return <-errCh
 }
 

@@ -3,6 +3,8 @@ package vz
 import (
 	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"syscall"
@@ -294,6 +296,40 @@ func TestAvailableVersion(t *testing.T) {
 			})
 		}
 	})
+
+	t.Run("macOS 14", func(t *testing.T) {
+		if macOSBuildTargetAvailable(14) != nil {
+			t.Skip("disabled build target for macOS 14")
+		}
+		dir := t.TempDir()
+		filename := filepath.Join(dir, "tmpfile.txt")
+		f, err := os.Create(filename)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer f.Close()
+
+		majorMinorVersion = 13
+		cases := map[string]func() error{
+			"NewNVMExpressControllerDeviceConfiguration": func() error {
+				_, err := NewNVMExpressControllerDeviceConfiguration(nil)
+				return err
+			},
+			"NewDiskBlockDeviceStorageDeviceAttachment": func() error {
+				_, err := NewDiskBlockDeviceStorageDeviceAttachment(nil, false, DiskSynchronizationModeFull)
+				return err
+			},
+		}
+		for name, fn := range cases {
+			t.Run(name, func(t *testing.T) {
+				err := fn()
+				if !errors.Is(err, ErrUnsupportedOSVersion) {
+					t.Fatalf("unexpected error %v in %s", err, name)
+				}
+			})
+		}
+	})
+
 }
 
 func Test_fetchMajorMinorVersion(t *testing.T) {

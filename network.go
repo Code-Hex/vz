@@ -23,7 +23,6 @@ import (
 // virtual machine send and receive packets on the same physical interface but have distinct network layers.
 //
 // The BridgedNetwork can be used with a BridgedNetworkDeviceAttachment to set up a network device NetworkDeviceConfiguration.
-// TODO(codehex): implement...
 // see: https://developer.apple.com/documentation/virtualization/vzbridgednetworkinterface?language=objc
 type BridgedNetwork interface {
 	objc.NSObject
@@ -39,6 +38,10 @@ type BridgedNetwork interface {
 	LocalizedDisplayName() string
 }
 
+// NewBridgedNetwork creates a new BridgedNetwork with identifier.
+//
+// This is only supported on macOS 11 and newer, error will
+// be returned on older versions.
 func NetworkInterfaces() []BridgedNetwork {
 	nsArray := objc.NewNSArray(
 		C.VZBridgedNetworkInterface_networkInterfaces(),
@@ -61,11 +64,17 @@ func (*baseBridgedNetwork) NetworkInterfaces() []BridgedNetwork {
 	return NetworkInterfaces()
 }
 
+// Identifier returns the unique identifier for this interface.
+//
+// The identifier is the BSD name associated with the interface (e.g. "en0").
 func (b *baseBridgedNetwork) Identifier() string {
 	cstring := (*char)(C.VZBridgedNetworkInterface_identifier(objc.Ptr(b)))
 	return cstring.String()
 }
 
+// LocalizedDisplayName returns a display name if available (e.g. "Ethernet").
+//
+// If no display name is available, the identifier is returned.
 func (b *baseBridgedNetwork) LocalizedDisplayName() string {
 	cstring := (*char)(C.VZBridgedNetworkInterface_localizedDisplayName(objc.Ptr(b)))
 	return cstring.String()

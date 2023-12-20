@@ -62,17 +62,13 @@ func (*baseBridgedNetwork) NetworkInterfaces() []BridgedNetwork {
 }
 
 func (b *baseBridgedNetwork) Identifier() string {
-	nsStirng := objc.NewNSString(
-		C.VZBridgedNetworkInterface_identifier(objc.Ptr(b)),
-	)
-	return nsStirng.String()
+	cstring := (*char)(C.VZBridgedNetworkInterface_identifier(objc.Ptr(b)))
+	return cstring.String()
 }
 
 func (b *baseBridgedNetwork) LocalizedDisplayName() string {
-	nsStirng := objc.NewNSString(
-		C.VZBridgedNetworkInterface_localizedDisplayName(objc.Ptr(b)),
-	)
-	return nsStirng.String()
+	cstring := (*char)(C.VZBridgedNetworkInterface_localizedDisplayName(objc.Ptr(b)))
+	return cstring.String()
 }
 
 // Network device attachment using network address translation (NAT) with outside networks.

@@ -415,10 +415,10 @@ void *VZBridgedNetworkInterface_networkInterfaces()
 /*!
  @abstract Return the unique identifier for this interface. The identifier is the BSD name associated with the interface (e.g. "en0").
  */
-void *VZBridgedNetworkInterface_identifier(void *networkInterface)
+const char *VZBridgedNetworkInterface_identifier(void *networkInterface)
 {
     if (@available(macOS 11, *)) {
-        return [(VZBridgedNetworkInterface *)networkInterface identifier]; // NSString *
+        return [[(VZBridgedNetworkInterface *)networkInterface identifier] UTF8String];
     }
 
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
@@ -427,10 +427,10 @@ void *VZBridgedNetworkInterface_identifier(void *networkInterface)
 /*!
  @abstract Return a display name if available (e.g. "Ethernet").
  */
-void *VZBridgedNetworkInterface_localizedDisplayName(void *networkInterface)
+const char *VZBridgedNetworkInterface_localizedDisplayName(void *networkInterface)
 {
     if (@available(macOS 11, *)) {
-        return [(VZBridgedNetworkInterface *)networkInterface localizedDisplayName]; // NSString *
+        return [[(VZBridgedNetworkInterface *)networkInterface localizedDisplayName] UTF8String];
     }
 
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();

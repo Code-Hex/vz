@@ -393,6 +393,50 @@ void *newVZVirtioConsoleDeviceSerialPortConfiguration(void *attachment)
 }
 
 /*!
+ @abstract Return the list of network interfaces available for bridging.
+ @discussion
+    A bridged interface is shared between the virtual machine and the host system. Both host and virtual machine send and receive packets on the same physical interface but have distinct network layers.
+
+    VZBridgedNetworkInterface cannot be instantiated directly. It can be used with a VZBridgedNetworkDeviceAttachment to set up a network device VZNetworkDeviceConfiguration.
+
+    @seealso VZBridgedNetworkDeviceAttachment
+    @seealso VZNATNetworkDeviceAttachment
+    @seealso VZNetworkDeviceConfiguration
+ */
+void *VZBridgedNetworkInterface_networkInterfaces()
+{
+    if (@available(macOS 11, *)) {
+        return [VZBridgedNetworkInterface networkInterfaces]; // NSArray<VZBridgedNetworkInterface *>
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+/*!
+ @abstract Return the unique identifier for this interface. The identifier is the BSD name associated with the interface (e.g. "en0").
+ */
+const char *VZBridgedNetworkInterface_identifier(void *networkInterface)
+{
+    if (@available(macOS 11, *)) {
+        return [[(VZBridgedNetworkInterface *)networkInterface identifier] UTF8String];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+/*!
+ @abstract Return a display name if available (e.g. "Ethernet").
+ */
+const char *VZBridgedNetworkInterface_localizedDisplayName(void *networkInterface)
+{
+    if (@available(macOS 11, *)) {
+        return [[(VZBridgedNetworkInterface *)networkInterface localizedDisplayName] UTF8String];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+/*!
  @abstract Create a new Network device attachment bridging a host physical interface with a virtual network device.
  @param networkInterface a network interface that bridges a physical interface.
  @discussion

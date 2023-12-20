@@ -64,6 +64,9 @@ void setStorageDevicesVZVirtualMachineConfiguration(void *config,
 void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileDescriptor);
 void *newVZFileSerialPortAttachment(const char *filePath, bool shouldAppend, void **error);
 void *newVZVirtioConsoleDeviceSerialPortConfiguration(void *attachment);
+void *VZBridgedNetworkInterface_networkInterfaces(void);
+const char *VZBridgedNetworkInterface_identifier(void *networkInterface);
+const char *VZBridgedNetworkInterface_localizedDisplayName(void *networkInterface);
 void *newVZBridgedNetworkDeviceAttachment(void *networkInterface);
 void *newVZNATNetworkDeviceAttachment(void);
 void *newVZFileHandleNetworkDeviceAttachment(int fileDescriptor);

@@ -5,3 +5,4 @@ virtualization
 RestoreImage.ipsw
 testdata/*
 !testdata/.gitkeep
+.idea/

@@ -165,11 +165,30 @@
 
 @end
 
+API_AVAILABLE(macos(12.0))
+@interface VMStateObserver : NSObject
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
+@end
+
+@implementation VMStateObserver
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
+{
+    if ([keyPath isEqualToString:@"state"]) {
+        int newState = (int)[change[NSKeyValueChangeNewKey] integerValue];
+        if (newState == VZVirtualMachineStateStopped || newState == VZVirtualMachineStateError) {
+            [NSApp performSelectorOnMainThread:@selector(terminate:) withObject:context waitUntilDone:NO];
+            [object removeObserver:self forKeyPath:@"state"];
+        }
+    }
+}
+@end
+
 @implementation AppDelegate {
     VZVirtualMachine *_virtualMachine;
     VZVirtualMachineView *_virtualMachineView;
     CGFloat _windowWidth;
     CGFloat _windowHeight;
+    VMStateObserver *_observer;
 }
 
 - (instancetype)initWithVirtualMachine:(VZVirtualMachine *)virtualMachine
@@ -179,6 +198,11 @@
     self = [super init];
     _virtualMachine = virtualMachine;
     _virtualMachine.delegate = self;
+    _observer = [[VMStateObserver alloc] init];
+    [virtualMachine addObserver:_observer
+           forKeyPath:@"state"
+              options:NSKeyValueObservingOptionNew
+              context:(void *)self];
 
     // Setup virtual machine view configs
     VZVirtualMachineView *view = [[[VZVirtualMachineView alloc] init] autorelease];

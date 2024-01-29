@@ -16,3 +16,4 @@
 /* macOS 14 API */
 void *newVZNVMExpressControllerDeviceConfiguration(void *attachment);
 void *newVZDiskBlockDeviceStorageDeviceAttachment(int fileDescriptor, bool readOnly, int syncMode, void **error);
+void *newVZNetworkBlockDeviceStorageDeviceAttachment(const char *url, double timeout, bool forcedReadOnly, int syncMode, void **error);

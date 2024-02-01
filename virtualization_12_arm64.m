@@ -409,7 +409,7 @@ void *newVZMacOSInstaller(void *virtualMachine, void *vmQueue, const char *resto
         __block VZMacOSInstaller *ret;
         NSString *restoreImageFilePathNSString = [NSString stringWithUTF8String:restoreImageFilePath];
         NSURL *restoreImageFileURL = [NSURL fileURLWithPath:restoreImageFilePathNSString];
-        dispatch_sync((dispatch_queue_t)vmQueue, ^{
+        dispatch_async((dispatch_queue_t)vmQueue, ^{
             ret = [[VZMacOSInstaller alloc] initWithVirtualMachine:(VZVirtualMachine *)virtualMachine restoreImageURL:restoreImageFileURL];
         });
         return ret;
@@ -427,7 +427,7 @@ void installByVZMacOSInstaller(void *installerPtr, void *vmQueue, void *progress
 {
     if (@available(macOS 12, *)) {
         VZMacOSInstaller *installer = (VZMacOSInstaller *)installerPtr;
-        dispatch_sync((dispatch_queue_t)vmQueue, ^{
+        dispatch_async((dispatch_queue_t)vmQueue, ^{
             [installer installWithCompletionHandler:^(NSError *error) {
                 macOSInstallCompletionHandler(completionHandler, error);
             }];

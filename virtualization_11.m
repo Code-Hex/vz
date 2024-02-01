@@ -649,7 +649,7 @@ void *newVZVirtioSocketListener(uintptr_t cgoHandle)
 void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQueue, void *listener, uint32_t port)
 {
     if (@available(macOS 11, *)) {
-        dispatch_sync((dispatch_queue_t)vmQueue, ^{
+        dispatch_async((dispatch_queue_t)vmQueue, ^{
             [(VZVirtioSocketDevice *)socketDevice setSocketListener:(VZVirtioSocketListener *)listener forPort:port];
         });
         return;
@@ -666,7 +666,7 @@ void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQ
 void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *vmQueue, uint32_t port)
 {
     if (@available(macOS 11, *)) {
-        dispatch_sync((dispatch_queue_t)vmQueue, ^{
+        dispatch_async((dispatch_queue_t)vmQueue, ^{
             [(VZVirtioSocketDevice *)socketDevice removeSocketListenerForPort:port];
         });
         return;
@@ -817,7 +817,7 @@ bool requestStopVirtualMachine(void *machine, void *queue, void **error)
 {
     if (@available(macOS 11, *)) {
         __block BOOL ret;
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             ret = [(VZVirtualMachine *)machine requestStopWithError:(NSError *_Nullable *_Nullable)error];
         });
         return (bool)ret;
@@ -838,7 +838,7 @@ void startWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle)
 {
     if (@available(macOS 11, *)) {
         vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine startWithCompletionHandler:handler];
         });
         Block_release(handler);
@@ -852,7 +852,7 @@ void pauseWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle)
 {
     if (@available(macOS 11, *)) {
         vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine pauseWithCompletionHandler:handler];
         });
         Block_release(handler);
@@ -866,7 +866,7 @@ void resumeWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle
 {
     if (@available(macOS 11, *)) {
         vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine resumeWithCompletionHandler:handler];
         });
         Block_release(handler);

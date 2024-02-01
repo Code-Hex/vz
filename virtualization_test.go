@@ -115,6 +115,25 @@ func newVirtualizationMachine(
 	t *testing.T,
 	configs ...func(*vz.VirtualMachineConfiguration) error,
 ) *Container {
+	t.Helper()
+RETRY:
+	for i := 1; ; i++ {
+		container, err := newVirtualizationMachineErr(configs...)
+		if err != nil {
+			if isECONNRESET(err) {
+				time.Sleep(time.Second)
+				t.Logf("retry: %d", i)
+				continue RETRY
+			}
+			t.Fatal(err)
+		}
+		return container
+	}
+}
+
+func newVirtualizationMachineErr(
+	configs ...func(*vz.VirtualMachineConfiguration) error,
+) (*Container, error) {
 	vmlinuz := "./testdata/Image"
 	initramfs := "./testdata/initramfs.cpio.gz"
 	bootLoader, err := vz.NewLinuxBootLoader(
@@ -123,44 +142,49 @@ func newVirtualizationMachine(
 		vz.WithInitrd(initramfs),
 	)
 	if err != nil {
-		t.Fatal(err)
+		return nil, err
 	}
 
 	config, err := setupConfiguration(bootLoader)
 	if err != nil {
-		t.Fatal(err)
+		return nil, err
 	}
 	for _, setConfig := range configs {
 		if err := setConfig(config); err != nil {
-			t.Fatal(err)
+			return nil, err
 		}
 	}
 
 	validated, err := config.Validate()
 	if !validated || err != nil {
-		t.Fatal(validated, err)
+		return nil, fmt.Errorf("validated=%v: %w", validated, err)
 	}
 
 	vm, err := vz.NewVirtualMachine(config)
 	if err != nil {
-		t.Fatal(err)
+		return nil, err
 	}
 	socketDevices := vm.SocketDevices()
 	if len(socketDevices) != 1 {
-		t.Fatalf("want the number of socket devices is 1 but got %d", len(socketDevices))
+		return nil, fmt.Errorf("want the number of socket devices is 1 but got %d", len(socketDevices))
 	}
 	socketDevice := socketDevices[0]
 
 	if canStart := vm.CanStart(); !canStart {
-		t.Fatal("want CanStart is true")
+		return nil, fmt.Errorf("want CanStart is true")
 	}
 
 	if err := vm.Start(); err != nil {
-		t.Fatal(err)
+		return nil, err
 	}
 
-	waitState(t, 3*time.Second, vm, vz.VirtualMachineStateStarting)
-	waitState(t, 3*time.Second, vm, vz.VirtualMachineStateRunning)
+	timeout := 3 * time.Second
+	if err := waitStateErr(timeout, vm, vz.VirtualMachineStateStarting); err != nil {
+		return nil, err
+	}
+	if err := waitStateErr(timeout, vm, vz.VirtualMachineStateRunning); err != nil {
+		return nil, err
+	}
 
 	sshConfig := testhelper.NewSshConfig("root", "passwd")
 
@@ -170,47 +194,77 @@ func newVirtualizationMachine(
 	// does not seem to have a connection timeout set.
 	if vz.Available(12) {
 		time.Sleep(5 * time.Second)
+	} else {
+		time.Sleep(time.Second)
 	}
 
-RETRY:
-	for i := 1; ; i++ {
-		conn, err := socketDevice.Connect(2222)
-		if err != nil {
-			var nserr *vz.NSError
-			if !errors.As(err, &nserr) || i > 5 {
-				t.Fatal(err)
-			}
-			if nserr.Code == int(syscall.ECONNRESET) {
-				t.Logf("retry vsock connect: %d", i)
-				time.Sleep(time.Second)
-				continue RETRY
-			}
-			t.Fatalf("failed to connect vsock: %v", err)
+	stop := func() {
+		if vz.Available(12) {
+			vm.RequestStop()
+		} else {
+			vm.Stop()
 		}
 
-		sshClient, err := testhelper.NewSshClient(conn, ":22", sshConfig)
-		if err != nil {
-			conn.Close()
-			t.Fatalf("failed to create a new ssh client: %v", err)
-		}
-
-		return &Container{
-			VirtualMachine: vm,
-			Client:         sshClient,
+	LOOP:
+		for {
+			select {
+			case got := <-vm.StateChangedNotify():
+				if got == vz.VirtualMachineStateStopping {
+					continue LOOP
+				}
+				if got == vz.VirtualMachineStateStopped {
+					return
+				}
+			case <-time.After(timeout):
+				return
+			}
 		}
 	}
+
+	conn, err := socketDevice.Connect(2222)
+	if err != nil {
+		stop()
+		return nil, fmt.Errorf("failed to connect vsock: %w", err)
+	}
+
+	sshClient, err := testhelper.NewSshClient(conn, ":22", sshConfig)
+	if err != nil {
+		conn.Close()
+		stop()
+		return nil, fmt.Errorf("failed to create a new ssh client: %w", err)
+	}
+
+	return &Container{
+		VirtualMachine: vm,
+		Client:         sshClient,
+	}, nil
+}
+
+func isECONNRESET(err error) bool {
+	var nserr *vz.NSError
+	if !errors.As(err, &nserr) {
+		return false
+	}
+	return nserr.Code == int(syscall.ECONNRESET)
 }
 
 func waitState(t *testing.T, wait time.Duration, vm *vz.VirtualMachine, want vz.VirtualMachineState) {
 	t.Helper()
+	if err := waitStateErr(wait, vm, want); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func waitStateErr(wait time.Duration, vm *vz.VirtualMachine, want vz.VirtualMachineState) error {
 	select {
 	case got := <-vm.StateChangedNotify():
 		if want != got {
-			t.Fatalf("unexpected state want %d but got %d", want, got)
+			return fmt.Errorf("unexpected state want %d but got %d", want, got)
 		}
 	case <-time.After(wait):
-		t.Fatal("failed to wait state changed notification")
+		return fmt.Errorf("failed to wait state changed notification")
 	}
+	return nil
 }
 
 func TestRun(t *testing.T) {
@@ -267,7 +321,12 @@ func TestRun(t *testing.T) {
 	// waitState(t, 5*time.Second, vm, vz.VirtualMachineStateStopping)
 	// waitState(t, 5*time.Second, vm, vz.VirtualMachineStateStopped)
 
-	sshSession.Run("poweroff")
+	if vz.Available(12) {
+		sshSession.Run("poweroff")
+	} else {
+		vm.Stop()
+		waitState(t, timeout, vm, vz.VirtualMachineStateStopping)
+	}
 
 	waitState(t, timeout, vm, vz.VirtualMachineStateStopped)
 
@@ -287,7 +346,7 @@ func TestStop(t *testing.T) {
 	vm := container.VirtualMachine
 
 	if got := vm.CanStop(); !got {
-		t.Fatal("want CanRequestStop is true")
+		t.Fatal("want CanStop is true")
 	}
 	if err := vm.Stop(); err != nil {
 		t.Fatal(err)

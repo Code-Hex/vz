@@ -430,7 +430,7 @@ void startWithOptionsCompletionHandler(void *machine, void *queue, void *options
 #ifdef INCLUDE_TARGET_OSX_13
     if (@available(macOS 13, *)) {
         vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine startWithOptions:options completionHandler:handler];
         });
         Block_release(handler);

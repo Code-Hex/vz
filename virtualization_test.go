@@ -188,11 +188,13 @@ RETRY:
 			t.Fatalf("failed to connect vsock: %v", err)
 		}
 
+		t.Log("setup ssh client in container")
 		sshClient, err := testhelper.NewSshClient(conn, ":22", sshConfig)
 		if err != nil {
 			conn.Close()
 			t.Fatalf("failed to create a new ssh client: %v", err)
 		}
+		t.Logf("container setup done")
 
 		return &Container{
 			VirtualMachine: vm,

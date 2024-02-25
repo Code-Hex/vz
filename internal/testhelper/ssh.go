@@ -14,6 +14,7 @@ func NewSshConfig(username, password string) *ssh.ClientConfig {
 		User:            username,
 		Auth:            []ssh.AuthMethod{ssh.Password(password)},
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		Timeout:         5 * time.Second,
 	}
 }
 
@@ -28,10 +29,16 @@ func NewSshClient(conn net.Conn, addr string, config *ssh.ClientConfig) (*ssh.Cl
 func SetKeepAlive(t *testing.T, session *ssh.Session) {
 	t.Helper()
 	go func() {
-		for range time.Tick(5 * time.Second) {
+		ticker := time.NewTicker(5 * time.Second)
+		defer ticker.Stop()
+
+		for range ticker.C {
 			_, err := session.SendRequest("keepalive@codehex.vz", true, nil)
 			if err != nil && err != io.EOF {
 				t.Logf("failed to send keep-alive request: %v", err)
+				return
+			}
+			if err == io.EOF {
 				return
 			}
 		}

@@ -3,6 +3,7 @@ package vz_test
 import (
 	"errors"
 	"fmt"
+	"math"
 	"os"
 	"runtime"
 	"syscall"
@@ -172,23 +173,22 @@ func newVirtualizationMachine(
 		time.Sleep(5 * time.Second)
 	}
 
+	max := 8
 RETRY:
 	for i := 1; ; i++ {
 		conn, err := socketDevice.Connect(2222)
 		if err != nil {
 			var nserr *vz.NSError
-			if !errors.As(err, &nserr) || i > 5 {
+			if !errors.As(err, &nserr) || i > max {
 				t.Fatal(err)
 			}
 			if nserr.Code == int(syscall.ECONNRESET) {
 				t.Logf("retry vsock connect: %d", i)
-				time.Sleep(time.Second)
+				time.Sleep(backOffDelay(i))
 				continue RETRY
 			}
 			t.Fatalf("failed to connect vsock: %v", err)
 		}
-
-		t.Log("setup ssh client in container")
 
 		initialized := make(chan struct{})
 		retry := make(chan struct{})
@@ -215,13 +215,17 @@ RETRY:
 
 		close(initialized)
 
-		t.Logf("container setup done")
-
 		return &Container{
 			VirtualMachine: vm,
 			Client:         sshClient,
 		}
 	}
+}
+
+func backOffDelay(retryAttempts int) time.Duration {
+	factor := 0.5
+	delay := math.Exp2(float64(retryAttempts)) * factor
+	return time.Duration(math.Min(delay, 10)) * time.Second
 }
 
 func waitState(t *testing.T, wait time.Duration, vm *vz.VirtualMachine, want vz.VirtualMachineState) {

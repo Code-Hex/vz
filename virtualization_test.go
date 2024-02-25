@@ -189,11 +189,16 @@ RETRY:
 		}
 
 		t.Log("setup ssh client in container")
+		now := time.Now()
+		t.Log(conn.SetReadDeadline(now.Add(5 * time.Second)))
+		t.Log(conn.SetWriteDeadline(now.Add(5 * time.Second)))
 		sshClient, err := testhelper.NewSshClient(conn, ":22", sshConfig)
 		if err != nil {
 			conn.Close()
 			t.Fatalf("failed to create a new ssh client: %v", err)
 		}
+		conn.SetReadDeadline(time.Time{})
+		conn.SetWriteDeadline(time.Time{})
 		t.Logf("container setup done")
 
 		return &Container{

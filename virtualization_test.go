@@ -189,16 +189,32 @@ RETRY:
 		}
 
 		t.Log("setup ssh client in container")
-		now := time.Now()
-		t.Log(conn.SetReadDeadline(now.Add(5 * time.Second)))
-		t.Log(conn.SetWriteDeadline(now.Add(5 * time.Second)))
+
+		initialized := make(chan struct{})
+		retry := make(chan struct{})
+		go func() {
+			select {
+			case <-initialized:
+			case <-time.After(5 * time.Second):
+				close(retry)
+				t.Log("closed", conn.Close())
+			}
+		}()
+
 		sshClient, err := testhelper.NewSshClient(conn, ":22", sshConfig)
 		if err != nil {
+			select {
+			case <-retry:
+				t.Log("retry because ssh handshake has been failed")
+				continue RETRY
+			default:
+			}
 			conn.Close()
 			t.Fatalf("failed to create a new ssh client: %v", err)
 		}
-		conn.SetReadDeadline(time.Time{})
-		conn.SetWriteDeadline(time.Time{})
+
+		close(initialized)
+
 		t.Logf("container setup done")
 
 		return &Container{

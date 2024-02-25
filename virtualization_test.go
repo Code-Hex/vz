@@ -190,6 +190,8 @@ RETRY:
 			t.Fatalf("failed to connect vsock: %v", err)
 		}
 
+		t.Log("setup ssh client in container")
+
 		initialized := make(chan struct{})
 		retry := make(chan struct{})
 		go func() {
@@ -214,6 +216,8 @@ RETRY:
 		}
 
 		close(initialized)
+
+		t.Logf("container setup done")
 
 		return &Container{
 			VirtualMachine: vm,

@@ -15,15 +15,31 @@ jobs:
     name: Formatting Check
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Run clang-format style check for Objective-C files.
       uses: jidicula/clang-format-action@v4.8.0
       with:
         clang-format-version: '13'
   build:
+    runs-on:
+      - macos-14
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - name: vet
+        run: go vet ./...
+      - name: Build Linux
+        run: make -C example/linux
+      - name: Build GUI Linux
+        run: make -C example/gui-linux
+  test:
     needs: formatting-check
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 6
+    timeout-minutes: 7
     strategy:
       fail-fast: false
       matrix:
@@ -31,25 +47,20 @@ jobs:
         - macos-11
         - macos-12
         - macos-13
-        - macos-14
+        # - macos-14 # we cannot use this in testing. see: https://github.com/Code-Hex/vz/issues/109#issuecomment-1962815058
         go:
-        - '^1.21'
-        - '^1.22'
+        - '1.21'
+        - '1.22'
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go }}
-      - name: vet
-        run: go vet ./...
       - name: Download Linux kernel
         run: make download_kernel
       - name: Unit Test
         run: make test
-        timeout-minutes: 3
-      - name: Build Linux
-        run: make -C example/linux
-      - name: Build GUI Linux
-        run: make -C example/gui-linux
+        timeout-minutes: 5
+

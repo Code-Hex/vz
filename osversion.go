@@ -105,6 +105,8 @@ func macOSBuildTargetAvailable(version float64) error {
 		target = 130000 // __MAC_13_0
 	case 14:
 		target = 140000 // __MAC_14_0
+	case 15:
+		target = 150000 // __MAC_15_0
 	}
 	if allowedVersion < target {
 		return fmt.Errorf("%w for %.1f (the binary was built with __MAC_OS_X_VERSION_MAX_ALLOWED=%d; needs recompilation)",

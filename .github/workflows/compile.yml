@@ -47,6 +47,9 @@ jobs:
         run: make -C example/linux
       - name: Build GUI Linux
         run: make -C example/gui-linux
+      - name: Build macOS
+        run: make -C example/macOS
+        if: runner.arch == 'ARM64'
   test:
     needs: build
     runs-on: ${{ matrix.os }}

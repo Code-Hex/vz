@@ -14,9 +14,11 @@ import (
 )
 
 var install bool
+var nbdURL string
 
 func init() {
 	flag.BoolVar(&install, "install", false, "run command as install mode")
+	flag.StringVar(&nbdURL, "nbd-url", "", "nbd url (e.g. nbd+unix:///export?socket=nbd.sock)")
 }
 
 func main() {
@@ -142,21 +144,33 @@ func computeMemorySize() uint64 {
 }
 
 func createBlockDeviceConfiguration(diskPath string) (*vz.VirtioBlockDeviceConfiguration, error) {
-	// create disk image with 64 GiB
-	if err := vz.CreateDiskImage(diskPath, 64*1024*1024*1024); err != nil {
-		if !os.IsExist(err) {
-			return nil, fmt.Errorf("failed to create disk image: %w", err)
-		}
-	}
+	var attachment vz.StorageDeviceAttachment
+	var err error
 
-	diskImageAttachment, err := vz.NewDiskImageStorageDeviceAttachment(
-		diskPath,
-		false,
-	)
+	if nbdURL == "" {
+		// create disk image with 64 GiB
+		if err := vz.CreateDiskImage(diskPath, 64*1024*1024*1024); err != nil {
+			if !os.IsExist(err) {
+				return nil, fmt.Errorf("failed to create disk image: %w", err)
+			}
+		}
+
+		attachment, err = vz.NewDiskImageStorageDeviceAttachment(
+			diskPath,
+			false,
+		)
+	} else {
+		attachment, err = vz.NewNetworkBlockDeviceStorageDeviceAttachment(
+			nbdURL,
+			10*time.Second,
+			false,
+			vz.DiskSynchronizationModeFull,
+		)
+	}
 	if err != nil {
 		return nil, err
 	}
-	return vz.NewVirtioBlockDeviceConfiguration(diskImageAttachment)
+	return vz.NewVirtioBlockDeviceConfiguration(attachment)
 }
 
 func createGraphicsDeviceConfiguration() (*vz.MacGraphicsDeviceConfiguration, error) {

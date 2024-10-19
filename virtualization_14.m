@@ -51,3 +51,36 @@ void *newVZDiskBlockDeviceStorageDeviceAttachment(int fileDescriptor, bool readO
 #endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
+
+/*!
+ @abstract Initialize a network block device storage attachment from an NBD URI.
+ @param uri The NBD’s URI represented as a URL.
+ @param timeout The timeout value in seconds for the connection between the client and server. When the timeout expires, an attempt to reconnect with the server takes place.
+ @param forcedReadOnly If YES, the framework forces the disk attachment to be read-only, regardless of whether or not the NBD server supports write requests.
+ @param synchronizationMode Defines how the disk synchronizes with the underlying storage when the guest operating system flushes data.
+ @param error If not nil, assigned with the error if the initialization failed.
+ @return An initialized `VZDiskBlockDeviceStorageDeviceAttachment` or nil if there was an error.
+ @discussion
+    The forcedReadOnly parameter affects how framework exposes the NBD client to the guest operating
+    system by the storage controller. As part of the NBD protocol, the NBD server advertises whether
+    or not the disk exposed by the NBD client is read-only during the handshake phase of the protocol.
+
+    Setting forcedReadOnly to YES forces the NBD client to show up as read-only to the guest
+    regardless of whether or not the NBD server advertises itself as read-only.
+ */
+void *newVZNetworkBlockDeviceStorageDeviceAttachment(const char *uri, double timeout, bool forcedReadOnly, int syncMode, void **error)
+{
+#ifdef INCLUDE_TARGET_OSX_14
+    if (@available(macOS 14, *)) {
+        NSURL *url = [NSURL URLWithString:[NSString stringWithUTF8String:uri]];
+
+        return [[VZNetworkBlockDeviceStorageDeviceAttachment alloc]
+                    initWithURL:url
+                        timeout:(NSTimeInterval)timeout
+                 forcedReadOnly:(BOOL)forcedReadOnly
+            synchronizationMode:(VZDiskSynchronizationMode)syncMode
+                          error:(NSError *_Nullable *_Nullable)error];
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}

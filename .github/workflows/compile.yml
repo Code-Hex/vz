@@ -29,8 +29,8 @@ jobs:
       matrix:
         os:
         - macos-13  # Intel
-        - macos-14-large  # Intel
-        - macos-15-large  # Intel
+        - macos-14
+        - macos-15
         go:
         - '^1.22'
         - '^1.23'
@@ -56,7 +56,7 @@ jobs:
       # Can't expand the matrix due to the flakiness of the CI infra
       matrix:
         os:
-        - macos-15-large  # Intel
+        - macos-15
         go:
         - '^1.23'
     steps:

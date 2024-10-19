@@ -630,7 +630,7 @@ void *newVZVirtioSocketListener(uintptr_t cgoHandle)
 {
     if (@available(macOS 11, *)) {
         VZVirtioSocketListener *ret = [[VZVirtioSocketListener alloc] init];
-        [ret setDelegate:[[VZVirtioSocketListenerDelegateImpl alloc] initWithHandle:cgoHandle]];
+        [ret setDelegate:[[[VZVirtioSocketListenerDelegateImpl alloc] initWithHandle:cgoHandle] autorelease]];
         return ret;
     }
 

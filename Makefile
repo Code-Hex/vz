@@ -1,4 +1,4 @@
-PUIPUI_LINUX_VERSION := 0.0.1
+PUIPUI_LINUX_VERSION := 1.0.1
 ARCH := $(shell uname -m)
 KERNEL_ARCH := $(shell echo $(ARCH) | sed -e s/arm64/aarch64/)
 KERNEL_TAR := puipui_linux_v$(PUIPUI_LINUX_VERSION)_$(KERNEL_ARCH).tar.gz

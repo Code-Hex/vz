@@ -12,6 +12,7 @@ package vz
 import "C"
 import (
 	"os"
+	"time"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
@@ -393,6 +394,62 @@ func NewDiskBlockDeviceStorageDeviceAttachment(file *os.File, readOnly bool, syn
 		return nil, err
 	}
 	objc.SetFinalizer(attachment, func(self *DiskBlockDeviceStorageDeviceAttachment) {
+		objc.Release(self)
+	})
+	return attachment, nil
+}
+
+// NetworkBlockDeviceStorageDeviceAttachment is a storage device attachment that is backed by a
+// NBD (Network Block Device) server.
+//
+// Using this attachment requires the app to have the com.apple.security.network.client entitlement
+// because this attachment opens an outgoing network connection.
+//
+// For more information about the NBD URL format read:
+// https://github.com/NetworkBlockDevice/nbd/blob/master/doc/uri.md
+type NetworkBlockDeviceStorageDeviceAttachment struct {
+	*pointer
+
+	*baseStorageDeviceAttachment
+}
+
+var _ StorageDeviceAttachment = (*NetworkBlockDeviceStorageDeviceAttachment)(nil)
+
+// NewNetworkBlockDeviceStorageDeviceAttachment creates a new network block device storage attachment from an NBD
+// Uniform Resource Indicator (URI) represented as a URL, timeout value, and read-only and synchronization modes
+// that you provide.
+//
+// - url is the NBD server URI. The format specified by https://github.com/NetworkBlockDevice/nbd/blob/master/doc/uri.md
+// - timeout is the duration for the connection between the client and server. When the timeout expires, an attempt to reconnect with the server takes place.
+// - forcedReadOnly if true forces the disk attachment to be read-only, regardless of whether or not the NBD server supports write requests.
+// - syncMode is one of the available DiskSynchronizationMode options.
+//
+// This is only supported on macOS 14 and newer, error will
+// be returned on older versions.
+func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Duration, forcedReadOnly bool, syncMode DiskSynchronizationMode) (*NetworkBlockDeviceStorageDeviceAttachment, error) {
+	if err := macOSAvailable(14); err != nil {
+		return nil, err
+	}
+
+	nserrPtr := newNSErrorAsNil()
+
+	urlChar := charWithGoString(url)
+	defer urlChar.Free()
+	attachment := &NetworkBlockDeviceStorageDeviceAttachment{
+		pointer: objc.NewPointer(
+			C.newVZNetworkBlockDeviceStorageDeviceAttachment(
+				urlChar.CString(),
+				C.double(timeout.Seconds()),
+				C.bool(forcedReadOnly),
+				C.int(syncMode),
+				&nserrPtr,
+			),
+		),
+	}
+	if err := newNSError(nserrPtr); err != nil {
+		return nil, err
+	}
+	objc.SetFinalizer(attachment, func(self *NetworkBlockDeviceStorageDeviceAttachment) {
 		objc.Release(self)
 	})
 	return attachment, nil

@@ -6,6 +6,7 @@ package vz
 # include "virtualization_11.h"
 # include "virtualization_12.h"
 # include "virtualization_13.h"
+# include "virtualization_15.h"
 */
 import "C"
 import (
@@ -38,6 +39,28 @@ type GenericPlatformConfiguration struct {
 // MachineIdentifier returns the machine identifier.
 func (m *GenericPlatformConfiguration) MachineIdentifier() *GenericMachineIdentifier {
 	return m.machineIdentifier
+}
+
+// IsNestedVirtualizationSupported reports if nested virtualization is supported.
+func IsNestedVirtualizationSupported() bool {
+	if err := macOSAvailable(15); err != nil {
+		return false
+	}
+
+	return (bool)(C.isNestedVirtualizationSupported())
+}
+
+// SetNestedVirtualizationEnabled toggles nested virtualization.
+func (m *GenericPlatformConfiguration) SetNestedVirtualizationEnabled(enable bool) error {
+	if err := macOSAvailable(15); err != nil {
+		return err
+	}
+
+	C.setNestedVirtualizationEnabled(
+		objc.Ptr(m),
+		C.bool(enable),
+	)
+	return nil
 }
 
 var _ PlatformConfiguration = (*GenericPlatformConfiguration)(nil)

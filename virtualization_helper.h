@@ -39,6 +39,13 @@ NSDictionary *dumpProcessinfo();
 #pragma message("macOS 14 API has been disabled")
 #endif
 
+// for macOS 15 API
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 150000
+#define INCLUDE_TARGET_OSX_15 1
+#else
+#pragma message("macOS 15 API has been disabled")
+#endif
+
 static inline int mac_os_x_version_max_allowed()
 {
 #ifdef __MAC_OS_X_VERSION_MAX_ALLOWED

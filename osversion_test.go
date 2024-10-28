@@ -319,6 +319,10 @@ func TestAvailableVersion(t *testing.T) {
 				_, err := NewDiskBlockDeviceStorageDeviceAttachment(nil, false, DiskSynchronizationModeFull)
 				return err
 			},
+			"NewNetworkBlockDeviceStorageDeviceAttachment": func() error {
+				_, err := NewNetworkBlockDeviceStorageDeviceAttachment("", 0, false, DiskSynchronizationModeFull)
+				return err
+			},
 		}
 		for name, fn := range cases {
 			t.Run(name, func(t *testing.T) {

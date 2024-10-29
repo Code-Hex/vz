@@ -51,9 +51,9 @@ jobs:
         run: make -C example/macOS
         if: runner.arch == 'ARM64'
   test:
-    needs: build
+    needs: formatting-check
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 30
+    timeout-minutes: 3
     strategy:
       fail-fast: false
       # Can't expand the matrix due to the flakiness of the CI infra
@@ -73,4 +73,3 @@ jobs:
         run: make download_kernel
       - name: Unit Test
         run: make test
-        timeout-minutes: 10

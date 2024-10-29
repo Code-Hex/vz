@@ -1,4 +1,4 @@
-PUIPUI_LINUX_VERSION := 0.0.1
+PUIPUI_LINUX_VERSION := 1.0.3
 ARCH := $(shell uname -m)
 KERNEL_ARCH := $(shell echo $(ARCH) | sed -e s/arm64/aarch64/)
 KERNEL_TAR := puipui_linux_v$(PUIPUI_LINUX_VERSION)_$(KERNEL_ARCH).tar.gz
@@ -10,7 +10,7 @@ fmt:
 
 .PHONY: test
 test:
-	go test -p 1 -exec "go run $(PWD)/cmd/codesign" ./... -timeout 60s -v
+	go test -p 1 -exec "go run $(PWD)/cmd/codesign" ./... -timeout 2m -v
 
 .PHONY: test/run
 test/run:

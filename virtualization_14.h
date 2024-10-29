@@ -13,7 +13,17 @@
 #import "virtualization_helper.h"
 #import <Virtualization/Virtualization.h>
 
+/* exported from cgo */
+void attachmentHandler(uintptr_t cgoHandle, void *err);
+void attachmentWasConnectedHandler(uintptr_t cgoHandle);
+
 /* macOS 14 API */
 void *newVZNVMExpressControllerDeviceConfiguration(void *attachment);
 void *newVZDiskBlockDeviceStorageDeviceAttachment(int fileDescriptor, bool readOnly, int syncMode, void **error);
-void *newVZNetworkBlockDeviceStorageDeviceAttachment(const char *url, double timeout, bool forcedReadOnly, int syncMode, void **error);
+void *newVZNetworkBlockDeviceStorageDeviceAttachment(const char *url, double timeout, bool forcedReadOnly, int syncMode, void **error, uintptr_t cgoHandle);
+
+@interface VZNetworkBlockDeviceStorageDeviceAttachmentDelegateImpl : NSObject <VZNetworkBlockDeviceStorageDeviceAttachmentDelegate>
+- (instancetype)initWithHandle:(uintptr_t)cgoHandle;
+- (void)attachment:(VZNetworkBlockDeviceStorageDeviceAttachment *)attachment didEncounterError:(NSError *)error;
+- (void)attachmentWasConnected:(VZNetworkBlockDeviceStorageDeviceAttachment *)attachment;
+@end

@@ -12,7 +12,9 @@ package vz
 import "C"
 import (
 	"os"
+	"runtime/cgo"
 	"time"
+	"unsafe"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
@@ -151,11 +153,17 @@ type StorageDeviceConfiguration interface {
 	objc.NSObject
 
 	storageDeviceConfiguration()
+	Attachment() StorageDeviceAttachment
 }
 
-type baseStorageDeviceConfiguration struct{}
+type baseStorageDeviceConfiguration struct {
+	attachment StorageDeviceAttachment
+}
 
 func (*baseStorageDeviceConfiguration) storageDeviceConfiguration() {}
+func (b *baseStorageDeviceConfiguration) Attachment() StorageDeviceAttachment {
+	return b.attachment
+}
 
 var _ StorageDeviceConfiguration = (*VirtioBlockDeviceConfiguration)(nil)
 
@@ -192,6 +200,9 @@ func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) (*Vir
 				objc.Ptr(attachment),
 			),
 		),
+		baseStorageDeviceConfiguration: &baseStorageDeviceConfiguration{
+			attachment: attachment,
+		},
 	}
 	objc.SetFinalizer(config, func(self *VirtioBlockDeviceConfiguration) {
 		objc.Release(self)
@@ -250,10 +261,6 @@ type USBMassStorageDeviceConfiguration struct {
 	*pointer
 
 	*baseStorageDeviceConfiguration
-
-	// marking as currently reachable.
-	// This ensures that the object is not freed, and its finalizer is not run
-	attachment StorageDeviceAttachment
 }
 
 // NewUSBMassStorageDeviceConfiguration initialize a USBMassStorageDeviceConfiguration
@@ -269,7 +276,9 @@ func NewUSBMassStorageDeviceConfiguration(attachment StorageDeviceAttachment) (*
 		pointer: objc.NewPointer(
 			C.newVZUSBMassStorageDeviceConfiguration(objc.Ptr(attachment)),
 		),
-		attachment: attachment,
+		baseStorageDeviceConfiguration: &baseStorageDeviceConfiguration{
+			attachment: attachment,
+		},
 	}
 	objc.SetFinalizer(usbMass, func(self *USBMassStorageDeviceConfiguration) {
 		objc.Release(self)
@@ -284,10 +293,6 @@ type NVMExpressControllerDeviceConfiguration struct {
 	*pointer
 
 	*baseStorageDeviceConfiguration
-
-	// marking as currently reachable.
-	// This ensures that the object is not freed, and its finalizer is not run
-	attachment StorageDeviceAttachment
 }
 
 // NewNVMExpressControllerDeviceConfiguration creates a new NVMExpressControllerDeviceConfiguration with
@@ -306,7 +311,9 @@ func NewNVMExpressControllerDeviceConfiguration(attachment StorageDeviceAttachme
 		pointer: objc.NewPointer(
 			C.newVZNVMExpressControllerDeviceConfiguration(objc.Ptr(attachment)),
 		),
-		attachment: attachment,
+		baseStorageDeviceConfiguration: &baseStorageDeviceConfiguration{
+			attachment: attachment,
+		},
 	}
 	objc.SetFinalizer(nvmExpress, func(self *NVMExpressControllerDeviceConfiguration) {
 		objc.Release(self)
@@ -411,6 +418,18 @@ type NetworkBlockDeviceStorageDeviceAttachment struct {
 	*pointer
 
 	*baseStorageDeviceAttachment
+
+	attachmentStatusCh chan networkBlockDeviceStorageDeviceAttachmentStatusData
+}
+
+type NetworkBlockDeviceStorageDeviceAttachmentStatus interface {
+	IsConnected() bool
+	Error() error
+}
+
+type networkBlockDeviceStorageDeviceAttachmentStatusData struct {
+	connected bool
+	err       error
 }
 
 var _ StorageDeviceAttachment = (*NetworkBlockDeviceStorageDeviceAttachment)(nil)
@@ -418,6 +437,9 @@ var _ StorageDeviceAttachment = (*NetworkBlockDeviceStorageDeviceAttachment)(nil
 // NewNetworkBlockDeviceStorageDeviceAttachment creates a new network block device storage attachment from an NBD
 // Uniform Resource Indicator (URI) represented as a URL, timeout value, and read-only and synchronization modes
 // that you provide.
+//
+// It also set up a channel that will be used by the VZNetworkBlockDeviceStorageDeviceAttachmentDelegate to
+// return changes to the NetworkBlockDeviceAttachment
 //
 // - url is the NBD server URI. The format specified by https://github.com/NetworkBlockDevice/nbd/blob/master/doc/uri.md
 // - timeout is the duration for the connection between the client and server. When the timeout expires, an attempt to reconnect with the server takes place.
@@ -431,6 +453,16 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 		return nil, err
 	}
 
+	ch := make(chan networkBlockDeviceStorageDeviceAttachmentStatusData)
+
+	handle := cgo.NewHandle(func(err error) {
+		connected := true
+		if err != nil {
+			connected = false
+		}
+		ch <- networkBlockDeviceStorageDeviceAttachmentStatusData{connected, err}
+	})
+
 	nserrPtr := newNSErrorAsNil()
 
 	urlChar := charWithGoString(url)
@@ -443,8 +475,10 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 				C.bool(forcedReadOnly),
 				C.int(syncMode),
 				&nserrPtr,
+				C.uintptr_t(handle),
 			),
 		),
+		attachmentStatusCh: ch,
 	}
 	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
@@ -453,4 +487,43 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 		objc.Release(self)
 	})
 	return attachment, nil
+}
+
+// Returns the connected value. It is true if the NBD client successfully connected to the server. False if there was an error that prevented the connection
+func (n *networkBlockDeviceStorageDeviceAttachmentStatusData) IsConnected() bool {
+	return n.connected
+}
+
+// Returns the error associated to the failed connection of the NBD client to the server
+func (n *networkBlockDeviceStorageDeviceAttachmentStatusData) Error() error {
+	return n.err
+}
+
+// It allows the caller to subscribe to the attachmentStatus channel to listen to changes of the network block device attachment
+// This way it can be informed if the NBD client successfully connects/reconnects to the server or it encounter an error
+func (n *NetworkBlockDeviceStorageDeviceAttachment) Listen(statusCh chan NetworkBlockDeviceStorageDeviceAttachmentStatus) {
+	go func() {
+		for {
+			status := <-n.attachmentStatusCh
+			statusCh <- &status
+		}
+	}()
+}
+
+//export attachmentHandler
+func attachmentHandler(cgoHandleUintptr C.uintptr_t, errorPtr unsafe.Pointer) {
+	cgoHandle := cgo.Handle(cgoHandleUintptr)
+	handler := cgoHandle.Value().(func(error))
+
+	err := newNSError(errorPtr)
+
+	go handler(err)
+}
+
+//export attachmentWasConnectedHandler
+func attachmentWasConnectedHandler(cgoHandleUintptr C.uintptr_t) {
+	cgoHandle := cgo.Handle(cgoHandleUintptr)
+	handler := cgoHandle.Value().(func(error))
+
+	go handler(nil)
 }

@@ -210,6 +210,12 @@ func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) (*Vir
 	return config, nil
 }
 
+func newVirtioBlockDeviceConfiguration(ptr unsafe.Pointer) *VirtioBlockDeviceConfiguration {
+	return &VirtioBlockDeviceConfiguration{
+		pointer: objc.NewPointer(ptr),
+	}
+}
+
 // BlockDeviceIdentifier returns the device identifier is a string identifying the Virtio block device.
 // Empty string by default.
 //

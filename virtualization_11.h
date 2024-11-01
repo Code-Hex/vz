@@ -59,6 +59,7 @@ void setSocketDevicesVZVirtualMachineConfiguration(void *config,
 void *socketDevicesVZVirtualMachineConfiguration(void *config);
 void setStorageDevicesVZVirtualMachineConfiguration(void *config,
     void *storageDevices);
+void *storageDevicesVZVirtualMachineConfiguration(void *config);
 
 /* Configurations */
 void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileDescriptor);

@@ -78,6 +78,9 @@ func runVM(ctx context.Context) error {
 		}
 	}()
 
+	// it start listening to the NBD server, if any
+	listenNetworkBlockDevice(config)
+
 	// cleanup is this function is useful when finished graphic application.
 	cleanup := func() {
 		for i := 1; vm.CanRequestStop(); i++ {
@@ -330,4 +333,25 @@ func setupVMConfiguration(platformConfig vz.PlatformConfiguration) (*vz.VirtualM
 	// }
 
 	return config, nil
+}
+
+func listenNetworkBlockDevice(vm *vz.VirtualMachineConfiguration) error {
+	storages := vm.StorageDevices()
+	for _, storage := range storages {
+		attachment := storage.Attachment()
+		if nbdAttachment, isNbdAttachment := attachment.(*vz.NetworkBlockDeviceStorageDeviceAttachment); isNbdAttachment {
+			nbdAttachmentStatusCh := make(chan vz.NetworkBlockDeviceStorageDeviceAttachmentStatus)
+			nbdAttachment.Listen(nbdAttachmentStatusCh)
+			go func() {
+				for status := range nbdAttachmentStatusCh {
+					if status.IsConnected() {
+						log.Println("Successfully connected to NBD server")
+					} else {
+						log.Printf("Disconnected from NBD server. Error %v\n", status.Error().Error())
+					}
+				}
+			}()
+		}
+	}
+	return nil
 }

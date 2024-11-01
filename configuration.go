@@ -174,6 +174,20 @@ func (v *VirtualMachineConfiguration) SetStorageDevicesVirtualMachineConfigurati
 	C.setStorageDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
 }
 
+// StorageDevices return the list of storage device configuration configured in this virtual machine configuration.
+// Return an empty array if no storage device configuration is set.
+func (v *VirtualMachineConfiguration) StorageDevices() []StorageDeviceConfiguration {
+	nsArray := objc.NewNSArray(
+		C.storageDevicesVZVirtualMachineConfiguration(objc.Ptr(v)),
+	)
+	ptrs := nsArray.ToPointerSlice()
+	storageDevices := make([]StorageDeviceConfiguration, len(ptrs))
+	for i, ptr := range ptrs {
+		storageDevices[i] = newVirtioBlockDeviceConfiguration(ptr)
+	}
+	return storageDevices
+}
+
 // SetDirectorySharingDevicesVirtualMachineConfiguration sets list of directory sharing devices. Empty by default.
 //
 // This is only supported on macOS 12 and newer. Older versions do nothing.

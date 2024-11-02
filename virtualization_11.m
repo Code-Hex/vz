@@ -328,6 +328,18 @@ void setStorageDevicesVZVirtualMachineConfiguration(void *config,
 }
 
 /*!
+ @abstract Return the list of storage devices configurations for this VZVirtualMachineConfiguration. Return an empty array if no storage device configuration is set.
+ */
+void *storageDevicesVZVirtualMachineConfiguration(void *config)
+{
+    if (@available(macOS 11, *)) {
+        return [(VZVirtualMachineConfiguration *)config storageDevices]; // NSArray<VZStorageDeviceConfiguration *>
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+/*!
  @abstract Intialize the VZFileHandleSerialPortAttachment from file descriptors.
  @param readFileDescriptor File descriptor for reading from the file.
  @param writeFileDescriptor File descriptor for writing to the file.

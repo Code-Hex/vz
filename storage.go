@@ -12,8 +12,11 @@ package vz
 import "C"
 import (
 	"os"
+	"runtime/cgo"
 	"time"
+	"unsafe"
 
+	infinity "github.com/Code-Hex/go-infinity-channel"
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
@@ -151,11 +154,17 @@ type StorageDeviceConfiguration interface {
 	objc.NSObject
 
 	storageDeviceConfiguration()
+	Attachment() StorageDeviceAttachment
 }
 
-type baseStorageDeviceConfiguration struct{}
+type baseStorageDeviceConfiguration struct {
+	attachment StorageDeviceAttachment
+}
 
 func (*baseStorageDeviceConfiguration) storageDeviceConfiguration() {}
+func (b *baseStorageDeviceConfiguration) Attachment() StorageDeviceAttachment {
+	return b.attachment
+}
 
 var _ StorageDeviceConfiguration = (*VirtioBlockDeviceConfiguration)(nil)
 
@@ -192,6 +201,9 @@ func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) (*Vir
 				objc.Ptr(attachment),
 			),
 		),
+		baseStorageDeviceConfiguration: &baseStorageDeviceConfiguration{
+			attachment: attachment,
+		},
 	}
 	objc.SetFinalizer(config, func(self *VirtioBlockDeviceConfiguration) {
 		objc.Release(self)
@@ -250,10 +262,6 @@ type USBMassStorageDeviceConfiguration struct {
 	*pointer
 
 	*baseStorageDeviceConfiguration
-
-	// marking as currently reachable.
-	// This ensures that the object is not freed, and its finalizer is not run
-	attachment StorageDeviceAttachment
 }
 
 // NewUSBMassStorageDeviceConfiguration initialize a USBMassStorageDeviceConfiguration
@@ -269,7 +277,9 @@ func NewUSBMassStorageDeviceConfiguration(attachment StorageDeviceAttachment) (*
 		pointer: objc.NewPointer(
 			C.newVZUSBMassStorageDeviceConfiguration(objc.Ptr(attachment)),
 		),
-		attachment: attachment,
+		baseStorageDeviceConfiguration: &baseStorageDeviceConfiguration{
+			attachment: attachment,
+		},
 	}
 	objc.SetFinalizer(usbMass, func(self *USBMassStorageDeviceConfiguration) {
 		objc.Release(self)
@@ -284,10 +294,6 @@ type NVMExpressControllerDeviceConfiguration struct {
 	*pointer
 
 	*baseStorageDeviceConfiguration
-
-	// marking as currently reachable.
-	// This ensures that the object is not freed, and its finalizer is not run
-	attachment StorageDeviceAttachment
 }
 
 // NewNVMExpressControllerDeviceConfiguration creates a new NVMExpressControllerDeviceConfiguration with
@@ -306,7 +312,9 @@ func NewNVMExpressControllerDeviceConfiguration(attachment StorageDeviceAttachme
 		pointer: objc.NewPointer(
 			C.newVZNVMExpressControllerDeviceConfiguration(objc.Ptr(attachment)),
 		),
-		attachment: attachment,
+		baseStorageDeviceConfiguration: &baseStorageDeviceConfiguration{
+			attachment: attachment,
+		},
 	}
 	objc.SetFinalizer(nvmExpress, func(self *NVMExpressControllerDeviceConfiguration) {
 		objc.Release(self)
@@ -411,6 +419,9 @@ type NetworkBlockDeviceStorageDeviceAttachment struct {
 	*pointer
 
 	*baseStorageDeviceAttachment
+
+	didEncounterError *infinity.Channel[error]
+	connected         *infinity.Channel[struct{}]
 }
 
 var _ StorageDeviceAttachment = (*NetworkBlockDeviceStorageDeviceAttachment)(nil)
@@ -418,6 +429,9 @@ var _ StorageDeviceAttachment = (*NetworkBlockDeviceStorageDeviceAttachment)(nil
 // NewNetworkBlockDeviceStorageDeviceAttachment creates a new network block device storage attachment from an NBD
 // Uniform Resource Indicator (URI) represented as a URL, timeout value, and read-only and synchronization modes
 // that you provide.
+//
+// It also set up a channel that will be used by the VZNetworkBlockDeviceStorageDeviceAttachmentDelegate to
+// return changes to the NetworkBlockDeviceAttachment
 //
 // - url is the NBD server URI. The format specified by https://github.com/NetworkBlockDevice/nbd/blob/master/doc/uri.md
 // - timeout is the duration for the connection between the client and server. When the timeout expires, an attempt to reconnect with the server takes place.
@@ -431,6 +445,17 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 		return nil, err
 	}
 
+	didEncounterError := infinity.NewChannel[error]()
+	connected := infinity.NewChannel[struct{}]()
+
+	handle := cgo.NewHandle(func(err error) {
+		if err != nil {
+			didEncounterError.In() <- err
+			return
+		}
+		connected.In() <- struct{}{}
+	})
+
 	nserrPtr := newNSErrorAsNil()
 
 	urlChar := charWithGoString(url)
@@ -443,8 +468,11 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 				C.bool(forcedReadOnly),
 				C.int(syncMode),
 				&nserrPtr,
+				C.uintptr_t(handle),
 			),
 		),
+		didEncounterError: didEncounterError,
+		connected:         connected,
 	}
 	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
@@ -453,4 +481,50 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 		objc.Release(self)
 	})
 	return attachment, nil
+}
+
+// Connected receive the signal via channel when the NBD client successfully connects or reconnects with the server.
+//
+// The NBD connection with the server takes place when the VM is first started, and reconnection attempts take place when the connection
+// times out or when the NBD client has encountered a recoverable error, such as an I/O error from the server.
+//
+// Note that the Virtualization framework may call this method multiple times during a VM’s life cycle. Reconnections are transparent to the guest.
+func (n *NetworkBlockDeviceStorageDeviceAttachment) Connected() <-chan struct{} {
+	return n.connected.Out()
+}
+
+// The DidEncounterError is triggered via the channel when the NBD client encounters an error that cannot be resolved on the client side.
+// In this state, the client will continue attempting to reconnect, but recovery depends entirely on the server's availability.
+// If the server resumes operation, the connection will recover automatically; however, until the server is restored, the client will continue to experience errors.
+func (n *NetworkBlockDeviceStorageDeviceAttachment) DidEncounterError() <-chan error {
+	return n.didEncounterError.Out()
+}
+
+// attachmentDidEncounterErrorHandler function is called when the NBD client encounters a nonrecoverable error.
+// After the attachment object calls this method, the NBD client is in a nonfunctional state.
+//
+//export attachmentDidEncounterErrorHandler
+func attachmentDidEncounterErrorHandler(cgoHandleUintptr C.uintptr_t, errorPtr unsafe.Pointer) {
+	cgoHandle := cgo.Handle(cgoHandleUintptr)
+	handler := cgoHandle.Value().(func(error))
+
+	err := newNSError(errorPtr)
+
+	handler(err)
+}
+
+// attachmentWasConnectedHandler function is called when a connection to the server is first established as the VM starts,
+// and during any reconnection attempts triggered by connection timeouts or recoverable errors encountered by the NBD client,
+// such as server-side I/O errors.
+//
+// Note that the Virtualization framework may invoke this method multiple times throughout the VM’s lifecycle,
+// ensuring reconnection processes remain seamless and transparent to the guest.
+// For more details, see: https://developer.apple.com/documentation/virtualization/vznetworkblockdevicestoragedeviceattachmentdelegate/4168511-attachmentwasconnected?language=objc
+//
+//export attachmentWasConnectedHandler
+func attachmentWasConnectedHandler(cgoHandleUintptr C.uintptr_t) {
+	cgoHandle := cgo.Handle(cgoHandleUintptr)
+	handler := cgoHandle.Value().(func(error))
+
+	handler(nil)
 }

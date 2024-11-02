@@ -68,19 +68,47 @@ void *newVZDiskBlockDeviceStorageDeviceAttachment(int fileDescriptor, bool readO
     Setting forcedReadOnly to YES forces the NBD client to show up as read-only to the guest
     regardless of whether or not the NBD server advertises itself as read-only.
  */
-void *newVZNetworkBlockDeviceStorageDeviceAttachment(const char *uri, double timeout, bool forcedReadOnly, int syncMode, void **error)
+void *newVZNetworkBlockDeviceStorageDeviceAttachment(const char *uri, double timeout, bool forcedReadOnly, int syncMode, void **error, uintptr_t cgoHandle)
 {
 #ifdef INCLUDE_TARGET_OSX_14
     if (@available(macOS 14, *)) {
         NSURL *url = [NSURL URLWithString:[NSString stringWithUTF8String:uri]];
 
-        return [[VZNetworkBlockDeviceStorageDeviceAttachment alloc]
+        VZNetworkBlockDeviceStorageDeviceAttachment *attachment = [[VZNetworkBlockDeviceStorageDeviceAttachment alloc]
                     initWithURL:url
                         timeout:(NSTimeInterval)timeout
                  forcedReadOnly:(BOOL)forcedReadOnly
             synchronizationMode:(VZDiskSynchronizationMode)syncMode
                           error:(NSError *_Nullable *_Nullable)error];
+
+        if (attachment) {
+            [attachment setDelegate:[[[VZNetworkBlockDeviceStorageDeviceAttachmentDelegateImpl alloc] initWithHandle:cgoHandle] autorelease]];
+        }
+
+        return attachment;
     }
 #endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
+
+@implementation VZNetworkBlockDeviceStorageDeviceAttachmentDelegateImpl {
+    uintptr_t _cgoHandle;
+}
+
+- (instancetype)initWithHandle:(uintptr_t)cgoHandle
+{
+    self = [super init];
+    _cgoHandle = cgoHandle;
+    return self;
+}
+
+- (void)attachment:(VZNetworkBlockDeviceStorageDeviceAttachment *)attachment didEncounterError:(NSError *)error
+{
+    attachmentDidEncounterErrorHandler(_cgoHandle, error);
+}
+
+- (void)attachmentWasConnected:(VZNetworkBlockDeviceStorageDeviceAttachment *)attachment
+{
+    attachmentWasConnectedHandler(_cgoHandle);
+}
+@end

@@ -37,6 +37,8 @@ type VirtualMachineConfiguration struct {
 	cpuCount   uint
 	memorySize uint64
 	*pointer
+
+	storageDeviceConfiguration []StorageDeviceConfiguration
 }
 
 // NewVirtualMachineConfiguration creates a new configuration.
@@ -172,6 +174,13 @@ func (v *VirtualMachineConfiguration) SetStorageDevicesVirtualMachineConfigurati
 	}
 	array := objc.ConvertToNSMutableArray(ptrs)
 	C.setStorageDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	v.storageDeviceConfiguration = cs
+}
+
+// StorageDevices return the list of storage device configuration configured in this virtual machine configuration.
+// Return an empty array if no storage device configuration is set.
+func (v *VirtualMachineConfiguration) StorageDevices() []StorageDeviceConfiguration {
+	return v.storageDeviceConfiguration
 }
 
 // SetDirectorySharingDevicesVirtualMachineConfiguration sets list of directory sharing devices. Empty by default.

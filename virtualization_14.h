@@ -14,7 +14,7 @@
 #import <Virtualization/Virtualization.h>
 
 /* exported from cgo */
-void attachmentHandler(uintptr_t cgoHandle, void *err);
+void attachmentDidEncounterErrorHandler(uintptr_t cgoHandle, void *err);
 void attachmentWasConnectedHandler(uintptr_t cgoHandle);
 
 /* macOS 14 API */

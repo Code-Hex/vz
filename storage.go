@@ -16,6 +16,7 @@ import (
 	"time"
 	"unsafe"
 
+	infinity "github.com/Code-Hex/go-infinity-channel"
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
@@ -208,12 +209,6 @@ func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) (*Vir
 		objc.Release(self)
 	})
 	return config, nil
-}
-
-func newVirtioBlockDeviceConfiguration(ptr unsafe.Pointer) *VirtioBlockDeviceConfiguration {
-	return &VirtioBlockDeviceConfiguration{
-		pointer: objc.NewPointer(ptr),
-	}
 }
 
 // BlockDeviceIdentifier returns the device identifier is a string identifying the Virtio block device.
@@ -425,17 +420,8 @@ type NetworkBlockDeviceStorageDeviceAttachment struct {
 
 	*baseStorageDeviceAttachment
 
-	attachmentStatusCh chan networkBlockDeviceStorageDeviceAttachmentStatusData
-}
-
-type NetworkBlockDeviceStorageDeviceAttachmentStatus interface {
-	IsConnected() bool
-	Error() error
-}
-
-type networkBlockDeviceStorageDeviceAttachmentStatusData struct {
-	connected bool
-	err       error
+	didEncounterError *infinity.Channel[error]
+	connected         *infinity.Channel[struct{}]
 }
 
 var _ StorageDeviceAttachment = (*NetworkBlockDeviceStorageDeviceAttachment)(nil)
@@ -459,14 +445,15 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 		return nil, err
 	}
 
-	ch := make(chan networkBlockDeviceStorageDeviceAttachmentStatusData)
+	didEncounterError := infinity.NewChannel[error]()
+	connected := infinity.NewChannel[struct{}]()
 
 	handle := cgo.NewHandle(func(err error) {
-		connected := true
 		if err != nil {
-			connected = false
+			didEncounterError.In() <- err
+			return
 		}
-		ch <- networkBlockDeviceStorageDeviceAttachmentStatusData{connected, err}
+		connected.In() <- struct{}{}
 	})
 
 	nserrPtr := newNSErrorAsNil()
@@ -484,7 +471,8 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 				C.uintptr_t(handle),
 			),
 		),
-		attachmentStatusCh: ch,
+		didEncounterError: didEncounterError,
+		connected:         connected,
 	}
 	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
@@ -495,41 +483,48 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 	return attachment, nil
 }
 
-// Returns the connected value. It is true if the NBD client successfully connected to the server. False if there was an error that prevented the connection
-func (n *networkBlockDeviceStorageDeviceAttachmentStatusData) IsConnected() bool {
-	return n.connected
+// Connected receive the signal via channel when the NBD client successfully connects or reconnects with the server.
+//
+// The NBD connection with the server takes place when the VM is first started, and reconnection attempts take place when the connection
+// times out or when the NBD client has encountered a recoverable error, such as an I/O error from the server.
+//
+// Note that the Virtualization framework may call this method multiple times during a VM’s life cycle. Reconnections are transparent to the guest.
+func (n *NetworkBlockDeviceStorageDeviceAttachment) Connected() <-chan struct{} {
+	return n.connected.Out()
 }
 
-// Returns the error associated to the failed connection of the NBD client to the server
-func (n *networkBlockDeviceStorageDeviceAttachmentStatusData) Error() error {
-	return n.err
+// The DidEncounterError is triggered via the channel when the NBD client encounters an error that cannot be resolved on the client side.
+// In this state, the client will continue attempting to reconnect, but recovery depends entirely on the server's availability.
+// If the server resumes operation, the connection will recover automatically; however, until the server is restored, the client will continue to experience errors.
+func (n *NetworkBlockDeviceStorageDeviceAttachment) DidEncounterError() <-chan error {
+	return n.didEncounterError.Out()
 }
 
-// It allows the caller to subscribe to the attachmentStatus channel to listen to changes of the network block device attachment
-// This way it can be informed if the NBD client successfully connects/reconnects to the server or it encounter an error
-func (n *NetworkBlockDeviceStorageDeviceAttachment) Listen(statusCh chan NetworkBlockDeviceStorageDeviceAttachmentStatus) {
-	go func() {
-		for {
-			status := <-n.attachmentStatusCh
-			statusCh <- &status
-		}
-	}()
-}
-
-//export attachmentHandler
-func attachmentHandler(cgoHandleUintptr C.uintptr_t, errorPtr unsafe.Pointer) {
+// attachmentDidEncounterErrorHandler function is called when the NBD client encounters a nonrecoverable error.
+// After the attachment object calls this method, the NBD client is in a nonfunctional state.
+//
+//export attachmentDidEncounterErrorHandler
+func attachmentDidEncounterErrorHandler(cgoHandleUintptr C.uintptr_t, errorPtr unsafe.Pointer) {
 	cgoHandle := cgo.Handle(cgoHandleUintptr)
 	handler := cgoHandle.Value().(func(error))
 
 	err := newNSError(errorPtr)
 
-	go handler(err)
+	handler(err)
 }
 
+// attachmentWasConnectedHandler function is called when a connection to the server is first established as the VM starts,
+// and during any reconnection attempts triggered by connection timeouts or recoverable errors encountered by the NBD client,
+// such as server-side I/O errors.
+//
+// Note that the Virtualization framework may invoke this method multiple times throughout the VM’s lifecycle,
+// ensuring reconnection processes remain seamless and transparent to the guest.
+// For more details, see: https://developer.apple.com/documentation/virtualization/vznetworkblockdevicestoragedeviceattachmentdelegate/4168511-attachmentwasconnected?language=objc
+//
 //export attachmentWasConnectedHandler
 func attachmentWasConnectedHandler(cgoHandleUintptr C.uintptr_t) {
 	cgoHandle := cgo.Handle(cgoHandleUintptr)
 	handler := cgoHandle.Value().(func(error))
 
-	go handler(nil)
+	handler(nil)
 }

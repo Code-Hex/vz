@@ -104,7 +104,7 @@ void *newVZNetworkBlockDeviceStorageDeviceAttachment(const char *uri, double tim
 
 - (void)attachment:(VZNetworkBlockDeviceStorageDeviceAttachment *)attachment didEncounterError:(NSError *)error
 {
-    attachmentHandler(_cgoHandle, error);
+    attachmentDidEncounterErrorHandler(_cgoHandle, error);
 }
 
 - (void)attachmentWasConnected:(VZNetworkBlockDeviceStorageDeviceAttachment *)attachment
@@ -112,4 +112,3 @@ void *newVZNetworkBlockDeviceStorageDeviceAttachment(const char *uri, double tim
     attachmentWasConnectedHandler(_cgoHandle);
 }
 @end
-

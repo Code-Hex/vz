@@ -79,7 +79,19 @@ func runVM(ctx context.Context) error {
 	}()
 
 	// it start listening to the NBD server, if any
-	listenNetworkBlockDevice(config)
+	nbdAttachment := retrieveNetworkBlockDeviceStorageDeviceAttachment(config.StorageDevices())
+	if nbdAttachment != nil {
+		go func() {
+			for {
+				select {
+				case err := <-nbdAttachment.DidEncounterError():
+					log.Printf("NBD client has been encountered error: %v\n", err)
+				case <-nbdAttachment.Connected():
+					log.Println("NBD client connected with the server")
+				}
+			}
+		}()
+	}
 
 	// cleanup is this function is useful when finished graphic application.
 	cleanup := func() {
@@ -105,9 +117,7 @@ func runVM(ctx context.Context) error {
 		log.Println("finished cleanup")
 	}
 
-	runtime.LockOSThread()
 	vm.StartGraphicApplication(960, 600)
-	runtime.UnlockOSThread()
 
 	cleanup()
 
@@ -147,29 +157,30 @@ func computeMemorySize() uint64 {
 }
 
 func createBlockDeviceConfiguration(diskPath string) (*vz.VirtioBlockDeviceConfiguration, error) {
-	var attachment vz.StorageDeviceAttachment
-	var err error
-
-	if nbdURL == "" {
-		// create disk image with 64 GiB
-		if err := vz.CreateDiskImage(diskPath, 64*1024*1024*1024); err != nil {
-			if !os.IsExist(err) {
-				return nil, fmt.Errorf("failed to create disk image: %w", err)
-			}
+	// create disk image with 64 GiB
+	if err := vz.CreateDiskImage(diskPath, 64*1024*1024*1024); err != nil {
+		if !os.IsExist(err) {
+			return nil, fmt.Errorf("failed to create disk image: %w", err)
 		}
-
-		attachment, err = vz.NewDiskImageStorageDeviceAttachment(
-			diskPath,
-			false,
-		)
-	} else {
-		attachment, err = vz.NewNetworkBlockDeviceStorageDeviceAttachment(
-			nbdURL,
-			10*time.Second,
-			false,
-			vz.DiskSynchronizationModeFull,
-		)
 	}
+
+	attachment, err := vz.NewDiskImageStorageDeviceAttachment(
+		diskPath,
+		false,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return vz.NewVirtioBlockDeviceConfiguration(attachment)
+}
+
+func createNetworkBlockDeviceConfiguration(nbdURL string) (*vz.VirtioBlockDeviceConfiguration, error) {
+	attachment, err := vz.NewNetworkBlockDeviceStorageDeviceAttachment(
+		nbdURL,
+		10*time.Second,
+		false,
+		vz.DiskSynchronizationModeFull,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +291,15 @@ func setupVMConfiguration(platformConfig vz.PlatformConfiguration) (*vz.VirtualM
 	if err != nil {
 		return nil, fmt.Errorf("failed to create block device configuration: %w", err)
 	}
-	config.SetStorageDevicesVirtualMachineConfiguration([]vz.StorageDeviceConfiguration{blockDeviceConfig})
+	sdconfigs := []vz.StorageDeviceConfiguration{blockDeviceConfig}
+	if nbdURL != "" {
+		ndbConfig, err := createNetworkBlockDeviceConfiguration(nbdURL)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create network block device configuration: %w", err)
+		}
+		sdconfigs = append(sdconfigs, ndbConfig)
+	}
+	config.SetStorageDevicesVirtualMachineConfiguration(sdconfigs)
 
 	networkDeviceConfig, err := createNetworkDeviceConfiguration()
 	if err != nil {
@@ -335,22 +354,11 @@ func setupVMConfiguration(platformConfig vz.PlatformConfiguration) (*vz.VirtualM
 	return config, nil
 }
 
-func listenNetworkBlockDevice(vm *vz.VirtualMachineConfiguration) error {
-	storages := vm.StorageDevices()
+func retrieveNetworkBlockDeviceStorageDeviceAttachment(storages []vz.StorageDeviceConfiguration) *vz.NetworkBlockDeviceStorageDeviceAttachment {
 	for _, storage := range storages {
 		attachment := storage.Attachment()
-		if nbdAttachment, isNbdAttachment := attachment.(*vz.NetworkBlockDeviceStorageDeviceAttachment); isNbdAttachment {
-			nbdAttachmentStatusCh := make(chan vz.NetworkBlockDeviceStorageDeviceAttachmentStatus)
-			nbdAttachment.Listen(nbdAttachmentStatusCh)
-			go func() {
-				for status := range nbdAttachmentStatusCh {
-					if status.IsConnected() {
-						log.Println("Successfully connected to NBD server")
-					} else {
-						log.Printf("Disconnected from NBD server. Error %v\n", status.Error().Error())
-					}
-				}
-			}()
+		if nbdAttachment, ok := attachment.(*vz.NetworkBlockDeviceStorageDeviceAttachment); ok {
+			return nbdAttachment
 		}
 	}
 	return nil

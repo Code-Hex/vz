@@ -11,7 +11,7 @@ bool isNestedVirtualizationSupported()
 {
 #ifdef INCLUDE_TARGET_OSX_15
     if (@available(macOS 15, *)) {
-        return (bool) VZGenericPlatformConfiguration.isNestedVirtualizationSupported;
+        return (bool)VZGenericPlatformConfiguration.isNestedVirtualizationSupported;
     }
 #endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
@@ -25,7 +25,7 @@ void setNestedVirtualizationEnabled(void *config, bool nestedVirtualizationEnabl
 #ifdef INCLUDE_TARGET_OSX_15
     if (@available(macOS 15, *)) {
         VZGenericPlatformConfiguration *platformConfig = (VZGenericPlatformConfiguration *)config;
-        platformConfig.nestedVirtualizationEnabled = (BOOL) nestedVirtualizationEnabled;
+        platformConfig.nestedVirtualizationEnabled = (BOOL)nestedVirtualizationEnabled;
         return;
     }
 #endif

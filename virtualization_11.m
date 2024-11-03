@@ -103,6 +103,17 @@
         [networkDevice debugDescription],
         networkDevice.attachment,
         error);
+
+    int i = 0;
+    for (VZNetworkDevice *nd in virtualMachine.networkDevices) {
+        if (nd == networkDevice) {
+            NSLog(@"Index network devices %d, %@", i, nd.attachment);
+            break;
+        }
+        i++;
+    }
+    NSLog(@"debug is finished");
+    [networkDevice setAttachment:[[VZNATNetworkDeviceAttachment alloc] init]];
 }
 @end
 

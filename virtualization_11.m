@@ -100,7 +100,7 @@
         processName,
         osVersion,
         architecture,
-        networkDevice,
+        [networkDevice debugDescription],
         networkDevice.attachment,
         error);
 }

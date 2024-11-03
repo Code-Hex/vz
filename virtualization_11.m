@@ -17,26 +17,133 @@
 }
 @end
 
+@implementation VZVirtualMachineDelegateWrapper
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _delegates = [NSHashTable weakObjectsHashTable];
+    }
+    return self;
+}
+
+- (void)addDelegate:(id<VZVirtualMachineDelegate>)delegate
+{
+    [self.delegates addObject:delegate];
+}
+
+- (void)guestDidStopVirtualMachine:(VZVirtualMachine *)virtualMachine
+{
+    for (id<VZVirtualMachineDelegate> delegate in self.delegates) {
+        if ([delegate respondsToSelector:@selector(guestDidStopVirtualMachine:)]) {
+            [delegate guestDidStopVirtualMachine:virtualMachine];
+        }
+    }
+}
+
+- (void)virtualMachine:(VZVirtualMachine *)virtualMachine didStopWithError:(NSError *)error
+{
+    for (id<VZVirtualMachineDelegate> delegate in self.delegates) {
+        if ([delegate respondsToSelector:@selector(virtualMachine:didStopWithError:)]) {
+            [delegate virtualMachine:virtualMachine didStopWithError:error];
+        }
+    }
+}
+
+- (void)virtualMachine:(VZVirtualMachine *)virtualMachine networkDevice:(VZNetworkDevice *)networkDevice
+    attachmentWasDisconnectedWithError:(NSError *)error
+{
+    for (id<VZVirtualMachineDelegate> delegate in self.delegates) {
+        if ([delegate respondsToSelector:@selector(virtualMachine:networkDevice:attachmentWasDisconnectedWithError:)]) {
+            [delegate virtualMachine:virtualMachine networkDevice:networkDevice attachmentWasDisconnectedWithError:error];
+        }
+    }
+}
+@end
+
+@implementation VZVirtualMachineNetworkDeviceErrorHandler {
+    uintptr_t _cgoHandle;
+}
+
+// TODO(codehex): Support the conditions under which the attachmentWasDisconnectedWithError method
+// is executed as soon as they are known.
+- (instancetype)initWithHandle:(uintptr_t)cgoHandle
+{
+    self = [super init];
+    if (self) {
+        _cgoHandle = cgoHandle;
+    }
+    return self;
+}
+
+- (void)virtualMachine:(VZVirtualMachine *)virtualMachine
+                         networkDevice:(VZNetworkDevice *)networkDevice
+    attachmentWasDisconnectedWithError:(NSError *)error
+{
+    NSProcessInfo *processInfo = [NSProcessInfo processInfo];
+    NSString *processName = [processInfo processName];
+    NSString *osVersion = [processInfo operatingSystemVersionString];
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    NSString *architecture = [NSString stringWithCString:systemInfo.machine
+                                                encoding:NSUTF8StringEncoding];
+
+    NSLog(
+        @"If you see this message, please report the information about the OS (including the version) that you are running on the VM, "
+        @"along with the information displayed below, to https://github.com/Code-Hex/vz/issues.\n"
+        @"Process Information:\n"
+        @"  Name: %@\n"
+        @"  macOS: %@, %@\n"
+        @"  networkDevice: %@\n"
+        @"  networkDevice attachment: %@\n"
+        @"  attachmentWasDisconnectedWithError: %@",
+        processName,
+        osVersion,
+        architecture,
+        networkDevice,
+        networkDevice.attachment,
+        error);
+}
+@end
+
 @implementation ObservableVZVirtualMachine {
     Observer *_observer;
+    VZVirtualMachineDelegateWrapper *_delegateWrapper;
 };
 - (instancetype)initWithConfiguration:(VZVirtualMachineConfiguration *)configuration
                                 queue:(dispatch_queue_t)queue
                    statusUpdateHandle:(uintptr_t)statusUpdateHandle
 {
     self = [super initWithConfiguration:configuration queue:queue];
-    _observer = [[Observer alloc] init];
-    [self addObserver:_observer
-           forKeyPath:@"state"
-              options:NSKeyValueObservingOptionNew
-              context:(void *)statusUpdateHandle];
+    if (self) {
+        _observer = [[Observer alloc] init];
+        [self addObserver:_observer
+               forKeyPath:@"state"
+                  options:NSKeyValueObservingOptionNew
+                  context:(void *)statusUpdateHandle];
+        _delegateWrapper = [[VZVirtualMachineDelegateWrapper alloc] init];
+        [super setDelegate:_delegateWrapper];
+    }
     return self;
+}
+
+- (void)setDelegate:(id<VZVirtualMachineDelegate>)delegate
+{
+    if (delegate != _delegateWrapper) {
+        [_delegateWrapper addDelegate:delegate];
+    }
+}
+
+- (id<VZVirtualMachineDelegate>)delegate
+{
+    return _delegateWrapper;
 }
 
 - (void)dealloc
 {
     [self removeObserver:_observer forKeyPath:@"state"];
     [_observer release];
+    [_delegateWrapper release];
     [super dealloc];
 }
 @end
@@ -48,7 +155,9 @@
 - (instancetype)initWithHandle:(uintptr_t)cgoHandle
 {
     self = [super init];
-    _cgoHandle = cgoHandle;
+    if (self) {
+        _cgoHandle = cgoHandle;
+    }
     return self;
 }
 
@@ -731,13 +840,15 @@ VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connecti
     Every operation on the virtual machine must be done on that queue. The callbacks and delegate methods are invoked on that queue.
     If the queue is not serial, the behavior is undefined.
  */
-void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, uintptr_t cgoHandle)
+void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, uintptr_t statusUpdateCgoHandle)
 {
     if (@available(macOS 11, *)) {
         ObservableVZVirtualMachine *vm = [[ObservableVZVirtualMachine alloc]
             initWithConfiguration:(VZVirtualMachineConfiguration *)config
                             queue:(dispatch_queue_t)queue
-               statusUpdateHandle:cgoHandle];
+               statusUpdateHandle:statusUpdateCgoHandle];
+        VZVirtualMachineNetworkDeviceErrorHandler *delegate = [[[VZVirtualMachineNetworkDeviceErrorHandler alloc] init] autorelease];
+        [vm setDelegate:delegate];
         return vm;
     }
 

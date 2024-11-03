@@ -178,7 +178,7 @@
 {
     self = [super init];
     _virtualMachine = virtualMachine;
-    _virtualMachine.delegate = self;
+    [_virtualMachine setDelegate:self];
 
     // Setup virtual machine view configs
     VZVirtualMachineView *view = [[[VZVirtualMachineView alloc] init] autorelease];

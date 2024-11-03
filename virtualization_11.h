@@ -8,6 +8,7 @@
 
 #import "virtualization_helper.h"
 #import <Virtualization/Virtualization.h>
+#import <sys/utsname.h>
 
 /* exported from cgo */
 void connectionHandler(void *connection, void *err, uintptr_t cgoHandle);
@@ -18,11 +19,30 @@ bool shouldAcceptNewConnectionHandler(uintptr_t cgoHandle, void *connection, voi
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
 @end
 
+@interface VZVirtualMachineDelegateWrapper : NSObject <VZVirtualMachineDelegate>
+@property (nonatomic, strong, readonly) NSHashTable<id<VZVirtualMachineDelegate>> *delegates;
+
+- (instancetype)init;
+- (void)addDelegate:(id<VZVirtualMachineDelegate>)delegate;
+- (void)guestDidStopVirtualMachine:(VZVirtualMachine *)virtualMachine;
+- (void)virtualMachine:(VZVirtualMachine *)virtualMachine didStopWithError:(NSError *)error;
+- (void)virtualMachine:(VZVirtualMachine *)virtualMachine
+                         networkDevice:(VZNetworkDevice *)networkDevice
+    attachmentWasDisconnectedWithError:(NSError *)error API_AVAILABLE(macos(12.0));
+@end
+
 @interface ObservableVZVirtualMachine : VZVirtualMachine
 - (instancetype)initWithConfiguration:(VZVirtualMachineConfiguration *)configuration
                                 queue:(dispatch_queue_t)queue
                    statusUpdateHandle:(uintptr_t)statusUpdateHandle;
 - (void)dealloc;
+@end
+
+@interface VZVirtualMachineNetworkDeviceErrorHandler : NSObject <VZVirtualMachineDelegate>
+- (instancetype)initWithHandle:(uintptr_t)cgoHandle;
+- (void)virtualMachine:(VZVirtualMachine *)virtualMachine
+                         networkDevice:(VZNetworkDevice *)networkDevice
+    attachmentWasDisconnectedWithError:(NSError *)error API_AVAILABLE(macos(12.0));
 @end
 
 /* VZVirtioSocketListener */
@@ -88,7 +108,7 @@ void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *
 void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, uintptr_t cgoHandle);
 
 /* VirtualMachine */
-void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, uintptr_t cgoHandle);
+void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, uintptr_t statusUpdateCgoHandle);
 bool requestStopVirtualMachine(void *machine, void *queue, void **error);
 void startWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle);
 void pauseWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle);

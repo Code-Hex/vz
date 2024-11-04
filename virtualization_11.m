@@ -61,12 +61,10 @@
 }
 @end
 
-@implementation VZVirtualMachineNetworkDeviceErrorHandler {
+@implementation NetworkDeviceDisconnectedHandler {
     uintptr_t _cgoHandle;
 }
 
-// TODO(codehex): Support the conditions under which the attachmentWasDisconnectedWithError method
-// is executed as soon as they are known.
 - (instancetype)initWithHandle:(uintptr_t)cgoHandle
 {
     self = [super init];
@@ -80,40 +78,24 @@
                          networkDevice:(VZNetworkDevice *)networkDevice
     attachmentWasDisconnectedWithError:(NSError *)error
 {
-    NSProcessInfo *processInfo = [NSProcessInfo processInfo];
-    NSString *processName = [processInfo processName];
-    NSString *osVersion = [processInfo operatingSystemVersionString];
-    struct utsname systemInfo;
-    uname(&systemInfo);
-    NSString *architecture = [NSString stringWithCString:systemInfo.machine
-                                                encoding:NSUTF8StringEncoding];
+    int index = [self networkDevices:virtualMachine.networkDevices indexOf:networkDevice];
+    emitAttachmentWasDisconnected(index, error, _cgoHandle);
+}
 
-    NSLog(
-        @"If you see this message, please report the information about the OS (including the version) that you are running on the VM, "
-        @"along with the information displayed below, to https://github.com/Code-Hex/vz/issues.\n"
-        @"Process Information:\n"
-        @"  Name: %@\n"
-        @"  macOS: %@, %@\n"
-        @"  networkDevice: %@\n"
-        @"  networkDevice attachment: %@\n"
-        @"  attachmentWasDisconnectedWithError: %@",
-        processName,
-        osVersion,
-        architecture,
-        [networkDevice debugDescription],
-        networkDevice.attachment,
-        error);
-
-    int i = 0;
-    for (VZNetworkDevice *nd in virtualMachine.networkDevices) {
-        if (nd == networkDevice) {
-            NSLog(@"Index network devices %d, %@", i, nd.attachment);
-            break;
-        }
-        i++;
+- (int)networkDevices:(NSArray<VZNetworkDevice *> *)networkDevices
+              indexOf:(VZNetworkDevice *)networkDevice
+{
+    NSInteger index = [networkDevices indexOfObject:networkDevice];
+    if (index != NSNotFound) {
+        return (int)index;
     }
-    NSLog(@"debug is finished");
-    [networkDevice setAttachment:[[VZNATNetworkDeviceAttachment alloc] init]];
+    return -1;
+}
+
+- (void)dealloc
+{
+    closeAttachmentWasDisconnectedChannel(_cgoHandle);
+    [super dealloc];
 }
 @end
 
@@ -851,15 +833,15 @@ VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connecti
     Every operation on the virtual machine must be done on that queue. The callbacks and delegate methods are invoked on that queue.
     If the queue is not serial, the behavior is undefined.
  */
-void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, uintptr_t statusUpdateCgoHandle)
+void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, uintptr_t statusUpdateCgoHandle, uintptr_t disconnectedCgoHandle)
 {
     if (@available(macOS 11, *)) {
         ObservableVZVirtualMachine *vm = [[ObservableVZVirtualMachine alloc]
             initWithConfiguration:(VZVirtualMachineConfiguration *)config
                             queue:(dispatch_queue_t)queue
                statusUpdateHandle:statusUpdateCgoHandle];
-        VZVirtualMachineNetworkDeviceErrorHandler *delegate = [[[VZVirtualMachineNetworkDeviceErrorHandler alloc] init] autorelease];
-        [vm setDelegate:delegate];
+        NetworkDeviceDisconnectedHandler *delegate = [[NetworkDeviceDisconnectedHandler alloc] initWithHandle:disconnectedCgoHandle];
+        [vm setDelegate:[delegate autorelease]];
         return vm;
     }
 

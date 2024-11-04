@@ -12,7 +12,6 @@ import (
 	"net"
 	"os"
 	"syscall"
-	"unsafe"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
@@ -91,6 +90,10 @@ type NATNetworkDeviceAttachment struct {
 	*baseNetworkDeviceAttachment
 }
 
+func (*NATNetworkDeviceAttachment) String() string {
+	return "NATNetworkDeviceAttachment"
+}
+
 var _ NetworkDeviceAttachment = (*NATNetworkDeviceAttachment)(nil)
 
 // NewNATNetworkDeviceAttachment creates a new NATNetworkDeviceAttachment.
@@ -125,6 +128,10 @@ type BridgedNetworkDeviceAttachment struct {
 	*pointer
 
 	*baseNetworkDeviceAttachment
+}
+
+func (*BridgedNetworkDeviceAttachment) String() string {
+	return "BridgedNetworkDeviceAttachment"
 }
 
 var _ NetworkDeviceAttachment = (*BridgedNetworkDeviceAttachment)(nil)
@@ -162,6 +169,10 @@ type FileHandleNetworkDeviceAttachment struct {
 	*baseNetworkDeviceAttachment
 
 	mtu int
+}
+
+func (*FileHandleNetworkDeviceAttachment) String() string {
+	return "FileHandleNetworkDeviceAttachment"
 }
 
 var _ NetworkDeviceAttachment = (*FileHandleNetworkDeviceAttachment)(nil)
@@ -253,7 +264,7 @@ func (f *FileHandleNetworkDeviceAttachment) MaximumTransmissionUnit() int {
 // see: https://developer.apple.com/documentation/virtualization/vznetworkdeviceattachment?language=objc
 type NetworkDeviceAttachment interface {
 	objc.NSObject
-
+	fmt.Stringer
 	networkDeviceAttachment()
 }
 
@@ -271,6 +282,8 @@ func (*baseNetworkDeviceAttachment) networkDeviceAttachment() {}
 // see: https://developer.apple.com/documentation/virtualization/vzvirtionetworkdeviceconfiguration?language=objc
 type VirtioNetworkDeviceConfiguration struct {
 	*pointer
+
+	attachment NetworkDeviceAttachment
 }
 
 // NewVirtioNetworkDeviceConfiguration creates a new VirtioNetworkDeviceConfiguration with NetworkDeviceAttachment.
@@ -282,25 +295,29 @@ func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) (*V
 		return nil, err
 	}
 
-	config := newVirtioNetworkDeviceConfiguration(
-		C.newVZVirtioNetworkDeviceConfiguration(
-			objc.Ptr(attachment),
-		),
-	)
+	config := newVirtioNetworkDeviceConfiguration(attachment)
 	objc.SetFinalizer(config, func(self *VirtioNetworkDeviceConfiguration) {
 		objc.Release(self)
 	})
 	return config, nil
 }
 
-func newVirtioNetworkDeviceConfiguration(ptr unsafe.Pointer) *VirtioNetworkDeviceConfiguration {
+func newVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) *VirtioNetworkDeviceConfiguration {
+	ptr := C.newVZVirtioNetworkDeviceConfiguration(
+		objc.Ptr(attachment),
+	)
 	return &VirtioNetworkDeviceConfiguration{
-		pointer: objc.NewPointer(ptr),
+		pointer:    objc.NewPointer(ptr),
+		attachment: attachment,
 	}
 }
 
 func (v *VirtioNetworkDeviceConfiguration) SetMACAddress(macAddress *MACAddress) {
 	C.setNetworkDevicesVZMACAddress(objc.Ptr(v), objc.Ptr(macAddress))
+}
+
+func (v *VirtioNetworkDeviceConfiguration) Attachment() NetworkDeviceAttachment {
+	return v.attachment
 }
 
 // MACAddress represents a media access control address (MAC address), the 48-bit ethernet address.

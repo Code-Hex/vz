@@ -9,12 +9,14 @@ package vz
 */
 import "C"
 import (
+	"fmt"
 	"runtime/cgo"
 	"sync"
 	"unsafe"
 
 	infinity "github.com/Code-Hex/go-infinity-channel"
 	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/sliceutil"
 )
 
 // VirtualMachineState represents execution state of the virtual machine.
@@ -91,9 +93,15 @@ type VirtualMachine struct {
 	dispatchQueue unsafe.Pointer
 	machineState  *machineState
 
+	disconnectedIn        *infinity.Channel[*disconnected]
+	disconnectedOut       *infinity.Channel[*DisconnectedError]
+	watchDisconnectedOnce sync.Once
+
 	finalizeOnce sync.Once
 
 	config *VirtualMachineConfiguration
+
+	mu sync.RWMutex
 }
 
 type machineState struct {
@@ -123,8 +131,12 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 		state:       VirtualMachineState(0),
 		stateNotify: infinity.NewChannel[VirtualMachineState](),
 	}
-
 	stateHandle := cgo.NewHandle(machineState)
+
+	disconnectedIn := infinity.NewChannel[*disconnected]()
+	disconnectedOut := infinity.NewChannel[*DisconnectedError]()
+	disconnectedHandle := cgo.NewHandle(disconnectedIn)
+
 	v := &VirtualMachine{
 		id: cs.String(),
 		pointer: objc.NewPointer(
@@ -132,11 +144,14 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 				objc.Ptr(config),
 				dispatchQueue,
 				C.uintptr_t(stateHandle),
+				C.uintptr_t(disconnectedHandle),
 			),
 		),
-		dispatchQueue: dispatchQueue,
-		machineState:  machineState,
-		config:        config,
+		dispatchQueue:   dispatchQueue,
+		machineState:    machineState,
+		disconnectedIn:  disconnectedIn,
+		disconnectedOut: disconnectedOut,
+		config:          config,
 	}
 
 	objc.SetFinalizer(v, func(self *VirtualMachine) {
@@ -356,4 +371,84 @@ func (v *VirtualMachine) StartGraphicApplication(width, height float64) error {
 	}
 	C.startVirtualMachineWindow(objc.Ptr(v), C.double(width), C.double(height))
 	return nil
+}
+
+// DisconnectedError represents an error that occurs when a VM’s network attachment is disconnected
+// due to a network-related issue. This error is triggered by the framework when such a disconnection happens.
+type DisconnectedError struct {
+	// Err is the underlying error that caused the disconnection, triggered by the framework.
+	// This error provides information on why the network attachment was disconnected.
+	Err error
+	// The network device configuration associated with the disconnection event.
+	// This configuration helps identify which network device experienced the disconnection.
+	// If Config is nil, the specific configuration details are unavailable.
+	Config *VirtioNetworkDeviceConfiguration
+}
+
+func (e *DisconnectedError) Unwrap() error { return e.Err }
+func (e *DisconnectedError) Error() string {
+	if e.Config == nil {
+		return e.Err.Error()
+	}
+	return fmt.Sprintf("%s: %v", e.Config.attachment, e.Err)
+}
+
+type disconnected struct {
+	err   error
+	index int
+}
+
+// NetworkDeviceAttachmentWasDisconnected returns a receive channel.
+// The channel emits an error message each time the network attachment is disconnected,
+// typically triggered by events such as failure to start, initial boot, device reset, or reboot.
+// As a result, this method may be invoked multiple times throughout the virtual machine's lifecycle.
+//
+// This is only supported on macOS 12 and newer, error will be returned on older versions.
+func (v *VirtualMachine) NetworkDeviceAttachmentWasDisconnected() (<-chan *DisconnectedError, error) {
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
+	}
+	v.watchDisconnectedOnce.Do(func() {
+		go v.watchDisconnected()
+	})
+	return v.disconnectedOut.Out(), nil
+}
+
+// TODO(codehex): refactoring to leave using machineState's mutex lock.
+func (v *VirtualMachine) watchDisconnected() {
+	for disconnected := range v.disconnectedIn.Out() {
+		v.mu.RLock()
+		config := sliceutil.FindValueByIndex(
+			v.config.networkDeviceConfiguration,
+			disconnected.index,
+		)
+		v.mu.RUnlock()
+		v.disconnectedOut.In() <- &DisconnectedError{
+			Err:    disconnected.err,
+			Config: config,
+		}
+	}
+	v.disconnectedOut.Close()
+}
+
+//export emitAttachmentWasDisconnected
+func emitAttachmentWasDisconnected(index C.int, errPtr unsafe.Pointer, cgoHandleUintptr C.uintptr_t) {
+	handler := cgo.Handle(cgoHandleUintptr)
+	err := newNSError(errPtr)
+	// I expected it will not cause panic.
+	// if caused panic, that's unexpected behavior.
+	ch, _ := handler.Value().(*infinity.Channel[*disconnected])
+	ch.In() <- &disconnected{
+		err:   err,
+		index: int(index),
+	}
+}
+
+//export closeAttachmentWasDisconnectedChannel
+func closeAttachmentWasDisconnectedChannel(cgoHandleUintptr C.uintptr_t) {
+	handler := cgo.Handle(cgoHandleUintptr)
+	// I expected it will not cause panic.
+	// if caused panic, that's unexpected behavior.
+	ch, _ := handler.Value().(*infinity.Channel[*disconnected])
+	ch.Close()
 }

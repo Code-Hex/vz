@@ -8,12 +8,13 @@
 
 #import "virtualization_helper.h"
 #import <Virtualization/Virtualization.h>
-#import <sys/utsname.h>
 
 /* exported from cgo */
 void connectionHandler(void *connection, void *err, uintptr_t cgoHandle);
 void changeStateOnObserver(int state, uintptr_t cgoHandle);
 bool shouldAcceptNewConnectionHandler(uintptr_t cgoHandle, void *connection, void *socketDevice);
+void emitAttachmentWasDisconnected(int index, void *err, uintptr_t cgoHandle);
+void closeAttachmentWasDisconnectedChannel(uintptr_t cgoHandle);
 
 @interface Observer : NSObject
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
@@ -38,11 +39,14 @@ bool shouldAcceptNewConnectionHandler(uintptr_t cgoHandle, void *connection, voi
 - (void)dealloc;
 @end
 
-@interface VZVirtualMachineNetworkDeviceErrorHandler : NSObject <VZVirtualMachineDelegate>
+@interface NetworkDeviceDisconnectedHandler : NSObject <VZVirtualMachineDelegate>
 - (instancetype)initWithHandle:(uintptr_t)cgoHandle;
 - (void)virtualMachine:(VZVirtualMachine *)virtualMachine
                          networkDevice:(VZNetworkDevice *)networkDevice
     attachmentWasDisconnectedWithError:(NSError *)error API_AVAILABLE(macos(12.0));
+- (int)networkDevices:(NSArray<VZNetworkDevice *> *)networkDevices
+              indexOf:(VZNetworkDevice *)networkDevice;
+- (void)dealloc;
 @end
 
 /* VZVirtioSocketListener */
@@ -108,7 +112,7 @@ void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *
 void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, uintptr_t cgoHandle);
 
 /* VirtualMachine */
-void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, uintptr_t statusUpdateCgoHandle);
+void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, uintptr_t statusUpdateCgoHandle, uintptr_t disconnectedCgoHandle);
 bool requestStopVirtualMachine(void *machine, void *queue, void **error);
 void startWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle);
 void pauseWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle);

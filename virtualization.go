@@ -385,6 +385,8 @@ type DisconnectedError struct {
 	Config *VirtioNetworkDeviceConfiguration
 }
 
+var _ error = (*DisconnectedError)(nil)
+
 func (e *DisconnectedError) Unwrap() error { return e.Err }
 func (e *DisconnectedError) Error() string {
 	if e.Config == nil {

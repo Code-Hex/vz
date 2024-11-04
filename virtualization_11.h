@@ -45,7 +45,7 @@ void closeAttachmentWasDisconnectedChannel(uintptr_t cgoHandle);
                          networkDevice:(VZNetworkDevice *)networkDevice
     attachmentWasDisconnectedWithError:(NSError *)error API_AVAILABLE(macos(12.0));
 - (int)networkDevices:(NSArray<VZNetworkDevice *> *)networkDevices
-              indexOf:(VZNetworkDevice *)networkDevice;
+              indexOf:(VZNetworkDevice *)networkDevice API_AVAILABLE(macos(12.0));
 - (void)dealloc;
 @end
 

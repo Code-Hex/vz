@@ -101,10 +101,6 @@ type Container struct {
 	*ssh.Client
 }
 
-func (c *Container) Close() error {
-	return c.Client.Close()
-}
-
 func (c *Container) NewSession(t *testing.T) *ssh.Session {
 	sshSession, err := c.Client.NewSession()
 	if err != nil {
@@ -112,6 +108,47 @@ func (c *Container) NewSession(t *testing.T) *ssh.Session {
 	}
 	testhelper.SetKeepAlive(t, sshSession)
 	return sshSession
+}
+
+func (c *Container) Shutdown() error {
+	defer c.Client.Close()
+
+	vm := c.VirtualMachine
+
+	if got := vm.State(); vz.VirtualMachineStateStopped == got {
+		return nil
+	}
+
+	switch {
+	case vm.CanStop():
+		if err := vm.Stop(); err != nil {
+			return fmt.Errorf("failed to call stop: %w", err)
+		}
+	case vm.CanRequestStop():
+		if _, err := vm.RequestStop(); err != nil {
+			return fmt.Errorf("failed to send request stop: %w", err)
+		}
+	default:
+		sshSession, err := c.Client.NewSession()
+		if err != nil {
+			return fmt.Errorf("failed to create a new session: %w", err)
+		}
+		if err := sshSession.Run("poweroff"); err != nil {
+			return fmt.Errorf("failed to run poweroff command: %w", err)
+		}
+	}
+
+	wait := time.After(3 * time.Second)
+	for {
+		select {
+		case got := <-vm.StateChangedNotify():
+			if vz.VirtualMachineStateStopped == got {
+				return nil
+			}
+		case <-wait:
+			return fmt.Errorf("failed to wait stopped state")
+		}
+	}
 }
 
 func getFreePort() (int, error) {
@@ -281,7 +318,11 @@ func TestRun(t *testing.T) {
 			return setupConsoleConfig(vmc)
 		},
 	)
-	defer container.Close()
+	t.Cleanup(func() {
+		if err := container.Shutdown(); err != nil {
+			log.Println(err)
+		}
+	})
 
 	sshSession := container.NewSession(t)
 	defer sshSession.Close()
@@ -344,7 +385,11 @@ func TestStop(t *testing.T) {
 	}
 
 	container := newVirtualizationMachine(t)
-	defer container.Close()
+	t.Cleanup(func() {
+		if err := container.Shutdown(); err != nil {
+			log.Println(err)
+		}
+	})
 
 	vm := container.VirtualMachine
 
@@ -415,7 +460,11 @@ func TestRunIssue124(t *testing.T) {
 			return setupConsoleConfig(vmc)
 		},
 	)
-	defer container.Close()
+	t.Cleanup(func() {
+		if err := container.Shutdown(); err != nil {
+			log.Println(err)
+		}
+	})
 
 	sshSession := container.NewSession(t)
 	defer sshSession.Close()

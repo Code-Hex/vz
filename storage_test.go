@@ -1,6 +1,7 @@
 package vz_test
 
 import (
+	"log"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -90,7 +91,11 @@ func TestBlockDeviceWithCacheAndSyncMode(t *testing.T) {
 			return nil
 		},
 	)
-	defer container.Close()
+	t.Cleanup(func() {
+		if err := container.Shutdown(); err != nil {
+			log.Println(err)
+		}
+	})
 
 	vm := container.VirtualMachine
 

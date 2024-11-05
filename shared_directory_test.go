@@ -3,6 +3,7 @@ package vz_test
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -78,7 +79,11 @@ func TestSingleDirectoryShare(t *testing.T) {
 					return nil
 				},
 			)
-			defer container.Close()
+			t.Cleanup(func() {
+				if err := container.Shutdown(); err != nil {
+					log.Println(err)
+				}
+			})
 
 			vm := container.VirtualMachine
 
@@ -187,7 +192,11 @@ func TestMultipleDirectoryShare(t *testing.T) {
 			return nil
 		},
 	)
-	defer container.Close()
+	t.Cleanup(func() {
+		if err := container.Shutdown(); err != nil {
+			log.Println(err)
+		}
+	})
 
 	vm := container.VirtualMachine
 

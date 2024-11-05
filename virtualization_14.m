@@ -91,6 +91,7 @@ void *newVZNetworkBlockDeviceStorageDeviceAttachment(const char *uri, double tim
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
 
+#ifdef INCLUDE_TARGET_OSX_14
 @implementation VZNetworkBlockDeviceStorageDeviceAttachmentDelegateImpl {
     uintptr_t _cgoHandle;
 }
@@ -112,3 +113,4 @@ void *newVZNetworkBlockDeviceStorageDeviceAttachment(const char *uri, double tim
     attachmentWasConnectedHandler(_cgoHandle);
 }
 @end
+#endif

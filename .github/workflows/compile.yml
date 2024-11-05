@@ -28,6 +28,8 @@ jobs:
       fail-fast: false
       matrix:
         os:
+        - macos-11  # Intel
+        - macos-12  # Intel
         - macos-13  # Intel
         - macos-14
         - macos-15

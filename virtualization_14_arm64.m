@@ -39,10 +39,10 @@ void restoreMachineStateFromURLWithCompletionHandler(void *machine, void *queue,
         NSString *saveFilePathNSString = [NSString stringWithUTF8String:saveFilePath];
         NSURL *saveFileURL = [NSURL fileURLWithPath:saveFilePathNSString];
         vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine restoreMachineStateFromURL:saveFileURL completionHandler:handler];
+            Block_release(handler);
         });
-        Block_release(handler);
         return;
     }
 #endif
@@ -74,10 +74,10 @@ void saveMachineStateToURLWithCompletionHandler(void *machine, void *queue, uint
         NSString *saveFilePathNSString = [NSString stringWithUTF8String:saveFilePath];
         NSURL *saveFileURL = [NSURL fileURLWithPath:saveFilePathNSString];
         vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine saveMachineStateToURL:saveFileURL completionHandler:handler];
+            Block_release(handler);
         });
-        Block_release(handler);
         return;
     }
 #endif

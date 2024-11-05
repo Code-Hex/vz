@@ -15,6 +15,7 @@ void changeStateOnObserver(int state, uintptr_t cgoHandle);
 bool shouldAcceptNewConnectionHandler(uintptr_t cgoHandle, void *connection, void *socketDevice);
 void emitAttachmentWasDisconnected(int index, void *err, uintptr_t cgoHandle);
 void closeAttachmentWasDisconnectedChannel(uintptr_t cgoHandle);
+void emitRequestStop(bool success, void *err, uintptr_t cgoHandle);
 
 @interface Observer : NSObject
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
@@ -113,14 +114,14 @@ void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint3
 
 /* VirtualMachine */
 void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, uintptr_t statusUpdateCgoHandle, uintptr_t disconnectedCgoHandle);
-bool requestStopVirtualMachine(void *machine, void *queue, void **error);
+void requestStopVirtualMachine(void *machine, void *queue, uintptr_t cgoHandle);
 void startWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle);
 void pauseWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle);
 void resumeWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle);
-bool vmCanStart(void *machine, void *queue);
-bool vmCanPause(void *machine, void *queue);
-bool vmCanResume(void *machine, void *queue);
-bool vmCanRequestStop(void *machine, void *queue);
+void vmCanStart(void *machine, void *queue, uintptr_t cgoHandle);
+void vmCanPause(void *machine, void *queue, uintptr_t cgoHandle);
+void vmCanResume(void *machine, void *queue, uintptr_t cgoHandle);
+void vmCanRequestStop(void *machine, void *queue, uintptr_t cgoHandle);
 
 void *makeDispatchQueue(const char *label);
 

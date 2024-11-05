@@ -61,6 +61,7 @@ typedef struct nbyteslice {
 } nbyteslice;
 
 /* exported from cgo */
+void emitCanDo(bool can, uintptr_t cgoHandle);
 void virtualMachineCompletionHandler(uintptr_t cgoHandle, void *errPtr);
 
 typedef void (^vm_completion_handler_t)(NSError *);

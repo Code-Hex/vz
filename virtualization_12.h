@@ -11,7 +11,7 @@
 // "Configuration file(s) do(es) not support C++: /github.com/Code-Hex/vz/.clang-format"
 #define NSURLComponents NSURLComponents
 
-bool vmCanStop(void *machine, void *queue);
+void vmCanStop(void *machine, void *queue, uintptr_t cgoHandle);
 void stopWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle);
 
 void *newVZGenericPlatformConfiguration();

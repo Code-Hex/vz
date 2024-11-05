@@ -603,7 +603,7 @@ func (v *VirtualMachine) SaveMachineStateToPath(saveFilePath string) error {
 	}
 	cs := charWithGoString(saveFilePath)
 	defer cs.Free()
-	h, errCh := makeHandler()
+	h, errCh := makeHandler[error]()
 	handle := cgo.NewHandle(h)
 	defer handle.Delete()
 	C.saveMachineStateToURLWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle), cs.CString())
@@ -637,7 +637,7 @@ func (v *VirtualMachine) RestoreMachineStateFromURL(saveFilePath string) error {
 	}
 	cs := charWithGoString(saveFilePath)
 	defer cs.Free()
-	h, errCh := makeHandler()
+	h, errCh := makeHandler[error]()
 	handle := cgo.NewHandle(h)
 	defer handle.Delete()
 	C.restoreMachineStateFromURLWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle), cs.CString())

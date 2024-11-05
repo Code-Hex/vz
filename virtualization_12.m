@@ -6,14 +6,14 @@
 
 #import "virtualization_12.h"
 
-bool vmCanStop(void *machine, void *queue)
+void vmCanStop(void *machine, void *queue, uintptr_t cgoHandle)
 {
     if (@available(macOS 12, *)) {
-        __block BOOL result;
-        dispatch_sync((dispatch_queue_t)queue, ^{
-            result = ((VZVirtualMachine *)machine).canStop;
+        dispatch_async((dispatch_queue_t)queue, ^{
+            BOOL result = ((VZVirtualMachine *)machine).canStop;
+            emitCanDo((bool)result, cgoHandle);
         });
-        return (bool)result;
+        return;
     }
 
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
@@ -23,10 +23,10 @@ void stopWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle)
 {
     if (@available(macOS 12, *)) {
         vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
-        dispatch_sync((dispatch_queue_t)queue, ^{
+        dispatch_async((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine stopWithCompletionHandler:handler];
+            Block_release(handler);
         });
-        Block_release(handler);
         return;
     }
 

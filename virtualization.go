@@ -213,24 +213,47 @@ func (v *VirtualMachine) StateChangedNotify() <-chan VirtualMachineState {
 	return v.machineState.stateNotify.Out()
 }
 
+//export emitCanDo
+func emitCanDo(can C.bool, cgoHandleUintptr C.uintptr_t) {
+	cgoHandle := cgo.Handle(cgoHandleUintptr)
+	handler := cgoHandle.Value().(func(bool))
+	handler(bool(can))
+}
+
 // CanStart returns true if the machine is in a state that can be started.
 func (v *VirtualMachine) CanStart() bool {
-	return bool(C.vmCanStart(objc.Ptr(v), v.dispatchQueue))
+	h, ch := makeHandler[bool]()
+	handle := cgo.NewHandle(h)
+	defer handle.Delete()
+	go C.vmCanStart(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
+	return <-ch
 }
 
 // CanPause returns true if the machine is in a state that can be paused.
 func (v *VirtualMachine) CanPause() bool {
-	return bool(C.vmCanPause(objc.Ptr(v), v.dispatchQueue))
+	h, ch := makeHandler[bool]()
+	handle := cgo.NewHandle(h)
+	defer handle.Delete()
+	go C.vmCanPause(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
+	return <-ch
 }
 
 // CanResume returns true if the machine is in a state that can be resumed.
 func (v *VirtualMachine) CanResume() bool {
-	return (bool)(C.vmCanResume(objc.Ptr(v), v.dispatchQueue))
+	h, ch := makeHandler[bool]()
+	handle := cgo.NewHandle(h)
+	defer handle.Delete()
+	go C.vmCanResume(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
+	return <-ch
 }
 
 // CanRequestStop returns whether the machine is in a state where the guest can be asked to stop.
 func (v *VirtualMachine) CanRequestStop() bool {
-	return (bool)(C.vmCanRequestStop(objc.Ptr(v), v.dispatchQueue))
+	h, ch := makeHandler[bool]()
+	handle := cgo.NewHandle(h)
+	defer handle.Delete()
+	go C.vmCanRequestStop(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
+	return <-ch
 }
 
 // CanStop returns whether the machine is in a state that can be stopped.
@@ -241,7 +264,11 @@ func (v *VirtualMachine) CanStop() bool {
 	if err := macOSAvailable(12); err != nil {
 		return false
 	}
-	return (bool)(C.vmCanStop(objc.Ptr(v), v.dispatchQueue))
+	h, ch := makeHandler[bool]()
+	handle := cgo.NewHandle(h)
+	defer handle.Delete()
+	go C.vmCanStop(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
+	return <-ch
 }
 
 //export virtualMachineCompletionHandler
@@ -257,10 +284,10 @@ func virtualMachineCompletionHandler(cgoHandleUintptr C.uintptr_t, errPtr unsafe
 	}
 }
 
-func makeHandler() (func(error), chan error) {
-	ch := make(chan error, 1)
-	return func(err error) {
-		ch <- err
+func makeHandler[T any]() (func(T), chan T) {
+	ch := make(chan T, 1)
+	return func(v T) {
+		ch <- v
 		close(ch)
 	}, ch
 }
@@ -286,7 +313,7 @@ func (v *VirtualMachine) Start(opts ...VirtualMachineStartOption) error {
 		}
 	}
 
-	h, errCh := makeHandler()
+	h, errCh := makeHandler[error]()
 	handle := cgo.NewHandle(h)
 	defer handle.Delete()
 
@@ -307,7 +334,7 @@ func (v *VirtualMachine) Start(opts ...VirtualMachineStartOption) error {
 //
 // If you want to listen status change events, use the "StateChangedNotify" method.
 func (v *VirtualMachine) Pause() error {
-	h, errCh := makeHandler()
+	h, errCh := makeHandler[error]()
 	handle := cgo.NewHandle(h)
 	defer handle.Delete()
 	C.pauseWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
@@ -318,11 +345,26 @@ func (v *VirtualMachine) Pause() error {
 //
 // If you want to listen status change events, use the "StateChangedNotify" method.
 func (v *VirtualMachine) Resume() error {
-	h, errCh := makeHandler()
+	h, errCh := makeHandler[error]()
 	handle := cgo.NewHandle(h)
 	defer handle.Delete()
 	C.resumeWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
 	return <-errCh
+}
+
+type requestStopResult struct {
+	success bool
+	err     *NSError
+}
+
+//export emitRequestStop
+func emitRequestStop(success C.bool, errPtr unsafe.Pointer, cgoHandleUintptr C.uintptr_t) {
+	cgoHandle := cgo.Handle(cgoHandleUintptr)
+	handler := cgoHandle.Value().(func(requestStopResult))
+	handler(requestStopResult{
+		success: bool(success),
+		err:     newNSError(errPtr),
+	})
 }
 
 // RequestStop requests that the guest turns itself off.
@@ -330,12 +372,12 @@ func (v *VirtualMachine) Resume() error {
 // If returned error is not nil, assigned with the error if the request failed.
 // Returns true if the request was made successfully.
 func (v *VirtualMachine) RequestStop() (bool, error) {
-	nserrPtr := newNSErrorAsNil()
-	ret := (bool)(C.requestStopVirtualMachine(objc.Ptr(v), v.dispatchQueue, &nserrPtr))
-	if err := newNSError(nserrPtr); err != nil {
-		return ret, err
-	}
-	return ret, nil
+	h, ch := makeHandler[requestStopResult]()
+	handle := cgo.NewHandle(h)
+	defer handle.Delete()
+	go C.requestStopVirtualMachine(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
+	ret := <-ch
+	return ret.success, ret.err
 }
 
 // Stop stops a VM that’s in either a running or paused state.
@@ -353,7 +395,7 @@ func (v *VirtualMachine) Stop() error {
 	if err := macOSAvailable(12); err != nil {
 		return err
 	}
-	h, errCh := makeHandler()
+	h, errCh := makeHandler[error]()
 	handle := cgo.NewHandle(h)
 	defer handle.Delete()
 	C.stopWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))

@@ -38,6 +38,7 @@ type VirtualMachineConfiguration struct {
 	memorySize uint64
 	*pointer
 
+	networkDeviceConfiguration []*VirtioNetworkDeviceConfiguration
 	storageDeviceConfiguration []StorageDeviceConfiguration
 }
 
@@ -116,20 +117,13 @@ func (v *VirtualMachineConfiguration) SetNetworkDevicesVirtualMachineConfigurati
 	}
 	array := objc.ConvertToNSMutableArray(ptrs)
 	C.setNetworkDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	v.networkDeviceConfiguration = cs
 }
 
 // NetworkDevices return the list of network device configuration set in this virtual machine configuration.
 // Return an empty array if no network device configuration is set.
 func (v *VirtualMachineConfiguration) NetworkDevices() []*VirtioNetworkDeviceConfiguration {
-	nsArray := objc.NewNSArray(
-		C.networkDevicesVZVirtualMachineConfiguration(objc.Ptr(v)),
-	)
-	ptrs := nsArray.ToPointerSlice()
-	networkDevices := make([]*VirtioNetworkDeviceConfiguration, len(ptrs))
-	for i, ptr := range ptrs {
-		networkDevices[i] = newVirtioNetworkDeviceConfiguration(ptr)
-	}
-	return networkDevices
+	return v.networkDeviceConfiguration
 }
 
 // SetSerialPortsVirtualMachineConfiguration sets list of serial ports. Empty by default.

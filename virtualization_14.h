@@ -24,6 +24,6 @@ void *newVZNetworkBlockDeviceStorageDeviceAttachment(const char *url, double tim
 
 @interface VZNetworkBlockDeviceStorageDeviceAttachmentDelegateImpl : NSObject <VZNetworkBlockDeviceStorageDeviceAttachmentDelegate>
 - (instancetype)initWithHandle:(uintptr_t)cgoHandle;
-- (void)attachment:(VZNetworkBlockDeviceStorageDeviceAttachment *)attachment didEncounterError:(NSError *)error;
-- (void)attachmentWasConnected:(VZNetworkBlockDeviceStorageDeviceAttachment *)attachment;
+- (void)attachment:(VZNetworkBlockDeviceStorageDeviceAttachment *)attachment didEncounterError:(NSError *)error API_AVAILABLE(macos(14.0));
+- (void)attachmentWasConnected:(VZNetworkBlockDeviceStorageDeviceAttachment *)attachment API_AVAILABLE(macos(14.0));
 @end

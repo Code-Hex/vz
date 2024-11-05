@@ -13,15 +13,39 @@
 void connectionHandler(void *connection, void *err, uintptr_t cgoHandle);
 void changeStateOnObserver(int state, uintptr_t cgoHandle);
 bool shouldAcceptNewConnectionHandler(uintptr_t cgoHandle, void *connection, void *socketDevice);
+void emitAttachmentWasDisconnected(int index, void *err, uintptr_t cgoHandle);
+void closeAttachmentWasDisconnectedChannel(uintptr_t cgoHandle);
 
 @interface Observer : NSObject
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
+@end
+
+@interface VZVirtualMachineDelegateWrapper : NSObject <VZVirtualMachineDelegate>
+@property (nonatomic, strong, readonly) NSHashTable<id<VZVirtualMachineDelegate>> *delegates;
+
+- (instancetype)init;
+- (void)addDelegate:(id<VZVirtualMachineDelegate>)delegate;
+- (void)guestDidStopVirtualMachine:(VZVirtualMachine *)virtualMachine;
+- (void)virtualMachine:(VZVirtualMachine *)virtualMachine didStopWithError:(NSError *)error;
+- (void)virtualMachine:(VZVirtualMachine *)virtualMachine
+                         networkDevice:(VZNetworkDevice *)networkDevice
+    attachmentWasDisconnectedWithError:(NSError *)error API_AVAILABLE(macos(12.0));
 @end
 
 @interface ObservableVZVirtualMachine : VZVirtualMachine
 - (instancetype)initWithConfiguration:(VZVirtualMachineConfiguration *)configuration
                                 queue:(dispatch_queue_t)queue
                    statusUpdateHandle:(uintptr_t)statusUpdateHandle;
+- (void)dealloc;
+@end
+
+@interface NetworkDeviceDisconnectedHandler : NSObject <VZVirtualMachineDelegate>
+- (instancetype)initWithHandle:(uintptr_t)cgoHandle;
+- (void)virtualMachine:(VZVirtualMachine *)virtualMachine
+                         networkDevice:(VZNetworkDevice *)networkDevice
+    attachmentWasDisconnectedWithError:(NSError *)error API_AVAILABLE(macos(12.0));
+- (int)networkDevices:(NSArray<VZNetworkDevice *> *)networkDevices
+              indexOf:(VZNetworkDevice *)networkDevice API_AVAILABLE(macos(12.0));
 - (void)dealloc;
 @end
 
@@ -88,7 +112,7 @@ void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *
 void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, uintptr_t cgoHandle);
 
 /* VirtualMachine */
-void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, uintptr_t cgoHandle);
+void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, uintptr_t statusUpdateCgoHandle, uintptr_t disconnectedCgoHandle);
 bool requestStopVirtualMachine(void *machine, void *queue, void **error);
 void startWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle);
 void pauseWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle);

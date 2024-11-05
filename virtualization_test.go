@@ -3,6 +3,7 @@ package vz_test
 import (
 	"errors"
 	"fmt"
+	"log"
 	"math"
 	"net"
 	"os"
@@ -172,6 +173,16 @@ func newVirtualizationMachine(
 		t.Fatal("want CanStart is true")
 	}
 
+	// As it is not possible to intentionally cause errors, only logging is possible.
+	disconnected, err := vm.NetworkDeviceAttachmentWasDisconnected()
+	if err == nil {
+		go func() {
+			for disconnected := range disconnected {
+				log.Println(disconnected)
+			}
+		}()
+	}
+
 	if err := vm.Start(); err != nil {
 		t.Fatal(err)
 	}
@@ -187,6 +198,10 @@ func newVirtualizationMachine(
 	// does not seem to have a connection timeout set.
 	if vz.Available(12) {
 		time.Sleep(5 * time.Second)
+	} else {
+		// Not immediately available in the x86_64 environment
+		// so wait a little longer for the orbit before testing.
+		time.Sleep(3 * time.Second)
 	}
 
 	const max = 5

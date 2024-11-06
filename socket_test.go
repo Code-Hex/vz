@@ -12,7 +12,9 @@ import (
 )
 
 func TestVirtioSocketListener(t *testing.T) {
-	container := newVirtualizationMachine(t)
+	container := newVirtualizationMachine(t, func(vmc *vz.VirtualMachineConfiguration) error {
+		return setupConsoleConfig(vmc)
+	})
 	t.Cleanup(func() {
 		if err := container.Shutdown(); err != nil {
 			log.Println(err)

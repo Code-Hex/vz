@@ -114,7 +114,16 @@ func createMainDiskImage(diskPath string) error {
 }
 
 func createBlockDeviceConfiguration(diskPath string) (*vz.VirtioBlockDeviceConfiguration, error) {
-	attachment, err := vz.NewDiskImageStorageDeviceAttachmentWithCacheAndSync(diskPath, false, vz.DiskImageCachingModeAutomatic, vz.DiskImageSynchronizationModeFsync)
+	attachment, err := vz.NewDiskImageStorageDeviceAttachmentWithCacheAndSync(
+		diskPath,
+		false,
+		// Basically, use cached mode to fix disk corruption.
+		// See:
+		// - https://github.com/lima-vm/lima/pull/2026
+		// - https://github.com/utmapp/UTM/pull/5919
+		vz.DiskImageCachingModeCached,
+		vz.DiskImageSynchronizationModeFsync,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a new disk image storage device attachment: %w", err)
 	}

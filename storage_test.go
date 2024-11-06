@@ -77,7 +77,7 @@ func TestBlockDeviceWithCacheAndSyncMode(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			attachment, err := vz.NewDiskImageStorageDeviceAttachmentWithCacheAndSync(path, false, vz.DiskImageCachingModeAutomatic, vz.DiskImageSynchronizationModeFsync)
+			attachment, err := vz.NewDiskImageStorageDeviceAttachmentWithCacheAndSync(path, false, vz.DiskImageCachingModeCached, vz.DiskImageSynchronizationModeFsync)
 			if err != nil {
 				t.Fatal(err)
 			}

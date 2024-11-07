@@ -141,17 +141,7 @@ func (c *Container) Shutdown() error {
 		}
 	}
 
-	wait := time.After(3 * time.Second)
-	for {
-		select {
-		case got := <-vm.StateChangedNotify():
-			if vz.VirtualMachineStateStopped == got {
-				return nil
-			}
-		case <-wait:
-			return fmt.Errorf("failed to wait stopped state")
-		}
-	}
+	return waitUntilState(3*time.Second, vm, vz.VirtualMachineStateStopped)
 }
 
 func getFreePort() (int, error) {
@@ -227,8 +217,10 @@ func newVirtualizationMachine(
 		t.Fatal(err)
 	}
 
-	waitState(t, 3*time.Second, vm, vz.VirtualMachineStateStarting)
-	waitState(t, 3*time.Second, vm, vz.VirtualMachineStateRunning)
+	// Starting -> Running
+	if err := waitUntilState(5*time.Second, vm, vz.VirtualMachineStateRunning); err != nil {
+		t.Fatal(err)
+	}
 
 	sshConfig := testhelper.NewSshConfig("root", "passwd")
 
@@ -315,6 +307,24 @@ func waitState(t *testing.T, wait time.Duration, vm *vz.VirtualMachine, want vz.
 	}
 }
 
+var ErrErrorState = fmt.Errorf("error state")
+
+func waitUntilState(wait time.Duration, vm *vz.VirtualMachine, want vz.VirtualMachineState) error {
+	for {
+		select {
+		case got := <-vm.StateChangedNotify():
+			if want == got {
+				return nil
+			}
+			if got == vz.VirtualMachineStateError {
+				return ErrErrorState
+			}
+		case <-time.After(wait):
+			return fmt.Errorf("timedout waiting expected state: %s", want)
+		}
+	}
+}
+
 func TestRun(t *testing.T) {
 	container := newVirtualizationMachine(t,
 		func(vmc *vz.VirtualMachineConfiguration) error {
@@ -362,20 +372,12 @@ func TestRun(t *testing.T) {
 	if got := vm.CanRequestStop(); !got {
 		t.Fatal("want CanRequestStop is true")
 	}
-	// TODO(codehex): I need to support
-	// see: https://developer.apple.com/forums/thread/702160
-	//
-	// if success, err := vm.RequestStop(); !success || err != nil {
-	// 	t.Error(success, err)
-	// 	return
-	// }
+	if success, err := vm.RequestStop(); !success || err != nil {
+		t.Error(success, err)
+		return
+	}
 
-	// waitState(t, 5*time.Second, vm, vz.VirtualMachineStateStopping)
-	// waitState(t, 5*time.Second, vm, vz.VirtualMachineStateStopped)
-
-	sshSession.Run("poweroff")
-
-	waitState(t, timeout, vm, vz.VirtualMachineStateStopped)
+	waitState(t, 5*time.Second, vm, vz.VirtualMachineStateStopped)
 
 	if got := vm.State(); vz.VirtualMachineStateStopped != got {
 		t.Fatalf("want state %v but got %v", vz.VirtualMachineStateStopped, got)
@@ -404,8 +406,9 @@ func TestStop(t *testing.T) {
 	}
 
 	timeout := 3 * time.Second
-	waitState(t, timeout, vm, vz.VirtualMachineStateStopping)
-	waitState(t, timeout, vm, vz.VirtualMachineStateStopped)
+	if err := waitUntilState(timeout, vm, vz.VirtualMachineStateStopped); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestVirtualMachineStateString(t *testing.T) {
@@ -485,8 +488,9 @@ func TestRunIssue124(t *testing.T) {
 	}
 
 	timeout := 5 * time.Second
-	waitState(t, timeout, vm, vz.VirtualMachineStatePausing)
-	waitState(t, timeout, vm, vz.VirtualMachineStatePaused)
+	if err := waitUntilState(timeout, vm, vz.VirtualMachineStatePaused); err != nil {
+		t.Fatal(err)
+	}
 
 	if got := vm.State(); vz.VirtualMachineStatePaused != got {
 		t.Fatalf("want state %v but got %v", vz.VirtualMachineStatePaused, got)
@@ -498,8 +502,9 @@ func TestRunIssue124(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	waitState(t, timeout, vm, vz.VirtualMachineStateResuming)
-	waitState(t, timeout, vm, vz.VirtualMachineStateRunning)
+	if err := waitUntilState(timeout, vm, vz.VirtualMachineStateRunning); err != nil {
+		t.Fatal(err)
+	}
 
 	if got := vm.CanRequestStop(); !got {
 		t.Fatal("want CanRequestStop is true")

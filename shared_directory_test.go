@@ -169,6 +169,7 @@ func TestMultipleDirectoryShare(t *testing.T) {
 		t.Fatal(err)
 	}
 	fileSystemDeviceConfig.SetDirectoryShare(multiple)
+
 	container := newVirtualizationMachine(t,
 		func(vmc *vz.VirtualMachineConfiguration) error {
 			vmc.SetDirectorySharingDevicesVirtualMachineConfiguration(
@@ -176,7 +177,7 @@ func TestMultipleDirectoryShare(t *testing.T) {
 					fileSystemDeviceConfig,
 				},
 			)
-			return setupConsoleConfig(vmc)
+			return nil
 		},
 	)
 	t.Cleanup(func() {

@@ -88,7 +88,7 @@ func TestBlockDeviceWithCacheAndSyncMode(t *testing.T) {
 			vmc.SetStorageDevicesVirtualMachineConfiguration([]vz.StorageDeviceConfiguration{
 				config,
 			})
-			return setupConsoleConfig(vmc)
+			return nil
 		},
 	)
 	t.Cleanup(func() {

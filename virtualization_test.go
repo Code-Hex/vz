@@ -387,9 +387,7 @@ func TestStop(t *testing.T) {
 		t.Skip("Stop is supported from macOS 12")
 	}
 
-	container := newVirtualizationMachine(t, func(vmc *vz.VirtualMachineConfiguration) error {
-		return setupConsoleConfig(vmc)
-	})
+	container := newVirtualizationMachine(t)
 	t.Cleanup(func() {
 		if err := container.Shutdown(); err != nil {
 			log.Println(err)

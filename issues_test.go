@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
@@ -299,15 +300,41 @@ func TestIssue119(t *testing.T) {
 	objc.Retain(vm.pointer)
 	vm.finalize()
 
-	// sshSession.Run("poweroff")
-	vm.Pause()
+	sendStop := false
+	if vm.CanStop() {
+		if err := vm.Stop(); err != nil {
+			t.Error(err)
+		}
+		sendStop = true
+	}
+	if vm.CanRequestStop() {
+		if _, err := vm.RequestStop(); err != nil {
+			t.Error(err)
+		}
+		sendStop = true
+	}
+	if !sendStop {
+		t.Fatal("unexpected failed to send stop signal")
+	}
+
+	timer := time.After(3 * time.Second)
+	for {
+		select {
+		case state := <-vm.StateChangedNotify():
+			if VirtualMachineStateStopped == state {
+				return
+			}
+		case <-timer:
+			t.Fatal("failed to shutdown vm")
+		}
+	}
 }
 
 func setupIssue119Config(bootLoader *LinuxBootLoader) (*VirtualMachineConfiguration, error) {
 	config, err := NewVirtualMachineConfiguration(
 		bootLoader,
 		1,
-		512*1024*1024,
+		256*1024*1024,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a new virtual machine config: %w", err)

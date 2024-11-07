@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"testing"
 	"time"
 
@@ -12,7 +13,11 @@ import (
 
 func TestVirtioSocketListener(t *testing.T) {
 	container := newVirtualizationMachine(t)
-	defer container.Close()
+	t.Cleanup(func() {
+		if err := container.Shutdown(); err != nil {
+			log.Println(err)
+		}
+	})
 
 	vm := container.VirtualMachine
 

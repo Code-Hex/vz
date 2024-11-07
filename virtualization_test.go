@@ -56,7 +56,7 @@ func setupConfiguration(bootLoader vz.BootLoader) (*vz.VirtualMachineConfigurati
 	config, err := vz.NewVirtualMachineConfiguration(
 		bootLoader,
 		1,
-		512*1024*1024,
+		256*1024*1024,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a new virtual machine config: %w", err)
@@ -101,10 +101,6 @@ type Container struct {
 	*ssh.Client
 }
 
-func (c *Container) Close() error {
-	return c.Client.Close()
-}
-
 func (c *Container) NewSession(t *testing.T) *ssh.Session {
 	sshSession, err := c.Client.NewSession()
 	if err != nil {
@@ -112,6 +108,50 @@ func (c *Container) NewSession(t *testing.T) *ssh.Session {
 	}
 	testhelper.SetKeepAlive(t, sshSession)
 	return sshSession
+}
+
+func (c *Container) Shutdown() error {
+	defer func() {
+		log.Println("shutdown done")
+		c.Client.Close()
+	}()
+
+	vm := c.VirtualMachine
+
+	if got := vm.State(); vz.VirtualMachineStateStopped == got {
+		return nil
+	}
+
+	switch {
+	case vm.CanStop():
+		if err := vm.Stop(); err != nil {
+			return fmt.Errorf("failed to call stop: %w", err)
+		}
+	case vm.CanRequestStop():
+		if _, err := vm.RequestStop(); err != nil {
+			return fmt.Errorf("failed to send request stop: %w", err)
+		}
+	default:
+		sshSession, err := c.Client.NewSession()
+		if err != nil {
+			return fmt.Errorf("failed to create a new session: %w", err)
+		}
+		if err := sshSession.Run("poweroff"); err != nil {
+			return fmt.Errorf("failed to run poweroff command: %w", err)
+		}
+	}
+
+	wait := time.After(3 * time.Second)
+	for {
+		select {
+		case got := <-vm.StateChangedNotify():
+			if vz.VirtualMachineStateStopped == got {
+				return nil
+			}
+		case <-wait:
+			return fmt.Errorf("failed to wait stopped state")
+		}
+	}
 }
 
 func getFreePort() (int, error) {
@@ -221,7 +261,7 @@ RETRY:
 			t.Fatalf("failed to connect vsock: %v", err)
 		}
 
-		t.Log("setup ssh client in container")
+		log.Println("setup ssh client in container")
 
 		initialized := make(chan struct{})
 		retry := make(chan struct{})
@@ -248,7 +288,7 @@ RETRY:
 
 		close(initialized)
 
-		t.Logf("container setup done")
+		log.Println("container setup done")
 
 		return &Container{
 			VirtualMachine: vm,
@@ -281,7 +321,11 @@ func TestRun(t *testing.T) {
 			return setupConsoleConfig(vmc)
 		},
 	)
-	defer container.Close()
+	t.Cleanup(func() {
+		if err := container.Shutdown(); err != nil {
+			log.Println(err)
+		}
+	})
 
 	sshSession := container.NewSession(t)
 	defer sshSession.Close()
@@ -344,7 +388,11 @@ func TestStop(t *testing.T) {
 	}
 
 	container := newVirtualizationMachine(t)
-	defer container.Close()
+	t.Cleanup(func() {
+		if err := container.Shutdown(); err != nil {
+			log.Println(err)
+		}
+	})
 
 	vm := container.VirtualMachine
 
@@ -415,7 +463,11 @@ func TestRunIssue124(t *testing.T) {
 			return setupConsoleConfig(vmc)
 		},
 	)
-	defer container.Close()
+	t.Cleanup(func() {
+		if err := container.Shutdown(); err != nil {
+			log.Println(err)
+		}
+	})
 
 	sshSession := container.NewSession(t)
 	defer sshSession.Close()

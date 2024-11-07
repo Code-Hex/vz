@@ -3,11 +3,11 @@ package vz_test
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/Code-Hex/vz/v3"
 )
@@ -78,9 +78,11 @@ func TestSingleDirectoryShare(t *testing.T) {
 					return nil
 				},
 			)
-			defer container.Close()
-
-			vm := container.VirtualMachine
+			t.Cleanup(func() {
+				if err := container.Shutdown(); err != nil {
+					log.Println(err)
+				}
+			})
 
 			file := "hello.txt"
 			for _, v := range []struct {
@@ -133,14 +135,6 @@ func TestSingleDirectoryShare(t *testing.T) {
 				t.Fatalf("failed to run command %q: %v\nstderr: %q", check, err, buf)
 			}
 			session.Close()
-
-			if err := vm.Stop(); err != nil {
-				t.Fatal(err)
-			}
-
-			timeout := 3 * time.Second
-			waitState(t, timeout, vm, vz.VirtualMachineStateStopping)
-			waitState(t, timeout, vm, vz.VirtualMachineStateStopped)
 		})
 	}
 }
@@ -187,9 +181,11 @@ func TestMultipleDirectoryShare(t *testing.T) {
 			return nil
 		},
 	)
-	defer container.Close()
-
-	vm := container.VirtualMachine
+	t.Cleanup(func() {
+		if err := container.Shutdown(); err != nil {
+			log.Println(err)
+		}
+	})
 
 	// Create a file in mount directories.
 	tmpFile := "tmp.txt"
@@ -244,12 +240,4 @@ func TestMultipleDirectoryShare(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected the file to exist in read/write directory: %v", err)
 	}
-
-	if err := vm.Stop(); err != nil {
-		t.Fatal(err)
-	}
-
-	timeout := 3 * time.Second
-	waitState(t, timeout, vm, vz.VirtualMachineStateStopping)
-	waitState(t, timeout, vm, vz.VirtualMachineStateStopped)
 }

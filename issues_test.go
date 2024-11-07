@@ -300,17 +300,23 @@ func TestIssue119(t *testing.T) {
 	objc.Retain(vm.pointer)
 	vm.finalize()
 
-	// sshSession.Run("poweroff")
+	sendStop := false
 	if vm.CanStop() {
 		if err := vm.Stop(); err != nil {
 			t.Error(err)
 		}
+		sendStop = true
 	}
 	if vm.CanRequestStop() {
 		if _, err := vm.RequestStop(); err != nil {
 			t.Error(err)
 		}
+		sendStop = true
 	}
+	if !sendStop {
+		t.Fatal("unexpected failed to send stop signal")
+	}
+
 	timer := time.After(3 * time.Second)
 	for {
 		select {

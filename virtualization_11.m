@@ -946,7 +946,7 @@ void requestStopVirtualMachine(void *machine, void *queue, uintptr_t cgoHandle)
 void *makeDispatchQueue(const char *label)
 {
     // dispatch_queue_attr_t attr = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_DEFAULT, 0);
-    dispatch_queue_t queue = dispatch_queue_create(label, DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t queue = dispatch_queue_create(label, DISPATCH_QUEUE_CONCURRENT);
     // dispatch_retain(queue);
     return queue;
 }

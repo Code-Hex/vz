@@ -328,7 +328,7 @@ func setupIssue119Config(bootLoader *LinuxBootLoader) (*VirtualMachineConfigurat
 	config, err := NewVirtualMachineConfiguration(
 		bootLoader,
 		1,
-		512*1024*1024,
+		256*1024*1024,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a new virtual machine config: %w", err)

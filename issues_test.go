@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
@@ -300,7 +301,27 @@ func TestIssue119(t *testing.T) {
 	vm.finalize()
 
 	// sshSession.Run("poweroff")
-	vm.Pause()
+	if vm.CanStop() {
+		if err := vm.Stop(); err != nil {
+			t.Error(err)
+		}
+	}
+	if vm.CanRequestStop() {
+		if _, err := vm.RequestStop(); err != nil {
+			t.Error(err)
+		}
+	}
+	timer := time.After(3 * time.Second)
+	for {
+		select {
+		case state := <-vm.StateChangedNotify():
+			if VirtualMachineStateStopped == state {
+				return
+			}
+		case <-timer:
+			t.Fatal("failed to shutdown vm")
+		}
+	}
 }
 
 func setupIssue119Config(bootLoader *LinuxBootLoader) (*VirtualMachineConfiguration, error) {

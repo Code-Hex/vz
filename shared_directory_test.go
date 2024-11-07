@@ -85,8 +85,6 @@ func TestSingleDirectoryShare(t *testing.T) {
 				}
 			})
 
-			vm := container.VirtualMachine
-
 			file := "hello.txt"
 			for _, v := range []struct {
 				cmd     string
@@ -137,15 +135,6 @@ func TestSingleDirectoryShare(t *testing.T) {
 			if err := session.Run(check); err != nil {
 				t.Fatalf("failed to run command %q: %v\nstderr: %q", check, err, buf)
 			}
-			session.Close()
-
-			if err := vm.Stop(); err != nil {
-				t.Fatal(err)
-			}
-
-			timeout := 3 * time.Second
-			waitState(t, timeout, vm, vz.VirtualMachineStateStopping)
-			waitState(t, timeout, vm, vz.VirtualMachineStateStopped)
 		})
 	}
 }

@@ -111,7 +111,10 @@ func (c *Container) NewSession(t *testing.T) *ssh.Session {
 }
 
 func (c *Container) Shutdown() error {
-	defer c.Client.Close()
+	defer func() {
+		log.Println("shutdown done")
+		c.Client.Close()
+	}()
 
 	vm := c.VirtualMachine
 
@@ -258,7 +261,7 @@ RETRY:
 			t.Fatalf("failed to connect vsock: %v", err)
 		}
 
-		t.Log("setup ssh client in container")
+		log.Println("setup ssh client in container")
 
 		initialized := make(chan struct{})
 		retry := make(chan struct{})
@@ -285,7 +288,7 @@ RETRY:
 
 		close(initialized)
 
-		t.Logf("container setup done")
+		log.Println("container setup done")
 
 		return &Container{
 			VirtualMachine: vm,

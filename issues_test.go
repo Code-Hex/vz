@@ -49,15 +49,30 @@ func TestIssue50(t *testing.T) {
 	}
 
 	t.Run("check for segmentation faults", func(t *testing.T) {
-		cases := map[string]func() error{
-			"start handler":  func() error { return m.Start() },
-			"pause handler":  m.Pause,
-			"resume handler": m.Resume,
-			"stop handler":   m.Stop,
+		cases := []struct {
+			name string
+			run  func() error
+		}{
+			{
+				name: "start handler",
+				run:  func() error { return m.Start() },
+			},
+			{
+				name: "pause handler",
+				run:  m.Pause,
+			},
+			{
+				name: "resume handler",
+				run:  m.Resume,
+			},
+			{
+				name: "stop handler",
+				run:  m.Stop,
+			},
 		}
-		for name, run := range cases {
-			t.Run(name, func(t *testing.T) {
-				_ = run()
+		for _, tc := range cases {
+			t.Run(tc.name, func(t *testing.T) {
+				_ = tc.run()
 			})
 		}
 	})

@@ -78,11 +78,11 @@ func TestSingleDirectoryShare(t *testing.T) {
 					return nil
 				},
 			)
-			defer func() {
+			t.Cleanup(func() {
 				if err := container.Shutdown(); err != nil {
 					log.Println(err)
 				}
-			}()
+			})
 
 			file := "hello.txt"
 			for _, v := range []struct {

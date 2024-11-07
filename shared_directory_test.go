@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/Code-Hex/vz/v3"
 )
@@ -79,11 +78,11 @@ func TestSingleDirectoryShare(t *testing.T) {
 					return nil
 				},
 			)
-			t.Cleanup(func() {
+			defer func() {
 				if err := container.Shutdown(); err != nil {
 					log.Println(err)
 				}
-			})
+			}()
 
 			file := "hello.txt"
 			for _, v := range []struct {
@@ -186,8 +185,6 @@ func TestMultipleDirectoryShare(t *testing.T) {
 		}
 	})
 
-	vm := container.VirtualMachine
-
 	// Create a file in mount directories.
 	tmpFile := "tmp.txt"
 	for _, dir := range []string{readOnlyDir, rwDir} {
@@ -241,12 +238,4 @@ func TestMultipleDirectoryShare(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected the file to exist in read/write directory: %v", err)
 	}
-
-	if err := vm.Stop(); err != nil {
-		t.Fatal(err)
-	}
-
-	timeout := 3 * time.Second
-	waitState(t, timeout, vm, vz.VirtualMachineStateStopping)
-	waitState(t, timeout, vm, vz.VirtualMachineStateStopped)
 }

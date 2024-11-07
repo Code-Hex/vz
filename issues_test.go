@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
@@ -48,15 +49,30 @@ func TestIssue50(t *testing.T) {
 	}
 
 	t.Run("check for segmentation faults", func(t *testing.T) {
-		cases := map[string]func() error{
-			"start handler":  func() error { return m.Start() },
-			"pause handler":  m.Pause,
-			"resume handler": m.Resume,
-			"stop handler":   m.Stop,
+		cases := []struct {
+			name string
+			run  func() error
+		}{
+			{
+				name: "start handler",
+				run:  func() error { return m.Start() },
+			},
+			{
+				name: "pause handler",
+				run:  m.Pause,
+			},
+			{
+				name: "resume handler",
+				run:  m.Resume,
+			},
+			{
+				name: "stop handler",
+				run:  m.Stop,
+			},
 		}
-		for name, run := range cases {
-			t.Run(name, func(t *testing.T) {
-				_ = run()
+		for _, tc := range cases {
+			t.Run(tc.name, func(t *testing.T) {
+				_ = tc.run()
 			})
 		}
 	})
@@ -299,15 +315,41 @@ func TestIssue119(t *testing.T) {
 	objc.Retain(vm.pointer)
 	vm.finalize()
 
-	// sshSession.Run("poweroff")
-	vm.Pause()
+	sendStop := false
+	if vm.CanStop() {
+		if err := vm.Stop(); err != nil {
+			t.Error(err)
+		}
+		sendStop = true
+	}
+	if vm.CanRequestStop() {
+		if _, err := vm.RequestStop(); err != nil {
+			t.Error(err)
+		}
+		sendStop = true
+	}
+	if !sendStop {
+		t.Fatal("unexpected failed to send stop signal")
+	}
+
+	timer := time.After(3 * time.Second)
+	for {
+		select {
+		case state := <-vm.StateChangedNotify():
+			if VirtualMachineStateStopped == state {
+				return
+			}
+		case <-timer:
+			t.Fatal("failed to shutdown vm")
+		}
+	}
 }
 
 func setupIssue119Config(bootLoader *LinuxBootLoader) (*VirtualMachineConfiguration, error) {
 	config, err := NewVirtualMachineConfiguration(
 		bootLoader,
 		1,
-		512*1024*1024,
+		256*1024*1024,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create a new virtual machine config: %w", err)

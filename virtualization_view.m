@@ -223,12 +223,15 @@
         _mouseMovedMonitor = nil;
     }
     [self stopScrollTimer];
-    [_virtualMachine removeObserver:self forKeyPath:@"state"];
+    if (_virtualMachine) {
+        [_virtualMachine removeObserver:self forKeyPath:@"state"];
+    }
     _virtualMachineView = nil;
     _virtualMachine = nil;
     _queue = nil;
     _toolbar = nil;
     _window = nil;
+    _pauseOverlayView = nil;
     [super dealloc];
 }
 

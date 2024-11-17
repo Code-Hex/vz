@@ -171,6 +171,7 @@
     VZVirtualMachineView *_virtualMachineView;
     NSWindow *_window;
     NSToolbar *_toolbar;
+    BOOL _enableController;
     // Overlay for pause mode.
     NSVisualEffectView *_pauseOverlayView;
     // Zoom function properties.
@@ -185,6 +186,7 @@
                            windowWidth:(CGFloat)windowWidth
                           windowHeight:(CGFloat)windowHeight
                            windowTitle:(NSString *)windowTitle
+                      enableController:(BOOL)enableController
 {
     self = [super init];
     _virtualMachine = virtualMachine;
@@ -206,6 +208,7 @@
     // Setup some window configs
     _window = [self createMainWindowWithTitle:windowTitle width:windowWidth height:windowHeight];
     _toolbar = [self createCustomToolbar];
+    _enableController = enableController;
     [_virtualMachine addObserver:self
                       forKeyPath:@"state"
                          options:NSKeyValueObservingOptionNew
@@ -321,23 +324,31 @@ static NSString *const PlayToolbarIdentifier = @"Play";
 static NSString *const PowerToolbarIdentifier = @"Power";
 static NSString *const SpaceToolbarIdentifier = @"Space";
 
-- (void)updateToolbarItems
+- (NSArray<NSToolbarItemIdentifier> *)setupToolbarItemIdentifiers
 {
     NSMutableArray<NSToolbarItemIdentifier> *toolbarItems = [NSMutableArray array];
-    if ([self canPauseVirtualMachine]) {
-        [toolbarItems addObject:PauseToolbarIdentifier];
-    }
-    if ([self canResumeVirtualMachine]) {
-        [toolbarItems addObject:SpaceToolbarIdentifier];
-        [toolbarItems addObject:PlayToolbarIdentifier];
-    }
-    if ([self canStopVirtualMachine] || [self canStartVirtualMachine]) {
-        [toolbarItems addObject:SpaceToolbarIdentifier];
-        [toolbarItems addObject:PowerToolbarIdentifier];
+    if (_enableController) {
+        if ([self canPauseVirtualMachine]) {
+            [toolbarItems addObject:PauseToolbarIdentifier];
+        }
+        if ([self canResumeVirtualMachine]) {
+            [toolbarItems addObject:SpaceToolbarIdentifier];
+            [toolbarItems addObject:PlayToolbarIdentifier];
+        }
+        if ([self canStopVirtualMachine] || [self canStartVirtualMachine]) {
+            [toolbarItems addObject:SpaceToolbarIdentifier];
+            [toolbarItems addObject:PowerToolbarIdentifier];
+        }
     }
     [toolbarItems addObject:NSToolbarSpaceItemIdentifier];
     [toolbarItems addObject:ZoomToolbarIdentifier];
     [toolbarItems addObject:NSToolbarFlexibleSpaceItemIdentifier];
+    return [toolbarItems copy];
+}
+
+- (void)updateToolbarItems
+{
+    NSArray<NSToolbarItemIdentifier> *toolbarItems = [self setupToolbarItemIdentifiers];
     [self setToolBarItems:toolbarItems];
 }
 
@@ -467,14 +478,7 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
 
 - (NSArray<NSToolbarItemIdentifier> *)toolbarDefaultItemIdentifiers:(NSToolbar *)toolbar
 {
-    return @[
-        PauseToolbarIdentifier,
-        SpaceToolbarIdentifier,
-        PowerToolbarIdentifier,
-        NSToolbarSpaceItemIdentifier,
-        ZoomToolbarIdentifier,
-        NSToolbarFlexibleSpaceItemIdentifier
-    ];
+    return [self setupToolbarItemIdentifiers];
 }
 
 - (NSArray<NSToolbarItemIdentifier> *)toolbarAllowedItemIdentifiers:(NSToolbar *)toolbar
@@ -526,10 +530,10 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
         [item setLabel:@"Zoom"];
         [item setToolTip:@"Toggle Zoom"];
     } else if ([itemIdentifier isEqualToString:SpaceToolbarIdentifier]) {
-        NSView *spaceView = [[[NSView alloc] initWithFrame:NSMakeRect(0, 0, 5, 10)] autorelease];
+        NSView *spaceView = [[[NSView alloc] initWithFrame:NSMakeRect(0, 0, 2, 10)] autorelease];
         item.view = spaceView;
-        item.minSize = NSMakeSize(2.5, 10);
-        item.maxSize = NSMakeSize(2.5, 10);
+        item.minSize = NSMakeSize(1, 10);
+        item.maxSize = NSMakeSize(1, 10);
     }
 
     return item;

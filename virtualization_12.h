@@ -45,4 +45,4 @@ void setKeyboardsVZVirtualMachineConfiguration(void *config,
 void setAudioDevicesVZVirtualMachineConfiguration(void *config,
     void *audioDevices);
 
-void startVirtualMachineWindow(void *machine, void *queue, double width, double height, const char *title);
+void startVirtualMachineWindow(void *machine, void *queue, double width, double height, const char *title, bool enableController);

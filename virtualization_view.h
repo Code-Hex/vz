@@ -29,5 +29,6 @@ API_AVAILABLE(macos(12.0))
                                  queue:(dispatch_queue_t)queue
                            windowWidth:(CGFloat)windowWidth
                           windowHeight:(CGFloat)windowHeight
-                           windowTitle:(NSString *)windowTitle;
+                           windowTitle:(NSString *)windowTitle
+                      enableController:(BOOL)enableController;
 @end

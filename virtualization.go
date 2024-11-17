@@ -361,7 +361,8 @@ func (v *VirtualMachine) Stop() error {
 }
 
 type startGraphicApplicationOptions struct {
-	title string
+	title            string
+	enableController bool
 }
 
 // StartGraphicApplicationOption is an option for display graphics start.
@@ -371,6 +372,14 @@ type StartGraphicApplicationOption func(*startGraphicApplicationOptions) error
 func WithWindowTitle(title string) StartGraphicApplicationOption {
 	return func(sgao *startGraphicApplicationOptions) error {
 		sgao.title = title
+		return nil
+	}
+}
+
+// WithController is an option to set virtual machine controller on graphics window toolbar.
+func WithController(enable bool) StartGraphicApplicationOption {
+	return func(sgao *startGraphicApplicationOptions) error {
+		sgao.enableController = enable
 		return nil
 	}
 }
@@ -390,7 +399,14 @@ func (v *VirtualMachine) StartGraphicApplication(width, height float64, opts ...
 	}
 	windowTitle := charWithGoString(defaultOpts.title)
 	defer windowTitle.Free()
-	C.startVirtualMachineWindow(objc.Ptr(v), v.dispatchQueue, C.double(width), C.double(height), windowTitle.CString())
+	C.startVirtualMachineWindow(
+		objc.Ptr(v),
+		v.dispatchQueue,
+		C.double(width),
+		C.double(height),
+		windowTitle.CString(),
+		C.bool(defaultOpts.enableController),
+	)
 	return nil
 }
 

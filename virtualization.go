@@ -395,7 +395,9 @@ func (v *VirtualMachine) StartGraphicApplication(width, height float64, opts ...
 	}
 	defaultOpts := &startGraphicApplicationOptions{}
 	for _, opt := range opts {
-		opt(defaultOpts)
+		if err := opt(defaultOpts); err != nil {
+			return err
+		}
 	}
 	windowTitle := charWithGoString(defaultOpts.title)
 	defer windowTitle.Free()

@@ -24,8 +24,10 @@
 @end
 
 API_AVAILABLE(macos(12.0))
-@interface AppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate, VZVirtualMachineDelegate>
+@interface AppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate, VZVirtualMachineDelegate, NSToolbarDelegate>
 - (instancetype)initWithVirtualMachine:(VZVirtualMachine *)virtualMachine
+                                 queue:(dispatch_queue_t)queue
                            windowWidth:(CGFloat)windowWidth
-                          windowHeight:(CGFloat)windowHeight;
+                          windowHeight:(CGFloat)windowHeight
+                           windowTitle:(NSString *)windowTitle;
 @end

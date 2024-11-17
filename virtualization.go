@@ -360,16 +360,37 @@ func (v *VirtualMachine) Stop() error {
 	return <-errCh
 }
 
+type startGraphicApplicationOptions struct {
+	title string
+}
+
+// StartGraphicApplicationOption is an option for display graphics start.
+type StartGraphicApplicationOption func(*startGraphicApplicationOptions) error
+
+// WithWindowTitle is an option to set window title of display graphics window.
+func WithWindowTitle(title string) StartGraphicApplicationOption {
+	return func(sgao *startGraphicApplicationOptions) error {
+		sgao.title = title
+		return nil
+	}
+}
+
 // StartGraphicApplication starts an application to display graphics of the VM.
 //
 // You must to call runtime.LockOSThread before calling this method.
 //
 // This is only supported on macOS 12 and newer, error will be returned on older versions.
-func (v *VirtualMachine) StartGraphicApplication(width, height float64) error {
+func (v *VirtualMachine) StartGraphicApplication(width, height float64, opts ...StartGraphicApplicationOption) error {
 	if err := macOSAvailable(12); err != nil {
 		return err
 	}
-	C.startVirtualMachineWindow(objc.Ptr(v), C.double(width), C.double(height))
+	defaultOpts := &startGraphicApplicationOptions{}
+	for _, opt := range opts {
+		opt(defaultOpts)
+	}
+	windowTitle := charWithGoString(defaultOpts.title)
+	defer windowTitle.Free()
+	C.startVirtualMachineWindow(objc.Ptr(v), v.dispatchQueue, C.double(width), C.double(height), windowTitle.CString())
 	return nil
 }
 

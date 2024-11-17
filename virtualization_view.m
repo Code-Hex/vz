@@ -171,7 +171,13 @@
     VZVirtualMachineView *_virtualMachineView;
     NSWindow *_window;
     NSToolbar *_toolbar;
-    NSVisualEffectView *_overlayView;
+    // Overlay for pause mode.
+    NSVisualEffectView *_pauseOverlayView;
+    // Zoom function properties.
+    BOOL _isZoomEnabled;
+    NSTimer *_scrollTimer;
+    NSPoint _scrollDelta;
+    id _mouseMovedMonitor;
 }
 
 - (instancetype)initWithVirtualMachine:(VZVirtualMachine *)virtualMachine
@@ -204,13 +210,19 @@
                       forKeyPath:@"state"
                          options:NSKeyValueObservingOptionNew
                          context:nil];
-    _overlayView = [self createOverlayEffectView:_virtualMachineView];
-    [_virtualMachineView addSubview:_overlayView];
+    _pauseOverlayView = [self createPauseOverlayEffectView:_virtualMachineView];
+    [_virtualMachineView addSubview:_pauseOverlayView];
+    _isZoomEnabled = NO;
     return self;
 }
 
 - (void)dealloc
 {
+    if (_mouseMovedMonitor) {
+        [NSEvent removeMonitor:_mouseMovedMonitor];
+        _mouseMovedMonitor = nil;
+    }
+    [self stopScrollTimer];
     [_virtualMachine removeObserver:self forKeyPath:@"state"];
     _virtualMachineView = nil;
     _virtualMachine = nil;
@@ -271,7 +283,10 @@
     }
 }
 
-- (NSVisualEffectView *)createOverlayEffectView:(NSView *)view
+// Overlay a semi-transparent view on the VZVirtualMachineView when the virtual machine is paused.
+// This provides a clear visual indication to the user that the virtual machine is in a paused state.
+// The overlay is hidden when the virtual machine resumes or stops.
+- (NSVisualEffectView *)createPauseOverlayEffectView:(NSView *)view
 {
     NSVisualEffectView *effectView = [[[NSVisualEffectView alloc] initWithFrame:view.bounds] autorelease];
     effectView.wantsLayer = YES;
@@ -285,18 +300,19 @@
 
 - (void)showOverlay
 {
-    if (_overlayView) {
-        _overlayView.hidden = NO;
+    if (_pauseOverlayView) {
+        _pauseOverlayView.hidden = NO;
     }
 }
 
 - (void)hideOverlay
 {
-    if (_overlayView) {
-        _overlayView.hidden = YES;
+    if (_pauseOverlayView) {
+        _pauseOverlayView.hidden = YES;
     }
 }
 
+static NSString *const ZoomToolbarIdentifier = @"Zoom";
 static NSString *const PauseToolbarIdentifier = @"Pause";
 static NSString *const PlayToolbarIdentifier = @"Play";
 static NSString *const PowerToolbarIdentifier = @"Power";
@@ -316,6 +332,8 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
         [toolbarItems addObject:SpaceToolbarIdentifier];
         [toolbarItems addObject:PowerToolbarIdentifier];
     }
+    [toolbarItems addObject:NSToolbarSpaceItemIdentifier];
+    [toolbarItems addObject:ZoomToolbarIdentifier];
     [toolbarItems addObject:NSToolbarFlexibleSpaceItemIdentifier];
     [self setToolBarItems:toolbarItems];
 }
@@ -368,8 +386,28 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
     [_window setTitlebarAppearsTransparent:YES];
     [_window setToolbar:_toolbar];
     [_window setOpaque:NO];
-    [_window setContentView:_virtualMachineView];
     [_window center];
+
+    // Monitoring mouse movement events to control auto-scrolling behavior
+    // within the virtual machine window when zoom mode is enabled.
+    _mouseMovedMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskMouseMoved
+                                                               handler:^NSEvent *(NSEvent *event) {
+                                                                   [self handleMouseMovement:event];
+                                                                   return event;
+                                                               }];
+
+    // Create scroll view for the virtual machine view
+    NSScrollView *scrollView = [self createScrollViewForVirtualMachineView:_virtualMachineView];
+    [_window setContentView:scrollView];
+
+    // Configure Auto Layout constraints for VirtualMachineView to resize with the window
+    [_virtualMachineView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [NSLayoutConstraint activateConstraints:@[
+        [_virtualMachineView.leadingAnchor constraintEqualToAnchor:_window.contentView.leadingAnchor],
+        [_virtualMachineView.trailingAnchor constraintEqualToAnchor:_window.contentView.trailingAnchor],
+        [_virtualMachineView.topAnchor constraintEqualToAnchor:_window.contentView.topAnchor],
+        [_virtualMachineView.bottomAnchor constraintEqualToAnchor:_window.contentView.bottomAnchor]
+    ]];
 
     NSSize sizeInPixels = [self getVirtualMachineSizeInPixels];
     if (!NSEqualSizes(sizeInPixels, NSZeroSize)) {
@@ -430,6 +468,8 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
         PauseToolbarIdentifier,
         SpaceToolbarIdentifier,
         PowerToolbarIdentifier,
+        NSToolbarSpaceItemIdentifier,
+        ZoomToolbarIdentifier,
         NSToolbarFlexibleSpaceItemIdentifier
     ];
 }
@@ -437,10 +477,12 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
 - (NSArray<NSToolbarItemIdentifier> *)toolbarAllowedItemIdentifiers:(NSToolbar *)toolbar
 {
     return @[
+        ZoomToolbarIdentifier,
         PlayToolbarIdentifier,
         PauseToolbarIdentifier,
         SpaceToolbarIdentifier,
         PowerToolbarIdentifier,
+        NSToolbarSpaceItemIdentifier,
         NSToolbarFlexibleSpaceItemIdentifier
     ];
 }
@@ -470,6 +512,16 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
         [item setToolTip:@"Resume"];
         [item setBordered:YES];
         [item setAction:@selector(playButtonClicked:)];
+    } else if ([itemIdentifier isEqualToString:ZoomToolbarIdentifier]) {
+        NSButton *zoomButton = [[[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 40, 40)] autorelease];
+        zoomButton.bezelStyle = NSBezelStyleTexturedRounded;
+        [zoomButton setImage:[NSImage imageWithSystemSymbolName:@"magnifyingglass" accessibilityDescription:nil]];
+        [zoomButton setTarget:self];
+        [zoomButton setAction:@selector(toggleZoomMode:)];
+        [zoomButton setButtonType:NSButtonTypeToggle];
+        [item setView:zoomButton];
+        [item setLabel:@"Zoom"];
+        [item setToolTip:@"Toggle Zoom"];
     } else if ([itemIdentifier isEqualToString:SpaceToolbarIdentifier]) {
         NSView *spaceView = [[[NSView alloc] initWithFrame:NSMakeRect(0, 0, 5, 10)] autorelease];
         item.view = spaceView;
@@ -549,6 +601,164 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
         [alert runModal];
     });
 }
+
+#pragma mark - Zoom Function
+
+- (void)toggleZoomMode:(id)sender
+{
+    _isZoomEnabled = !_isZoomEnabled;
+
+    // Reset zoom when zoom mode is disabled.
+    if (!_isZoomEnabled) {
+        [NSAnimationContext
+            runAnimationGroup:^(NSAnimationContext *context) {
+                [context setDuration:0.3];
+                [[_window.contentView animator] setMagnification:1.0];
+            }
+            completionHandler:nil];
+    }
+}
+
+- (NSScrollView *)createScrollViewForVirtualMachineView:(VZVirtualMachineView *)view
+{
+    NSScrollView *scrollView = [[[NSScrollView alloc] initWithFrame:_window.contentView.bounds] autorelease];
+    scrollView.hasVerticalScroller = YES;
+    scrollView.hasHorizontalScroller = YES;
+    scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
+    scrollView.documentView = view;
+
+    scrollView.allowsMagnification = YES;
+    scrollView.maxMagnification = 4.0;
+    scrollView.minMagnification = 1.0;
+
+    // Pinch to zoom. Register the NSMagnificationGestureRecognizer
+    NSMagnificationGestureRecognizer *magnifyRecognizer = [[[NSMagnificationGestureRecognizer alloc] initWithTarget:self action:@selector(handleMagnification:)] autorelease];
+
+    // Set `delaysMagnificationEvents` to NO to ensure that pinch-to-zoom gestures
+    // are immediately propagated to the VZVirtualMachineView. the default value is YES.
+    //
+    // If set to YES, the magnification gesture recognizer delays event handling, preventing
+    // pinch-in and pinch-out interactions within the virtual machine view.
+    // See: https://developer.apple.com/documentation/appkit/nsmagnificationgesturerecognizer
+    magnifyRecognizer.delaysMagnificationEvents = NO;
+
+    [scrollView addGestureRecognizer:magnifyRecognizer];
+
+    return scrollView;
+}
+
+// Handles pinch-to-zoom gestures for the virtual machine view.
+// If zoom mode is enabled, adjusts the magnification of the content view
+// based on the user's pinch gesture, allowing smooth zoom in/out.
+- (void)handleMagnification:(NSMagnificationGestureRecognizer *)recognizer
+{
+    if (!_isZoomEnabled) {
+        return;
+    }
+
+    NSScrollView *scrollView = (NSScrollView *)recognizer.view;
+    CGFloat newMagnification = scrollView.magnification + recognizer.magnification;
+    newMagnification = MIN(scrollView.maxMagnification, MAX(scrollView.minMagnification, newMagnification));
+
+    NSPoint locationInView = [recognizer locationInView:scrollView];
+    NSPoint centeredPoint = [scrollView.contentView convertPoint:locationInView fromView:scrollView];
+
+    [scrollView setMagnification:newMagnification centeredAtPoint:centeredPoint];
+}
+
+// When the mouse approaches the window's edges, this handler adjusts the scroll position
+// to provide a smooth panning experience without requiring manual scroll input.
+- (void)handleMouseMovement:(NSEvent *)event
+{
+    if (!_isZoomEnabled) {
+        [self stopScrollTimer];
+        return;
+    }
+
+    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
+    if (![scrollView isKindOfClass:[NSScrollView class]]) {
+        [self stopScrollTimer];
+        return;
+    }
+
+    // Take the mouse position.
+    NSPoint mouseLocation = [scrollView.window convertPointToScreen:event.locationInWindow];
+    NSRect windowFrame = scrollView.window.frame;
+
+    const CGFloat margin = 24.0; // Set scrolling boundary margins.
+    const CGFloat baseScrollSpeed = 5.0; // Basic scrolling speed
+
+    // Calculate scroll direction and speed from here.
+    _scrollDelta = NSMakePoint(0, 0);
+
+    // X-axis scrollmeter
+    if (mouseLocation.x < NSMinX(windowFrame) + margin) {
+        _scrollDelta.x = -baseScrollSpeed;
+    } else if (mouseLocation.x > NSMaxX(windowFrame) - margin) {
+        _scrollDelta.x = baseScrollSpeed;
+    }
+
+    CGFloat titleBarHeight = scrollView.window.frame.size.height - scrollView.window.contentView.frame.size.height;
+
+    // Y-axis scrollmeter
+    // No Y-axis scrolling when the mouse is in the title bar area.
+    if (mouseLocation.y >= (NSMaxY(windowFrame) - titleBarHeight)) {
+        _scrollDelta.y = 0;
+    } else if (mouseLocation.y < NSMinY(windowFrame) + margin) {
+        _scrollDelta.y = -baseScrollSpeed;
+    } else if (mouseLocation.y > NSMaxY(windowFrame) - margin - titleBarHeight) {
+        _scrollDelta.y = baseScrollSpeed;
+    }
+
+    // Start timer if scrolling is required, stop if not required.
+    if (_scrollDelta.x != 0 || _scrollDelta.y != 0) {
+        [self startScrollTimer];
+    } else {
+        [self stopScrollTimer];
+    }
+}
+
+- (void)startScrollTimer
+{
+    if (_scrollTimer == nil) {
+        _scrollTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 / 60.0
+                                                        target:self
+                                                      selector:@selector(scrollTick:)
+                                                      userInfo:nil
+                                                       repeats:YES];
+    }
+}
+
+- (void)stopScrollTimer
+{
+    [_scrollTimer invalidate];
+    _scrollTimer = nil;
+}
+
+- (void)scrollTick:(NSTimer *)timer
+{
+    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
+    if (![scrollView isKindOfClass:[NSScrollView class]]) {
+        [self stopScrollTimer];
+        return;
+    }
+
+    NSClipView *clipView = scrollView.contentView;
+    NSPoint currentOrigin = clipView.bounds.origin;
+
+    // Calculate new scroll position
+    currentOrigin.x += _scrollDelta.x;
+    currentOrigin.y += _scrollDelta.y;
+
+    // Scroll position controlled.
+    currentOrigin.x = MAX(0, MIN(currentOrigin.x, clipView.documentView.frame.size.width - clipView.bounds.size.width));
+    currentOrigin.y = MAX(0, MIN(currentOrigin.y, clipView.documentView.frame.size.height - clipView.bounds.size.height));
+
+    // Update scroll position
+    [clipView setBoundsOrigin:currentOrigin];
+}
+
+#pragma mark - Application Menu Bar
 
 - (void)setupMenuBar
 {

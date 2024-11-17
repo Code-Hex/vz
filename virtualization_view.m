@@ -192,7 +192,7 @@
 
     // Setup virtual machine view configs
     VZVirtualMachineView *view = [[[VZVirtualMachineView alloc] init] autorelease];
-    view.capturesSystemKeys = NO;
+    view.capturesSystemKeys = YES;
     view.virtualMachine = _virtualMachine;
 #ifdef INCLUDE_TARGET_OSX_14
     if (@available(macOS 14.0, *)) {

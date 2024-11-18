@@ -954,7 +954,7 @@ void startWithCompletionHandler(void *machine, void *queue, uintptr_t cgoHandle)
 {
     if (@available(macOS 11, *)) {
         vm_completion_handler_t handler = makeVMCompletionHandler(cgoHandle);
-        dispatch_async((dispatch_queue_t)queue, ^{
+        dispatch_sync((dispatch_queue_t)queue, ^{
             [(VZVirtualMachine *)machine startWithCompletionHandler:handler];
         });
         Block_release(handler);

@@ -117,7 +117,7 @@ func runVM(ctx context.Context) error {
 		log.Println("finished cleanup")
 	}
 
-	vm.StartGraphicApplication(960, 600)
+	vm.StartGraphicApplication(960, 600, vz.WithWindowTitle("macOS"), vz.WithController(true))
 
 	cleanup()
 

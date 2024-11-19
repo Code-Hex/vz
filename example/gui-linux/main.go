@@ -94,7 +94,7 @@ func run(ctx context.Context) error {
 	}
 
 	runtime.LockOSThread()
-	vm.StartGraphicApplication(960, 600)
+	vm.StartGraphicApplication(960, 600, vz.WithWindowTitle("Linux"), vz.WithController(true))
 	runtime.UnlockOSThread()
 
 	cleanup()

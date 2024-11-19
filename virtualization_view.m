@@ -285,6 +285,11 @@
             } else {
                 [self hideOverlay];
             }
+            // Terminating GUI Application from Guest and Host.
+            // See: https://github.com/Code-Hex/vz/issues/150
+            if (newState == VZVirtualMachineStateStopped) {
+                [NSApp terminate:nil];
+            }
         });
     }
 }
@@ -368,7 +373,7 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
 /* IMPORTANT: delegate methods are called from VM's queue */
 - (void)guestDidStopVirtualMachine:(VZVirtualMachine *)virtualMachine
 {
-    [NSApp performSelectorOnMainThread:@selector(terminate:) withObject:self waitUntilDone:NO];
+    // [NSApp performSelectorOnMainThread:@selector(terminate:) withObject:self waitUntilDone:NO];
 }
 
 - (void)virtualMachine:(VZVirtualMachine *)virtualMachine didStopWithError:(NSError *)error

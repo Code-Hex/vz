@@ -522,7 +522,7 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
     } else if ([itemIdentifier isEqualToString:ZoomToolbarIdentifier]) {
         NSButton *zoomButton = [[[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 40, 40)] autorelease];
         zoomButton.bezelStyle = NSBezelStyleTexturedRounded;
-        [zoomButton setImage:[NSImage imageWithSystemSymbolName:@"magnifyingglass" accessibilityDescription:nil]];
+        [zoomButton setImage:[NSImage imageWithSystemSymbolName:@"plus.magnifyingglass" accessibilityDescription:nil]];
         [zoomButton setTarget:self];
         [zoomButton setAction:@selector(toggleZoomMode:)];
         [zoomButton setButtonType:NSButtonTypeToggle];
@@ -574,13 +574,28 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
                         [self showErrorAlertWithMessage:@"Failed to start Virtual Machine" error:err];
                 }];
             });
-        } else {
+            return;
+        }
+        if ([self canStopVirtualMachine]) {
+            NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+            [alert setIcon:[NSImage imageNamed:NSImageNameCaution]];
+            [alert setMessageText:@"Force Stop Warning"];
+            [alert setInformativeText:@"This action will stop the VM without a clean shutdown, similar to unplugging a PC.\n\nDo you want to force stop?"];
+            [alert setAlertStyle:NSAlertStyleWarning];
+            [alert addButtonWithTitle:@"Stop"];
+            [alert addButtonWithTitle:@"Cancel"];
+
+            NSModalResponse response = [alert runModal];
+            if (response != NSAlertFirstButtonReturn) {
+                return;
+            }
             dispatch_sync(_queue, ^{
                 [_virtualMachine stopWithCompletionHandler:^(NSError *err) {
                     if (err)
                         [self showErrorAlertWithMessage:@"Failed to stop Virtual Machine" error:err];
                 }];
             });
+            return;
         }
     });
 }

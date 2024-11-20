@@ -43,6 +43,14 @@ const (
 	// ErrorNotSupported represents the operation is not supported.
 	// Available from macOS 13.0 and above.
 	ErrorNotSupported
+
+	// ErrorSave represents the save operation failed.
+	// Available from macOS 14.0 and above.
+	ErrorSave
+
+	// ErrorRestore represents the restore operation failed.
+	// Available from macOS 14.0 and above.
+	ErrorRestore
 )
 
 /* macOS installation errors. */
@@ -74,4 +82,34 @@ const (
 	// ErrorInstallationFailed is an error occurred during installation.
 	// Available from macOS 13.0 and above.
 	ErrorInstallationFailed
+)
+
+/* Network Block Device errors. */
+const (
+	// ErrorNetworkBlockDeviceNegotiationFailed represents the connection or the negotiation with the NBD server failed.
+	// Available from macOS 14.0 and above.
+	ErrorNetworkBlockDeviceNegotiationFailed ErrorCode = 20001 + iota
+
+	// ErrorNetworkBlockDeviceDisconnected represents the NBD client is disconnected from the server.
+	// Available from macOS 14.0 and above.
+	ErrorNetworkBlockDeviceDisconnected
+)
+
+/* USB device hot-plug errors. */
+const (
+	// ErrorUSBControllerNotFound represents controller not found.
+	// Available from macOS 15.0 and above.
+	ErrorUSBControllerNotFound ErrorCode = 30001 + iota
+
+	// ErrorDeviceAlreadyAttached represents Device is already attached.
+	// Available from macOS 15.0 and above.
+	ErrorDeviceAlreadyAttached
+
+	// ErrorDeviceInitializationFailure represents device initialization failure.
+	// Available from macOS 15.0 and above.
+	ErrorDeviceInitializationFailure
+
+	// ErrorDeviceNotFound represents device not found.
+	// Available from macOS 15.0 and above.
+	ErrorDeviceNotFound
 )

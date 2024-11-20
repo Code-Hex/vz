@@ -18,6 +18,8 @@ func _() {
 	_ = x[ErrorOutOfDiskSpace-8]
 	_ = x[ErrorOperationCancelled-9]
 	_ = x[ErrorNotSupported-10]
+	_ = x[ErrorSave-11]
+	_ = x[ErrorRestore-12]
 	_ = x[ErrorRestoreImageCatalogLoadFailed-10001]
 	_ = x[ErrorInvalidRestoreImageCatalog-10002]
 	_ = x[ErrorNoSupportedRestoreImagesInCatalog-10003]
@@ -25,26 +27,42 @@ func _() {
 	_ = x[ErrorInvalidRestoreImage-10005]
 	_ = x[ErrorInstallationRequiresUpdate-10006]
 	_ = x[ErrorInstallationFailed-10007]
+	_ = x[ErrorNetworkBlockDeviceNegotiationFailed-20001]
+	_ = x[ErrorNetworkBlockDeviceDisconnected-20002]
+	_ = x[ErrorUSBControllerNotFound-30001]
+	_ = x[ErrorDeviceAlreadyAttached-30002]
+	_ = x[ErrorDeviceInitializationFailure-30003]
+	_ = x[ErrorDeviceNotFound-30004]
 }
 
 const (
-	_ErrorCode_name_0 = "ErrorInternalErrorInvalidVirtualMachineConfigurationErrorInvalidVirtualMachineStateErrorInvalidVirtualMachineStateTransitionErrorInvalidDiskImageErrorVirtualMachineLimitExceededErrorNetworkErrorErrorOutOfDiskSpaceErrorOperationCancelledErrorNotSupported"
+	_ErrorCode_name_0 = "ErrorInternalErrorInvalidVirtualMachineConfigurationErrorInvalidVirtualMachineStateErrorInvalidVirtualMachineStateTransitionErrorInvalidDiskImageErrorVirtualMachineLimitExceededErrorNetworkErrorErrorOutOfDiskSpaceErrorOperationCancelledErrorNotSupportedErrorSaveErrorRestore"
 	_ErrorCode_name_1 = "ErrorRestoreImageCatalogLoadFailedErrorInvalidRestoreImageCatalogErrorNoSupportedRestoreImagesInCatalogErrorRestoreImageLoadFailedErrorInvalidRestoreImageErrorInstallationRequiresUpdateErrorInstallationFailed"
+	_ErrorCode_name_2 = "ErrorNetworkBlockDeviceNegotiationFailedErrorNetworkBlockDeviceDisconnected"
+	_ErrorCode_name_3 = "ErrorUSBControllerNotFoundErrorDeviceAlreadyAttachedErrorDeviceInitializationFailureErrorDeviceNotFound"
 )
 
 var (
-	_ErrorCode_index_0 = [...]uint8{0, 13, 52, 83, 124, 145, 177, 194, 213, 236, 253}
+	_ErrorCode_index_0 = [...]uint16{0, 13, 52, 83, 124, 145, 177, 194, 213, 236, 253, 262, 274}
 	_ErrorCode_index_1 = [...]uint8{0, 34, 65, 103, 130, 154, 185, 208}
+	_ErrorCode_index_2 = [...]uint8{0, 40, 75}
+	_ErrorCode_index_3 = [...]uint8{0, 26, 52, 84, 103}
 )
 
 func (i ErrorCode) String() string {
 	switch {
-	case 1 <= i && i <= 10:
+	case 1 <= i && i <= 12:
 		i -= 1
 		return _ErrorCode_name_0[_ErrorCode_index_0[i]:_ErrorCode_index_0[i+1]]
 	case 10001 <= i && i <= 10007:
 		i -= 10001
 		return _ErrorCode_name_1[_ErrorCode_index_1[i]:_ErrorCode_index_1[i+1]]
+	case 20001 <= i && i <= 20002:
+		i -= 20001
+		return _ErrorCode_name_2[_ErrorCode_index_2[i]:_ErrorCode_index_2[i+1]]
+	case 30001 <= i && i <= 30004:
+		i -= 30001
+		return _ErrorCode_name_3[_ErrorCode_index_3[i]:_ErrorCode_index_3[i+1]]
 	default:
 		return "ErrorCode(" + strconv.FormatInt(int64(i), 10) + ")"
 	}

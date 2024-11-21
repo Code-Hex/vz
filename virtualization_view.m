@@ -453,7 +453,7 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
 // distortion within the window.
 - (NSSize)getVirtualMachineSizeInPixels
 {
-    __block NSSize sizeInPixels;
+    __block NSSize sizeInPixels = NSZeroSize;
 #ifdef INCLUDE_TARGET_OSX_14
     if (@available(macOS 14.0, *)) {
         dispatch_sync(_queue, ^{

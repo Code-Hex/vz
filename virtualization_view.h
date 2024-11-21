@@ -6,6 +6,7 @@
 
 #pragma once
 
+#import "virtualization_helper.h"
 #import <Availability.h>
 #import <Cocoa/Cocoa.h>
 #import <Virtualization/Virtualization.h>

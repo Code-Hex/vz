@@ -454,6 +454,7 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
 - (NSSize)getVirtualMachineSizeInPixels
 {
     __block NSSize sizeInPixels;
+#ifdef INCLUDE_TARGET_OSX_14
     if (@available(macOS 14.0, *)) {
         dispatch_sync(_queue, ^{
             if (_virtualMachine.graphicsDevices.count > 0) {
@@ -465,6 +466,7 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
             }
         });
     }
+#endif
     return sizeInPixels;
 }
 

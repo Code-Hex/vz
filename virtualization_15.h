@@ -13,3 +13,5 @@
 /* macOS 15 API */
 bool isNestedVirtualizationSupported();
 void setNestedVirtualizationEnabled(void *config, bool nestedVirtualizationEnabled);
+void *newVZXHCIControllerConfiguration();
+void setUSBControllersVZVirtualMachineConfiguration(void *config, void *usbControllers);

@@ -6,6 +6,7 @@ package vz
 # include "virtualization_11.h"
 # include "virtualization_12.h"
 # include "virtualization_13.h"
+# include "virtualization_15.h"
 */
 import "C"
 import (
@@ -40,6 +41,7 @@ type VirtualMachineConfiguration struct {
 
 	networkDeviceConfiguration []*VirtioNetworkDeviceConfiguration
 	storageDeviceConfiguration []StorageDeviceConfiguration
+	usbControllerConfiguration []USBControllerConfiguration
 }
 
 // NewVirtualMachineConfiguration creates a new configuration.
@@ -275,6 +277,28 @@ func (v *VirtualMachineConfiguration) SetConsoleDevicesVirtualMachineConfigurati
 	}
 	array := objc.ConvertToNSMutableArray(ptrs)
 	C.setConsoleDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+}
+
+// SetUSBControllerConfiguration sets list of network adapters. Empty by default.
+//
+// This is only supported on macOS 15 and newer. Older versions do nothing.
+func (v *VirtualMachineConfiguration) SetUSBControllersVirtualMachineConfiguration(us []USBControllerConfiguration) {
+	if err := macOSAvailable(15); err != nil {
+		return
+	}
+	ptrs := make([]objc.NSObject, len(us))
+	for i, val := range us {
+		ptrs[i] = val
+	}
+	array := objc.ConvertToNSMutableArray(ptrs)
+	C.setUSBControllersVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	v.usbControllerConfiguration = us
+}
+
+// USBControllers return the list of usb controller configuration configured in this virtual machine configuration.
+// Return an empty array if no usb controller configuration is set.
+func (v *VirtualMachineConfiguration) USBControllers() []USBControllerConfiguration {
+	return v.usbControllerConfiguration
 }
 
 // VirtualMachineConfigurationMinimumAllowedMemorySize returns minimum

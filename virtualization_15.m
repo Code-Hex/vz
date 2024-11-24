@@ -31,3 +31,29 @@ void setNestedVirtualizationEnabled(void *config, bool nestedVirtualizationEnabl
 #endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();
 }
+
+/*!
+ @abstract Configuration for the USB XHCI controller.
+ @discussion This configuration creates a USB XHCI controller device for the guest.
+ */
+void *newVZXHCIControllerConfiguration()
+{
+#ifdef INCLUDE_TARGET_OSX_15
+    if (@available(macOS 15, *)) {
+        return [[VZXHCIControllerConfiguration alloc] init];
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+void setUSBControllersVZVirtualMachineConfiguration(void *config, void *usbControllers)
+{
+#ifdef INCLUDE_TARGET_OSX_15
+    if (@available(macOS 15, *)) {
+        [(VZVirtualMachineConfiguration *)config
+            setUsbControllers:[(NSMutableArray *)usbControllers copy]];
+        return;
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}

@@ -10,8 +10,6 @@ package vz
 */
 import "C"
 import (
-	"runtime"
-
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 

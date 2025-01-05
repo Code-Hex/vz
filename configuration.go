@@ -279,7 +279,7 @@ func (v *VirtualMachineConfiguration) SetConsoleDevicesVirtualMachineConfigurati
 	C.setConsoleDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
 }
 
-// SetUSBControllerConfiguration sets list of network adapters. Empty by default.
+// SetUSBControllerConfiguration sets list of USB controllers. Empty by default.
 //
 // This is only supported on macOS 15 and newer. Older versions do nothing.
 func (v *VirtualMachineConfiguration) SetUSBControllersVirtualMachineConfiguration(us []USBControllerConfiguration) {

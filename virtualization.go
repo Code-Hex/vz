@@ -6,6 +6,7 @@ package vz
 # include "virtualization_11.h"
 # include "virtualization_12.h"
 # include "virtualization_13.h"
+# include "virtualization_15.h"
 */
 import "C"
 import (
@@ -185,6 +186,26 @@ func (v *VirtualMachine) SocketDevices() []*VirtioSocketDevice {
 	}
 	return socketDevices
 }
+
+// USBControllers return the list of USB controllers configured on this virtual machine. Return an empty array if no USB controller is configured.
+//
+// This is only supported on macOS 15 and newer, nil will
+// be returned on older versions.
+func (v *VirtualMachine) USBControllers() []*USBController {
+	if err := macOSAvailable(15); err != nil {
+		return nil
+	}
+	nsArray := objc.NewNSArray(
+		C.VZVirtualMachine_usbControllers(objc.Ptr(v)),
+	)
+	ptrs := nsArray.ToPointerSlice()
+	usbControllers := make([]*USBController, len(ptrs))
+	for i, ptr := range ptrs {
+		usbControllers[i] = newUSBController(ptr, v.dispatchQueue)
+	}
+	return usbControllers
+}
+
 
 //export changeStateOnObserver
 func changeStateOnObserver(newStateRaw C.int, cgoHandleUintptr C.uintptr_t) {

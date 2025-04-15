@@ -391,18 +391,14 @@ func downloadRestoreImage(ctx context.Context, url string, destPath string) (*pr
 	return reader, nil
 }
 
-// FetchLatestSupportedMacOSRestoreImage fetches the latest macOS restore image supported by this host from the network.
-//
-// After downloading the restore image, you can initialize a MacOSInstaller using LoadMacOSRestoreImageFromPath function
-// with the local restore image file.
+// GetLatestSupportedMacOSRestoreImageURL get the latest macOS restore image url supported by this host from the network.
 //
 // This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
-func FetchLatestSupportedMacOSRestoreImage(ctx context.Context, destPath string) (*progress.Reader, error) {
+func GetLatestSupportedMacOSRestoreImageURL() (string, error) {
 	if err := macOSAvailable(12); err != nil {
-		return nil, err
+		return "", err
 	}
-
 	waitCh := make(chan struct{})
 	var (
 		url      string
@@ -419,7 +415,22 @@ func FetchLatestSupportedMacOSRestoreImage(ctx context.Context, destPath string)
 	)
 	<-waitCh
 	if fetchErr != nil {
-		return nil, fetchErr
+		return "", fetchErr
+	}
+	return url, nil
+}
+
+// FetchLatestSupportedMacOSRestoreImage fetches the latest macOS restore image supported by this host from the network.
+//
+// After downloading the restore image, you can initialize a MacOSInstaller using LoadMacOSRestoreImageFromPath function
+// with the local restore image file.
+//
+// This is only supported on macOS 12 and newer, error will
+// be returned on older versions.
+func FetchLatestSupportedMacOSRestoreImage(ctx context.Context, destPath string) (*progress.Reader, error) {
+	url, err := GetLatestSupportedMacOSRestoreImageURL()
+	if err != nil {
+		return nil, err
 	}
 	progressReader, err := downloadRestoreImage(ctx, url, destPath)
 	if err != nil {

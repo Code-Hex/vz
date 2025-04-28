@@ -328,6 +328,7 @@ static NSString *const PauseToolbarIdentifier = @"Pause";
 static NSString *const PlayToolbarIdentifier = @"Play";
 static NSString *const PowerToolbarIdentifier = @"Power";
 static NSString *const SpaceToolbarIdentifier = @"Space";
+static NSString *const Space2ToolbarIdentifier = @"Space2";
 
 - (NSArray<NSToolbarItemIdentifier> *)setupToolbarItemIdentifiers
 {
@@ -341,7 +342,7 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
             [toolbarItems addObject:PlayToolbarIdentifier];
         }
         if ([self canStopVirtualMachine] || [self canStartVirtualMachine]) {
-            [toolbarItems addObject:SpaceToolbarIdentifier];
+            [toolbarItems addObject:Space2ToolbarIdentifier];
             [toolbarItems addObject:PowerToolbarIdentifier];
         }
     }
@@ -495,6 +496,7 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
         PlayToolbarIdentifier,
         PauseToolbarIdentifier,
         SpaceToolbarIdentifier,
+        Space2ToolbarIdentifier,
         PowerToolbarIdentifier,
         NSToolbarSpaceItemIdentifier,
         NSToolbarFlexibleSpaceItemIdentifier
@@ -536,7 +538,7 @@ static NSString *const SpaceToolbarIdentifier = @"Space";
         [item setView:zoomButton];
         [item setLabel:@"Zoom"];
         [item setToolTip:@"Toggle Zoom"];
-    } else if ([itemIdentifier isEqualToString:SpaceToolbarIdentifier]) {
+    } else if ([itemIdentifier isEqualToString:SpaceToolbarIdentifier] || [itemIdentifier isEqualToString:Space2ToolbarIdentifier]) {
         NSView *spaceView = [[[NSView alloc] initWithFrame:NSMakeRect(0, 0, 2, 10)] autorelease];
         item.view = spaceView;
         item.minSize = NSMakeSize(1, 10);

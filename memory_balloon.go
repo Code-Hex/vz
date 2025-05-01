@@ -7,6 +7,8 @@ package vz
 */
 import "C"
 import (
+	"unsafe"
+
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
@@ -50,4 +52,98 @@ func NewVirtioTraditionalMemoryBalloonDeviceConfiguration() (*VirtioTraditionalM
 		objc.Release(self)
 	})
 	return config, nil
+}
+
+// VZMemoryBalloonDevice is the base interface for memory balloon devices.
+//
+// This represents VZMemoryBalloonDevice in the Virtualization framework.
+// It is an abstract class that should not be directly used.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzmemoryballoondevice?language=objc
+type VZMemoryBalloonDevice interface {
+	objc.NSObject
+
+	memoryBalloonDevice()
+}
+
+type baseMemoryBalloonDevice struct{}
+
+func (*baseMemoryBalloonDevice) memoryBalloonDevice() {}
+
+// MemoryBalloonDevices returns the list of memory balloon devices configured on this virtual machine.
+//
+// Returns an empty array if no memory balloon device is configured.
+//
+// This is only supported on macOS 11 and newer.
+func (v *VirtualMachine) MemoryBalloonDevices() []VZMemoryBalloonDevice {
+	nsArray := objc.NewNSArray(
+		C.VZVirtualMachine_memoryBalloonDevices(objc.Ptr(v)),
+	)
+	ptrs := nsArray.ToPointerSlice()
+	devices := make([]VZMemoryBalloonDevice, len(ptrs))
+	for i, ptr := range ptrs {
+		// TODO: When Apple adds more memory balloon device types in future macOS versions,
+		// implement type checking here to create the appropriate device wrapper.
+		// Currently, VirtioTraditionalMemoryBalloonDevice is the only type supported.
+		devices[i] = newVirtioTraditionalMemoryBalloonDevice(ptr, v)
+	}
+	return devices
+}
+
+// VirtioTraditionalMemoryBalloonDevice represents a Virtio traditional memory balloon device.
+//
+// The balloon device allows for dynamic memory management by inflating or deflating
+// the balloon to control memory available to the guest OS.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzvirtiotraditionalmemoryballoondevice?language=objc
+type VirtioTraditionalMemoryBalloonDevice struct {
+	*pointer
+	vm *VirtualMachine
+
+	*baseMemoryBalloonDevice
+}
+
+var _ VZMemoryBalloonDevice = (*VirtioTraditionalMemoryBalloonDevice)(nil)
+
+// AsVirtioTraditionalMemoryBalloonDevice attempts to convert a VZMemoryBalloonDevice to a VirtioTraditionalMemoryBalloonDevice.
+//
+// Returns the VirtioTraditionalMemoryBalloonDevice if the device is of that type, or nil otherwise.
+func AsVirtioTraditionalMemoryBalloonDevice(device VZMemoryBalloonDevice) *VirtioTraditionalMemoryBalloonDevice {
+	if traditionalDevice, ok := device.(*VirtioTraditionalMemoryBalloonDevice); ok {
+		return traditionalDevice
+	}
+	return nil
+}
+
+func newVirtioTraditionalMemoryBalloonDevice(pointer unsafe.Pointer, vm *VirtualMachine) *VirtioTraditionalMemoryBalloonDevice {
+	device := &VirtioTraditionalMemoryBalloonDevice{
+		pointer: objc.NewPointer(pointer),
+		vm:      vm,
+	}
+	objc.SetFinalizer(device, func(self *VirtioTraditionalMemoryBalloonDevice) {
+		objc.Release(self)
+	})
+	return device
+}
+
+// SetTargetVirtualMachineMemorySize sets the target memory size in bytes for the virtual machine.
+//
+// This method inflates or deflates the memory balloon to adjust the amount of memory
+// available to the guest OS. The target memory size must be less than the total memory
+// configured for the virtual machine.
+//
+// This is only supported on macOS 11 and newer.
+func (v *VirtioTraditionalMemoryBalloonDevice) SetTargetVirtualMachineMemorySize(targetMemorySize uint64) {
+	C.VZVirtioTraditionalMemoryBalloonDevice_setTargetVirtualMachineMemorySize(
+		objc.Ptr(v),
+		v.vm.dispatchQueue,
+		C.ulonglong(targetMemorySize),
+	)
+}
+
+// GetTargetVirtualMachineMemorySize returns the current target memory size in bytes for the virtual machine.
+//
+// This is only supported on macOS 11 and newer.
+func (v *VirtioTraditionalMemoryBalloonDevice) GetTargetVirtualMachineMemorySize() uint64 {
+	return uint64(C.VZVirtioTraditionalMemoryBalloonDevice_getTargetVirtualMachineMemorySize(objc.Ptr(v), v.vm.dispatchQueue))
 }

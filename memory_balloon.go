@@ -54,13 +54,13 @@ func NewVirtioTraditionalMemoryBalloonDeviceConfiguration() (*VirtioTraditionalM
 	return config, nil
 }
 
-// VZMemoryBalloonDevice is the base interface for memory balloon devices.
+// MemoryBalloonDevice is the base interface for memory balloon devices.
 //
-// This represents VZMemoryBalloonDevice in the Virtualization framework.
+// This represents MemoryBalloonDevice in the Virtualization framework.
 // It is an abstract class that should not be directly used.
 //
-// see: https://developer.apple.com/documentation/virtualization/vzmemoryballoondevice?language=objc
-type VZMemoryBalloonDevice interface {
+// see: https://developer.apple.com/documentation/virtualization/memoryballoondevice?language=objc
+type MemoryBalloonDevice interface {
 	objc.NSObject
 
 	memoryBalloonDevice()
@@ -75,12 +75,12 @@ func (*baseMemoryBalloonDevice) memoryBalloonDevice() {}
 // Returns an empty array if no memory balloon device is configured.
 //
 // This is only supported on macOS 11 and newer.
-func (v *VirtualMachine) MemoryBalloonDevices() []VZMemoryBalloonDevice {
+func (v *VirtualMachine) MemoryBalloonDevices() []MemoryBalloonDevice {
 	nsArray := objc.NewNSArray(
 		C.VZVirtualMachine_memoryBalloonDevices(objc.Ptr(v)),
 	)
 	ptrs := nsArray.ToPointerSlice()
-	devices := make([]VZMemoryBalloonDevice, len(ptrs))
+	devices := make([]MemoryBalloonDevice, len(ptrs))
 	for i, ptr := range ptrs {
 		// TODO: When Apple adds more memory balloon device types in future macOS versions,
 		// implement type checking here to create the appropriate device wrapper.
@@ -103,12 +103,12 @@ type VirtioTraditionalMemoryBalloonDevice struct {
 	*baseMemoryBalloonDevice
 }
 
-var _ VZMemoryBalloonDevice = (*VirtioTraditionalMemoryBalloonDevice)(nil)
+var _ MemoryBalloonDevice = (*VirtioTraditionalMemoryBalloonDevice)(nil)
 
-// AsVirtioTraditionalMemoryBalloonDevice attempts to convert a VZMemoryBalloonDevice to a VirtioTraditionalMemoryBalloonDevice.
+// AsVirtioTraditionalMemoryBalloonDevice attempts to convert a MemoryBalloonDevice to a VirtioTraditionalMemoryBalloonDevice.
 //
 // Returns the VirtioTraditionalMemoryBalloonDevice if the device is of that type, or nil otherwise.
-func AsVirtioTraditionalMemoryBalloonDevice(device VZMemoryBalloonDevice) *VirtioTraditionalMemoryBalloonDevice {
+func AsVirtioTraditionalMemoryBalloonDevice(device MemoryBalloonDevice) *VirtioTraditionalMemoryBalloonDevice {
 	if traditionalDevice, ok := device.(*VirtioTraditionalMemoryBalloonDevice); ok {
 		return traditionalDevice
 	}

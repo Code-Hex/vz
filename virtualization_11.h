@@ -110,6 +110,7 @@ void *VZVirtualMachine_socketDevices(void *machine);
 void VZVirtioSocketDevice_setSocketListenerForPort(void *socketDevice, void *vmQueue, void *listener, uint32_t port);
 void VZVirtioSocketDevice_removeSocketListenerForPort(void *socketDevice, void *vmQueue, uint32_t port);
 void VZVirtioSocketDevice_connectToPort(void *socketDevice, void *vmQueue, uint32_t port, uintptr_t cgoHandle);
+void *VZVirtualMachine_memoryBalloonDevices(void *machine);
 
 /* VirtualMachine */
 void *newVZVirtualMachineWithDispatchQueue(void *config, void *queue, uintptr_t statusUpdateCgoHandle, uintptr_t disconnectedCgoHandle);
@@ -132,3 +133,7 @@ typedef struct VZVirtioSocketConnectionFlat {
 } VZVirtioSocketConnectionFlat;
 
 VZVirtioSocketConnectionFlat convertVZVirtioSocketConnection2Flat(void *connection);
+
+/* VZVirtioTraditionalMemoryBalloonDevice */
+void VZVirtioTraditionalMemoryBalloonDevice_setTargetVirtualMachineMemorySize(void *balloonDevice, void *queue, unsigned long long targetMemorySize);
+unsigned long long VZVirtioTraditionalMemoryBalloonDevice_getTargetVirtualMachineMemorySize(void *balloonDevice, void *queue);

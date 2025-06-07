@@ -1046,3 +1046,56 @@ bool vmCanRequestStop(void *machine, void *queue)
 }
 
 // --- TODO end
+
+/*!
+ @abstract Return the list of memory balloon devices configured on this virtual machine.
+ @discussion Returns an empty array if no memory balloon device is configured.
+ @see VZVirtioTraditionalMemoryBalloonDeviceConfiguration
+ @see VZVirtualMachineConfiguration
+ */
+void *VZVirtualMachine_memoryBalloonDevices(void *machine)
+{
+    if (@available(macOS 11, *)) {
+        return [(VZVirtualMachine *)machine memoryBalloonDevices]; // NSArray<VZMemoryBalloonDevice *>
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+/*!
+ @abstract Set the target memory size for the virtual machine.
+ @discussion Adjusts the memory balloon to make the specified amount of memory available to the guest OS.
+ @param memoryBalloonDevice The memory balloon device to set the target memory size for.
+ @param vmQueue The dispatch queue on which the virtual machine operates.
+ @param targetMemorySize The target memory size in bytes to set for the virtual machine.
+ */
+void VZVirtioTraditionalMemoryBalloonDevice_setTargetVirtualMachineMemorySize(void *memoryBalloonDevice, void *vmQueue, unsigned long long targetMemorySize)
+{
+    if (@available(macOS 11, *)) {
+        dispatch_sync((dispatch_queue_t)vmQueue, ^{
+            [(VZVirtioTraditionalMemoryBalloonDevice *)memoryBalloonDevice setTargetVirtualMachineMemorySize:targetMemorySize];
+        });
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+/*!
+ @abstract Get the current target memory size for the virtual machine.
+ @param memoryBalloonDevice The memory balloon device to get the target memory size from.
+ @param vmQueue The dispatch queue on which the virtual machine operates.
+ @return The current target memory size in bytes for the virtual machine.
+ */
+unsigned long long VZVirtioTraditionalMemoryBalloonDevice_getTargetVirtualMachineMemorySize(void *memoryBalloonDevice, void *vmQueue)
+{
+    if (@available(macOS 11, *)) {
+        __block unsigned long long ret;
+        dispatch_sync((dispatch_queue_t)vmQueue, ^{
+            ret = [(VZVirtioTraditionalMemoryBalloonDevice *)memoryBalloonDevice targetVirtualMachineMemorySize];
+        });
+        return ret;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}

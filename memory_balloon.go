@@ -59,7 +59,7 @@ func NewVirtioTraditionalMemoryBalloonDeviceConfiguration() (*VirtioTraditionalM
 // This represents MemoryBalloonDevice in the Virtualization framework.
 // It is an abstract class that should not be directly used.
 //
-// see: https://developer.apple.com/documentation/virtualization/memoryballoondevice?language=objc
+// see: https://developer.apple.com/documentation/virtualization/vzmemoryballoondevice?language=objc
 type MemoryBalloonDevice interface {
 	objc.NSObject
 

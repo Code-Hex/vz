@@ -1,0 +1,12 @@
+version: 2
+updates:
+- package-ecosystem: gomod
+  directory: "/"
+- package-ecosystem: gomod
+  directory: "/example/gui-linux"
+- package-ecosystem: gomod
+  directory: "/example/linux"
+- package-ecosystem: gomod
+  directory: "/example/macos"
+- package-ecosystem: github-actions
+  directory: "/"

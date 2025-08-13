@@ -59,16 +59,6 @@ func TestNewLinuxRosettaUnixSocketCachingOptions(t *testing.T) {
 			t.Fatalf("unexpected error: %q", got)
 		}
 	})
-	t.Run("invalid filename does not exists", func(t *testing.T) {
-		filename := "doesnotexists.txt"
-		_, err := vz.NewLinuxRosettaUnixSocketCachingOptions(filename)
-		if err == nil {
-			t.Fatal("expected error")
-		}
-		if got := err.Error(); !strings.Contains(got, "invalid path") {
-			t.Fatalf("unexpected error: %q", got)
-		}
-	})
 }
 
 func TestNewLinuxRosettaAbstractSocketCachingOptions(t *testing.T) {

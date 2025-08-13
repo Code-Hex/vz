@@ -12,7 +12,6 @@ package vz
 import "C"
 import (
 	"fmt"
-	"os"
 	"runtime/cgo"
 	"unsafe"
 
@@ -158,9 +157,6 @@ func NewLinuxRosettaUnixSocketCachingOptions(path string) (*LinuxRosettaUnixSock
 	maxPathLen := maximumPathLengthLinuxRosettaUnixSocketCachingOptions()
 	if maxPathLen < len(path) {
 		return nil, fmt.Errorf("path length exceeds maximum allowed length of %d", maxPathLen)
-	}
-	if _, err := os.Stat(path); err != nil {
-		return nil, fmt.Errorf("invalid path: %w", err)
 	}
 
 	cs := charWithGoString(path)

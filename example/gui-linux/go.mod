@@ -1,6 +1,6 @@
 module github.com/Code-Hex/vz/example/gui-linux
 
-go 1.22.0
+go 1.23.0
 
 toolchain go1.23.4
 
@@ -15,6 +15,6 @@ require (
 	github.com/Code-Hex/go-infinity-channel v1.0.0 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467 // indirect
 )

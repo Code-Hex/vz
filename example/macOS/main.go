@@ -15,10 +15,12 @@ import (
 
 var install bool
 var nbdURL string
+var asifDiskImage bool
 
 func init() {
 	flag.BoolVar(&install, "install", false, "run command as install mode")
 	flag.StringVar(&nbdURL, "nbd-url", "", "nbd url (e.g. nbd+unix:///export?socket=nbd.sock)")
+	flag.BoolVar(&asifDiskImage, "asif", false, "use ASIF disk image instead of raw")
 }
 
 func main() {
@@ -44,7 +46,7 @@ func runVM(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	config, err := setupVMConfiguration(platformConfig)
+	config, err := setupVMConfiguration(ctx, platformConfig)
 	if err != nil {
 		return err
 	}
@@ -156,9 +158,9 @@ func computeMemorySize() uint64 {
 	return memorySize
 }
 
-func createBlockDeviceConfiguration(diskPath string) (*vz.VirtioBlockDeviceConfiguration, error) {
+func createBlockDeviceConfiguration(ctx context.Context, diskPath string) (*vz.VirtioBlockDeviceConfiguration, error) {
 	// create disk image with 64 GiB
-	if err := vz.CreateDiskImage(diskPath, 64*1024*1024*1024); err != nil {
+	if err := createDiskImage(ctx, diskPath, 64*1024*1024*1024); err != nil {
 		if !os.IsExist(err) {
 			return nil, fmt.Errorf("failed to create disk image: %w", err)
 		}
@@ -265,7 +267,7 @@ func createMacPlatformConfiguration() (*vz.MacPlatformConfiguration, error) {
 	)
 }
 
-func setupVMConfiguration(platformConfig vz.PlatformConfiguration) (*vz.VirtualMachineConfiguration, error) {
+func setupVMConfiguration(ctx context.Context, platformConfig vz.PlatformConfiguration) (*vz.VirtualMachineConfiguration, error) {
 	bootloader, err := vz.NewMacOSBootLoader()
 	if err != nil {
 		return nil, err
@@ -287,7 +289,7 @@ func setupVMConfiguration(platformConfig vz.PlatformConfiguration) (*vz.VirtualM
 	config.SetGraphicsDevicesVirtualMachineConfiguration([]vz.GraphicsDeviceConfiguration{
 		graphicsDeviceConfig,
 	})
-	blockDeviceConfig, err := createBlockDeviceConfiguration(GetDiskImagePath())
+	blockDeviceConfig, err := createBlockDeviceConfiguration(ctx, GetDiskImagePath())
 	if err != nil {
 		return nil, fmt.Errorf("failed to create block device configuration: %w", err)
 	}
@@ -360,6 +362,20 @@ func retrieveNetworkBlockDeviceStorageDeviceAttachment(storages []vz.StorageDevi
 		if nbdAttachment, ok := attachment.(*vz.NetworkBlockDeviceStorageDeviceAttachment); ok {
 			return nbdAttachment
 		}
+	}
+	return nil
+}
+
+func createDiskImage(ctx context.Context, diskpath string, size int64) error {
+	if asifDiskImage {
+		if err := vz.CreateSparseDiskImage(ctx, diskpath, size); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	if err := vz.CreateDiskImage(diskpath, size); err != nil {
+		return err
 	}
 	return nil
 }

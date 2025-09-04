@@ -29,6 +29,7 @@ func installMacOS(ctx context.Context) error {
 	}
 	configurationRequirements := restoreImage.MostFeaturefulSupportedConfiguration()
 	config, err := setupVirtualMachineWithMacOSConfigurationRequirements(
+		ctx,
 		configurationRequirements,
 	)
 	if err != nil {
@@ -67,12 +68,12 @@ func installMacOS(ctx context.Context) error {
 	return installer.Install(ctx)
 }
 
-func setupVirtualMachineWithMacOSConfigurationRequirements(macOSConfiguration *vz.MacOSConfigurationRequirements) (*vz.VirtualMachineConfiguration, error) {
+func setupVirtualMachineWithMacOSConfigurationRequirements(ctx context.Context, macOSConfiguration *vz.MacOSConfigurationRequirements) (*vz.VirtualMachineConfiguration, error) {
 	platformConfig, err := createMacInstallerPlatformConfiguration(macOSConfiguration)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create mac platform config: %w", err)
 	}
-	return setupVMConfiguration(platformConfig)
+	return setupVMConfiguration(ctx, platformConfig)
 }
 
 func createMacInstallerPlatformConfiguration(macOSConfiguration *vz.MacOSConfigurationRequirements) (*vz.MacPlatformConfiguration, error) {

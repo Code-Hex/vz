@@ -16,12 +16,12 @@ var (
 )
 
 func usage() {
-	fmt.Fprintf(os.Stderr, `
+	fmt.Fprint(os.Stderr, `
 usage: addtags -tags <build tags to apply> -file FILE <subcommand args...>
 `[1:])
 
 	flag.PrintDefaults()
-	fmt.Fprintf(os.Stderr, `
+	fmt.Fprint(os.Stderr, `
 It is intended for use with 'go generate', so it also runs a subcommand,
 which presumably creates the file.
 Sample usage:

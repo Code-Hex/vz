@@ -1,8 +1,6 @@
 module github.com/Code-Hex/vz/example/macOS
 
-go 1.22.0
-
-toolchain go1.23.4
+go 1.24.0
 
 replace github.com/Code-Hex/vz/v3 => ../../
 

@@ -32,8 +32,8 @@ jobs:
         - macos-14
         - macos-15
         go:
-        - '^1.22'
-        - '^1.23'
+        - '^1.24'
+        - '^1.25'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -61,7 +61,7 @@ jobs:
         os:
         - macos-13 # because macOS 14, 15 does not support build on nested virtualization
         go:
-        - '^1.23'
+        - '^1.24'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4

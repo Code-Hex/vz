@@ -653,8 +653,9 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 - (NSScrollView *)createScrollViewForVirtualMachineView:(VZVirtualMachineView *)view
 {
     NSScrollView *scrollView = [[[NSScrollView alloc] initWithFrame:_window.contentView.bounds] autorelease];
-    scrollView.hasVerticalScroller = YES;
-    scrollView.hasHorizontalScroller = YES;
+    scrollView.hasVerticalScroller = NO;
+    scrollView.hasHorizontalScroller = NO;
+    scrollView.autohidesScrollers = YES;
     scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     scrollView.documentView = view;
 

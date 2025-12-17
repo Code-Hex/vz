@@ -28,9 +28,10 @@ jobs:
       fail-fast: false
       matrix:
         os:
-        - macos-13  # Intel
         - macos-14
         - macos-15
+        - macos-15-intel
+        - macos-26
         go:
         - '^1.24'
         - '^1.25'
@@ -59,7 +60,7 @@ jobs:
       # Can't expand the matrix due to the flakiness of the CI infra
       matrix:
         os:
-        - macos-13 # because macOS 14, 15 does not support build on nested virtualization
+        - macos-15-intel
         go:
         - '^1.24'
     steps:

@@ -54,7 +54,7 @@ jobs:
   test:
     needs: formatting-check
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 3
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       # Can't expand the matrix due to the flakiness of the CI infra

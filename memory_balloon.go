@@ -7,8 +7,6 @@ package vz
 */
 import "C"
 import (
-	"unsafe"
-
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
@@ -85,7 +83,10 @@ func (v *VirtualMachine) MemoryBalloonDevices() []MemoryBalloonDevice {
 		// TODO: When Apple adds more memory balloon device types in future macOS versions,
 		// implement type checking here to create the appropriate device wrapper.
 		// Currently, VirtioTraditionalMemoryBalloonDevice is the only type supported.
-		devices[i] = newVirtioTraditionalMemoryBalloonDevice(ptr, v)
+		devices[i] = &VirtioTraditionalMemoryBalloonDevice{
+			pointer: objc.NewPointer(ptr),
+			vm:      v,
+		}
 	}
 	return devices
 }
@@ -105,6 +106,7 @@ type VirtioTraditionalMemoryBalloonDevice struct {
 
 var _ MemoryBalloonDevice = (*VirtioTraditionalMemoryBalloonDevice)(nil)
 
+// Deprecated: should direct type checking using `v, ok := device.(*VirtioTraditionalMemoryBalloonDevice)`.
 // AsVirtioTraditionalMemoryBalloonDevice attempts to convert a MemoryBalloonDevice to a VirtioTraditionalMemoryBalloonDevice.
 //
 // Returns the VirtioTraditionalMemoryBalloonDevice if the device is of that type, or nil otherwise.
@@ -113,17 +115,6 @@ func AsVirtioTraditionalMemoryBalloonDevice(device MemoryBalloonDevice) *VirtioT
 		return traditionalDevice
 	}
 	return nil
-}
-
-func newVirtioTraditionalMemoryBalloonDevice(pointer unsafe.Pointer, vm *VirtualMachine) *VirtioTraditionalMemoryBalloonDevice {
-	device := &VirtioTraditionalMemoryBalloonDevice{
-		pointer: objc.NewPointer(pointer),
-		vm:      vm,
-	}
-	objc.SetFinalizer(device, func(self *VirtioTraditionalMemoryBalloonDevice) {
-		objc.Release(self)
-	})
-	return device
 }
 
 // SetTargetVirtualMachineMemorySize sets the target memory size in bytes for the virtual machine.

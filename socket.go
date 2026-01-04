@@ -7,6 +7,7 @@ package vz
 */
 import "C"
 import (
+	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -198,6 +199,11 @@ func (v *VirtioSocketListener) Close() error {
 			C.uint32_t(v.port),
 		)
 		v.handle.Delete()
+		v.acceptch <- connResults{
+			conn: nil,
+			err:  errors.New("accept failed: listener has been closed"),
+		}
+		close(v.acceptch)
 	})
 	return nil
 }

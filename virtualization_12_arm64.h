@@ -6,7 +6,7 @@
 
 #pragma once
 
-#import "virtualization_helper.h"
+#import "internal/osversion/virtualization_helper.h"
 #import <Foundation/Foundation.h>
 #import <Foundation/NSNotification.h>
 #import <Virtualization/Virtualization.h>

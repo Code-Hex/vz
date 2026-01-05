@@ -5,7 +5,7 @@
 //
 
 #import "virtualization_debug.h"
-#import "virtualization_helper.h"
+#import "internal/osversion/virtualization_helper.h"
 
 /*!
  @abstract Create a VZGDBDebugStubConfiguration with debug port for GDB server.

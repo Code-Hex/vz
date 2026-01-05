@@ -6,7 +6,7 @@
 
 #pragma once
 
-#import "virtualization_helper.h"
+#import "internal/osversion/virtualization_helper.h"
 #import <Virtualization/Virtualization.h>
 
 // FIXME(codehex): this is dirty hack to avoid clang-format error like below

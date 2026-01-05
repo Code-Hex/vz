@@ -235,6 +235,28 @@ const char *xpcCopyDescription(void *object)
 
 // MARK: - Boolean objects
 
+// # xpc_object_t (XPC_TYPE_BOOL)
+
+void *xpcBoolCreate(bool value)
+{
+    return xpc_bool_create(value);
+}
+
+bool xpcBoolGetValue(void *object)
+{
+    return xpc_bool_get_value((xpc_object_t)object);
+}
+
+void *xpcBoolTrue()
+{
+    return XPC_BOOL_TRUE;
+}
+
+void *xpcBoolFalse()
+{
+    return XPC_BOOL_FALSE;
+}
+
 // MARK: - Data objects
 
 // # xpc_object_t (XPC_TYPE_DATA)
@@ -244,7 +266,52 @@ void *xpcDataCreate(const void *bytes, size_t length)
     return xpc_data_create(bytes, length);
 }
 
+const void *xpcDataGetBytesPtr(void *object)
+{
+    return xpc_data_get_bytes_ptr((xpc_object_t)object);
+}
+
+size_t xpcDataGetLength(void *object)
+{
+    return xpc_data_get_length((xpc_object_t)object);
+}
+
 // MARK: - Number objects
+
+// # xpc_object_t (XPC_TYPE_DOUBLE)
+void *xpcDoubleCreate(double value)
+{
+    return xpc_double_create(value);
+}
+
+double xpcDoubleGetValue(void *object)
+{
+    return xpc_double_get_value((xpc_object_t)object);
+}
+
+// MARK: - Int64 objects
+// # xpc_object_t (XPC_TYPE_INT64)
+void *xpcInt64Create(int64_t value)
+{
+    return xpc_int64_create(value);
+}
+
+int64_t xpcInt64GetValue(void *object)
+{
+    return xpc_int64_get_value((xpc_object_t)object);
+}
+
+// MARK: - UInt64 objects
+// # xpc_object_t (XPC_TYPE_UINT64)
+void *xpcUInt64Create(uint64_t value)
+{
+    return xpc_uint64_create(value);
+}
+
+uint64_t xpcUInt64GetValue(void *object)
+{
+    return xpc_uint64_get_value((xpc_object_t)object);
+}
 
 // MARK: - Array objects
 
@@ -253,6 +320,21 @@ void *xpcDataCreate(const void *bytes, size_t length)
 void *xpcArrayCreate(void *const *object, size_t count)
 {
     return xpc_array_create((xpc_object_t const *)object, count);
+}
+
+void *xpcArrayGetValue(void *object, size_t index)
+{
+    return xpc_array_get_value((xpc_object_t)object, index);
+}
+
+void xpcArraySetValue(void *object, size_t index, void *value)
+{
+    xpc_array_set_value((xpc_object_t)object, index, (xpc_object_t)value);
+}
+
+void xpcArrayAppendValue(void *object, void *value)
+{
+    xpc_array_append_value((xpc_object_t)object, (xpc_object_t)value);
 }
 
 size_t xpcArrayGetCount(void *object)
@@ -265,6 +347,106 @@ bool xpcArrayApply(void *object, uintptr_t cgo_applier)
     return xpc_array_apply((xpc_object_t)object, ^bool(size_t index, xpc_object_t _Nonnull value) {
         return callArrayApplier(cgo_applier, index, wrapRawObject(value));
     });
+}
+
+int xpcArrayDupFd(void *object, size_t index)
+{
+    return xpc_array_dup_fd((xpc_object_t)object, index);
+}
+
+void *xpcArrayGetArray(void *object, size_t index)
+{
+    return xpc_array_get_array((xpc_object_t)object, index);
+}
+
+bool xpcArrayGetBool(void *object, size_t index)
+{
+    return xpc_array_get_bool((xpc_object_t)object, index);
+}
+
+const void *xpcArrayGetData(void *object, size_t index, size_t *length)
+{
+    return xpc_array_get_data((xpc_object_t)object, index, length);
+}
+
+int64_t xpcArrayGetDate(void *object, size_t index)
+{
+    return xpc_array_get_date((xpc_object_t)object, index);
+}
+
+void *xpcArrayGetDictionary(void *object, size_t index)
+{
+    return xpc_array_get_dictionary((xpc_object_t)object, index);
+}
+
+double xpcArrayGetDouble(void *object, size_t index)
+{
+    return xpc_array_get_double((xpc_object_t)object, index);
+}
+
+int64_t xpcArrayGetInt64(void *object, size_t index)
+{
+    return xpc_array_get_int64((xpc_object_t)object, index);
+}
+
+const char *xpcArrayGetString(void *object, size_t index)
+{
+    return xpc_array_get_string((xpc_object_t)object, index);
+}
+
+uint64_t xpcArrayGetUInt64(void *object, size_t index)
+{
+    return xpc_array_get_uint64((xpc_object_t)object, index);
+}
+
+const uint8_t *xpcArrayGetUUID(void *object, size_t index)
+{
+    return xpc_array_get_uuid((xpc_object_t)object, index);
+}
+
+void xpcArraySetBool(void *object, size_t index, bool value)
+{
+    xpc_array_set_bool((xpc_object_t)object, index, value);
+}
+
+void xpcArraySetData(void *object, size_t index, const void *bytes, size_t length)
+{
+    xpc_array_set_data((xpc_object_t)object, index, bytes, length);
+}
+
+void xpcArraySetDate(void *object, size_t index, int64_t value)
+{
+    xpc_array_set_date((xpc_object_t)object, index, value);
+}
+
+void xpcArraySetDouble(void *object, size_t index, double value)
+{
+    xpc_array_set_double((xpc_object_t)object, index, value);
+}
+
+void xpcArraySetFd(void *object, size_t index, int fd)
+{
+    xpc_array_set_fd((xpc_object_t)object, index, fd);
+}
+
+void xpcArraySetInt64(void *object, size_t index, int64_t value)
+{
+    xpc_array_set_int64((xpc_object_t)object, index, value);
+}
+
+void xpcArraySetString(void *object, size_t index, const char *value)
+{
+    xpc_array_set_string((xpc_object_t)object, index, value);
+}
+
+void xpcArraySetUInt64(void *object, size_t index, uint64_t value)
+{
+    xpc_array_set_uint64((xpc_object_t)object, index, value);
+}
+
+void xpcArraySetUUID(void *object, size_t index, const uint8_t *uuid)
+{
+    xpc_array_set_uuid((xpc_object_t)object, index, uuid);
 }
 
 // MARK: - Dictionary objects
@@ -286,6 +468,11 @@ void xpcDictionarySetValue(void *object, const char *key, void *value)
     xpc_dictionary_set_value((xpc_object_t)object, key, (xpc_object_t)value);
 }
 
+size_t xpcDictionaryGetCount(void *object)
+{
+    return xpc_dictionary_get_count((xpc_object_t)object);
+}
+
 void *xpcDictionaryGetValue(void *object, const char *key)
 {
     return xpc_dictionary_get_value((xpc_object_t)object, key);
@@ -298,9 +485,19 @@ bool xpcDictionaryApply(void *object, uintptr_t cgo_applier)
     });
 }
 
+int xpcDictionaryDupFd(void *object, const char *key)
+{
+    return xpc_dictionary_dup_fd((xpc_object_t)object, key);
+}
+
 void *xpcDictionaryGetArray(void *object, const char *key)
 {
     return xpc_dictionary_get_array((xpc_object_t)object, key);
+}
+
+bool xpcDictionaryGetBool(void *object, const char *key)
+{
+    return xpc_dictionary_get_bool((xpc_object_t)object, key);
 }
 
 const void *xpcDictionaryGetData(void *object, const char *key, size_t *length)
@@ -308,14 +505,84 @@ const void *xpcDictionaryGetData(void *object, const char *key, size_t *length)
     return xpc_dictionary_get_data((xpc_object_t)object, key, length);
 }
 
+int64_t xpcDictionaryGetDate(void *object, const char *key)
+{
+    return xpc_dictionary_get_date((xpc_object_t)object, key);
+}
+
+void *xpcDictionaryGetDictionary(void *object, const char *key)
+{
+    return xpc_dictionary_get_dictionary((xpc_object_t)object, key);
+}
+
+double xpcDictionaryGetDouble(void *object, const char *key)
+{
+    return xpc_dictionary_get_double((xpc_object_t)object, key);
+}
+
+int64_t xpcDictionaryGetInt64(void *object, const char *key)
+{
+    return xpc_dictionary_get_int64((xpc_object_t)object, key);
+}
+
 const char *xpcDictionaryGetString(void *object, const char *key)
 {
     return xpc_dictionary_get_string((xpc_object_t)object, key);
 }
 
+uint64_t xpcDictionaryGetUInt64(void *object, const char *key)
+{
+    return xpc_dictionary_get_uint64((xpc_object_t)object, key);
+}
+
+const uint8_t *xpcDictionaryGetUUID(void *object, const char *key)
+{
+    return xpc_dictionary_get_uuid((xpc_object_t)object, key);
+}
+
+void xpcDictionarySetBool(void *object, const char *key, bool value)
+{
+    xpc_dictionary_set_bool((xpc_object_t)object, key, value);
+}
+
+void xpcDictionarySetData(void *object, const char *key, const void *bytes, size_t length)
+{
+    xpc_dictionary_set_data((xpc_object_t)object, key, bytes, length);
+}
+
+void xpcDictionarySetDate(void *object, const char *key, int64_t value)
+{
+    xpc_dictionary_set_date((xpc_object_t)object, key, value);
+}
+
+void xpcDictionarySetDouble(void *object, const char *key, double value)
+{
+    xpc_dictionary_set_double((xpc_object_t)object, key, value);
+}
+
+void xpcDictionarySetFd(void *object, const char *key, int fd)
+{
+    xpc_dictionary_set_fd((xpc_object_t)object, key, fd);
+}
+
+void xpcDictionarySetInt64(void *object, const char *key, int64_t value)
+{
+    xpc_dictionary_set_int64((xpc_object_t)object, key, value);
+}
+
 void xpcDictionarySetString(void *object, const char *key, const char *value)
 {
     xpc_dictionary_set_string((xpc_object_t)object, key, value);
+}
+
+void xpcDictionarySetUInt64(void *object, const char *key, uint64_t value)
+{
+    xpc_dictionary_set_uint64((xpc_object_t)object, key, value);
+}
+
+void xpcDictionarySetUUID(void *object, const char *key, const uint8_t *uuid)
+{
+    xpc_dictionary_set_uuid((xpc_object_t)object, key, uuid);
 }
 
 // MARK: - String objects
@@ -325,11 +592,64 @@ void *xpcStringCreate(const char *string)
     return xpc_string_create(string);
 }
 
+size_t xpcStringGetLength(void *object)
+{
+    return xpc_string_get_length((xpc_object_t)object);
+}
+
+const char *xpcStringGetStringPtr(void *object)
+{
+    return xpc_string_get_string_ptr((xpc_object_t)object);
+}
+
 // MARK: - File descriptor objects
+
+void *xpcFdCreate(int fd)
+{
+    return xpc_fd_create(fd);
+}
+
+int xpcFdDup(void *object)
+{
+    return xpc_fd_dup((xpc_object_t)object);
+}
+
 // MARK: - Date objects
+
+void *xpcDateCreate(int64_t interval)
+{
+    return xpc_date_create(interval);
+}
+
+void *xpcDateCreateFromCurrent()
+{
+    return xpc_date_create_from_current();
+}
+
+int64_t xpcDateGetValue(void *object)
+{
+    return xpc_date_get_value((xpc_object_t)object);
+}
+
 // MARK: - UUID objects
+
+void *xpcUUIDCreate(const uuid_t uuid)
+{
+    return xpc_uuid_create(uuid);
+}
+
+const uint8_t *xpcUUIDGetBytes(void *object)
+{
+    return xpc_uuid_get_bytes((xpc_object_t)object);
+}
+
 // MARK: - Shared memory objects
 // MARK: - Null objects
+
+void *xpcNullCreate()
+{
+    return xpc_null_create();
+}
 
 // MARK: - Object life cycle
 

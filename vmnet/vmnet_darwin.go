@@ -14,7 +14,9 @@ import (
 	"runtime"
 	"unsafe"
 
+	"github.com/Code-Hex/vz/v3/internal/objc"
 	"github.com/Code-Hex/vz/v3/internal/osversion"
+	"github.com/Code-Hex/vz/v3/xpc"
 	"golang.org/x/sys/unix"
 )
 
@@ -371,14 +373,14 @@ func NewNetwork(config *NetworkConfiguration) (*Network, error) {
 // NewNetworkWithSerialization creates a new [Network] from a serialized representation.
 // This is only supported on macOS 26 and newer, error will be returned on older versions.
 //   - https://developer.apple.com/documentation/vmnet/vmnet_network_create_with_serialization(_:_:)?language=objc
-func NewNetworkWithSerialization(serialization unsafe.Pointer) (*Network, error) {
+func NewNetworkWithSerialization(serialization xpc.Object) (*Network, error) {
 	if err := macOSAvailable(26); err != nil {
 		return nil, err
 	}
 
 	var status Return
 	ptr := C.VmnetNetworkCreateWithSerialization(
-		serialization,
+		objc.Ptr(serialization),
 		(*C.uint32_t)(unsafe.Pointer(&status)),
 	)
 	if !errors.Is(status, ErrSuccess) {
@@ -389,9 +391,9 @@ func NewNetworkWithSerialization(serialization unsafe.Pointer) (*Network, error)
 	return network, nil
 }
 
-// CopySerialization returns a serialized copy of [Network] in xpc_object_t as [unsafe.Pointer].
+// CopySerialization returns a serialized copy of [Network] in xpc_object_t as [xpc.Object].
 //   - https://developer.apple.com/documentation/vmnet/vmnet_network_copy_serialization(_:_:)?language=objc
-func (n *Network) CopySerialization() (unsafe.Pointer, error) {
+func (n *Network) CopySerialization() (xpc.Object, error) {
 	var status Return
 	ptr := C.VmnetNetwork_copySerialization(
 		n.Raw(),
@@ -400,7 +402,7 @@ func (n *Network) CopySerialization() (unsafe.Pointer, error) {
 	if !errors.Is(status, ErrSuccess) {
 		return nil, fmt.Errorf("failed to copy serialization: %w", status)
 	}
-	return ptr, nil
+	return xpc.NewObject(ptr), nil
 }
 
 // IPv4Subnet returns the IPv4 subnet of the [Network].

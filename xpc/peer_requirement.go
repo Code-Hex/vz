@@ -8,13 +8,15 @@ package xpc
 import "C"
 import (
 	"unsafe"
+
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
 // PeerRequirement represents an [xpc_peer_requirement_t]. (macOS 26.0+)
 //
 // [xpc_peer_requirement_t]: https://developer.apple.com/documentation/xpc/xpc_peer_requirement_t?language=objc
 type PeerRequirement struct {
-	*XpcObject
+	*xpcObject
 }
 
 var _ Object = &PeerRequirement{}
@@ -28,11 +30,11 @@ func NewPeerRequirementLwcr(lwcr *Dictionary) (*PeerRequirement, error) {
 	}
 
 	var err_out unsafe.Pointer
-	ptr := C.xpcPeerRequirementCreateLwcr(lwcr.Raw(), &err_out)
+	ptr := C.xpcPeerRequirementCreateLwcr(objc.Ptr(lwcr), &err_out)
 	if err_out != nil {
 		return nil, newRichError(err_out)
 	}
-	return ReleaseOnCleanup(&PeerRequirement{XpcObject: &XpcObject{ptr}}), nil
+	return ReleaseOnCleanup(&PeerRequirement{newXpcObject(ptr)}), nil
 }
 
 // NewPeerRequirementLwcrWithEntries creates a [PeerRequirement] from a LWCR object *[Dictionary] constructed
@@ -48,7 +50,7 @@ func NewPeerRequirementLwcrWithEntries(entries ...DictionaryEntry) (*PeerRequire
 //
 // This method implements the [ListenerOption] interface.
 func (pr *PeerRequirement) inactiveListenerSet(listener *Listener) {
-	C.xpcListenerSetPeerRequirement(listener.Raw(), pr.Raw())
+	C.xpcListenerSetPeerRequirement(objc.Ptr(listener), objc.Ptr(pr))
 }
 
 // inactiveSessionSet configures the given [Session] with the [PeerRequirement]. (macOS 26.0+)
@@ -56,5 +58,5 @@ func (pr *PeerRequirement) inactiveListenerSet(listener *Listener) {
 //
 // This method implements the [SessionOption] interface.
 func (pr *PeerRequirement) inactiveSessionSet(session *Session) {
-	C.xpcSessionSetPeerRequirement(session.Raw(), pr.Raw())
+	C.xpcSessionSetPeerRequirement(objc.Ptr(session), objc.Ptr(pr))
 }

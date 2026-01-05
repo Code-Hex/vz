@@ -8,50 +8,47 @@ import "C"
 import (
 	"runtime"
 	"unsafe"
+
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
-// XpcObject wraps an XPC object (xpc_object_t).
+type pointer = objc.Pointer
+
+// xpcObject wraps an XPC object ([xpc_object_t]).
 // It is expected to be embedded in other structs as pointer to provide common functionality.
-//   - https://developer.apple.com/documentation/xpc/xpc_object_t?language=objc
-type XpcObject struct {
-	p unsafe.Pointer
+//
+// [xpc_object_t]: https://developer.apple.com/documentation/xpc/xpc_object_t?language=objc
+type xpcObject struct {
+	*pointer
 }
 
-var _ Object = (*XpcObject)(nil)
+var _ Object = (*xpcObject)(nil)
 
-// Raw returns the raw xpc_object_t as [unsafe.Pointer].
-func (x *XpcObject) Raw() unsafe.Pointer {
-	return x.p
+// newXpcObject creates a new [xpcObject] from an existing xpc_object_t.
+func newXpcObject(ptr unsafe.Pointer) *xpcObject {
+	return &xpcObject{objc.NewPointer(ptr)}
 }
 
-// Type returns the [Type] of the [XpcObject].
-//   - https://developer.apple.com/documentation/xpc/xpc_get_type(_:)?language=objc
-func (x *XpcObject) Type() Type {
-	return Type{C.xpcGetType(x.p)}
-}
-
-// String returns the description of the [XpcObject].
+// String returns the description of the [xpcObject].
 //   - https://developer.apple.com/documentation/xpc/xpc_copy_description(_:)?language=objc
-func (x *XpcObject) String() string {
-	cs := C.xpcCopyDescription(x.Raw())
+func (x *xpcObject) String() string {
+	cs := C.xpcCopyDescription(objc.Ptr(x))
 	defer C.free(unsafe.Pointer(cs))
 	return C.GoString(cs)
 }
 
-// retain retains the [XpcObject].
-// It also uses [runtime.SetFinalizer] to call [XpcObject.release] when it is garbage collected.
+// retain retains the [xpcObject].
 //   - https://developer.apple.com/documentation/xpc/xpc_retain?language=objc
-func (x *XpcObject) retain() {
-	C.xpcRetain(x.p)
-	_ = ReleaseOnCleanup(x)
+func (x *xpcObject) retain() {
+	C.xpcRetain(objc.Ptr(x))
 }
 
-// releaseOnCleanup registers a cleanup function to release the XpcObject when cleaned up.
+// releaseOnCleanup registers a cleanup function to release the [xpcObject] when cleaned up.
 //   - https://developer.apple.com/documentation/xpc/xpc_release?language=objc
-func (x *XpcObject) releaseOnCleanup() {
+func (x *xpcObject) releaseOnCleanup() {
 	runtime.AddCleanup(x, func(p unsafe.Pointer) {
 		C.xpcRelease(p)
-	}, x.p)
+	}, objc.Ptr(x))
 }
 
 // Retain calls retain method on the given object and returns it.
@@ -61,7 +58,7 @@ func Retain[T interface{ retain() }](o T) T {
 }
 
 // ReleaseOnCleanup calls releaseOnCleanup method on the given object and returns it.
-func ReleaseOnCleanup[O interface{ releaseOnCleanup() }](o O) O {
+func ReleaseOnCleanup[T interface{ releaseOnCleanup() }](o T) T {
 	o.releaseOnCleanup()
 	return o
 }

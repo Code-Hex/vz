@@ -8,12 +8,14 @@ package xpc
 import "C"
 import (
 	"unsafe"
+
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
 // Listener represents an XPC listener. (macOS 14.0+)
 //   - https://developer.apple.com/documentation/xpc/xpc_listener_t?language=objc
 type Listener struct {
-	*XpcObject
+	*xpcObject
 	sessionHandler *cgoHandler
 }
 
@@ -52,7 +54,7 @@ func NewListener(service string, handler SessionHandler, options ...ListenerOpti
 		return nil, newRichError(err_out)
 	}
 	listener := ReleaseOnCleanup(&Listener{
-		XpcObject:      &XpcObject{ptr},
+		xpcObject:      newXpcObject(ptr),
 		sessionHandler: cgoHandler,
 	})
 	for _, opt := range options {
@@ -73,7 +75,7 @@ func callSessionHandler(cgoSessionHandler, cgoSession uintptr) {
 // String returns a description of the [Listener]. (macOS 14.0+)
 //   - https://developer.apple.com/documentation/xpc/xpc_listener_copy_description
 func (l *Listener) String() string {
-	desc := C.xpcListenerCopyDescription(l.Raw())
+	desc := C.xpcListenerCopyDescription(objc.Ptr(l))
 	defer C.free(unsafe.Pointer(desc))
 	return C.GoString(desc)
 }
@@ -82,7 +84,7 @@ func (l *Listener) String() string {
 //   - https://developer.apple.com/documentation/xpc/xpc_listener_activate
 func (l *Listener) Activate() error {
 	var err_out unsafe.Pointer
-	C.xpcListenerActivate(l.Raw(), &err_out)
+	C.xpcListenerActivate(objc.Ptr(l), &err_out)
 	if err_out != nil {
 		return newRichError(err_out)
 	}
@@ -92,6 +94,6 @@ func (l *Listener) Activate() error {
 // Close stops the [Listener] from accepting incoming connections. (macOS 14.0+)
 //   - https://developer.apple.com/documentation/xpc/xpc_listener_cancel
 func (l *Listener) Close() error {
-	C.xpcListenerCancel(l.Raw())
+	C.xpcListenerCancel(objc.Ptr(l))
 	return nil
 }

@@ -62,32 +62,32 @@ const char *xpcCopyDescription(void *object);
 // MARK: - Boolean objects
 
 // # xpc_object_t (XPC_TYPE_BOOL)
-// void *xpcBoolCreate(bool value);
-// bool xpcBoolGetValue(void *object);
-// XPC_BOOL_TRUE
-// XPC_BOOL_FALSE
+void *xpcBoolCreate(bool value);
+bool xpcBoolGetValue(void *object);
+void *xpcBoolTrue(); // XPC_BOOL_TRUE
+void *xpcBoolFalse(); // XPC_BOOL_FALSE
 
 // MARK: - Data objects
 
 // # xpc_object_t (XPC_TYPE_DATA)
 void *xpcDataCreate(const void *bytes, size_t length);
 // size_t xpcDataGetBytes(void *object, void *buffer, size_t offset, size_t length);
-// const void *xpcDataGetBytesPtr(void *object);
-// size_t xpcDataGetLength(void *object);
+const void *xpcDataGetBytesPtr(void *object);
+size_t xpcDataGetLength(void *object);
 
 // MARK: - Number objects
 
 // # xpc_object_t (XPC_TYPE_DOUBLE)
-// void *xpcDoubleCreate(double value);
-// double xpcDoubleGetValue(void *object);
+void *xpcDoubleCreate(double value);
+double xpcDoubleGetValue(void *object);
 
 // # xpc_object_t (XPC_TYPE_INT64)
-// void *xpcInt64Create(int64_t value);
-// int64_t xpcInt64GetValue(void *object);
+void *xpcInt64Create(int64_t value);
+int64_t xpcInt64GetValue(void *object);
 
 // # xpc_object_t (XPC_TYPE_UINT64)
-// void *xpcUInt64Create(uint64_t value);
-// uint64_t xpcUInt64GetValue(void *object);
+void *xpcUInt64Create(uint64_t value);
+uint64_t xpcUInt64GetValue(void *object);
 
 // MARK: - Array objects
 
@@ -95,32 +95,32 @@ void *xpcDataCreate(const void *bytes, size_t length);
 void *xpcArrayCreate(void *const *object, size_t count);
 // void *xpcArrayCreateEmpty();
 // void *xpcArrayCreateConnection
-// void *xpcArrayGetValue(void *object, size_t index);
-// void xpcArraySetValue(void *object, size_t index, void *value);
-// void xpcArrayAppendValue(void *object, void *value);
+void *xpcArrayGetValue(void *object, size_t index);
+void xpcArraySetValue(void *object, size_t index, void *value);
+void xpcArrayAppendValue(void *object, void *value);
 size_t xpcArrayGetCount(void *object);
 bool xpcArrayApply(void *object, uintptr_t cgo_applier);
-// int xcpArrayDupFds(void *object, size_t index);
-// void *xpcArrayGetArray(void *object, size_t index);
-// bool xpcArrayGetBool(void *object, size_t index);
-// const void *xpcArrayGetData(void *object, size_t index, size_t *length);
-// int64_t xpcArrayGetDate(void *object, size_t index);
-// void *xpcArrayGetDictionary(void *object, size_t index);
-// double xpcArrayGetDouble(void *object, size_t index);
-// int64_t xpcArrayGetInt64(void *object, size_t index);
-// const char *xpcArrayGetString(void *object, size_t index);
-// uint64_t xpcArrayGetUInt64(void *object, size_t index);
-// uint8_t *xpcArrayGetUUID(void *object, size_t index);
-// void xpcArraySetBool(void *object, size_t index, bool value);
+int xpcArrayDupFd(void *object, size_t index);
+void *xpcArrayGetArray(void *object, size_t index);
+bool xpcArrayGetBool(void *object, size_t index);
+const void *xpcArrayGetData(void *object, size_t index, size_t *length);
+int64_t xpcArrayGetDate(void *object, size_t index);
+void *xpcArrayGetDictionary(void *object, size_t index);
+double xpcArrayGetDouble(void *object, size_t index);
+int64_t xpcArrayGetInt64(void *object, size_t index);
+const char *xpcArrayGetString(void *object, size_t index);
+uint64_t xpcArrayGetUInt64(void *object, size_t index);
+const uint8_t *xpcArrayGetUUID(void *object, size_t index);
+void xpcArraySetBool(void *object, size_t index, bool value);
 // void xpcArraySetConnection
-// void xpcArraySetData(void *object, size_t index, const void *bytes, size_t length);
-// void xpcArraySetDate(void *object, size_t index, int64_t value);
-// void xpcArraySetDouble(void *object, size_t index, double value);
-// void xpcArraySetFd(void *object, size_t index, int fd);
-// void xpcArraySetInt64(void *object, size_t index, int64_t value);
-// void xpcArraySetString(void *object, size_t index, const char *string);
-// void xpcArraySetUInt64(void *object, size_t index, uint64_t value);
-// void xpcArraySetUUID(void *object, size_t index, const uuid_t uuid);
+void xpcArraySetData(void *object, size_t index, const void *bytes, size_t length);
+void xpcArraySetDate(void *object, size_t index, int64_t value);
+void xpcArraySetDouble(void *object, size_t index, double value);
+void xpcArraySetFd(void *object, size_t index, int fd);
+void xpcArraySetInt64(void *object, size_t index, int64_t value);
+void xpcArraySetString(void *object, size_t index, const char *string);
+void xpcArraySetUInt64(void *object, size_t index, uint64_t value);
+void xpcArraySetUUID(void *object, size_t index, const uuid_t uuid);
 // XPC_ARRAY_APPEND
 
 // MARK: - Dictionary objects
@@ -131,31 +131,31 @@ void *xpcDictionaryCreateEmpty(void);
 // void *xpcDictionaryCreateConnection
 void *xpcDictionaryCreateReply(void *object);
 void xpcDictionarySetValue(void *object, const char *key, void *value);
-// size_t xpcDictionaryGetCount(void *object);
+size_t xpcDictionaryGetCount(void *object);
 void *xpcDictionaryGetValue(void *object, const char *key);
 bool xpcDictionaryApply(void *object, uintptr_t cgo_applier);
-// int xpcDictionaryDupFd(void *object, const char *key);
+int xpcDictionaryDupFd(void *object, const char *key);
 void *xpcDictionaryGetArray(void *object, const char *key);
-// bool xpcDictionaryGetBool(void *object, const char *key);
+bool xpcDictionaryGetBool(void *object, const char *key);
 const void *xpcDictionaryGetData(void *object, const char *key, size_t *length);
-// int64_t xpcDictionaryGetDate(void *object, const char *key);
-// void *xpcDictionaryGetDictionary(void *object, const char *key);
-// double xpcDictionaryGetDouble(void *object, const char *key);
-// int64_t xpcDictionaryGetInt64(void *object, const char *key);
+int64_t xpcDictionaryGetDate(void *object, const char *key);
+void *xpcDictionaryGetDictionary(void *object, const char *key);
+double xpcDictionaryGetDouble(void *object, const char *key);
+int64_t xpcDictionaryGetInt64(void *object, const char *key);
 // void *xpcDictionaryGetRemoteConnection
 const char *xpcDictionaryGetString(void *object, const char *key);
-// uint64_t xpcDictionaryGetUInt64(void *object, const char *key);
-// uint8_t *xpcDictionaryGetUUID(void *object, const char *key);
-// void xpcDictionarySetBool(void *object, const char *key, bool value);
+uint64_t xpcDictionaryGetUInt64(void *object, const char *key);
+const uint8_t *xpcDictionaryGetUUID(void *object, const char *key);
+void xpcDictionarySetBool(void *object, const char *key, bool value);
 // void xpcDictionarySetConnection
-// void xpcDictionarySetData(void *object, const char *key, const void *bytes, size_t length);
-// void xpcDictionarySetDate(void *object, const char *key, int64_t value);
-// void xpcDictionarySetDouble(void *object, const char *key, double value);
-// void xpcDictionarySetFd(void *object, const char *key, int fd);
-// void xpcDictionarySetInt64(void *object, const char *key, int64_t value);
+void xpcDictionarySetData(void *object, const char *key, const void *bytes, size_t length);
+void xpcDictionarySetDate(void *object, const char *key, int64_t value);
+void xpcDictionarySetDouble(void *object, const char *key, double value);
+void xpcDictionarySetFd(void *object, const char *key, int fd);
+void xpcDictionarySetInt64(void *object, const char *key, int64_t value);
 void xpcDictionarySetString(void *object, const char *key, const char *value);
-// void xpcDictionarySetUInt64(void *object, const char *key, uint64_t value);
-// void xpcDictionarySetUUID(void *object, const char *key, const uuid_t uuid);
+void xpcDictionarySetUInt64(void *object, const char *key, uint64_t value);
+void xpcDictionarySetUUID(void *object, const char *key, const uint8_t *uuid);
 // void *xpcDictionaryCopyMachSend
 // void xpcDictionarySetMachSend
 
@@ -165,27 +165,27 @@ void xpcDictionarySetString(void *object, const char *key, const char *value);
 void *xpcStringCreate(const char *string);
 // void *xpcStringCreateWithFormat(const char *format, ...);
 // void *xpcStringCreateWithFormatAndArguments(const char *format, va_list args);
-// size_t xpcStringGetLength(void *object);
-// const char *xpcStringGetStringPtr(void *object);
+size_t xpcStringGetLength(void *object);
+const char *xpcStringGetStringPtr(void *object);
 
 // MARK: - File Descriptor objects
 
 // # xpc_object_t (XPC_TYPE_FD)
-// void *xpcFdCreate(int fd);
-// int xpcFdDup(void *object);
+void *xpcFdCreate(int fd);
+int xpcFdDup(void *object);
 
 // MARK: - Date objects
 
 // # xpc_object_t (XPC_TYPE_DATE)
-// void *xpcDateCreate(int64_t interval);
-// void *xpcDateFromCurrent();
-// int64_t xpcDateGetValue(void *object);
+void *xpcDateCreate(int64_t interval);
+void *xpcDateCreateFromCurrent();
+int64_t xpcDateGetValue(void *object);
 
 // MARK: - UUID objects
 
 // # xpc_object_t (XPC_TYPE_UUID)
-// void *xpcUUIDCreate(const uuid_t uuid);
-// const uint8_t *xpcUUIDGetBytes(void *object);
+void *xpcUUIDCreate(const uuid_t uuid);
+const uint8_t *xpcUUIDGetBytes(void *object);
 
 // MARK: - Shared Memory objects
 
@@ -195,7 +195,7 @@ void *xpcStringCreate(const char *string);
 
 // MARK: - Null objects
 // # xpc_object_t (XPC_TYPE_NULL)
-// void *xpcNullCreate();
+void *xpcNullCreate();
 
 // MARK: - Object life cycle
 void *xpcRetain(void *object);

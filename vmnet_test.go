@@ -322,7 +322,7 @@ func xpcClientRequestingSubnet(t *testing.T, machServiceName string, subnet neti
 		serializationData := serializationDic.GetData("networkSerialization")
 		fmt.Printf("serialization data: %q\n", hex.EncodeToString(serializationData))
 	}
-	return vmnet.NewNetworkWithSerialization(serialization.Raw())
+	return vmnet.NewNetworkWithSerialization(serialization)
 }
 
 const launchdPlistTemplate = `<?xml version="1.0" encoding="UTF-8"?>
@@ -447,7 +447,7 @@ func xpcServerProvidingSubnet(t *testing.T, machServiceName string) (*xpc.Listen
 					t.Logf("Container IPv4: %s", containerIPv4)
 					if netip.MustParsePrefix(subnet).Contains(netip.MustParseAddr(containerIPv4)) {
 						reply = dic.CreateReply(
-							xpc.KeyValue("Serialization", xpc.NewObject(serialization)),
+							xpc.KeyValue("Serialization", serialization),
 						)
 					} else {
 						reply = createErrorReply("allocated container IPv4 %s is not within requested subnet %s", containerIPv4, subnet)

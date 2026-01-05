@@ -10,6 +10,8 @@ import (
 	"context"
 	"runtime/cgo"
 	"unsafe"
+
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
 // Session represents an [xpc_session_t]. (macOS 13.0+)
@@ -17,7 +19,7 @@ import (
 // [xpc_session_t]: https://developer.apple.com/documentation/xpc/xpc_session_t?language=objc
 type Session struct {
 	// Exported for use in other packages since unimplemented XPC API may require direct access to xpc_session_t.
-	*XpcObject
+	*xpcObject
 	cancellationHandler    *cgoHandler
 	incomingMessageHandler *cgoHandler
 }
@@ -53,7 +55,7 @@ func NewSession(macServiceName string, sessionOpts ...SessionOption) (*Session, 
 	if err_out != nil {
 		return nil, newRichError(err_out)
 	}
-	session := ReleaseOnCleanup(&Session{XpcObject: &XpcObject{ptr}})
+	session := ReleaseOnCleanup(&Session{xpcObject: newXpcObject(ptr)})
 	for _, o := range sessionOpts {
 		o.inactiveSessionSet(session)
 	}
@@ -90,7 +92,7 @@ func (ch CancellationHandler) inactiveSessionSet(s *Session) {
 func (s *Session) Reject(reason string) {
 	cReason := C.CString(reason)
 	defer C.free(unsafe.Pointer(cReason))
-	C.xpcListenerRejectPeer(s.Raw(), cReason)
+	C.xpcListenerRejectPeer(objc.Ptr(s), cReason)
 }
 
 // Accept creates a [SessionHandler] that accepts incoming sessions with the given [SessionOption]s.
@@ -105,7 +107,7 @@ func Accept(sessionOptions ...SessionOption) SessionHandler {
 // String returns a description of the [Session]. (macOS 13.0+)
 //   - https://developer.apple.com/documentation/xpc/xpc_session_copy_description
 func (s *Session) String() string {
-	desc := C.xpcSessionCopyDescription(s.Raw())
+	desc := C.xpcSessionCopyDescription(objc.Ptr(s))
 	defer C.free(unsafe.Pointer(desc))
 	return C.GoString(desc)
 }
@@ -115,7 +117,7 @@ func (s *Session) String() string {
 //   - https://developer.apple.com/documentation/xpc/xpc_session_activate
 func (s *Session) activate() error {
 	var err_out unsafe.Pointer
-	C.xpcSessionActivate(s.Raw(), &err_out)
+	C.xpcSessionActivate(objc.Ptr(s), &err_out)
 	if err_out != nil {
 		return newRichError(err_out)
 	}
@@ -128,14 +130,14 @@ func (s *Session) activate() error {
 func callMessageHandler(cgoMessageHandler, cgoMessage uintptr) (reply unsafe.Pointer) {
 	handler := unwrapHandler[MessageHandler](cgoMessageHandler)
 	message := unwrapObject[*Dictionary](cgoMessage)
-	return handler(message).Raw()
+	return objc.Ptr(handler(message))
 }
 
 // setIncomingMessageHandler sets the [MessageHandler] for the inactive [Session]. (macOS 13.0+)
 //   - https://developer.apple.com/documentation/xpc/xpc_session_set_incoming_message_handler
 func (s *Session) setIncomingMessageHandler(handler MessageHandler) {
 	cgoHandler, p := newCgoHandler(handler)
-	C.xpcSessionSetIncomingMessageHandler(s.Raw(), p)
+	C.xpcSessionSetIncomingMessageHandler(objc.Ptr(s), p)
 	// Store the handler after setting it to avoid premature garbage collection of the previous handler.
 	s.incomingMessageHandler = cgoHandler
 }
@@ -143,7 +145,7 @@ func (s *Session) setIncomingMessageHandler(handler MessageHandler) {
 // Cancel cancels the [Session]. (macOS 13.0+)
 //   - https://developer.apple.com/documentation/xpc/xpc_session_cancel
 func (s *Session) Cancel() {
-	C.xpcSessionCancel(s.Raw())
+	C.xpcSessionCancel(objc.Ptr(s))
 }
 
 // callCancelHandler is called from C to handle session cancellation.
@@ -165,7 +167,7 @@ func (s *Session) setCancellationHandler(handler CancellationHandler) {
 		}
 		s.handleCancellation(err)
 	}))
-	C.xpcSessionSetCancelHandler(s.Raw(), p)
+	C.xpcSessionSetCancelHandler(objc.Ptr(s), p)
 	// Store the handler after setting it to avoid premature garbage collection of the previous handler.
 	s.cancellationHandler = cgoHandler
 }
@@ -197,14 +199,14 @@ func (s *Session) SendMessageWithReply(ctx context.Context, message *Dictionary)
 		defer close(replyCh)
 		defer close(errCh)
 		if err != nil {
-			errCh <- Retain(err)
+			errCh <- ReleaseOnCleanup(Retain(err))
 		} else {
-			replyCh <- Retain(reply)
+			replyCh <- ReleaseOnCleanup(Retain(reply))
 		}
 	})
 	cgoReplyHandler := cgo.NewHandle(replyHandler)
 	defer cgoReplyHandler.Delete()
-	C.xpcSessionSendMessageWithReplyAsync(s.Raw(), message.Raw(), C.uintptr_t(cgoReplyHandler))
+	C.xpcSessionSendMessageWithReplyAsync(objc.Ptr(s), objc.Ptr(message), C.uintptr_t(cgoReplyHandler))
 	select {
 	case reply := <-replyCh:
 		return reply, nil

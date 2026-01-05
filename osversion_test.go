@@ -16,14 +16,14 @@ type nopDoer struct{}
 func (*nopDoer) Do(func()) {}
 
 func TestAvailableVersion(t *testing.T) {
-	majorMinorVersionOnce = &nopDoer{}
+	*majorMinorVersionOnce = &nopDoer{}
 	defer func() {
-		majorMinorVersion = 0
-		majorMinorVersionOnce = &sync.Once{}
+		*majorMinorVersion = 0
+		*majorMinorVersionOnce = &sync.Once{}
 	}()
 
 	t.Run("macOS 11", func(t *testing.T) {
-		majorMinorVersion = 10
+		*majorMinorVersion = 10
 		cases := map[string]func() error{
 			"NewLinuxBootLoader": func() error {
 				_, err := NewLinuxBootLoader("")
@@ -109,7 +109,7 @@ func TestAvailableVersion(t *testing.T) {
 	})
 
 	t.Run("macOS 12", func(t *testing.T) {
-		majorMinorVersion = 11
+		*majorMinorVersion = 11
 		cases := map[string]func() error{
 			"NewVirtioSoundDeviceConfiguration": func() error {
 				_, err := NewVirtioSoundDeviceConfiguration()
@@ -177,7 +177,7 @@ func TestAvailableVersion(t *testing.T) {
 			t.Skip("disabled build target for macOS 12.3")
 		}
 
-		majorMinorVersion = 12
+		*majorMinorVersion = 12
 		cases := map[string]func() error{
 			"BlockDeviceIdentifier": func() error {
 				_, err := (*VirtioBlockDeviceConfiguration)(nil).BlockDeviceIdentifier()
@@ -202,7 +202,7 @@ func TestAvailableVersion(t *testing.T) {
 			t.Skip("disabled build target for macOS 13")
 		}
 
-		majorMinorVersion = 12.3
+		*majorMinorVersion = 12.3
 		cases := map[string]func() error{
 			"NewEFIBootLoader": func() error {
 				_, err := NewEFIBootLoader()
@@ -309,7 +309,7 @@ func TestAvailableVersion(t *testing.T) {
 		}
 		defer f.Close()
 
-		majorMinorVersion = 13
+		*majorMinorVersion = 13
 		cases := map[string]func() error{
 			"NewNVMExpressControllerDeviceConfiguration": func() error {
 				_, err := NewNVMExpressControllerDeviceConfiguration(nil)
@@ -378,9 +378,9 @@ func Test_fetchMajorMinorVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			sysctl = tt.sysctl
+			*sysctl = tt.sysctl
 			defer func() {
-				sysctl = syscall.Sysctl
+				*sysctl = syscall.Sysctl
 			}()
 
 			version, err := fetchMajorMinorVersion()
@@ -395,9 +395,9 @@ func Test_fetchMajorMinorVersion(t *testing.T) {
 }
 
 func Test_macOSBuildTargetAvailable(t *testing.T) {
-	maxAllowedVersionOnce = &nopDoer{}
+	*maxAllowedVersionOnce = &nopDoer{}
 	defer func() {
-		maxAllowedVersionOnce = &sync.Once{}
+		*maxAllowedVersionOnce = &sync.Once{}
 	}()
 
 	wantErrMsgFor := func(version float64, maxAllowedVersion int) string {
@@ -492,7 +492,7 @@ func Test_macOSBuildTargetAvailable(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			tmp := maxAllowedVersion
 			defer func() { maxAllowedVersion = tmp }()
-			maxAllowedVersion = tc.maxAllowedVersion
+			*maxAllowedVersion = tc.maxAllowedVersion
 
 			err := macOSBuildTargetAvailable(tc.version)
 			if (err != nil) != tc.wantErr {

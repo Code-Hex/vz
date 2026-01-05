@@ -9,6 +9,8 @@ import (
 	"iter"
 	"runtime/cgo"
 	"unsafe"
+
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
 // Array represents an XPC array([XPC_TYPE_ARRAY]) object. [TypeArray]
@@ -26,19 +28,19 @@ var _ Object = &Array{}
 func NewArray(objects ...Object) *Array {
 	cObjects := make([]unsafe.Pointer, len(objects))
 	for i, obj := range objects {
-		cObjects[i] = obj.Raw()
+		cObjects[i] = objc.Ptr(obj)
 	}
-	return ReleaseOnCleanup(&Array{XpcObject: &XpcObject{C.xpcArrayCreate(
+	return ReleaseOnCleanup(&Array{NewXpcObject(C.xpcArrayCreate(
 		(*unsafe.Pointer)(unsafe.Pointer(&cObjects[0])),
 		C.size_t(len(cObjects)),
-	)}})
+	))})
 }
 
 // Count returns the number of elements in the [Array].
 //
 //   - https://developer.apple.com/documentation/xpc/xpc_array_get_count(_:)?language=objc
 func (a *Array) Count() int {
-	return int(C.xpcArrayGetCount(a.Raw()))
+	return int(C.xpcArrayGetCount(objc.Ptr(a)))
 }
 
 // ArrayApplier is a function type for applying to each element in the Array.
@@ -62,7 +64,7 @@ func (a *Array) All() iter.Seq2[uint64, Object] {
 		cgoApplier := cgo.NewHandle(ArrayApplier(yieald))
 		defer cgoApplier.Delete()
 		_ = C.xpcArrayApply(
-			a.Raw(),
+			objc.Ptr(a),
 			C.uintptr_t(cgoApplier),
 		)
 	}

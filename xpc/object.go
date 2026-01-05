@@ -8,16 +8,17 @@ import "C"
 import (
 	"runtime/cgo"
 	"unsafe"
+
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
 // Object represents a generic XPC object.
 //   - https://developer.apple.com/documentation/xpc/xpc_object_t?language=objc
 type Object interface {
-	Raw() unsafe.Pointer // Raw returns the raw xpc_object_t pointer.
-	Type() Type          // Type returns the type of the XPC object.
-	String() string      // String returns the description of the XPC object.
-	retain()             // retain retains the XPC object.
-	releaseOnCleanup()   // releaseOnCleanup releases the XPC object on cleanup.
+	objc.NSObject
+	Type() Type        // Type returns the type of the XPC object.
+	String() string    // String returns the description of the XPC object.
+	releaseOnCleanup() // releaseOnCleanup releases the XPC object on cleanup.
 }
 
 // NewObject creates a new [Object] from an existing xpc_object_t.
@@ -28,7 +29,7 @@ func NewObject(o unsafe.Pointer) Object {
 	if o == nil {
 		return nil
 	}
-	xpcObject := &XpcObject{o}
+	xpcObject := NewXpcObject(o)
 	// Determine the specific type and return the appropriate wrapper.
 	// It allows users to use type assertions to access type-specific methods.
 	switch xpcObject.Type() {
@@ -78,12 +79,12 @@ func unwrapObject[T any](handle uintptr) T {
 //   - https://developer.apple.com/documentation/xpc/xpc_data_create(_:_:)?language=objc
 func NewData(b []byte) Object {
 	if len(b) == 0 {
-		return ReleaseOnCleanup(&Data{&XpcObject{C.xpcDataCreate(nil, 0)}})
+		return ReleaseOnCleanup(&Data{NewXpcObject(C.xpcDataCreate(nil, 0))})
 	}
-	return ReleaseOnCleanup(&Data{&XpcObject{C.xpcDataCreate(
+	return ReleaseOnCleanup(&Data{NewXpcObject(C.xpcDataCreate(
 		unsafe.Pointer(&b[0]),
 		C.size_t(len(b)),
-	)}})
+	))})
 }
 
 // Data represents an XPC data([XPC_TYPE_DATA]) object. [TypeData]
@@ -98,7 +99,7 @@ var _ Object = &Data{}
 func NewString(s string) Object {
 	cstr := C.CString(s)
 	defer C.free(unsafe.Pointer(cstr))
-	return ReleaseOnCleanup(&String{&XpcObject{C.xpcStringCreate(cstr)}})
+	return ReleaseOnCleanup(&String{NewXpcObject(C.xpcStringCreate(cstr))})
 }
 
 // String represents an XPC string([XPC_TYPE_STRING]) object. [TypeString]

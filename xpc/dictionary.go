@@ -10,6 +10,8 @@ import (
 	"iter"
 	"runtime/cgo"
 	"unsafe"
+
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
 // Dictionary represents an XPC dictionary (XPC_TYPE_DICTIONARY) object. [TypeDictionary]
@@ -25,7 +27,7 @@ var _ Object = &Dictionary{}
 //
 // The entries can be created using [DictionaryEntry] functions such as [KeyValue].
 func NewDictionary(entries ...DictionaryEntry) *Dictionary {
-	d := ReleaseOnCleanup(&Dictionary{XpcObject: &XpcObject{C.xpcDictionaryCreateEmpty()}})
+	d := ReleaseOnCleanup(&Dictionary{NewXpcObject(C.xpcDictionaryCreateEmpty())})
 	for _, e := range entries {
 		e(d)
 	}
@@ -60,7 +62,7 @@ func (o *Dictionary) All() iter.Seq2[string, Object] {
 	return func(yieald func(string, Object) bool) {
 		cgoApplier := cgo.NewHandle(DictionaryApplier(yieald))
 		defer cgoApplier.Delete()
-		C.xpcDictionaryApply(o.Raw(), C.uintptr_t(cgoApplier))
+		C.xpcDictionaryApply(objc.Ptr(o), C.uintptr_t(cgoApplier))
 	}
 }
 
@@ -105,7 +107,7 @@ func (o *Dictionary) GetData(key string) []byte {
 	cKey := C.CString(key)
 	defer C.free(unsafe.Pointer(cKey))
 	var n C.size_t
-	p := C.xpcDictionaryGetData(o.Raw(), cKey, &n)
+	p := C.xpcDictionaryGetData(objc.Ptr(o), cKey, &n)
 	if p == nil || n == 0 {
 		return nil
 	}
@@ -119,7 +121,7 @@ func (o *Dictionary) GetData(key string) []byte {
 func (o *Dictionary) GetString(key string) string {
 	cKey := C.CString(key)
 	defer C.free(unsafe.Pointer(cKey))
-	val := C.xpcDictionaryGetString(o.Raw(), cKey)
+	val := C.xpcDictionaryGetString(objc.Ptr(o), cKey)
 	return C.GoString(val)
 }
 
@@ -128,7 +130,7 @@ func (o *Dictionary) GetString(key string) string {
 func (o *Dictionary) SetValue(key string, val Object) {
 	cKey := C.CString(key)
 	defer C.free(unsafe.Pointer(cKey))
-	C.xpcDictionarySetValue(o.Raw(), cKey, val.Raw())
+	C.xpcDictionarySetValue(objc.Ptr(o), cKey, objc.Ptr(val))
 }
 
 // GetValue retrieves an [Object] value from the [Dictionary] by key.
@@ -138,7 +140,7 @@ func (o *Dictionary) SetValue(key string, val Object) {
 func (o *Dictionary) GetValue(key string) Object {
 	cKey := C.CString(key)
 	defer C.free(unsafe.Pointer(cKey))
-	val := C.xpcDictionaryGetValue(o.Raw(), cKey)
+	val := C.xpcDictionaryGetValue(objc.Ptr(o), cKey)
 	if val == nil {
 		return nil
 	}
@@ -151,7 +153,7 @@ func (o *Dictionary) GetValue(key string) Object {
 // The entries can be created using [DictionaryEntry] functions such as [KeyValue].
 func (o *Dictionary) CreateReply(entries ...DictionaryEntry) *Dictionary {
 	// Do not use ReleaseOnCleanup here because the reply dictionary will be released in C after sending.
-	d := &Dictionary{XpcObject: &XpcObject{C.xpcDictionaryCreateReply(o.Raw())}}
+	d := &Dictionary{NewXpcObject(C.xpcDictionaryCreateReply(objc.Ptr(o)))}
 	for _, entry := range entries {
 		entry(d)
 	}
@@ -162,7 +164,7 @@ func (o *Dictionary) CreateReply(entries ...DictionaryEntry) *Dictionary {
 //   - https://developer.apple.com/documentation/xpc/xpc_peer_requirement_match_received_message?language=objc
 func (d *Dictionary) SenderSatisfies(requirement *PeerRequirement) (bool, error) {
 	var err_out unsafe.Pointer
-	res := C.xpcPeerRequirementMatchReceivedMessage(requirement.Raw(), d.Raw(), &err_out)
+	res := C.xpcPeerRequirementMatchReceivedMessage(objc.Ptr(requirement), objc.Ptr(d), &err_out)
 	if err_out != nil {
 		return false, fmt.Errorf("error matching peer requirement: %w", newRichError(err_out))
 	}

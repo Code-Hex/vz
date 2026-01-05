@@ -8,32 +8,41 @@ import "C"
 import (
 	"runtime"
 	"unsafe"
+
+	"github.com/Code-Hex/vz/v3/internal/objc"
 )
+
+type pointer = objc.Pointer
 
 // XpcObject wraps an XPC object (xpc_object_t).
 // It is expected to be embedded in other structs as pointer to provide common functionality.
 //   - https://developer.apple.com/documentation/xpc/xpc_object_t?language=objc
 type XpcObject struct {
-	p unsafe.Pointer
+	*pointer
 }
 
 var _ Object = (*XpcObject)(nil)
 
+// NewXpcObject creates a new XpcObject from an existing xpc_object_t.
+func NewXpcObject(ptr unsafe.Pointer) *XpcObject {
+	return &XpcObject{objc.NewPointer(ptr)}
+}
+
 // Raw returns the raw xpc_object_t as [unsafe.Pointer].
 func (x *XpcObject) Raw() unsafe.Pointer {
-	return x.p
+	return objc.Ptr(x)
 }
 
 // Type returns the [Type] of the [XpcObject].
 //   - https://developer.apple.com/documentation/xpc/xpc_get_type(_:)?language=objc
 func (x *XpcObject) Type() Type {
-	return Type{C.xpcGetType(x.p)}
+	return Type{C.xpcGetType(objc.Ptr(x))}
 }
 
 // String returns the description of the [XpcObject].
 //   - https://developer.apple.com/documentation/xpc/xpc_copy_description(_:)?language=objc
 func (x *XpcObject) String() string {
-	cs := C.xpcCopyDescription(x.Raw())
+	cs := C.xpcCopyDescription(objc.Ptr(x))
 	defer C.free(unsafe.Pointer(cs))
 	return C.GoString(cs)
 }
@@ -42,7 +51,7 @@ func (x *XpcObject) String() string {
 // It also uses [runtime.SetFinalizer] to call [XpcObject.release] when it is garbage collected.
 //   - https://developer.apple.com/documentation/xpc/xpc_retain?language=objc
 func (x *XpcObject) retain() {
-	C.xpcRetain(x.p)
+	C.xpcRetain(objc.Ptr(x))
 	_ = ReleaseOnCleanup(x)
 }
 
@@ -51,7 +60,7 @@ func (x *XpcObject) retain() {
 func (x *XpcObject) releaseOnCleanup() {
 	runtime.AddCleanup(x, func(p unsafe.Pointer) {
 		C.xpcRelease(p)
-	}, x.p)
+	}, objc.Ptr(x))
 }
 
 // Retain calls retain method on the given object and returns it.

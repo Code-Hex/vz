@@ -602,12 +602,15 @@ void *newVZNATNetworkDeviceAttachment()
  @see VZNetworkDeviceConfiguration
  @see VZVirtioNetworkDeviceConfiguration
  */
-void *newVZFileHandleNetworkDeviceAttachment(int fileDescriptor)
+void *newVZFileHandleNetworkDeviceAttachment(int fileDescriptor, void **error)
 {
     if (@available(macOS 11, *)) {
         VZFileHandleNetworkDeviceAttachment *ret;
         @autoreleasepool {
-            NSFileHandle *fileHandle = [[NSFileHandle alloc] initWithFileDescriptor:fileDescriptor];
+            NSFileHandle *fileHandle = newFileHandleDupFd(fileDescriptor, error);
+            if (fileHandle == nil) {
+                return nil;
+            }
             ret = [[VZFileHandleNetworkDeviceAttachment alloc] initWithFileHandle:fileHandle];
         }
         return ret;

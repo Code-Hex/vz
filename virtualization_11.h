@@ -86,7 +86,7 @@ void setStorageDevicesVZVirtualMachineConfiguration(void *config,
 void *storageDevicesVZVirtualMachineConfiguration(void *config);
 
 /* Configurations */
-void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileDescriptor);
+void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileDescriptor, void **error);
 void *newVZFileSerialPortAttachment(const char *filePath, bool shouldAppend, void **error);
 void *newVZVirtioConsoleDeviceSerialPortConfiguration(void *attachment);
 void *VZBridgedNetworkInterface_networkInterfaces(void);

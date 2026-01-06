@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strings"
 	"testing"
 
@@ -107,6 +106,22 @@ func TestBlockDeviceWithCacheAndSyncMode(t *testing.T) {
 	}
 }
 
+func TestBlockDeviceStorageDeviceAttachmentError(t *testing.T) {
+	if vz.Available(14) {
+		t.Skip("vz.NewDiskBlockDeviceStorageDeviceAttachment is supported from macOS 14")
+	}
+
+	f, err := os.Create(filepath.Join(t.TempDir(), "empty"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.Close()
+	_, err = vz.NewDiskBlockDeviceStorageDeviceAttachment(f, false, vz.DiskSynchronizationModeNone)
+	if err == nil {
+		t.Fatal("did not get an error with invalid file descriptor")
+	}
+}
+
 func TestBlockDeviceWithDeviceAttachment(t *testing.T) {
 	if vz.Available(12) {
 		t.Skip("vz.NewDiskImageStorageDeviceAttachmentWithCacheAndSync is supported from macOS 12")
@@ -147,11 +162,11 @@ func TestBlockDeviceWithDeviceAttachment(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
+				if err := dev.Close(); err != nil {
+					log.Printf("failed to close %s: %s\n", devPath, err)
+				}
+
 			}
-			// `dev` from the block above will be garbage collected and the underlying file descriptor will be closed.
-			// This will trigger an internal virtualization error in the subsequent code.
-			// https://github.com/Code-Hex/vz/issues/201
-			runtime.GC()
 
 			config, err := vz.NewVirtioBlockDeviceConfiguration(attachment)
 			if err != nil {

@@ -16,7 +16,7 @@ import (
 //
 // [xpc_peer_requirement_t]: https://developer.apple.com/documentation/xpc/xpc_peer_requirement_t?language=objc
 type PeerRequirement struct {
-	*XpcObject
+	*xpcObject
 }
 
 var _ Object = &PeerRequirement{}
@@ -34,7 +34,7 @@ func NewPeerRequirementLwcr(lwcr *Dictionary) (*PeerRequirement, error) {
 	if err_out != nil {
 		return nil, newRichError(err_out)
 	}
-	return ReleaseOnCleanup(&PeerRequirement{NewXpcObject(ptr)}), nil
+	return ReleaseOnCleanup(&PeerRequirement{newXpcObject(ptr)}), nil
 }
 
 // NewPeerRequirementLwcrWithEntries creates a [PeerRequirement] from a LWCR object *[Dictionary] constructed

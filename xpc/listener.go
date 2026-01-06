@@ -15,7 +15,7 @@ import (
 // Listener represents an XPC listener. (macOS 14.0+)
 //   - https://developer.apple.com/documentation/xpc/xpc_listener_t?language=objc
 type Listener struct {
-	*XpcObject
+	*xpcObject
 	sessionHandler *cgoHandler
 }
 
@@ -54,7 +54,7 @@ func NewListener(service string, handler SessionHandler, options ...ListenerOpti
 		return nil, newRichError(err_out)
 	}
 	listener := ReleaseOnCleanup(&Listener{
-		XpcObject:      NewXpcObject(ptr),
+		xpcObject:      newXpcObject(ptr),
 		sessionHandler: cgoHandler,
 	})
 	for _, opt := range options {

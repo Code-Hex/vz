@@ -19,7 +19,7 @@ import (
 // [xpc_session_t]: https://developer.apple.com/documentation/xpc/xpc_session_t?language=objc
 type Session struct {
 	// Exported for use in other packages since unimplemented XPC API may require direct access to xpc_session_t.
-	*XpcObject
+	*xpcObject
 	cancellationHandler    *cgoHandler
 	incomingMessageHandler *cgoHandler
 }
@@ -55,7 +55,7 @@ func NewSession(macServiceName string, sessionOpts ...SessionOption) (*Session, 
 	if err_out != nil {
 		return nil, newRichError(err_out)
 	}
-	session := ReleaseOnCleanup(&Session{XpcObject: NewXpcObject(ptr)})
+	session := ReleaseOnCleanup(&Session{xpcObject: newXpcObject(ptr)})
 	for _, o := range sessionOpts {
 		o.inactiveSessionSet(session)
 	}

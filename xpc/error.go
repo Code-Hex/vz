@@ -15,7 +15,7 @@ import (
 //
 // [XPC_TYPE_RICH_ERROR]: https://developer.apple.com/documentation/xpc/xpc_rich_error_t?language=objc
 type RichError struct {
-	*XpcObject
+	*xpcObject
 }
 
 var _ Object = &RichError{}
@@ -28,7 +28,7 @@ func newRichError(richErr unsafe.Pointer) *RichError {
 	if richErr == nil {
 		return nil
 	}
-	return &RichError{NewXpcObject(richErr)}
+	return &RichError{newXpcObject(richErr)}
 }
 
 // CanRetry indicates whether the operation that caused the [RichError] can be retried.

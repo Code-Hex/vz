@@ -12,6 +12,7 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/Code-Hex/vz/v3/internal/cgohandler"
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
@@ -104,7 +105,7 @@ type DictionaryApplier func(string, Object) bool
 //
 //export callDictionaryApplier
 func callDictionaryApplier(cgoApplier uintptr, cKey *C.char, cgoValue uintptr) C.bool {
-	applier := unwrapHandler[DictionaryApplier](cgoApplier)
+	applier := cgohandler.Unwrap[DictionaryApplier](cgoApplier)
 	return C.bool(applier(C.GoString(cKey), unwrapObject[Object](cgoValue)))
 }
 

@@ -11,6 +11,7 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/Code-Hex/vz/v3/internal/cgohandler"
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
@@ -75,7 +76,7 @@ type ArrayApplier func(uint64, Object) bool
 //
 //export callArrayApplier
 func callArrayApplier(cgoApplier uintptr, index C.size_t, cgoValue uintptr) C.bool {
-	applier := unwrapHandler[ArrayApplier](cgoApplier)
+	applier := cgohandler.Unwrap[ArrayApplier](cgoApplier)
 	value := unwrapObject[Object](cgoValue)
 	result := applier(uint64(index), value)
 	return C.bool(result)

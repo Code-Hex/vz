@@ -9,6 +9,7 @@ import "C"
 import (
 	"unsafe"
 
+	"github.com/Code-Hex/vz/v3/internal/cgohandler"
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
@@ -16,7 +17,7 @@ import (
 //   - https://developer.apple.com/documentation/xpc/xpc_listener_t?language=objc
 type Listener struct {
 	*xpcObject
-	sessionHandler *cgoHandler
+	sessionHandler *cgohandler.Handler
 }
 
 // SessionHandler is a function that handles incoming sessions.
@@ -47,9 +48,9 @@ func NewListener(service string, handler SessionHandler, options ...ListenerOpti
 	// For example, vmnet_network_create fails when using a concurrent queue.
 	q := C.dispatchQueueCreateSerial(cname)
 	defer C.dispatchRelease(q)
-	cgoHandler, p := newCgoHandler(handler)
+	cgoHandler, p := cgohandler.New(handler)
 	var err_out unsafe.Pointer
-	ptr := C.xpcListenerCreate(cname, q, C.XPC_LISTENER_CREATE_INACTIVE, p, &err_out)
+	ptr := C.xpcListenerCreate(cname, q, C.XPC_LISTENER_CREATE_INACTIVE, C.uintptr_t(p), &err_out)
 	if err_out != nil {
 		return nil, newRichError(err_out)
 	}
@@ -67,7 +68,7 @@ func NewListener(service string, handler SessionHandler, options ...ListenerOpti
 //
 //export callSessionHandler
 func callSessionHandler(cgoSessionHandler, cgoSession uintptr) {
-	handler := unwrapHandler[SessionHandler](cgoSessionHandler)
+	handler := cgohandler.Unwrap[SessionHandler](cgoSessionHandler)
 	session := unwrapObject[*Session](cgoSession)
 	handler(session)
 }

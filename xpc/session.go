@@ -11,6 +11,7 @@ import (
 	"runtime/cgo"
 	"unsafe"
 
+	"github.com/Code-Hex/vz/v3/internal/cgohandler"
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
@@ -20,8 +21,8 @@ import (
 type Session struct {
 	// Exported for use in other packages since unimplemented XPC API may require direct access to xpc_session_t.
 	*xpcObject
-	cancellationHandler    *cgoHandler
-	incomingMessageHandler *cgoHandler
+	cancellationHandler    *cgohandler.Handler
+	incomingMessageHandler *cgohandler.Handler
 }
 
 var _ Object = &Session{}
@@ -128,7 +129,7 @@ func (s *Session) activate() error {
 //
 //export callMessageHandler
 func callMessageHandler(cgoMessageHandler, cgoMessage uintptr) (reply unsafe.Pointer) {
-	handler := unwrapHandler[MessageHandler](cgoMessageHandler)
+	handler := cgohandler.Unwrap[MessageHandler](cgoMessageHandler)
 	message := unwrapObject[*Dictionary](cgoMessage)
 	return objc.Ptr(handler(message))
 }
@@ -136,8 +137,8 @@ func callMessageHandler(cgoMessageHandler, cgoMessage uintptr) (reply unsafe.Poi
 // setIncomingMessageHandler sets the [MessageHandler] for the inactive [Session]. (macOS 13.0+)
 //   - https://developer.apple.com/documentation/xpc/xpc_session_set_incoming_message_handler
 func (s *Session) setIncomingMessageHandler(handler MessageHandler) {
-	cgoHandler, p := newCgoHandler(handler)
-	C.xpcSessionSetIncomingMessageHandler(objc.Ptr(s), p)
+	cgoHandler, p := cgohandler.New(handler)
+	C.xpcSessionSetIncomingMessageHandler(objc.Ptr(s), C.uintptr_t(p))
 	// Store the handler after setting it to avoid premature garbage collection of the previous handler.
 	s.incomingMessageHandler = cgoHandler
 }
@@ -152,7 +153,7 @@ func (s *Session) Cancel() {
 //
 //export callCancelHandler
 func callCancelHandler(cgoCancelHandler, cgoErr uintptr) {
-	handler := unwrapHandler[CancellationHandler](cgoCancelHandler)
+	handler := cgohandler.Unwrap[CancellationHandler](cgoCancelHandler)
 	err := unwrapObject[*RichError](cgoErr)
 	handler(err)
 }
@@ -161,13 +162,13 @@ func callCancelHandler(cgoCancelHandler, cgoErr uintptr) {
 // The handler will call [Session.handleCancellation] after executing the provided handler.
 //   - https://developer.apple.com/documentation/xpc/xpc_session_set_cancel_handler
 func (s *Session) setCancellationHandler(handler CancellationHandler) {
-	cgoHandler, p := newCgoHandler((CancellationHandler)(func(err *RichError) {
+	cgoHandler, p := cgohandler.New((CancellationHandler)(func(err *RichError) {
 		if handler != nil {
 			handler(err)
 		}
 		s.handleCancellation(err)
 	}))
-	C.xpcSessionSetCancelHandler(objc.Ptr(s), p)
+	C.xpcSessionSetCancelHandler(objc.Ptr(s), C.uintptr_t(p))
 	// Store the handler after setting it to avoid premature garbage collection of the previous handler.
 	s.cancellationHandler = cgoHandler
 }
@@ -182,7 +183,7 @@ type ReplyHandler func(*Dictionary, *RichError)
 //
 //export callReplyHandler
 func callReplyHandler(cgoReplyHandler uintptr, cgoReply, cgoError uintptr) {
-	handler := unwrapHandler[ReplyHandler](cgoReplyHandler)
+	handler := cgohandler.Unwrap[ReplyHandler](cgoReplyHandler)
 	reply := unwrapObject[*Dictionary](uintptr(cgoReply))
 	err := unwrapObject[*RichError](cgoError)
 	handler(reply, err)

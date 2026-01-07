@@ -1,9 +1,5 @@
 package cgohandler
 
-/*
-# include <stdint.h>
-*/
-import "C"
 import (
 	"runtime"
 	"runtime/cgo"

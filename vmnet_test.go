@@ -222,7 +222,7 @@ func TestVmnetNetworkShareModeSharingOverXpc(t *testing.T) {
 func configureNetworkDevice(network *vmnet.Network, macAddress *vz.MACAddress) func(cfg *vz.VirtualMachineConfiguration) error {
 	return func(cfg *vz.VirtualMachineConfiguration) error {
 		var configurations []*vz.VirtioNetworkDeviceConfiguration
-		attachment, err := vz.NewVmnetNetworkDeviceAttachment(network.Raw())
+		attachment, err := vz.NewVmnetNetworkDeviceAttachment(network)
 		if err != nil {
 			return err
 		}

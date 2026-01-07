@@ -12,8 +12,10 @@ import (
 	"net"
 	"net/netip"
 	"runtime"
+	"runtime/cgo"
 	"unsafe"
 
+	"github.com/Code-Hex/vz/v3/internal/cgohandler"
 	"github.com/Code-Hex/vz/v3/internal/objc"
 	"github.com/Code-Hex/vz/v3/internal/osversion"
 	"github.com/Code-Hex/vz/v3/xpc"
@@ -90,23 +92,14 @@ const (
 	SharedMode Mode = C.VMNET_SHARED_MODE
 )
 
-// MARK: - object
+// MARK: - pointer
 
-// object
-type object struct {
-	p unsafe.Pointer
-}
+type pointer = objc.Pointer
 
-// Raw returns the raw xpc_object_t as [unsafe.Pointer].
-func (o *object) Raw() unsafe.Pointer {
-	return o.p
-}
-
-// releaseOnCleanup registers a cleanup function to release the object when cleaned up.
-func (o *object) releaseOnCleanup() {
-	runtime.AddCleanup(o, func(p unsafe.Pointer) {
-		C.vmnetRelease(p)
-	}, o.p)
+// Retain calls retain method on the given object and returns it.
+func Retain[O interface{ retain() }](o O) O {
+	o.retain()
+	return o
 }
 
 // ReleaseOnCleanup calls releaseOnCleanup method on the given object and returns it.
@@ -117,15 +110,17 @@ func ReleaseOnCleanup[O interface{ releaseOnCleanup() }](o O) O {
 
 // MARK: - NetworkConfiguration
 
-// NetworkConfiguration is configuration for the [Network].
-//   - https://developer.apple.com/documentation/vmnet/vmnet_network_configuration_create(_:_:)?language=objc
+// NetworkConfiguration represents a [vmnet_network_configuration_ref].
+//
+// [vmnet_network_configuration_ref]: https://developer.apple.com/documentation/vmnet/vmnet_network_configuration_ref?language=objc
 type NetworkConfiguration struct {
-	*object
+	*pointer
 }
 
 // NewNetworkConfiguration creates a new [NetworkConfiguration] with [Mode].
 // This is only supported on macOS 26 and newer, error will be returned on older versions.
 // [BridgedMode] is not supported by this function.
+//   - https://developer.apple.com/documentation/vmnet/vmnet_network_configuration_create(_:_:)?language=objc
 func NewNetworkConfiguration(mode Mode) (*NetworkConfiguration, error) {
 	if err := macOSAvailable(26); err != nil {
 		return nil, err
@@ -138,9 +133,16 @@ func NewNetworkConfiguration(mode Mode) (*NetworkConfiguration, error) {
 	if !errors.Is(status, ErrSuccess) {
 		return nil, fmt.Errorf("failed to create VmnetNetworkConfiguration: %w", status)
 	}
-	config := &NetworkConfiguration{object: &object{p: ptr}}
+	config := &NetworkConfiguration{objc.NewPointer(ptr)}
 	ReleaseOnCleanup(config)
 	return config, nil
+}
+
+// releaseOnCleanup registers a cleanup function to release the object when cleaned up.
+func (c *NetworkConfiguration) releaseOnCleanup() {
+	runtime.AddCleanup(c, func(p unsafe.Pointer) {
+		C.vmnetRelease(p)
+	}, objc.Ptr(c))
 }
 
 // AddDhcpReservation configures a new DHCP reservation for the [Network].
@@ -161,7 +163,7 @@ func (c *NetworkConfiguration) AddDhcpReservation(client net.HardwareAddr, reser
 	copy((*[4]byte)(unsafe.Pointer(&cReservation))[:], ip[:])
 
 	status := C.VmnetNetworkConfiguration_addDhcpReservation(
-		c.Raw(),
+		objc.Ptr(c),
 		&cClient,
 		&cReservation,
 	)
@@ -206,7 +208,7 @@ func (c *NetworkConfiguration) AddPortForwardingRule(protocol uint8, addressFami
 		return fmt.Errorf("unsupported address family: %d", addressFamily)
 	}
 	status := C.VmnetNetworkConfiguration_addPortForwardingRule(
-		c.Raw(),
+		objc.Ptr(c),
 		C.uint8_t(protocol),
 		C.sa_family_t(addressFamily),
 		C.uint16_t(internalPort),
@@ -222,31 +224,31 @@ func (c *NetworkConfiguration) AddPortForwardingRule(protocol uint8, addressFami
 // DisableDhcp disables DHCP server on the [Network].
 //   - https://developer.apple.com/documentation/vmnet/vmnet_network_configuration_disable_dhcp(_:)?language=objc
 func (c *NetworkConfiguration) DisableDhcp() {
-	C.VmnetNetworkConfiguration_disableDhcp(c.Raw())
+	C.VmnetNetworkConfiguration_disableDhcp(objc.Ptr(c))
 }
 
 // DisableDnsProxy disables DNS proxy on the [Network].
 //   - https://developer.apple.com/documentation/vmnet/vmnet_network_configuration_disable_dns_proxy(_:)?language=objc
 func (c *NetworkConfiguration) DisableDnsProxy() {
-	C.VmnetNetworkConfiguration_disableDnsProxy(c.Raw())
+	C.VmnetNetworkConfiguration_disableDnsProxy(objc.Ptr(c))
 }
 
 // DisableNat44 disables NAT44 on the [Network].
 //   - https://developer.apple.com/documentation/vmnet/vmnet_network_configuration_disable_nat44(_:)?language=objc
 func (c *NetworkConfiguration) DisableNat44() {
-	C.VmnetNetworkConfiguration_disableNat44(c.Raw())
+	C.VmnetNetworkConfiguration_disableNat44(objc.Ptr(c))
 }
 
 // DisableNat66 disables NAT66 on the [Network].
 //   - https://developer.apple.com/documentation/vmnet/vmnet_network_configuration_disable_nat66(_:)?language=objc
 func (c *NetworkConfiguration) DisableNat66() {
-	C.VmnetNetworkConfiguration_disableNat66(c.Raw())
+	C.VmnetNetworkConfiguration_disableNat66(objc.Ptr(c))
 }
 
 // DisableRouterAdvertisement disables router advertisement on the [Network].
 //   - https://developer.apple.com/documentation/vmnet/vmnet_network_configuration_disable_router_advertisement(_:)?language=objc
 func (c *NetworkConfiguration) DisableRouterAdvertisement() {
-	C.VmnetNetworkConfiguration_disableRouterAdvertisement(c.Raw())
+	C.VmnetNetworkConfiguration_disableRouterAdvertisement(objc.Ptr(c))
 }
 
 // SetExternalInterface sets the external interface of the [Network].
@@ -257,7 +259,7 @@ func (c *NetworkConfiguration) SetExternalInterface(ifname string) error {
 	defer C.free(unsafe.Pointer(cIfname))
 
 	status := C.VmnetNetworkConfiguration_setExternalInterface(
-		c.Raw(),
+		objc.Ptr(c),
 		cIfname,
 	)
 	if !errors.Is(Return(status), ErrSuccess) {
@@ -288,7 +290,7 @@ func (c *NetworkConfiguration) SetIPv4Subnet(subnet netip.Prefix) error {
 	copy((*[4]byte)(unsafe.Pointer(&cMask))[:], mask[:])
 
 	status := C.VmnetNetworkConfiguration_setIPv4Subnet(
-		c.Raw(),
+		objc.Ptr(c),
 		&cSubnet,
 		&cMask,
 	)
@@ -310,7 +312,7 @@ func (c *NetworkConfiguration) SetIPv6Prefix(prefix netip.Prefix) error {
 	copy((*[16]byte)(unsafe.Pointer(&cPrefix))[:], ip[:])
 
 	status := C.VmnetNetworkConfiguration_setIPv6Prefix(
-		c.Raw(),
+		objc.Ptr(c),
 		&cPrefix,
 		C.uint8_t(prefix.Bits()),
 	)
@@ -333,7 +335,7 @@ func netHardwareAddrToEtherAddr(hw net.HardwareAddr) (C.ether_addr_t, error) {
 //   - https://developer.apple.com/documentation/vmnet/vmnet_network_configuration_set_mtu(_:_:)?language=objc
 func (c *NetworkConfiguration) SetMtu(mtu uint32) error {
 	status := C.VmnetNetworkConfiguration_setMtu(
-		c.Raw(),
+		objc.Ptr(c),
 		C.uint32_t(mtu),
 	)
 	if !errors.Is(Return(status), ErrSuccess) {
@@ -344,14 +346,16 @@ func (c *NetworkConfiguration) SetMtu(mtu uint32) error {
 
 // MARK: - Network
 
-// Network represents a [Network].
-//   - https://developer.apple.com/documentation/vmnet/vmnet_network_create(_:_:)?language=objc
+// Network represents a [vmnet_network_ref].
+//
+// [vmnet_network_ref]: https://developer.apple.com/documentation/vmnet/vmnet_network_ref?language=objc
 type Network struct {
-	*object
+	*pointer
 }
 
 // NewNetwork creates a new [Network] with [NetworkConfiguration].
 // This is only supported on macOS 26 and newer, error will be returned on older versions.
+//   - https://developer.apple.com/documentation/vmnet/vmnet_network_create(_:_:)?language=objc
 func NewNetwork(config *NetworkConfiguration) (*Network, error) {
 	if err := macOSAvailable(26); err != nil {
 		return nil, err
@@ -359,15 +363,22 @@ func NewNetwork(config *NetworkConfiguration) (*Network, error) {
 
 	var status Return
 	ptr := C.VmnetNetworkCreate(
-		config.Raw(),
+		objc.Ptr(config),
 		(*C.uint32_t)(unsafe.Pointer(&status)),
 	)
 	if !errors.Is(status, ErrSuccess) {
 		return nil, fmt.Errorf("failed to create VmnetNetwork: %w", status)
 	}
-	network := &Network{object: &object{p: ptr}}
+	network := &Network{objc.NewPointer(ptr)}
 	ReleaseOnCleanup(network)
 	return network, nil
+}
+
+// releaseOnCleanup registers a cleanup function to release the object when cleaned up.
+func (n *Network) releaseOnCleanup() {
+	runtime.AddCleanup(n, func(p unsafe.Pointer) {
+		C.vmnetRelease(p)
+	}, objc.Ptr(n))
 }
 
 // NewNetworkWithSerialization creates a new [Network] from a serialized representation.
@@ -386,17 +397,24 @@ func NewNetworkWithSerialization(serialization xpc.Object) (*Network, error) {
 	if !errors.Is(status, ErrSuccess) {
 		return nil, fmt.Errorf("failed to create VmnetNetwork with serialization: %w", status)
 	}
-	network := &Network{object: &object{p: ptr}}
+	network := &Network{objc.NewPointer(ptr)}
 	ReleaseOnCleanup(network)
 	return network, nil
 }
 
-// CopySerialization returns a serialized copy of [Network] in xpc_object_t as [xpc.Object].
+// NewNetworkFromPointer creates a new [Network] from an existing [objc.Pointer].
+func NewNetworkFromPointer(p *objc.Pointer) *Network {
+	return &Network{p}
+}
+
+// CopySerialization returns a serialized copy of [Network] in [xpc_object_t] as [xpc.Object].
 //   - https://developer.apple.com/documentation/vmnet/vmnet_network_copy_serialization(_:_:)?language=objc
+//
+// [xpc_object_t]: https://developer.apple.com/documentation/xpc/xpc_object_t?language=objc
 func (n *Network) CopySerialization() (xpc.Object, error) {
 	var status Return
 	ptr := C.VmnetNetwork_copySerialization(
-		n.Raw(),
+		objc.Ptr(n),
 		(*C.uint32_t)(unsafe.Pointer(&status)),
 	)
 	if !errors.Is(status, ErrSuccess) {
@@ -411,7 +429,7 @@ func (n *Network) IPv4Subnet() (subnet netip.Prefix, err error) {
 	var cSubnet C.struct_in_addr
 	var cMask C.struct_in_addr
 
-	C.VmnetNetwork_getIPv4Subnet(n.Raw(), &cSubnet, &cMask)
+	C.VmnetNetwork_getIPv4Subnet(objc.Ptr(n), &cSubnet, &cMask)
 
 	sIP := inAddrToNetipAddr(cSubnet)
 	mIP := inAddrToIP(cMask)
@@ -441,7 +459,7 @@ func (n *Network) IPv6Prefix() (netip.Prefix, error) {
 	var prefix C.struct_in6_addr
 	var prefixLen C.uint8_t
 
-	C.VmnetNetwork_getIPv6Prefix(n.Raw(), &prefix, &prefixLen)
+	C.VmnetNetwork_getIPv6Prefix(objc.Ptr(n), &prefix, &prefixLen)
 
 	addr := in6AddrToNetipAddr(prefix)
 	pfx := netip.PrefixFrom(addr, int(prefixLen))
@@ -455,4 +473,187 @@ func (n *Network) IPv6Prefix() (netip.Prefix, error) {
 func in6AddrToNetipAddr(a C.struct_in6_addr) netip.Addr {
 	p := (*[16]byte)(unsafe.Pointer(&a))
 	return netip.AddrFrom16(*p)
+}
+
+// MARK: - Interface
+
+// Interface represents a [interface_ref] in vmnet.
+//
+// [interface_ref]: https://developer.apple.com/documentation/vmnet/interface_ref?language=objc
+type Interface struct {
+	*pointer
+	Param                                *xpc.Dictionary
+	MaxPacketSize                        uint64
+	MaxReadPacketCount                   int
+	MaxWritePacketCount                  int
+	packetsAvailableEventCallbackHandler *cgohandler.Handler
+	// Interface Describing Parameters on starting the interface.
+	AllocateMacAddress    bool
+	EnableChecksumOffload bool
+	EnableIsolation       bool
+	EnableTSO             bool
+	EnableVirtioHeader    bool
+}
+
+// Keys for interface describing parameters dictionary.
+var (
+	// AllocateMacAddressKey represents [vmnet_allocate_mac_address_key].
+	//    - Allocate a MAC address for the VM to use (bool). Default value is true.
+	//    - If set to false, no MAC address will be generated.
+	//    - Can be used in the interface describing dictionary passed to [StartInterfaceWithNetwork] to request automatic MAC address allocation.
+	//    - See <vmnet/vmnet.h> for details.
+	//
+	// [vmnet_allocate_mac_address_key]: https://developer.apple.com/documentation/vmnet/vmnet_allocate_mac_address_key?language=objc
+	AllocateMacAddressKey = C.GoString(C.vmnet_allocate_mac_address_key)
+
+	// EnableChecksumOffloadKey represents [vmnet_enable_checksum_offload_key].
+	//    - Can be used in the interface describing dictionary passed to [StartInterfaceWithNetwork] to enable checksum offloading.
+	//    - See <vmnet/vmnet.h> for details.
+	//
+	// [vmnet_enable_checksum_offload_key]: https://developer.apple.com/documentation/vmnet/vmnet_enable_checksum_offload_key?language=objc
+	EnableChecksumOffloadKey = C.GoString(C.vmnet_enable_checksum_offload_key)
+
+	// EnableIsolationKey represents [vmnet_enable_isolation_key].
+	//    - Can be used in the interface describing dictionary passed to [StartInterfaceWithNetwork] to enable isolation.
+	//    - See <vmnet/vmnet.h> for details.
+	//
+	// [vmnet_enable_isolation_key]: https://developer.apple.com/documentation/vmnet/vmnet_enable_isolation_key?language=objc
+	EnableIsolationKey = C.GoString(C.vmnet_enable_isolation_key)
+
+	// EnableTSOKey represents [vmnet_enable_tso_key].
+	//    - Can be used in the interface describing dictionary passed to [StartInterfaceWithNetwork] to enable TCP Segmentation Offloading (TSO).
+	//    - See <vmnet/vmnet.h> for details.
+	//
+	// [vmnet_enable_tso_key]: https://developer.apple.com/documentation/vmnet/vmnet_enable_tso_key?language=objc
+	EnableTSOKey = C.GoString(C.vmnet_enable_tso_key)
+
+	// EnableVirtioHeaderKey represents [vmnet_enable_virtio_header_key].
+	//    - Can be used in the interface describing dictionary passed to [StartInterfaceWithNetwork] to enable Virtio header support.
+	//    - See <vmnet/vmnet.h> for details.
+	//    - Requires macOS 15.4 or newer SDK. On older SDKs, [StartInterfaceWithNetwork] will return an error if this key is used.
+	//
+	// [vmnet_enable_virtio_header_key]: https://developer.apple.com/documentation/vmnet/vmnet_enable_virtio_header_key-swift.var?language=objc
+	EnableVirtioHeaderKey = func() string {
+		// wrap_vmnet_enable_virtio_header_key is defined to return NULL on older SDKs.
+		if cs := C.wrap_vmnet_enable_virtio_header_key(); cs != nil {
+			return C.GoString(cs)
+		}
+		return EnableVirtioHeaderKeyUnavailableError
+	}()
+)
+
+const EnableVirtioHeaderKeyUnavailableError = "vmnet_enable_virtio_header_key requires macOS 15.4 or newer SDK"
+
+// StartInterfaceWithNetwork starts an [Interface] with the given [Network] and interface describing parameter.
+//   - If [Network] is created in another process and passed via serialization, the process's executable must be the same as the one which created the [Network]. If not, the API call causes SIGTRAP with API Misuse.
+//   - The condition that the executable is the same is checked by:
+//     (<macOS 26.2) the [CDHash] of the executable is the same?
+//     (macOS 26.2) the path of the executable is the same?
+//   - https://developer.apple.com/documentation/vmnet/vmnet_interface_start_with_network(_:_:_:_:)?language=objc
+//   - interfaceDesc is a dictionary of interface describing parameters.
+//     Allowed keys are: [AllocateMacAddressKey], [EnableChecksumOffloadKey], [EnableIsolationKey], [EnableTSOKey], [EnableVirtioHeaderKey]//
+//
+// [CDHash]: https://developer.apple.com/documentation/Technotes/tn3126-inside-code-signing-hashes
+func StartInterfaceWithNetwork(network *Network, interfaceDesc *xpc.Dictionary) (*Interface, error) {
+	if interfaceDesc != nil {
+		if v := interfaceDesc.GetValue(EnableVirtioHeaderKeyUnavailableError); v != nil {
+			return nil, fmt.Errorf("cannot use EnableVirtioHeaderKey: %s", EnableVirtioHeaderKeyUnavailableError)
+		}
+	} else {
+		// If interfaceDesc is nil, create an empty dictionary.
+		interfaceDesc = xpc.NewDictionary()
+	}
+	result := C.VmnetInterfaceStartWithNetwork(objc.Ptr(network), objc.Ptr(interfaceDesc))
+	if vzvmnetResult := Return(result.vmnetReturn); vzvmnetResult != ErrSuccess {
+		return nil, fmt.Errorf("VmnetInterfaceStartWithNetwork failed: %w", vzvmnetResult)
+	}
+	i := &Interface{
+		pointer:             objc.NewPointer(result.iface),
+		Param:               xpc.ReleaseOnCleanup(xpc.NewObject(result.ifaceParam).(*xpc.Dictionary)),
+		MaxPacketSize:       uint64(result.maxPacketSize),
+		MaxReadPacketCount:  int(result.maxReadPacketCount),
+		MaxWritePacketCount: int(result.maxWritePacketCount),
+		AllocateMacAddress: func() bool {
+			// AllocateMacAddress defaults to true, so if the key is not set, return true.
+			if val, ok := interfaceDesc.GetValue(AllocateMacAddressKey).(xpc.Bool); ok {
+				return val.Bool()
+			}
+			return true
+		}(),
+		EnableChecksumOffload: interfaceDesc.GetBool(EnableChecksumOffloadKey),
+		EnableIsolation:       interfaceDesc.GetBool(EnableIsolationKey),
+		EnableTSO:             interfaceDesc.GetBool(EnableTSOKey),
+		EnableVirtioHeader:    interfaceDesc.GetBool(EnableVirtioHeaderKey),
+	}
+	ReleaseOnCleanup(i)
+	return i, nil
+}
+
+// releaseOnCleanup registers a cleanup function to release the object when cleaned up.
+func (i *Interface) releaseOnCleanup() {
+	runtime.AddCleanup(i, func(p unsafe.Pointer) {
+		C.vmnetRelease(p)
+	}, objc.Ptr(i))
+}
+
+// PacketsAvailableEventCallback is a callback function type for packets available event.
+//   - https://developer.apple.com/documentation/vmnet/vmnet_interface_set_event_callback(_:_:_:_:)?language=objc
+type PacketsAvailableEventCallback func(estimatedCount int)
+
+//export callPacketsAvailableEventCallback
+func callPacketsAvailableEventCallback(cgoHandle uintptr, estimatedCount C.int) {
+	if cgoHandle != 0 {
+		callback := cgo.Handle(cgoHandle).Value().(PacketsAvailableEventCallback)
+		callback(int(estimatedCount))
+	}
+}
+
+// SetPacketsAvailableEventCallback sets the packets available event callback for the [Interface].
+//   - https://developer.apple.com/documentation/vmnet/vmnet_interface_set_event_callback(_:_:_:_:)?language=objc
+//   - https://developer.apple.com/documentation/vmnet/vmnet_interface_event_callback_t?language=objc
+//   - https://developer.apple.com/documentation/vmnet/interface_event_t/vmnet_interface_packets_available?language=objc
+//   - https://developer.apple.com/documentation/vmnet/vmnet_estimated_packets_available_key?language=objc
+func (i *Interface) SetPacketsAvailableEventCallback(callback PacketsAvailableEventCallback) error {
+	cgoHandle, p := cgohandler.New(callback)
+	if result := Return(
+		C.VmnetInterfaceSetPacketsAvailableEventCallback(objc.Ptr(i), C.uintptr_t(p)),
+	); result != ErrSuccess {
+		return fmt.Errorf("VmnetInterfaceSetPacketsAvailableEventCallback failed: %w", result)
+	}
+	i.packetsAvailableEventCallbackHandler = cgoHandle
+	return nil
+}
+
+// Stop stops the [Interface].
+//   - https://developer.apple.com/documentation/vmnet/vmnet_stop_interface(_:_:_:)?language=objc
+func (i *Interface) Stop() error {
+	result := Return(C.VmnetStopInterface(objc.Ptr(i)))
+	if result != ErrSuccess {
+		return fmt.Errorf("VmnetStopInterface failed: %w", result)
+	}
+	return nil
+}
+
+// ReadPackets reads packets from the [Interface] into [VMPktDesc] array.
+// It returns the number of packets read.
+//   - https://developer.apple.com/documentation/vmnet/vmnet_read(_:_:_:)?language=objc
+func (i *Interface) ReadPackets(v *VMPktDesc, packetCount int) (int, error) {
+	// Limit packetCount to maxReadPacketCount
+	count := C.int(min(packetCount, i.MaxReadPacketCount))
+	if result := Return(C.VmnetRead(objc.Ptr(i), (*C.struct_vmpktdesc)(v), &count)); result != ErrSuccess {
+		return 0, fmt.Errorf("VmnetRead failed: %w", result)
+	}
+	return int(count), nil
+}
+
+// WritePackets writes packets to the [Interface] from [VMPktDesc] array.
+//   - Partial write won't happen, either all packets are written or an error is returned.
+//   - https://developer.apple.com/documentation/vmnet/vmnet_write(_:_:_:)?language=objc
+func (i *Interface) WritePackets(v *VMPktDesc, packetCount int) error {
+	count := C.int(min(packetCount, i.MaxWritePacketCount))
+	if result := Return(C.VmnetWrite(objc.Ptr(i), (*C.struct_vmpktdesc)(v), &count)); result != ErrSuccess {
+		// Will partial write happen here?
+		return fmt.Errorf("VmnetWrite failed: %w", result)
+	}
+	return nil
 }

@@ -38,11 +38,9 @@ func (x *xpcObject) String() string {
 }
 
 // retain retains the [xpcObject].
-// It also uses [ReleaseOnCleanup] to ensure it is released later.
 //   - https://developer.apple.com/documentation/xpc/xpc_retain?language=objc
 func (x *xpcObject) retain() {
 	C.xpcRetain(objc.Ptr(x))
-	_ = ReleaseOnCleanup(x)
 }
 
 // releaseOnCleanup registers a cleanup function to release the [xpcObject] when cleaned up.

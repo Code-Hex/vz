@@ -199,9 +199,9 @@ func (s *Session) SendMessageWithReply(ctx context.Context, message *Dictionary)
 		defer close(replyCh)
 		defer close(errCh)
 		if err != nil {
-			errCh <- Retain(err)
+			errCh <- ReleaseOnCleanup(Retain(err))
 		} else {
-			replyCh <- Retain(reply)
+			replyCh <- ReleaseOnCleanup(Retain(reply))
 		}
 	})
 	cgoReplyHandler := cgo.NewHandle(replyHandler)

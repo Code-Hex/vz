@@ -108,8 +108,8 @@ func (a *Array) Values() iter.Seq[Object] {
 
 // DupFd retrieves duplicated file descriptors from the [Array] at the given index.
 //   - https://developer.apple.com/documentation/xpc/xpc_array_dup_fd(_:_:)?language=objc
-func (a *Array) DupFd(index int) int {
-	return int(C.xpcArrayDupFd(objc.Ptr(a), C.size_t(index)))
+func (a *Array) DupFd(index int) uintptr {
+	return uintptr(C.xpcArrayDupFd(objc.Ptr(a), C.size_t(index)))
 }
 
 // GetArray retrieves an [Array] value from the [Array] at the given index.
@@ -224,7 +224,7 @@ func (a *Array) SetDouble(index int, value float64) {
 
 // SetFd sets a file descriptor in the [Array] at the given index.
 //   - https://developer.apple.com/documentation/xpc/xpc_array_set_fd(_:_:_:)?language=objc
-func (a *Array) SetFd(index int, fd int) {
+func (a *Array) SetFd(index int, fd uintptr) {
 	cfd := C.int(fd)
 	C.xpcArraySetFd(objc.Ptr(a), C.size_t(index), cfd)
 }

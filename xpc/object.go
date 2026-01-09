@@ -265,15 +265,15 @@ var _ Object = &Fd{}
 
 // NewFd returns a new [Fd] object from the given file descriptor.
 //   - https://developer.apple.com/documentation/xpc/xpc_fd_create(_:)?language=objc
-func NewFd(fd int) Object {
+func NewFd(fd uintptr) Object {
 	cfd := C.int(fd)
 	return ReleaseOnCleanup(&Fd{newXpcObject(C.xpcFdCreate(cfd))})
 }
 
 // Dup returns a duplicated file descriptor from the [Fd] object.
 //   - https://developer.apple.com/documentation/xpc/xpc_fd_dup(_:)?language=objc
-func (f *Fd) Dup() int {
-	return int(C.xpcFdDup(objc.Ptr(f)))
+func (f *Fd) Dup() uintptr {
+	return uintptr(C.xpcFdDup(objc.Ptr(f)))
 }
 
 // MARK: - Date: XPC_TYPE_DATE represents an XPC date object.

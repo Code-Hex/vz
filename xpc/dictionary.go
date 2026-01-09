@@ -154,10 +154,10 @@ func (o *Dictionary) Entries() iter.Seq[DictionaryEntry] {
 
 // DupFd retrieves a duplicated file descriptor from the [Dictionary] by key.
 //   - https://developer.apple.com/documentation/xpc/xpc_dictionary_dup_fd(_:_:)?language=objc
-func (o *Dictionary) DupFd(key string) int {
+func (o *Dictionary) DupFd(key string) uintptr {
 	cKey := C.CString(key)
 	defer C.free(unsafe.Pointer(cKey))
-	return int(C.xpcDictionaryDupFd(objc.Ptr(o), cKey))
+	return uintptr(C.xpcDictionaryDupFd(objc.Ptr(o), cKey))
 }
 
 // GetArray retrieves an [Array] value from the [Dictionary] by key.
@@ -314,7 +314,7 @@ func (o *Dictionary) SetDouble(key string, value float64) {
 
 // SetFd sets a file descriptor value for the given key in the [Dictionary].
 //   - https://developer.apple.com/documentation/xpc/xpc_dictionary_set_fd(_:_:_:)?language=objc
-func (o *Dictionary) SetFd(key string, fd int) {
+func (o *Dictionary) SetFd(key string, fd uintptr) {
 	cKey := C.CString(key)
 	defer C.free(unsafe.Pointer(cKey))
 	C.xpcDictionarySetFd(objc.Ptr(o), cKey, C.int(fd))

@@ -17,12 +17,15 @@ import (
 	"runtime"
 	"slices"
 	"strings"
+	"sync"
 	"syscall"
 	"testing"
 	"text/template"
 
 	"github.com/Code-Hex/vz/v3"
 	"github.com/Code-Hex/vz/v3/vmnet"
+	"github.com/Code-Hex/vz/v3/vmnet/fileadapter/datagram"
+	"github.com/Code-Hex/vz/v3/vmnet/fileadapter/datagramx"
 	"github.com/Code-Hex/vz/v3/xpc"
 )
 
@@ -44,7 +47,6 @@ func TestVmnetSharedModeAllowsCommunicationBetweenMultipleVMs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	macaddress1 := randomMACAddress(t)
 
 	// Create another VmnetNetwork instance from serialization of the first one
 	serialization, err := network1.CopySerialization()
@@ -55,10 +57,44 @@ func TestVmnetSharedModeAllowsCommunicationBetweenMultipleVMs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	macaddress2 := randomMACAddress(t)
+	// Test *FileAdaptorForInterface
+	var startFuncsWG sync.WaitGroup
+	var file3 *os.File
+	var start3 func()
+	// Create DatagramFileAdaptorForInterface instances
+	if network, err := vmnet.NewNetworkWithSerialization(serialization); err != nil {
+		t.Fatal(err)
+	} else if iface, err := vmnet.StartInterfaceWithNetwork(network, xpc.NewDictionary()); err != nil {
+		t.Fatal(err)
+	} else if file3, start3, _, err = datagram.FileAdapterForInterface(t.Context(), iface); err != nil {
+		t.Fatal(err)
+	}
+	startFuncsWG.Add(1)
+	go func() {
+		defer startFuncsWG.Done()
+		start3()
+	}()
 
-	container1 := newVirtualizationMachine(t, configureNetworkDevice(network1, macaddress1))
-	container2 := newVirtualizationMachine(t, configureNetworkDevice(network2, macaddress2))
+	// Create DatagramNextFileAdaptorForInterface instances
+	var file4 *os.File
+	var start4 func()
+	if network4, err := vmnet.NewNetworkWithSerialization(serialization); err != nil {
+		t.Fatal(err)
+	} else if iface, err := vmnet.StartInterfaceWithNetwork(network4, xpc.NewDictionary()); err != nil {
+		t.Fatal(err)
+	} else if file4, start4, _, err = datagramx.FileAdapterForInterface(t.Context(), iface); err != nil {
+		t.Fatal(err)
+	}
+	startFuncsWG.Add(1)
+	go func() {
+		defer startFuncsWG.Done()
+		start4()
+	}()
+
+	container1 := newVirtualizationMachine(t, configureVmnetNetworkDevice(network1, randomMACAddress(t)))
+	container2 := newVirtualizationMachine(t, configureVmnetNetworkDevice(network2, randomMACAddress(t)))
+	container3 := newVirtualizationMachine(t, configureFileHandleNetworkDevice(file3, randomMACAddress(t)))
+	container4 := newVirtualizationMachine(t, configureFileHandleNetworkDevice(file4, randomMACAddress(t)))
 	t.Cleanup(func() {
 		if err := container1.Shutdown(); err != nil {
 			log.Println(err)
@@ -66,6 +102,13 @@ func TestVmnetSharedModeAllowsCommunicationBetweenMultipleVMs(t *testing.T) {
 		if err := container2.Shutdown(); err != nil {
 			log.Println(err)
 		}
+		if err := container3.Shutdown(); err != nil {
+			log.Println(err)
+		}
+		if err := container4.Shutdown(); err != nil {
+			log.Println(err)
+		}
+		startFuncsWG.Wait()
 	})
 
 	// Log network information
@@ -85,8 +128,14 @@ func TestVmnetSharedModeAllowsCommunicationBetweenMultipleVMs(t *testing.T) {
 	t.Logf("Container 1 IPv4: %s", container1IPv4)
 	container2IPv4 := container2.DetectIPv4(t, "eth0")
 	t.Logf("Container 2 IPv4: %s", container2IPv4)
+	container3IPv4 := container3.DetectIPv4(t, "eth0")
+	t.Logf("Container 3 IPv4: %s", container3IPv4)
+	container4IPv4 := container4.DetectIPv4(t, "eth0")
+	t.Logf("Container 4 IPv4: %s", container4IPv4)
 	container1.exec(t, "ping "+container2IPv4)
-	container2.exec(t, "ping "+container1IPv4)
+	container2.exec(t, "ping "+container3IPv4)
+	container3.exec(t, "ping "+container4IPv4)
+	container4.exec(t, "ping "+container1IPv4)
 }
 
 // TestVmnetSharedModeWithConfiguringIPv4 tests VmnetNetwork in SharedMode
@@ -121,7 +170,7 @@ func TestVmnetSharedModeWithConfiguringIPv4(t *testing.T) {
 	}
 
 	// Create VirtualizationMachine instance
-	container := newVirtualizationMachine(t, configureNetworkDevice(network, macaddress))
+	container := newVirtualizationMachine(t, configureVmnetNetworkDevice(network, macaddress))
 	t.Cleanup(func() {
 		if err := container.Shutdown(); err != nil {
 			log.Println(err)
@@ -203,7 +252,7 @@ func TestVmnetNetworkShareModeSharingOverXpc(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		container := newVirtualizationMachine(t, configureNetworkDevice(network, randomMACAddress(t)))
+		container := newVirtualizationMachine(t, configureVmnetNetworkDevice(network, randomMACAddress(t)))
 		t.Cleanup(func() {
 			if err := container.Shutdown(); err != nil {
 				log.Println(err)
@@ -217,12 +266,32 @@ func TestVmnetNetworkShareModeSharingOverXpc(t *testing.T) {
 	}
 }
 
-// configureNetworkDevice returns a function that configures a network device
+// configureVmnetNetworkDevice returns a function that configures a network device
 // with the given VmnetNetwork and MAC address.
-func configureNetworkDevice(network *vmnet.Network, macAddress *vz.MACAddress) func(cfg *vz.VirtualMachineConfiguration) error {
+func configureVmnetNetworkDevice(network *vmnet.Network, macAddress *vz.MACAddress) func(cfg *vz.VirtualMachineConfiguration) error {
 	return func(cfg *vz.VirtualMachineConfiguration) error {
 		var configurations []*vz.VirtioNetworkDeviceConfiguration
 		attachment, err := vz.NewVmnetNetworkDeviceAttachment(network)
+		if err != nil {
+			return err
+		}
+		config, err := vz.NewVirtioNetworkDeviceConfiguration(attachment)
+		if err != nil {
+			return err
+		}
+		config.SetMACAddress(macAddress)
+		configurations = append(configurations, config)
+		cfg.SetNetworkDevicesVirtualMachineConfiguration(configurations)
+		return nil
+	}
+}
+
+// configureFileHandleNetworkDevice returns a function that configures a network device
+// with the given file handle and MAC address.
+func configureFileHandleNetworkDevice(file *os.File, macAddress *vz.MACAddress) func(cfg *vz.VirtualMachineConfiguration) error {
+	return func(cfg *vz.VirtualMachineConfiguration) error {
+		var configurations []*vz.VirtioNetworkDeviceConfiguration
+		attachment, err := vz.NewFileHandleNetworkDeviceAttachment(file)
 		if err != nil {
 			return err
 		}
@@ -436,7 +505,7 @@ func xpcServerProvidingSubnet(t *testing.T, machServiceName string) (*xpc.Listen
 				} else if serialization, err := network.CopySerialization(); err != nil {
 					reply = createErrorReply("failed to copy serialization: %v", err)
 				} else {
-					container := newVirtualizationMachine(t, configureNetworkDevice(network, randomMACAddress(t)))
+					container := newVirtualizationMachine(t, configureVmnetNetworkDevice(network, randomMACAddress(t)))
 					t.Cleanup(func() {
 						if err := container.Shutdown(); err != nil {
 							log.Println(err)

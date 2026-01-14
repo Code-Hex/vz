@@ -48,6 +48,7 @@ func (a *Array) GetValue(index int) Object {
 }
 
 // SetValue sets the [Object] at the given index in the [Array].
+// The value can not be nil.
 //   - https://developer.apple.com/documentation/xpc/xpc_array_set_value(_:_:_:)?language=objc
 func (a *Array) SetValue(index int, value Object) {
 	C.xpcArraySetValue(objc.Ptr(a), C.size_t(index), objc.Ptr(value))

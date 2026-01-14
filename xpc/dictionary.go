@@ -43,9 +43,9 @@ type DictionaryEntry func(*Dictionary)
 
 // KeyValue sets a [Object] value for the given key in the [Dictionary].
 //   - https://developer.apple.com/documentation/xpc/xpc_dictionary_set_value(_:_:_:)?language=objc
-func KeyValue(key string, val Object) DictionaryEntry {
+func KeyValue(key string, value Object) DictionaryEntry {
 	return func(o *Dictionary) {
-		o.SetValue(key, val)
+		o.SetValue(key, value)
 	}
 }
 
@@ -67,11 +67,12 @@ func (o *Dictionary) CreateReply(entries ...DictionaryEntry) *Dictionary {
 // MARK: - Value Accessors
 
 // SetValue sets an [Object] value for the given key in the [Dictionary].
+// The value may be nil, which removes the key from the dictionary.
 //   - https://developer.apple.com/documentation/xpc/xpc_dictionary_set_value(_:_:_:)?language=objc
-func (o *Dictionary) SetValue(key string, val Object) {
+func (o *Dictionary) SetValue(key string, value Object) {
 	cKey := C.CString(key)
 	defer C.free(unsafe.Pointer(cKey))
-	C.xpcDictionarySetValue(objc.Ptr(o), cKey, objc.Ptr(val))
+	C.xpcDictionarySetValue(objc.Ptr(o), cKey, objc.Ptr(value))
 }
 
 // Count returns the number of key-value pairs in the [Dictionary].
@@ -87,11 +88,11 @@ func (o *Dictionary) Count() int {
 func (o *Dictionary) GetValue(key string) Object {
 	cKey := C.CString(key)
 	defer C.free(unsafe.Pointer(cKey))
-	val := C.xpcDictionaryGetValue(objc.Ptr(o), cKey)
-	if val == nil {
+	value := C.xpcDictionaryGetValue(objc.Ptr(o), cKey)
+	if value == nil {
 		return nil
 	}
-	return NewObject(val)
+	return NewObject(value)
 }
 
 // MARK: - Iteration
@@ -179,8 +180,8 @@ func (o *Dictionary) GetArray(key string) *Array {
 func (o *Dictionary) GetBool(key string) bool {
 	cKey := C.CString(key)
 	defer C.free(unsafe.Pointer(cKey))
-	val := C.xpcDictionaryGetBool(objc.Ptr(o), cKey)
-	return bool(val)
+	value := C.xpcDictionaryGetBool(objc.Ptr(o), cKey)
+	return bool(value)
 }
 
 // GetData retrieves a byte slice value from the [Dictionary] by key.
@@ -224,8 +225,8 @@ func (o *Dictionary) GetDictionary(key string) *Dictionary {
 func (o *Dictionary) GetDouble(key string) float64 {
 	cKey := C.CString(key)
 	defer C.free(unsafe.Pointer(cKey))
-	val := C.xpcDictionaryGetDouble(objc.Ptr(o), cKey)
-	return float64(val)
+	value := C.xpcDictionaryGetDouble(objc.Ptr(o), cKey)
+	return float64(value)
 }
 
 // GetInt64 retrieves an int64 value from the [Dictionary] by key.
@@ -233,8 +234,8 @@ func (o *Dictionary) GetDouble(key string) float64 {
 func (o *Dictionary) GetInt64(key string) int64 {
 	cKey := C.CString(key)
 	defer C.free(unsafe.Pointer(cKey))
-	val := C.xpcDictionaryGetInt64(objc.Ptr(o), cKey)
-	return int64(val)
+	value := C.xpcDictionaryGetInt64(objc.Ptr(o), cKey)
+	return int64(value)
 }
 
 // GetString retrieves a string value from the [Dictionary] by key.
@@ -244,8 +245,8 @@ func (o *Dictionary) GetInt64(key string) int64 {
 func (o *Dictionary) GetString(key string) string {
 	cKey := C.CString(key)
 	defer C.free(unsafe.Pointer(cKey))
-	val := C.xpcDictionaryGetString(objc.Ptr(o), cKey)
-	return C.GoString(val)
+	value := C.xpcDictionaryGetString(objc.Ptr(o), cKey)
+	return C.GoString(value)
 }
 
 // GetUInt64 retrieves a uint64 value from the [Dictionary] by key.
@@ -253,8 +254,8 @@ func (o *Dictionary) GetString(key string) string {
 func (o *Dictionary) GetUInt64(key string) uint64 {
 	cKey := C.CString(key)
 	defer C.free(unsafe.Pointer(cKey))
-	val := C.xpcDictionaryGetUInt64(objc.Ptr(o), cKey)
-	return uint64(val)
+	value := C.xpcDictionaryGetUInt64(objc.Ptr(o), cKey)
+	return uint64(value)
 }
 
 // GetUUID retrieves a UUID value from the [Dictionary] by key.

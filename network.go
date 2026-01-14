@@ -192,13 +192,19 @@ func NewFileHandleNetworkDeviceAttachment(file *os.File) (*FileHandleNetworkDevi
 		return nil, err
 	}
 
+	nserrPtr := newNSErrorAsNil()
+
 	attachment := &FileHandleNetworkDeviceAttachment{
 		pointer: objc.NewPointer(
 			C.newVZFileHandleNetworkDeviceAttachment(
 				C.int(file.Fd()),
+				&nserrPtr,
 			),
 		),
 		mtu: 1500, // The default MTU is 1500.
+	}
+	if err := newNSError(nserrPtr); err != nil {
+		return nil, err
 	}
 	objc.SetFinalizer(attachment, func(self *FileHandleNetworkDeviceAttachment) {
 		objc.Release(self)

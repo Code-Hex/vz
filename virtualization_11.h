@@ -86,7 +86,7 @@ void setStorageDevicesVZVirtualMachineConfiguration(void *config,
 void *storageDevicesVZVirtualMachineConfiguration(void *config);
 
 /* Configurations */
-void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileDescriptor);
+void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileDescriptor, void **error);
 void *newVZFileSerialPortAttachment(const char *filePath, bool shouldAppend, void **error);
 void *newVZVirtioConsoleDeviceSerialPortConfiguration(void *attachment);
 void *VZBridgedNetworkInterface_networkInterfaces(void);
@@ -94,7 +94,7 @@ const char *VZBridgedNetworkInterface_identifier(void *networkInterface);
 const char *VZBridgedNetworkInterface_localizedDisplayName(void *networkInterface);
 void *newVZBridgedNetworkDeviceAttachment(void *networkInterface);
 void *newVZNATNetworkDeviceAttachment(void);
-void *newVZFileHandleNetworkDeviceAttachment(int fileDescriptor);
+void *newVZFileHandleNetworkDeviceAttachment(int fileDescriptor, void **error);
 void *newVZVirtioNetworkDeviceConfiguration(void *attachment);
 void setNetworkDevicesVZMACAddress(void *config, void *macAddress);
 void *newVZVirtioEntropyDeviceConfiguration(void);

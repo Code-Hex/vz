@@ -28,3 +28,18 @@ NSDictionary *dumpProcessinfo()
 #endif
     };
 }
+
+NSFileHandle *newFileHandleDupFd(int fileDescriptor, void **error)
+{
+    int dupedFd = dup(fileDescriptor);
+    if (dupedFd < 0) {
+        if (error != nil) {
+            *error = [NSError errorWithDomain:NSPOSIXErrorDomain
+                                         code:errno
+                                     userInfo:nil];
+        }
+        return nil;
+    }
+
+    return [[NSFileHandle alloc] initWithFileDescriptor:dupedFd closeOnDealloc:true];
+}

@@ -4,6 +4,7 @@
 #import <Foundation/Foundation.h>
 
 NSDictionary *dumpProcessinfo();
+NSFileHandle *newFileHandleDupFd(int fileDescriptor, void **error);
 
 #define RAISE_REASON_MESSAGE                                                                               \
     "This may possibly be a bug due to library handling errors.\n"                                         \

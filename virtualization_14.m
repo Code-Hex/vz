@@ -30,7 +30,7 @@ void *newVZNVMExpressControllerDeviceConfiguration(void *attachment)
  @param error If not nil, assigned with the error if the initialization failed.
  @return An initialized `VZDiskBlockDeviceStorageDeviceAttachment` or nil if there was an error.
  @discussion
-    The file handle is retained by the disk attachment.
+    The file handle is dup()’ed by this function.
     The handle must be open when the virtual machine starts.
 
     The `readOnly` parameter affects how the disk is exposed to the guest operating system
@@ -41,7 +41,10 @@ void *newVZDiskBlockDeviceStorageDeviceAttachment(int fileDescriptor, bool readO
 {
 #ifdef INCLUDE_TARGET_OSX_14
     if (@available(macOS 14, *)) {
-        NSFileHandle *fileHandle = [[NSFileHandle alloc] initWithFileDescriptor:fileDescriptor];
+        NSFileHandle *fileHandle = newFileHandleDupFd(fileDescriptor, error);
+        if (fileHandle == nil) {
+            return nil;
+        }
         return [[VZDiskBlockDeviceStorageDeviceAttachment alloc]
              initWithFileHandle:fileHandle
                        readOnly:(BOOL)readOnly

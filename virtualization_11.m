@@ -448,13 +448,20 @@ void *storageDevicesVZVirtualMachineConfiguration(void *config)
  @discussion
     Each file descriptor must a valid.
 */
-void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileDescriptor)
+void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileDescriptor, void **error)
 {
     if (@available(macOS 11, *)) {
         VZFileHandleSerialPortAttachment *ret;
         @autoreleasepool {
-            NSFileHandle *fileHandleForReading = [[NSFileHandle alloc] initWithFileDescriptor:readFileDescriptor];
-            NSFileHandle *fileHandleForWriting = [[NSFileHandle alloc] initWithFileDescriptor:writeFileDescriptor];
+            NSFileHandle *fileHandleForReading = newFileHandleDupFd(readFileDescriptor, error);
+            if (error != nil) {
+                return nil;
+            }
+
+            NSFileHandle *fileHandleForWriting = newFileHandleDupFd(writeFileDescriptor, error);
+            if (error != nil) {
+                return nil;
+            }
             ret = [[VZFileHandleSerialPortAttachment alloc]
                 initWithFileHandleForReading:fileHandleForReading
                         fileHandleForWriting:fileHandleForWriting];
@@ -602,12 +609,15 @@ void *newVZNATNetworkDeviceAttachment()
  @see VZNetworkDeviceConfiguration
  @see VZVirtioNetworkDeviceConfiguration
  */
-void *newVZFileHandleNetworkDeviceAttachment(int fileDescriptor)
+void *newVZFileHandleNetworkDeviceAttachment(int fileDescriptor, void **error)
 {
     if (@available(macOS 11, *)) {
         VZFileHandleNetworkDeviceAttachment *ret;
         @autoreleasepool {
-            NSFileHandle *fileHandle = [[NSFileHandle alloc] initWithFileDescriptor:fileDescriptor];
+            NSFileHandle *fileHandle = newFileHandleDupFd(fileDescriptor, error);
+            if (fileHandle == nil) {
+                return nil;
+            }
             ret = [[VZFileHandleNetworkDeviceAttachment alloc] initWithFileHandle:fileHandle];
         }
         return ret;

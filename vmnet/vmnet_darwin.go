@@ -92,26 +92,9 @@ const (
 	SharedMode Mode = C.VMNET_SHARED_MODE
 )
 
-// MARK: - object
+// MARK: - pointer
 
 type pointer = objc.Pointer
-
-// object
-type object struct {
-	*pointer
-}
-
-// retain calls CFRetain on the underlying object.
-func (o *object) retain() {
-	C.vmnetRetain(objc.Ptr(o))
-}
-
-// releaseOnCleanup registers a cleanup function to release the object when cleaned up.
-func (o *object) releaseOnCleanup() {
-	runtime.AddCleanup(o, func(p unsafe.Pointer) {
-		C.vmnetRelease(p)
-	}, objc.Ptr(o))
-}
 
 // Retain calls retain method on the given object and returns it.
 func Retain[O interface{ retain() }](o O) O {
@@ -131,7 +114,7 @@ func ReleaseOnCleanup[O interface{ releaseOnCleanup() }](o O) O {
 //
 // [vmnet_network_configuration_ref]: https://developer.apple.com/documentation/vmnet/vmnet_network_configuration_ref?language=objc
 type NetworkConfiguration struct {
-	*object
+	*pointer
 }
 
 // NewNetworkConfiguration creates a new [NetworkConfiguration] with [Mode].
@@ -150,9 +133,16 @@ func NewNetworkConfiguration(mode Mode) (*NetworkConfiguration, error) {
 	if !errors.Is(status, ErrSuccess) {
 		return nil, fmt.Errorf("failed to create VmnetNetworkConfiguration: %w", status)
 	}
-	config := &NetworkConfiguration{object: &object{objc.NewPointer(ptr)}}
+	config := &NetworkConfiguration{objc.NewPointer(ptr)}
 	ReleaseOnCleanup(config)
 	return config, nil
+}
+
+// releaseOnCleanup registers a cleanup function to release the object when cleaned up.
+func (c *NetworkConfiguration) releaseOnCleanup() {
+	runtime.AddCleanup(c, func(p unsafe.Pointer) {
+		C.vmnetRelease(p)
+	}, objc.Ptr(c))
 }
 
 // AddDhcpReservation configures a new DHCP reservation for the [Network].
@@ -360,7 +350,7 @@ func (c *NetworkConfiguration) SetMtu(mtu uint32) error {
 //
 // [vmnet_network_ref]: https://developer.apple.com/documentation/vmnet/vmnet_network_ref?language=objc
 type Network struct {
-	*object
+	*pointer
 }
 
 // NewNetwork creates a new [Network] with [NetworkConfiguration].
@@ -379,9 +369,16 @@ func NewNetwork(config *NetworkConfiguration) (*Network, error) {
 	if !errors.Is(status, ErrSuccess) {
 		return nil, fmt.Errorf("failed to create VmnetNetwork: %w", status)
 	}
-	network := &Network{object: &object{objc.NewPointer(ptr)}}
+	network := &Network{objc.NewPointer(ptr)}
 	ReleaseOnCleanup(network)
 	return network, nil
+}
+
+// releaseOnCleanup registers a cleanup function to release the object when cleaned up.
+func (n *Network) releaseOnCleanup() {
+	runtime.AddCleanup(n, func(p unsafe.Pointer) {
+		C.vmnetRelease(p)
+	}, objc.Ptr(n))
 }
 
 // NewNetworkWithSerialization creates a new [Network] from a serialized representation.
@@ -400,14 +397,14 @@ func NewNetworkWithSerialization(serialization xpc.Object) (*Network, error) {
 	if !errors.Is(status, ErrSuccess) {
 		return nil, fmt.Errorf("failed to create VmnetNetwork with serialization: %w", status)
 	}
-	network := &Network{object: &object{objc.NewPointer(ptr)}}
+	network := &Network{objc.NewPointer(ptr)}
 	ReleaseOnCleanup(network)
 	return network, nil
 }
 
 // NewNetworkFromPointer creates a new [Network] from an existing [objc.Pointer].
 func NewNetworkFromPointer(p *objc.Pointer) *Network {
-	return &Network{object: &object{p}}
+	return &Network{p}
 }
 
 // CopySerialization returns a serialized copy of [Network] in [xpc_object_t] as [xpc.Object].
@@ -484,7 +481,7 @@ func in6AddrToNetipAddr(a C.struct_in6_addr) netip.Addr {
 //
 // [interface_ref]: https://developer.apple.com/documentation/vmnet/interface_ref?language=objc
 type Interface struct {
-	*object
+	*pointer
 	Param                                *xpc.Dictionary
 	MaxPacketSize                        uint64
 	MaxReadPacketCount                   int
@@ -571,7 +568,7 @@ func StartInterfaceWithNetwork(network *Network, interfaceDesc *xpc.Dictionary) 
 		return nil, fmt.Errorf("VmnetInterfaceStartWithNetwork failed: %w", vzvmnetResult)
 	}
 	i := &Interface{
-		object:              ReleaseOnCleanup(&object{objc.NewPointer(result.iface)}),
+		pointer:             objc.NewPointer(result.iface),
 		Param:               xpc.ReleaseOnCleanup(xpc.NewObject(result.ifaceParam).(*xpc.Dictionary)),
 		MaxPacketSize:       uint64(result.maxPacketSize),
 		MaxReadPacketCount:  int(result.maxReadPacketCount),
@@ -588,7 +585,15 @@ func StartInterfaceWithNetwork(network *Network, interfaceDesc *xpc.Dictionary) 
 		EnableTSO:             interfaceDesc.GetBool(EnableTSOKey),
 		EnableVirtioHeader:    interfaceDesc.GetBool(EnableVirtioHeaderKey),
 	}
+	ReleaseOnCleanup(i)
 	return i, nil
+}
+
+// releaseOnCleanup registers a cleanup function to release the object when cleaned up.
+func (i *Interface) releaseOnCleanup() {
+	runtime.AddCleanup(i, func(p unsafe.Pointer) {
+		C.vmnetRelease(p)
+	}, objc.Ptr(i))
 }
 
 // PacketsAvailableEventCallback is a callback function type for packets available event.

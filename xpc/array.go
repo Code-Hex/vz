@@ -28,7 +28,11 @@ var _ Object = &Array{}
 // NewArray creates a new [Array] from the given [Object]s.
 //   - https://developer.apple.com/documentation/xpc/xpc_array_create(_:_:)?language=objc
 func NewArray(objects ...Object) *Array {
-	cObjects := make([]unsafe.Pointer, len(objects))
+	n := len(objects)
+	if n == 0 {
+		return ReleaseOnCleanup(&Array{newXpcObject(C.xpcArrayCreate(nil, 0))})
+	}
+	cObjects := make([]unsafe.Pointer, n)
 	for i, obj := range objects {
 		cObjects[i] = objc.Ptr(obj)
 	}

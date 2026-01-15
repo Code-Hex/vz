@@ -111,7 +111,7 @@ var _ Object = &Bool{}
 
 // NewBool returns a new [Bool] object from the given Go bool.
 //   - https://developer.apple.com/documentation/xpc/xpc_bool_create(_:)?language=objc
-func NewBool(b bool) Object {
+func NewBool(b bool) *Bool {
 	cbool := C.bool(b)
 	return ReleaseOnCleanup(&Bool{newXpcObject(C.xpcBoolCreate(cbool))})
 }
@@ -138,7 +138,7 @@ var _ Object = &Data{}
 
 // NewData returns a new [Data] object from the given byte slice.
 //   - https://developer.apple.com/documentation/xpc/xpc_data_create(_:_:)?language=objc
-func NewData(b []byte) Object {
+func NewData(b []byte) *Data {
 	if len(b) == 0 {
 		return ReleaseOnCleanup(&Data{newXpcObject(C.xpcDataCreate(nil, 0))})
 	}
@@ -171,7 +171,7 @@ var _ Object = &Double{}
 
 // NewDouble returns a new [Double] object from the given Go float64.
 //   - https://developer.apple.com/documentation/xpc/xpc_double_create(_:)?language=objc
-func NewDouble(f float64) Object {
+func NewDouble(f float64) *Double {
 	cdouble := C.double(f)
 	return ReleaseOnCleanup(&Double{newXpcObject(C.xpcDoubleCreate(cdouble))})
 }
@@ -193,7 +193,7 @@ var _ Object = &Int64{}
 
 // NewInt64 returns a new [Int64] object from the given Go int64.
 //   - https://developer.apple.com/documentation/xpc/xpc_int64_create(_:)?language=objc
-func NewInt64(i int64) Object {
+func NewInt64(i int64) *Int64 {
 	cint64 := C.int64_t(i)
 	return ReleaseOnCleanup(&Int64{newXpcObject(C.xpcInt64Create(cint64))})
 }
@@ -215,7 +215,7 @@ var _ Object = &UInt64{}
 
 // NewUInt64 returns a new [UInt64] object from the given Go uint64.
 //   - https://developer.apple.com/documentation/xpc/xpc_uint64_create(_:)?language=objc
-func NewUInt64(u uint64) Object {
+func NewUInt64(u uint64) *UInt64 {
 	cuint64 := C.uint64_t(u)
 	return ReleaseOnCleanup(&UInt64{newXpcObject(C.xpcUInt64Create(cuint64))})
 }
@@ -237,7 +237,7 @@ var _ Object = &String{}
 
 // NewString returns a new [String] object from the given Go string.
 //   - https://developer.apple.com/documentation/xpc/xpc_string_create(_:)?language=objc
-func NewString(s string) Object {
+func NewString(s string) *String {
 	cstr := C.CString(s)
 	defer C.free(unsafe.Pointer(cstr))
 	return ReleaseOnCleanup(&String{newXpcObject(C.xpcStringCreate(cstr))})
@@ -265,7 +265,7 @@ var _ Object = &Fd{}
 
 // NewFd returns a new [Fd] object from the given file descriptor.
 //   - https://developer.apple.com/documentation/xpc/xpc_fd_create(_:)?language=objc
-func NewFd(fd uintptr) Object {
+func NewFd(fd uintptr) *Fd {
 	cfd := C.int(fd)
 	return ReleaseOnCleanup(&Fd{newXpcObject(C.xpcFdCreate(cfd))})
 }
@@ -287,14 +287,14 @@ var _ Object = &Date{}
 
 // NewDate returns a new [Date] object from the given Go int64 representing nanoseconds since epoch.
 //   - https://developer.apple.com/documentation/xpc/xpc_date_create(_:)?language=objc
-func NewDate(nanoseconds int64) Object {
+func NewDate(nanoseconds int64) *Date {
 	cinterval := C.int64_t(nanoseconds)
 	return ReleaseOnCleanup(&Date{newXpcObject(C.xpcDateCreate(cinterval))})
 }
 
 // NewDateFromCurrent returns a new [Date] object representing the current date and time.
 //   - https://developer.apple.com/documentation/xpc/xpc_date_from_current()?language=objc
-func NewDateFromCurrent() Object {
+func NewDateFromCurrent() *Date {
 	return ReleaseOnCleanup(&Date{newXpcObject(C.xpcDateCreateFromCurrent())})
 }
 
@@ -316,7 +316,7 @@ var _ Object = &UUID{}
 
 // NewUUID returns a new [UUID] object from the given UUID byte array.
 //   - https://developer.apple.com/documentation/xpc/xpc_uuid_create(_:)?language=objc
-func NewUUID(uuid [16]byte) Object {
+func NewUUID(uuid [16]byte) *UUID {
 	cuuid := (*C.uint8_t)(unsafe.Pointer(&uuid[0]))
 	return ReleaseOnCleanup(&UUID{newXpcObject(C.xpcUUIDCreate(cuuid))})
 }
@@ -345,6 +345,6 @@ var _ Object = &Null{}
 
 // NewNull returns a new [Null] object.
 //   - https://developer.apple.com/documentation/xpc/xpc_null_create()?language=objc
-func NewNull() Object {
+func NewNull() *Null {
 	return ReleaseOnCleanup(&Null{newXpcObject(C.xpcNullCreate())})
 }

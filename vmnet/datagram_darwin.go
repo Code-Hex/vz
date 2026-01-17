@@ -20,11 +20,18 @@ import (
 //   - Invoke the returned function in a separate goroutine to start packet forwarding between the vmnet interface and the file.
 //   - The context can be used to stop the goroutines and the interface.
 //   - The returned error channel can be used to receive errors from the goroutines.
+//   - The connection closure is reported as [io.EOF] error or [syscall.ECONNRESET] error in the error channel.
 //
-// The returned file can be used as a file descriptor for QEMU's netdev datagram backend or VZ's [NewFileHandleNetworkDeviceAttachment]
+// The returned file can be used as a datagram file descriptor for QEMU, krunkit, or VZ.
+//
 // QEMU:
 //
 //	-netdev datagram,id=net0,addr.type=fd,addr.str=<file descriptor>
+//	-netdev tap,id=net1,fd=<file descriptor>
+//
+// krunkit:
+//
+//	--device virtio-net,type=unixgram,fd=<file descriptor>,offloading=on  // offloading=on is recommended. See krunkit driver in LIMA.
 //
 // VZ:
 //

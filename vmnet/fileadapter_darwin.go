@@ -72,10 +72,11 @@ type PacketForwarder[T io.Closer] interface {
 }
 
 // FileAdaptorForInterface is a generic function that returns a file for the given [Network].
-// The returned file is used as a file descriptor for network devices in QEMU or Virtualization frameworks.
+// The returned file is used as a file descriptor for network devices in QEMU, krunkit, or Virtualization frameworks.
 //   - Invoke the returned function in a separate goroutine to start packet forwarding between the vmnet interface and the file.
 //   - The context can be used to stop the goroutines and the interface.
 //   - The returned error channel can be used to receive errors from the goroutines.
+//   - The connection closure is reported as [io.EOF] error or [syscall.ECONNRESET] error in the error channel.
 func FileAdaptorForInterface[T PacketForwarder[U], U io.Closer](ctx context.Context, iface *Interface, opts ...Sockopt) (file *os.File, start func(), errCh <-chan error, err error) {
 	var factory T
 	forwarder := factory.New()
@@ -106,6 +107,10 @@ func FileAdaptorForInterface[T PacketForwarder[U], U io.Closer](ctx context.Cont
 	errChRW := make(chan error, 10)
 	reportError := func(err error, message string) {
 		if err != nil {
+			if strings.Contains(err.Error(), "use of closed network connection") {
+				// Silently ignore the error caused by connection closure
+				return
+			}
 			errChRW <- fmt.Errorf("%s: %w", message, err)
 		}
 	}
@@ -144,12 +149,10 @@ func FileAdaptorForInterface[T PacketForwarder[U], U io.Closer](ctx context.Cont
 		// Read all available packets in a loop.
 		for {
 			// Read packets from the connection to writeDescs
+			// It won't return until at least one packet is read or connection is closed.
+			// Remote closure may be detected as io.EOF on stream connection.
 			packetCount, err := forwarder.ReadPacketsFromConn(conn)
 			if err != nil {
-				if strings.Contains(err.Error(), "use of closed network connection") {
-					// Normal closure
-					break
-				}
 				reportError(err, "forwarder.ReadPacketsFromConn failed")
 				break
 			}

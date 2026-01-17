@@ -23,6 +23,7 @@ import (
 //   - Invoke the returned function in a separate goroutine to start packet forwarding between the vmnet interface and the file.
 //   - The context can be used to stop the goroutines and the interface.
 //   - The returned error channel can be used to receive errors from the goroutines.
+//   - The connection closure is reported as [io.EOF] error or [syscall.ECONNRESET] error in the error channel.
 //
 // The returned file can be used as a file descriptor for QEMU's netdev stream or socket backend.
 //

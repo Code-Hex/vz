@@ -13,13 +13,13 @@ import (
 )
 
 func TestAvailableVersionArm64(t *testing.T) {
-	majorMinorVersionOnce = &nopDoer{}
+	*majorMinorVersionOnce = &nopDoer{}
 	defer func() {
-		majorMinorVersion = 0
-		majorMinorVersionOnce = &sync.Once{}
+		*majorMinorVersion = 0
+		*majorMinorVersionOnce = &sync.Once{}
 	}()
 	t.Run("macOS 12", func(t *testing.T) {
-		majorMinorVersion = 11
+		*majorMinorVersion = 11
 		cases := map[string]func() error{
 			"NewMacOSBootLoader": func() error {
 				_, err := NewMacOSBootLoader()
@@ -79,7 +79,7 @@ func TestAvailableVersionArm64(t *testing.T) {
 			t.Skip("disabled build target for macOS 13")
 		}
 
-		majorMinorVersion = 12.3
+		*majorMinorVersion = 12.3
 		cases := map[string]func() error{
 			"WithStartUpFromMacOSRecovery": func() error {
 				return (*VirtualMachine)(nil).Start(WithStartUpFromMacOSRecovery(true))
@@ -110,7 +110,7 @@ func TestAvailableVersionArm64(t *testing.T) {
 		}
 		defer f.Close()
 
-		majorMinorVersion = 13
+		*majorMinorVersion = 13
 		cases := map[string]func() error{
 			"NewLinuxRosettaUnixSocketCachingOptions": func() error {
 				_, err := NewLinuxRosettaUnixSocketCachingOptions(filename)

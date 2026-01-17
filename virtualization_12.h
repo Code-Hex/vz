@@ -4,7 +4,7 @@
 //  Created by codehex.
 //
 
-#import "virtualization_helper.h"
+#import "internal/osversion/virtualization_helper.h"
 #import "virtualization_view.h"
 
 // FIXME(codehex): this is dirty hack to avoid clang-format error like below

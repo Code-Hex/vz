@@ -119,6 +119,9 @@ func Retain(o NSObject) {
 
 // Ptr returns unsafe.Pointer of the NSObject
 func Ptr(o NSObject) unsafe.Pointer {
+	if o == nil {
+		return nil
+	}
 	return o.ptr()
 }
 

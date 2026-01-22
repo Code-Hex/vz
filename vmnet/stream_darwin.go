@@ -139,9 +139,9 @@ func (v *pktDescsManager) buffersForWritingToConn(packetCount int) (net.Buffers,
 			return nil, fmt.Errorf("vm_pkt_size %d exceeds maxPacketSize %d", vmPktDesc.vm_pkt_size, v.maxPacketSize)
 		}
 		// Write packet size to the 4-byte header
-		binary.BigEndian.PutUint32(v.backingBuffers[i][:headerSize], uint32(vmPktDesc.vm_pkt_size))
+		binary.BigEndian.PutUint32(v.headerBufferAt(i), uint32(vmPktDesc.vm_pkt_size))
 		// Resize buffer to include header and packet size
-		v.writingBuffers[i] = v.backingBuffers[i][:headerSize+uintptr(vmPktDesc.vm_pkt_size)]
+		v.writingBuffers[i] = v.backingBuffers[i][:headerSize+vmPktDesc.GetPacketSize()]
 	}
 	return v.writingBuffers[:packetCount], nil
 }
@@ -165,6 +165,28 @@ func (v *pktDescsManager) writePacketsToConn(conn net.Conn, packetCount int) err
 	return nil
 }
 
+// buffersForReadingFromConn returns [net.Buffers] to read from the [net.Conn]
+// for the given index and offset.
+// It prepares buffer for the next header read as well if possible.
+func (v *pktDescsManager) buffersForReadingFromConn(index, offset int) net.Buffers {
+	if offset < v.at(index).GetPacketSize() {
+		if index+1 < v.maxPacketCount {
+			// prepare next header read as well
+			return net.Buffers{
+				v.packetBufferAt(index, offset),
+				v.headerBufferAt(index + 1),
+			}
+		}
+		return net.Buffers{
+			v.packetBufferAt(index, offset),
+		}
+	}
+	headerOffset := offset - v.at(index).GetPacketSize()
+	return net.Buffers{
+		v.headerBufferAt(index)[headerOffset:],
+	}
+}
+
 // readPacketsFromConn reads packets from the [net.Conn] into [VMPktDesc]s.
 //   - It returns the number of packets read.
 //   - The packets are expected to come one by one with 4-byte big-endian header indicating the packet size.
@@ -173,63 +195,51 @@ func (v *pktDescsManager) writePacketsToConn(conn net.Conn, packetCount int) err
 func (v *pktDescsManager) readPacketsFromConn(conn net.Conn) (int, error) {
 	var packetCount int
 	// Wait until 4-byte header is read
-	if _, err := conn.Read(v.backingBuffers[packetCount][:headerSize]); err != nil {
+	if _, err := conn.Read(v.headerBufferAt(packetCount)); err != nil {
 		return 0, fmt.Errorf("conn.Read failed: %w", err)
 	}
 	// Get rawConn for Readv
 	rawConn, _ := conn.(syscall.Conn).SyscallConn()
 	// Read available packets
-	var packetLen uint32
-	var bufs net.Buffers
 	for {
-		packetLen = binary.BigEndian.Uint32(v.backingBuffers[packetCount][:headerSize])
+		packetLen := int(binary.BigEndian.Uint32(v.headerBufferAt(packetCount)))
 		if packetLen == 0 || uint64(packetLen) > v.maxPacketSize {
 			return 0, fmt.Errorf("invalid packetLen: %d (max %d)", packetLen, v.maxPacketSize)
 		}
+		v.at(packetCount).SetPacketSize(packetLen)
 
-		// prepare buffers for reading packet and next header if any
-		if packetCount+1 < v.maxPacketCount {
-			// prepare next header read as well
-			bufs = net.Buffers{
-				v.backingBuffers[packetCount][headerSize : headerSize+uintptr(packetLen)],
-				v.backingBuffers[packetCount+1][:headerSize],
-			}
-		} else {
-			// prepare only packet read to avoid exceeding maxPacketCount
-			bufs = net.Buffers{
-				v.backingBuffers[packetCount][headerSize : headerSize+uintptr(packetLen)],
-			}
-		}
-
-		// Read packet from the connection
+		// Read packet from the connection until full packet is read, including next header if possible.
 		var bytesHasBeenRead int
-		var err error
-		rawConnReadErr := rawConn.Read(func(fd uintptr) (done bool) {
+		var readErr error
+		if rawConnReadErr := rawConn.Read(func(fd uintptr) (done bool) {
+			bufs := v.buffersForReadingFromConn(packetCount, bytesHasBeenRead)
 			// read packet into buffers
-			bytesHasBeenRead, err = unix.Readv(int(fd), bufs)
-			if bytesHasBeenRead <= 0 {
+			n, err := unix.Readv(int(fd), bufs)
+			if n <= 0 {
 				if errors.Is(err, syscall.EAGAIN) {
 					return false // try again later
 				}
-				err = fmt.Errorf("unix.Readv failed: %w", err)
+				readErr = fmt.Errorf("unix.Readv failed: %w", err)
 				return true
 			}
-			// assumes partial read of a packet does not happen since packet len is already known
-			return true
-		})
-		if rawConnReadErr != nil {
+			bytesHasBeenRead += n
+			if bytesHasBeenRead == packetLen+headerSize || bytesHasBeenRead == packetLen {
+				return true
+			}
+			// Partial read, read again
+			return false
+		}); rawConnReadErr != nil {
 			return 0, fmt.Errorf("rawConn.Read failed: %w", rawConnReadErr)
 		}
-		if err != nil {
-			return 0, fmt.Errorf("closure in rawConn.Read failed: %w", err)
+		if readErr != nil {
+			return 0, fmt.Errorf("closure in rawConn.Read failed: %w", readErr)
 		}
-		v.at(packetCount).SetPacketSize(int(packetLen))
 		packetCount++
-		if bytesHasBeenRead == int(packetLen) {
+		if bytesHasBeenRead == packetLen+headerSize {
+			// next packet header is also read, continue to read next packet
+		} else if bytesHasBeenRead == packetLen {
 			// next packet seems not available now, or reached maxPacketCount
 			break
-		} else if bytesHasBeenRead != int(packetLen)+int(headerSize) {
-			return 0, fmt.Errorf("unexpected bytesHasBeenRead: %d (expected %d or %d)", bytesHasBeenRead, packetLen, packetLen+uint32(headerSize))
 		}
 	}
 	return packetCount, nil

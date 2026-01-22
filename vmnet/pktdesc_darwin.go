@@ -14,7 +14,7 @@ import (
 	"unsafe"
 )
 
-const headerSize = unsafe.Sizeof(C.uint32_t(0))
+const headerSize = int(unsafe.Sizeof(C.uint32_t(0)))
 const virtioNetHdrSize = 12 // Size of virtio_net_hdr_v1
 
 // VMPktDesc is a Go representation of C.struct_vmpktdesc.
@@ -24,6 +24,11 @@ type VMPktDesc C.struct_vmpktdesc
 func (v *VMPktDesc) SetPacketSize(size int) {
 	v.vm_pkt_size = C.size_t(size)
 	v.vm_pkt_iov.iov_len = C.size_t(size)
+}
+
+// GetPacketSize gets the packet size from VMPktDesc.
+func (v *VMPktDesc) GetPacketSize() int {
+	return int(v.vm_pkt_size)
 }
 
 // pktDescsManager manages pktDescs and their backing buffers.
@@ -65,6 +70,11 @@ func (v *pktDescsManager) at(index int) *VMPktDesc {
 	return (*VMPktDesc)(unsafe.Add(unsafe.Pointer(v.pktDescs), index*int(unsafe.Sizeof(VMPktDesc{}))))
 }
 
+// headerBufferAt returns the 4-byte header buffer at the given index.
+func (v *pktDescsManager) headerBufferAt(index int) []byte {
+	return v.backingBuffers[index][:headerSize]
+}
+
 // iter iterates over pktDescs and their corresponding buffers.
 func (v *pktDescsManager) iter(packetCount int) iter.Seq2[int, *VMPktDesc] {
 	return func(yield func(int, *VMPktDesc) bool) {
@@ -74,6 +84,12 @@ func (v *pktDescsManager) iter(packetCount int) iter.Seq2[int, *VMPktDesc] {
 			}
 		}
 	}
+}
+
+// packetBufferAt returns the packet buffer at the given index and offset.
+func (v *pktDescsManager) packetBufferAt(index, offset int) []byte {
+	end := headerSize + v.at(index).GetPacketSize()
+	return v.backingBuffers[index][headerSize+offset : end]
 }
 
 // reset resets pktDescs to initial state.

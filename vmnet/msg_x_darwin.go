@@ -14,6 +14,7 @@ import (
 	"os"
 	"runtime"
 	"syscall"
+	"time"
 	"unsafe"
 )
 
@@ -191,8 +192,12 @@ func (m *msgHdrXArray) writePacketsToPacketConn(conn net.PacketConn, packetCount
 			// send packet from msgHdrX array
 			n, err := C.sendmsg_x(C.int(fd), (*C.struct_msghdr_x)(m.at(sentCount)), C.u_int(packetCount-sentCount), 0)
 			if n < 0 {
-				if errors.Is(err, syscall.EAGAIN) || errors.Is(err, syscall.ENOBUFS) {
+				if errors.Is(err, syscall.EAGAIN) {
 					return false // try again later
+				} else if errors.Is(err, syscall.ENOBUFS) {
+					// Wait and try to send next packet
+					time.Sleep(100 * time.Microsecond)
+					continue
 				}
 				sendErr = fmt.Errorf("sendmsg_x failed: %w", err)
 				return true

@@ -12,6 +12,7 @@ import (
 	"net"
 	"os"
 	"syscall"
+	"time"
 )
 
 // MARK: - DatagramFileAdaptorForInterface
@@ -160,7 +161,7 @@ func (v *pktDescsManager) buffersForWritingToPacketConn(packetCount int) (net.Bu
 			return nil, fmt.Errorf("vm_pkt_size %d exceeds maxPacketSize %d", vmPktDesc.vm_pkt_size, v.maxPacketSize)
 		}
 		// Resize buffer to exclude the 4-byte header
-		v.writingBuffers[i] = v.backingBuffers[i][headerSize : headerSize+uintptr(vmPktDesc.vm_pkt_size)]
+		v.writingBuffers[i] = v.packetBufferAt(i, 0)
 	}
 	return v.writingBuffers[:packetCount], nil
 }
@@ -180,8 +181,12 @@ func (v *pktDescsManager) writePacketsToPacketConn(conn net.PacketConn, packetCo
 		for sentCount < packetCount {
 			// send packet from buffer
 			if err := syscall.Sendmsg(int(fd), buffers[sentCount], nil, nil, 0); err != nil {
-				if errors.Is(err, syscall.EAGAIN) || errors.Is(err, syscall.ENOBUFS) {
+				if errors.Is(err, syscall.EAGAIN) {
 					return false // try again later
+				} else if errors.Is(err, syscall.ENOBUFS) {
+					// Wait and try to send next packet
+					time.Sleep(100 * time.Microsecond)
+					continue
 				}
 				sendErr = fmt.Errorf("syscall.Sendmsg failed: %w", err)
 				return true

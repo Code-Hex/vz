@@ -187,6 +187,7 @@ func callReplyHandler(cgoReplyHandler uintptr, cgoReply, cgoError uintptr) {
 	reply := unwrapObject[*Dictionary](uintptr(cgoReply))
 	err := unwrapObject[*RichError](cgoError)
 	handler(reply, err)
+	cgo.Handle(cgoReplyHandler).Delete()
 }
 
 // SendMessageWithReply sends a message *[Dictionary] to the [Session] and waits for a reply *[Dictionary]. (macOS 13.0+)
@@ -205,8 +206,8 @@ func (s *Session) SendMessageWithReply(ctx context.Context, message *Dictionary)
 			replyCh <- ReleaseOnCleanup(Retain(reply))
 		}
 	})
+	// handle will be deleted in callReplyHandler
 	cgoReplyHandler := cgo.NewHandle(replyHandler)
-	defer cgoReplyHandler.Delete()
 	C.xpcSessionSendMessageWithReplyAsync(objc.Ptr(s), objc.Ptr(message), C.uintptr_t(cgoReplyHandler))
 	select {
 	case reply := <-replyCh:

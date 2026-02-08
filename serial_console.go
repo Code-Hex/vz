@@ -49,13 +49,18 @@ func NewFileHandleSerialPortAttachment(read, write *os.File) (*FileHandleSerialP
 		return nil, err
 	}
 
+	nserrPtr := newNSErrorAsNil()
 	attachment := &FileHandleSerialPortAttachment{
 		pointer: objc.NewPointer(
 			C.newVZFileHandleSerialPortAttachment(
 				C.int(read.Fd()),
 				C.int(write.Fd()),
+				&nserrPtr,
 			),
 		),
+	}
+	if err := newNSError(nserrPtr); err != nil {
+		return nil, err
 	}
 	objc.SetFinalizer(attachment, func(self *FileHandleSerialPortAttachment) {
 		objc.Release(self)

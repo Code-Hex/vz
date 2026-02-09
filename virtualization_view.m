@@ -169,9 +169,12 @@
     VZVirtualMachine *_virtualMachine;
     dispatch_queue_t _queue;
     VZVirtualMachineView *_virtualMachineView;
+    NSScrollView *_scrollView;
+    NSView *_liquidGlassBaseView;
     NSWindow *_window;
     NSToolbar *_toolbar;
     BOOL _enableController;
+    BOOL _useWindowCornerSafeLayout;
     // Overlay for pause mode.
     NSVisualEffectView *_pauseOverlayView;
     // Zoom function properties.
@@ -210,6 +213,7 @@
     _window = [self createMainWindowWithTitle:windowTitle width:windowWidth height:windowHeight];
     _toolbar = [self createCustomToolbar];
     _enableController = enableController;
+    _useWindowCornerSafeLayout = [self shouldUseWindowCornerSafeLayout];
     [_virtualMachine addObserver:self
                       forKeyPath:@"state"
                          options:NSKeyValueObservingOptionNew
@@ -234,6 +238,8 @@
     if (_virtualMachine) {
         [_virtualMachine removeObserver:self forKeyPath:@"state"];
     }
+    _scrollView = nil;
+    _liquidGlassBaseView = nil;
     _virtualMachineView = nil;
     _virtualMachine = nil;
     _queue = nil;
@@ -405,6 +411,53 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     [NSApp performSelectorOnMainThread:@selector(terminate:) withObject:self waitUntilDone:NO];
 }
 
+- (BOOL)shouldUseWindowCornerSafeLayout
+{
+    if (@available(macOS 26.0, *)) {
+        return YES;
+    }
+    return NO;
+}
+
+- (NSView *)createLiquidGlassBaseView
+{
+    NSView *baseView = [[[NSView alloc] initWithFrame:NSZeroRect] autorelease];
+    baseView.translatesAutoresizingMaskIntoConstraints = NO;
+    baseView.wantsLayer = YES;
+    baseView.layer.cornerRadius = 6.0;
+    baseView.layer.masksToBounds = YES;
+    baseView.layer.backgroundColor = [[NSColor colorWithCalibratedWhite:1.0 alpha:0.06] CGColor];
+    baseView.layer.borderWidth = 1.0;
+    baseView.layer.borderColor = [[NSColor colorWithCalibratedWhite:1.0 alpha:0.16] CGColor];
+    return baseView;
+}
+
+- (NSView *)createWindowContentViewForLiquidGlassLayoutWithScrollView:(NSScrollView *)scrollView
+{
+    NSView *contentView = [[[NSView alloc] initWithFrame:_window.contentView.bounds] autorelease];
+    contentView.translatesAutoresizingMaskIntoConstraints = NO;
+    _liquidGlassBaseView = [self createLiquidGlassBaseView];
+    [contentView addSubview:_liquidGlassBaseView];
+    [_liquidGlassBaseView addSubview:scrollView];
+
+    [scrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    const CGFloat basePadding = 12.0;
+    [NSLayoutConstraint activateConstraints:@[
+        [_liquidGlassBaseView.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor
+                                                           constant:basePadding],
+        [_liquidGlassBaseView.trailingAnchor constraintEqualToAnchor:contentView.trailingAnchor
+                                                            constant:-basePadding],
+        [_liquidGlassBaseView.topAnchor constraintEqualToAnchor:contentView.topAnchor],
+        [_liquidGlassBaseView.bottomAnchor constraintEqualToAnchor:contentView.bottomAnchor
+                                                          constant:-basePadding],
+        [scrollView.leadingAnchor constraintEqualToAnchor:_liquidGlassBaseView.leadingAnchor],
+        [scrollView.trailingAnchor constraintEqualToAnchor:_liquidGlassBaseView.trailingAnchor],
+        [scrollView.topAnchor constraintEqualToAnchor:_liquidGlassBaseView.topAnchor],
+        [scrollView.bottomAnchor constraintEqualToAnchor:_liquidGlassBaseView.bottomAnchor]
+    ]];
+    return contentView;
+}
+
 - (void)setupGraphicWindow
 {
     // Set custom title bar
@@ -423,22 +476,28 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 
     // Add scroll wheel event monitor for zoom functionality
     _scrollWheelMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskScrollWheel
-                                          handler:^NSEvent *(NSEvent *event) {
-                                              [self handleScrollWheel:event];
-                                              return event;
-                                          }];
+                                                                handler:^NSEvent *(NSEvent *event) {
+                                                                    [self handleScrollWheel:event];
+                                                                    return event;
+                                                                }];
 
     // Create scroll view for the virtual machine view
-    NSScrollView *scrollView = [self createScrollViewForVirtualMachineView:_virtualMachineView];
-    [_window setContentView:scrollView];
+    _scrollView = [self createScrollViewForVirtualMachineView:_virtualMachineView];
+    if (_useWindowCornerSafeLayout) {
+        NSView *contentView = [self createWindowContentViewForLiquidGlassLayoutWithScrollView:_scrollView];
+        [_window setContentView:contentView];
+    } else {
+        [_window setContentView:_scrollView];
+    }
 
-    // Configure Auto Layout constraints for VirtualMachineView to resize with the window
+    // Configure Auto Layout constraints for VirtualMachineView to resize with the window.
     [_virtualMachineView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    NSClipView *clipView = _scrollView.contentView;
     [NSLayoutConstraint activateConstraints:@[
-        [_virtualMachineView.leadingAnchor constraintEqualToAnchor:_window.contentView.leadingAnchor],
-        [_virtualMachineView.trailingAnchor constraintEqualToAnchor:_window.contentView.trailingAnchor],
-        [_virtualMachineView.topAnchor constraintEqualToAnchor:_window.contentView.topAnchor],
-        [_virtualMachineView.bottomAnchor constraintEqualToAnchor:_window.contentView.bottomAnchor]
+        [_virtualMachineView.leadingAnchor constraintEqualToAnchor:clipView.leadingAnchor],
+        [_virtualMachineView.trailingAnchor constraintEqualToAnchor:clipView.trailingAnchor],
+        [_virtualMachineView.topAnchor constraintEqualToAnchor:clipView.topAnchor],
+        [_virtualMachineView.bottomAnchor constraintEqualToAnchor:clipView.bottomAnchor]
     ]];
 
     NSSize sizeInPixels = [self getVirtualMachineSizeInPixels];
@@ -649,15 +708,18 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 
 - (void)toggleZoomMode:(id)sender
 {
+    if (_scrollView == nil) {
+        return;
+    }
     _isZoomEnabled = !_isZoomEnabled;
-    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
+    NSScrollView *scrollView = _scrollView;
 
     // Reset zoom when zoom mode is disabled.
     if (!_isZoomEnabled) {
         [NSAnimationContext
             runAnimationGroup:^(NSAnimationContext *context) {
                 [context setDuration:0.3];
-                [[_window.contentView animator] setMagnification:1.0];
+                [[scrollView animator] setMagnification:1.0];
             }
             completionHandler:^{
                 // Hide scrollers when zoom is disabled
@@ -733,12 +795,11 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     }
 
     // Only zoom if Command or Option key is held
-    if (!(event.modifierFlags & NSEventModifierFlagCommand) &&
-        !(event.modifierFlags & NSEventModifierFlagOption)) {
+    if (!(event.modifierFlags & NSEventModifierFlagCommand) && !(event.modifierFlags & NSEventModifierFlagOption)) {
         return;
     }
 
-    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
+    NSScrollView *scrollView = _scrollView;
     if (![scrollView isKindOfClass:[NSScrollView class]]) {
         return;
     }
@@ -752,8 +813,8 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     newMagnification = MIN(scrollView.maxMagnification, MAX(scrollView.minMagnification, newMagnification));
 
     // Get mouse location for centered zooming
-    NSPoint mouseLocation = [_window.contentView convertPoint:event.locationInWindow fromView:nil];
-    NSPoint centeredPoint = [scrollView.contentView convertPoint:mouseLocation fromView:_window.contentView];
+    NSPoint mouseLocation = [scrollView convertPoint:event.locationInWindow fromView:nil];
+    NSPoint centeredPoint = [scrollView.contentView convertPoint:mouseLocation fromView:scrollView];
 
     [scrollView setMagnification:newMagnification centeredAtPoint:centeredPoint];
 }
@@ -767,7 +828,7 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
         return;
     }
 
-    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
+    NSScrollView *scrollView = _scrollView;
     if (![scrollView isKindOfClass:[NSScrollView class]]) {
         [self stopScrollTimer];
         return;
@@ -829,7 +890,7 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 
 - (void)scrollTick:(NSTimer *)timer
 {
-    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
+    NSScrollView *scrollView = _scrollView;
     if (![scrollView isKindOfClass:[NSScrollView class]]) {
         [self stopScrollTimer];
         return;

@@ -179,6 +179,7 @@
     NSTimer *_scrollTimer;
     NSPoint _scrollDelta;
     id _mouseMovedMonitor;
+    id _scrollWheelMonitor;
 }
 
 - (instancetype)initWithVirtualMachine:(VZVirtualMachine *)virtualMachine
@@ -224,6 +225,10 @@
     if (_mouseMovedMonitor) {
         [NSEvent removeMonitor:_mouseMovedMonitor];
         _mouseMovedMonitor = nil;
+    }
+    if (_scrollWheelMonitor) {
+        [NSEvent removeMonitor:_scrollWheelMonitor];
+        _scrollWheelMonitor = nil;
     }
     [self stopScrollTimer];
     if (_virtualMachine) {
@@ -415,6 +420,13 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
                                                                    [self handleMouseMovement:event];
                                                                    return event;
                                                                }];
+
+    // Add scroll wheel event monitor for zoom functionality
+    _scrollWheelMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskScrollWheel
+                                          handler:^NSEvent *(NSEvent *event) {
+                                              [self handleScrollWheel:event];
+                                              return event;
+                                          }];
 
     // Create scroll view for the virtual machine view
     NSScrollView *scrollView = [self createScrollViewForVirtualMachineView:_virtualMachineView];
@@ -638,6 +650,7 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 - (void)toggleZoomMode:(id)sender
 {
     _isZoomEnabled = !_isZoomEnabled;
+    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
 
     // Reset zoom when zoom mode is disabled.
     if (!_isZoomEnabled) {
@@ -646,15 +659,29 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
                 [context setDuration:0.3];
                 [[_window.contentView animator] setMagnification:1.0];
             }
-            completionHandler:nil];
+            completionHandler:^{
+                // Hide scrollers when zoom is disabled
+                if ([scrollView isKindOfClass:[NSScrollView class]]) {
+                    scrollView.hasVerticalScroller = NO;
+                    scrollView.hasHorizontalScroller = NO;
+                }
+            }];
+    } else {
+        // Show scrollers when zoom is enabled (they'll auto-hide when not needed)
+        if ([scrollView isKindOfClass:[NSScrollView class]]) {
+            scrollView.hasVerticalScroller = YES;
+            scrollView.hasHorizontalScroller = YES;
+            scrollView.autohidesScrollers = YES;
+        }
     }
 }
 
 - (NSScrollView *)createScrollViewForVirtualMachineView:(VZVirtualMachineView *)view
 {
     NSScrollView *scrollView = [[[NSScrollView alloc] initWithFrame:_window.contentView.bounds] autorelease];
-    scrollView.hasVerticalScroller = YES;
-    scrollView.hasHorizontalScroller = YES;
+    scrollView.hasVerticalScroller = NO;
+    scrollView.hasHorizontalScroller = NO;
+    scrollView.autohidesScrollers = YES;
     scrollView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     scrollView.documentView = view;
 
@@ -693,6 +720,40 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 
     NSPoint locationInView = [recognizer locationInView:scrollView];
     NSPoint centeredPoint = [scrollView.contentView convertPoint:locationInView fromView:scrollView];
+
+    [scrollView setMagnification:newMagnification centeredAtPoint:centeredPoint];
+}
+
+// Handles scroll wheel events for zooming when Command or Option key is held.
+// This provides zoom functionality for mice and non-trackpad devices.
+- (void)handleScrollWheel:(NSEvent *)event
+{
+    if (!_isZoomEnabled) {
+        return;
+    }
+
+    // Only zoom if Command or Option key is held
+    if (!(event.modifierFlags & NSEventModifierFlagCommand) &&
+        !(event.modifierFlags & NSEventModifierFlagOption)) {
+        return;
+    }
+
+    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
+    if (![scrollView isKindOfClass:[NSScrollView class]]) {
+        return;
+    }
+
+    // Calculate zoom delta (scrolling up = zoom in, down = zoom out)
+    CGFloat zoomDelta = event.scrollingDeltaY * 0.01; // Scale factor for smooth zooming
+    CGFloat currentMagnification = scrollView.magnification;
+    CGFloat newMagnification = currentMagnification + zoomDelta;
+
+    // Clamp to min/max magnification
+    newMagnification = MIN(scrollView.maxMagnification, MAX(scrollView.minMagnification, newMagnification));
+
+    // Get mouse location for centered zooming
+    NSPoint mouseLocation = [_window.contentView convertPoint:event.locationInWindow fromView:nil];
+    NSPoint centeredPoint = [scrollView.contentView convertPoint:mouseLocation fromView:_window.contentView];
 
     [scrollView setMagnification:newMagnification centeredAtPoint:centeredPoint];
 }

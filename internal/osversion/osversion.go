@@ -1,4 +1,4 @@
-package vz
+package osversion
 
 /*
 #cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
@@ -27,24 +27,24 @@ var (
 	ErrBuildTargetOSVersion = errors.New("unsupported build target macOS version")
 )
 
-func macOSAvailable(version float64) error {
+func MacOSAvailable(version float64) error {
 	if macOSMajorMinorVersion() < version {
 		return ErrUnsupportedOSVersion
 	}
-	return macOSBuildTargetAvailable(version)
+	return MacOSBuildTargetAvailable(version)
 }
 
 var (
-	majorMinorVersion     float64
-	majorMinorVersionOnce interface{ Do(func()) } = &sync.Once{}
+	MajorMinorVersion     float64
+	MajorMinorVersionOnce interface{ Do(func()) } = &sync.Once{}
 
 	// This can be replaced in the test code to enable mock.
 	// It will not be changed in production.
-	sysctl = syscall.Sysctl
+	Sysctl = syscall.Sysctl
 )
 
-func fetchMajorMinorVersion() (float64, error) {
-	osver, err := sysctl("kern.osproductversion")
+func FetchMajorMinorVersion() (float64, error) {
+	osver, err := Sysctl("kern.osproductversion")
 	if err != nil {
 		return 0, err
 	}
@@ -58,19 +58,19 @@ func fetchMajorMinorVersion() (float64, error) {
 }
 
 func macOSMajorMinorVersion() float64 {
-	majorMinorVersionOnce.Do(func() {
-		version, err := fetchMajorMinorVersion()
+	MajorMinorVersionOnce.Do(func() {
+		version, err := FetchMajorMinorVersion()
 		if err != nil {
 			panic(err)
 		}
-		majorMinorVersion = version
+		MajorMinorVersion = version
 	})
-	return majorMinorVersion
+	return MajorMinorVersion
 }
 
 var (
-	maxAllowedVersion     int
-	maxAllowedVersionOnce interface{ Do(func()) } = &sync.Once{}
+	MaxAllowedVersion     int
+	MaxAllowedVersionOnce interface{ Do(func()) } = &sync.Once{}
 
 	getMaxAllowedVersion = func() int {
 		return int(C.mac_os_x_version_max_allowed())
@@ -78,14 +78,14 @@ var (
 )
 
 func fetchMaxAllowedVersion() int {
-	maxAllowedVersionOnce.Do(func() {
-		maxAllowedVersion = getMaxAllowedVersion()
+	MaxAllowedVersionOnce.Do(func() {
+		MaxAllowedVersion = getMaxAllowedVersion()
 	})
-	return maxAllowedVersion
+	return MaxAllowedVersion
 }
 
-// macOSBuildTargetAvailable checks whether the API available in a given version has been compiled.
-func macOSBuildTargetAvailable(version float64) error {
+// MacOSBuildTargetAvailable checks whether the API available in a given version has been compiled.
+func MacOSBuildTargetAvailable(version float64) error {
 	allowedVersion := fetchMaxAllowedVersion()
 	if allowedVersion == 0 {
 		return fmt.Errorf("undefined __MAC_OS_X_VERSION_MAX_ALLOWED: %w", ErrBuildTargetOSVersion)
@@ -107,6 +107,12 @@ func macOSBuildTargetAvailable(version float64) error {
 		target = 140000 // __MAC_14_0
 	case 15:
 		target = 150000 // __MAC_15_0
+	case 15.4:
+		target = 150400 // __MAC_15_4
+	case 26:
+		target = 260000 // __MAC_26_0
+	default:
+		return fmt.Errorf("unsupported target version %.1f: %w", version, ErrBuildTargetOSVersion)
 	}
 	if allowedVersion < target {
 		return fmt.Errorf("%w for %.1f (the binary was built with __MAC_OS_X_VERSION_MAX_ALLOWED=%d; needs recompilation)",

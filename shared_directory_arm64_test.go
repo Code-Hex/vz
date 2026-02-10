@@ -156,25 +156,6 @@ func rosettaConfiguration(t *testing.T, o vz.LinuxRosettaCachingOptions) func(*v
 	}
 }
 
-func (c *Container) exec(t *testing.T, cmds ...string) {
-	t.Helper()
-	for _, cmd := range cmds {
-		session := c.NewSession(t)
-		defer session.Close()
-		output, err := session.CombinedOutput(cmd)
-		if err != nil {
-			if len(output) > 0 {
-				t.Fatalf("failed to run command %q: %v, outputs:\n%s", cmd, err, string(output))
-			} else {
-				t.Fatalf("failed to run command %q: %v", cmd, err)
-			}
-		}
-		if len(output) > 0 {
-			t.Logf("command %q outputs:\n%s", cmd, string(output))
-		}
-	}
-}
-
 // rosettad's default unix socket
 const rosettadDefaultUnixSocket = "~/.cache/rosettad/uds/rosetta.sock"
 

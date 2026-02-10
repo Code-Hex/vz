@@ -1,23 +1,18 @@
-package vmnet
+package datagram
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -lobjc -framework Foundation -framework vmnet
-# include "vmnet_darwin.h"
-*/
-import "C"
 import (
-	"errors"
 	"fmt"
 	"net"
 	"os"
 	"syscall"
-	"time"
+
+	"github.com/Code-Hex/vz/v3/vmnet"
+	"github.com/Code-Hex/vz/v3/vmnet/fileadapter"
 )
 
-// MARK: - DatagramFileAdaptorForInterface
+// MARK: - FileAdaptorForInterface
 
-// DatagramFileAdaptorForInterface returns a file for the given [Network].
+// FileAdaptorForInterface returns a file for the given [vmnet.Interface].
 //   - Invoke the returned function in a separate goroutine to start packet forwarding between the vmnet interface and the file.
 //   - The context can be used to stop the goroutines and the interface.
 //   - The returned error channel can be used to receive errors from the goroutines.
@@ -36,103 +31,74 @@ import (
 //
 // VZ:
 //
-//	file, errCh, err := DatagramFileAdaptorForInterface(ctx, iface)
+//	file, errCh, err := FileAdaptorForInterface(ctx, iface)
 //	attachment := NewFileHandleNetworkDeviceAttachment(file)
-var DatagramFileAdaptorForInterface = FileAdaptorForInterface[*DatagramPacketForwarder, net.PacketConn]
+var FileAdaptorForInterface = fileadapter.ForInterface[*PacketForwarder, net.PacketConn]
 
-// MARK: - DatagramPacketForwarder for datagram file adaptor
+// MARK: - PacketForwarder for datagram file adaptor
 
-// DatagramPacketForwarder implements PacketForwarder for datagram file descriptor.
-type DatagramPacketForwarder struct {
-	readPktDescsManager  *pktDescsManager
-	writePktDescsManager *pktDescsManager
+// PacketForwarder implements [fileadapter.PacketForwarder] for datagram file descriptor.
+type PacketForwarder struct {
 }
 
-var _ PacketForwarder[net.PacketConn] = (*DatagramPacketForwarder)(nil)
+var _ fileadapter.PacketForwarder[net.PacketConn] = (*PacketForwarder)(nil)
 
-// New creates a new DatagramPacketForwarder.
-func (f *DatagramPacketForwarder) New() PacketForwarder[net.PacketConn] {
-	return &DatagramPacketForwarder{}
+// New creates a new [PacketForwarder].
+func (f *PacketForwarder) New() fileadapter.PacketForwarder[net.PacketConn] {
+	return &PacketForwarder{}
 }
 
-// Sockopts returns socket options for the given Interface and user desired options.
-// Default values are based on the following references:
-//   - https://developer.apple.com/documentation/virtualization/vzfilehandlenetworkdeviceattachment/maximumtransmissionunit?language=objc
-func (*DatagramPacketForwarder) Sockopts(iface *Interface, userOpts Sockopts) Sockopts {
-	return sockoptsForPacketConn(iface, userOpts)
+// Sockopts returns [fileadapter.Sockopts] for the given [vmnet.Interface] and user desired options.
+func (*PacketForwarder) Sockopts(iface *vmnet.Interface, userOpts fileadapter.Sockopts) fileadapter.Sockopts {
+	return SockoptsForPacketConn(iface, userOpts)
 }
 
-// ConnAndFile creates a [net.PacketConn] and *[os.File] pair using [syscall.Socketpair].
-func (f *DatagramPacketForwarder) ConnAndFile(opts Sockopts) (net.PacketConn, *os.File, error) {
-	return packetConnAndFile(opts)
-}
-
-// AllocateBuffers allocates packet descriptor buffers for reading and writing packets.
-func (f *DatagramPacketForwarder) AllocateBuffers(iface *Interface) error {
-	maxPacketSize := iface.MaxPacketSize
-	if iface.EnableVirtioHeader {
-		// Add virtio header size
-		maxPacketSize += virtioNetHdrSize
-	}
-	f.readPktDescsManager = newPktDescsManager(iface.MaxReadPacketCount, maxPacketSize)
-	f.writePktDescsManager = newPktDescsManager(iface.MaxWritePacketCount, maxPacketSize)
-	return nil
-}
-
-// ReadPacketsFromInterface reads packets from the vmnet Interface.
-func (f *DatagramPacketForwarder) ReadPacketsFromInterface(iface *Interface, estimatedCount int) (int, error) {
-	f.readPktDescsManager.reset()
-	return iface.ReadPackets(f.readPktDescsManager.pktDescs, estimatedCount)
-}
-
-// WritePacketsToConn writes packets to the connection.
-func (f *DatagramPacketForwarder) WritePacketsToConn(conn net.PacketConn, packetCount int) error {
-	return f.readPktDescsManager.writePacketsToPacketConn(conn, packetCount)
-}
-
-// ReadPacketsFromConn reads packets from the connection.
-func (f *DatagramPacketForwarder) ReadPacketsFromConn(conn net.PacketConn) (int, error) {
-	return f.writePktDescsManager.readPacketsFromPacketConn(conn)
-}
-
-// WritePacketsToInterface writes packets to the vmnet Interface.
-func (f *DatagramPacketForwarder) WritePacketsToInterface(iface *Interface, packetCount int) error {
-	return iface.WritePackets(f.writePktDescsManager.pktDescs, packetCount)
-}
-
-// sockoptsForPacketConn returns socket options for the given [Interface] and user desired options for [net.PacketConn].
-// Default values are based on the following references:
-//   - https://developer.apple.com/documentation/virtualization/vzfilehandlenetworkdeviceattachment/maximumtransmissionunit?language=objc
-func sockoptsForPacketConn(iface *Interface, userOpts Sockopts) Sockopts {
+// SockoptsForPacketConn returns [fileadapter.Sockopts] for the given [vmnet.Interface] and user desired options for [net.PacketConn].
+func SockoptsForPacketConn(iface *vmnet.Interface, userOpts fileadapter.Sockopts) fileadapter.Sockopts {
 	// Calculate minimum buffer sizes based on interface configuration
 	packetSize := int(iface.MaxPacketSize)
 	if iface.EnableVirtioHeader {
 		// Add virtio header size
-		packetSize += virtioNetHdrSize
+		packetSize += vmnet.VirtioNetHdrSize
 	}
-	minPacketCount := max(iface.MaxReadPacketCount, iface.MaxWritePacketCount)
+	maxPacketCount := max(iface.MaxReadPacketCount, iface.MaxWritePacketCount)
+	// On datagram socket, send buffer size only needs to hold one packet.
 	minSendBufSize := packetSize
-	minRecvBufSize := minSendBufSize * minPacketCount
+	// Minimum receive buffer size is calculated to hold multiple packets that may handled at once by the vmnet interface.
+	defaultRecvBufSize := minSendBufSize * maxPacketCount
+	if !iface.EnableTSO {
+		// If TSO is disabled, receive buffer size calculated above is too small.
+		// Increase receive buffer size to increase performance.
+		defaultRecvBufSize *= 10
+	}
 
 	// Default socket options
-	sockopts := Sockopts{
-		ReceiveBufferSize: minRecvBufSize * 4 * 10,
-		SendBufferSize:    packetSize,
+	// When TSO is enabled, both receive buffer sizes will exceed the default maximum buffer size on macOS, it will be capped by the system.
+	// default max buffer size on macOS 26.2:
+	//  kern.ipc.maxsockbuf: 8388608
+	sockopts := fileadapter.Sockopts{
+		ReceiveBufferSize: defaultRecvBufSize,
+		SendBufferSize:    minSendBufSize,
 	}
-	// If user specified options, override with minimums as needed
 	if userOpts.ReceiveBufferSize > 0 {
-		sockopts.ReceiveBufferSize = max(userOpts.ReceiveBufferSize, minRecvBufSize)
+		sockopts.ReceiveBufferSize = defaultRecvBufSize
 	}
 	if userOpts.SendBufferSize > 0 {
+		// If user specified options, override with minimums as needed
 		sockopts.SendBufferSize = max(userOpts.SendBufferSize, minSendBufSize)
 	}
 	return sockopts
 }
 
-// packetConnAndFile creates a [net.PacketConn] and *[os.File] pair using [syscall.Socketpair].
-func packetConnAndFile(opts Sockopts) (net.PacketConn, *os.File, error) {
+// ConnAndFile creates a [net.PacketConn] and *[os.File] pair using [syscall.Socketpair].
+func (f *PacketForwarder) ConnAndFile(opts fileadapter.Sockopts) (net.PacketConn, *os.File, error) {
+	return PacketConnAndFile(opts)
+}
+
+// PacketConnAndFile creates a [net.PacketConn] and *[os.File] pair using [syscall.Socketpair].
+func PacketConnAndFile(opts fileadapter.Sockopts) (net.PacketConn, *os.File, error) {
 	sendBufSize, recvBufSize := opts.SendBufferSize, opts.ReceiveBufferSize
-	connFile, file, err := filePair(syscall.SOCK_DGRAM, sendBufSize, recvBufSize)
+	connFile, file, err := fileadapter.FilePair(syscall.SOCK_DGRAM, sendBufSize, recvBufSize)
 	if err != nil {
 		return nil, nil, fmt.Errorf("ConnAndFile failed: %w", err)
 	}
@@ -150,102 +116,71 @@ func packetConnAndFile(opts Sockopts) (net.PacketConn, *os.File, error) {
 	return conn, file, nil
 }
 
-// MARK: - pktDescsManager methods for datagram file adaptor
-
-// buffersForWritingToPacketConn returns [net.Buffers] to write to the [net.PacketConn]
-// adjusted their buffer sizes based vm_pkt_size in [VMPktDesc]s read from [Interface].
-// The 4-byte header is excluded.
-func (v *pktDescsManager) buffersForWritingToPacketConn(packetCount int) (net.Buffers, error) {
-	for i, vmPktDesc := range v.iter(packetCount) {
-		if uint64(vmPktDesc.vm_pkt_size) > v.maxPacketSize {
-			return nil, fmt.Errorf("vm_pkt_size %d exceeds maxPacketSize %d", vmPktDesc.vm_pkt_size, v.maxPacketSize)
-		}
-		// Resize buffer to exclude the 4-byte header
-		v.writingBuffers[i] = v.packetBufferAt(i, 0)
+// NewInterfaceToConnForwarder creates a new [fileadapter.InterfaceToConnForwarder] for [net.PacketConn].
+func (f *PacketForwarder) NewInterfaceToConnForwarder(iface *vmnet.Interface) fileadapter.InterfaceToConnForwarder[net.PacketConn] {
+	maxPacketSize := iface.MaxPacketSize
+	if iface.EnableVirtioHeader {
+		// Add virtio header size
+		maxPacketSize += vmnet.VirtioNetHdrSize
 	}
-	return v.writingBuffers[:packetCount], nil
+	return &InterfaceToPacketConnForwarder{
+		readPktDescsManager: vmnet.NewPktDescsManager(iface.MaxReadPacketCount, maxPacketSize),
+	}
 }
 
-// writePacketsToPacketConn writes packets from [VMPktDesc]s to the [net.PacketConn].
-//   - It returns an error if any occurs during sending packets.
-func (v *pktDescsManager) writePacketsToPacketConn(conn net.PacketConn, packetCount int) error {
-	buffers, err := v.buffersForWritingToPacketConn(packetCount)
-	if err != nil {
-		return fmt.Errorf("buffersForWritingToPacketConn failed: %w", err)
+// NewConnToInterfaceForwarder creates a new [fileadapter.ConnToInterfaceForwarder] for [net.PacketConn].
+func (f *PacketForwarder) NewConnToInterfaceForwarder(iface *vmnet.Interface) fileadapter.ConnToInterfaceForwarder[net.PacketConn] {
+	maxPacketSize := iface.MaxPacketSize
+	if iface.EnableVirtioHeader {
+		// Add virtio header size
+		maxPacketSize += vmnet.VirtioNetHdrSize
 	}
-	// Get rawConn for syscall.Sendmsg
-	rawConn, _ := conn.(syscall.Conn).SyscallConn()
-	var sentCount int
-	var sendErr error
-	rawConnWriteErr := rawConn.Write(func(fd uintptr) (done bool) {
-		for sentCount < packetCount {
-			// send packet from buffer
-			if err := syscall.Sendmsg(int(fd), buffers[sentCount], nil, nil, 0); err != nil {
-				if errors.Is(err, syscall.EAGAIN) {
-					return false // try again later
-				} else if errors.Is(err, syscall.ENOBUFS) {
-					// Wait and try to send next packet
-					time.Sleep(100 * time.Microsecond)
-					continue
-				}
-				sendErr = fmt.Errorf("syscall.Sendmsg failed: %w", err)
-				return true
-			}
-			sentCount++
-		}
-		return true
-	})
-	if rawConnWriteErr != nil {
-		return fmt.Errorf("rawConn.Write failed: %w", rawConnWriteErr)
+	return &PacketConnToInterfaceForwarder{
+		writePktDescsManager: vmnet.NewPktDescsManager(iface.MaxWritePacketCount, maxPacketSize),
 	}
-	if sendErr != nil {
-		return sendErr
-	}
-	return nil
 }
 
-// readPacketsFromPacketConn reads packets from the [net.PacketConn] into [VMPktDesc]s.
-//   - It returns the number of packets read.
-//   - The packets are expected to come one by one.
-//   - It receives all available packets until no more packets are available, packetCount reaches maxPacketCount, or an error occurs.
-//   - It waits for the connection to be ready for initial packet.
-func (v *pktDescsManager) readPacketsFromPacketConn(conn net.PacketConn) (int, error) {
-	var packetCount int
-	// Read the first packet (blocking)
-	n, _, err := conn.ReadFrom(v.backingBuffers[packetCount][headerSize:])
-	if n == 0 {
-		// normal closure. Will this happen in datagram socket?
-		return 0, errors.New("conn.ReadFrom: use of closed network connection")
-	}
-	if err != nil {
-		return 0, fmt.Errorf("conn.ReadFrom failed: %w", err)
-	}
-	v.at(packetCount).SetPacketSize(n)
-	packetCount++
-	// Get rawConn for syscall.Recvfrom
-	rawConn, _ := conn.(syscall.Conn).SyscallConn()
-	var recvErr error
-	rawConnReadErr := rawConn.Read(func(fd uintptr) (done bool) {
-		// Read available packets until no more packets are available or packetCount reaches maxPacketCount
-		for packetCount < v.maxPacketCount {
-			// receive packet into buffer
-			n, _, err := syscall.Recvfrom(int(fd), v.backingBuffers[packetCount][headerSize:], 0)
-			if err != nil {
-				if !errors.Is(err, syscall.EAGAIN) {
-					recvErr = fmt.Errorf("syscall.Recvfrom failed: %w", err)
-				}
-				return true // Do not retry on error
-			}
-			v.at(packetCount).SetPacketSize(n)
-			packetCount++
-		}
-		return true
-	})
-	if rawConnReadErr != nil {
-		return 0, fmt.Errorf("rawConn.Read failed: %w", rawConnReadErr)
-	}
-	if recvErr != nil {
-		return 0, recvErr
-	}
-	return packetCount, nil
+// MARK: - Interface -> Conn
+
+// InterfaceToPacketConnForwarder forwards packets from [vmnet.Interface] to [net.PacketConn].
+type InterfaceToPacketConnForwarder struct {
+	readPktDescsManager *vmnet.PktDescsManager
+	packetCount         int
+}
+
+var _ fileadapter.InterfaceToConnForwarder[net.PacketConn] = (*InterfaceToPacketConnForwarder)(nil)
+
+// ReadPacketsFromInterface reads packets from the [vmnet.Interface].
+func (f *InterfaceToPacketConnForwarder) ReadPacketsFromInterface(iface *vmnet.Interface, estimatedCount int) (int, error) {
+	f.readPktDescsManager.Reset()
+	n, err := iface.ReadPackets(f.readPktDescsManager.PktDescs, estimatedCount)
+	f.packetCount = n
+	return n, err
+}
+
+// WritePacketsToConn writes packets to the [net.PacketConn].
+func (f *InterfaceToPacketConnForwarder) WritePacketsToConn(conn net.PacketConn) error {
+	return f.readPktDescsManager.WritePacketsToPacketConn(conn, f.packetCount)
+}
+
+// MARK: - Conn -> Interface
+
+// PacketConnToInterfaceForwarder forwards packets from [net.PacketConn] to [vmnet.Interface].
+type PacketConnToInterfaceForwarder struct {
+	writePktDescsManager *vmnet.PktDescsManager
+	packetCount          int
+}
+
+var _ fileadapter.ConnToInterfaceForwarder[net.PacketConn] = (*PacketConnToInterfaceForwarder)(nil)
+
+// ReadPacketsFromConn reads packets from the [net.PacketConn].
+func (f *PacketConnToInterfaceForwarder) ReadPacketsFromConn(conn net.PacketConn) error {
+	n, err := f.writePktDescsManager.ReadPacketsFromPacketConn(conn)
+	f.packetCount = n
+	return err
+}
+
+// WritePacketsToInterface writes packets to the [vmnet.Interface].
+func (f *PacketConnToInterfaceForwarder) WritePacketsToInterface(iface *vmnet.Interface) error {
+	return iface.WritePackets(f.writePktDescsManager.PktDescs, f.packetCount)
 }

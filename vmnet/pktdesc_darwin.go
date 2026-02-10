@@ -119,7 +119,7 @@ func (v *PktDescsManager) Reset() {
 	C.resetVMPktDescArray((*C.struct_vmpktdesc)(v.PktDescs), C.int(v.MaxPacketCount()), C.uint64_t(v.maxPacketSize))
 }
 
-// MARK: - PktDescsManager methods for datagram file adaptor
+// MARK: - PktDescsManager methods for datagram file adapter
 
 // buffersForWritingToPacketConn returns [net.Buffers] to write to the [net.PacketConn]
 // adjusted their buffer sizes based vm_pkt_size in [VMPktDesc]s read from [Interface].
@@ -212,7 +212,7 @@ func (v *PktDescsManager) ReadPacketsFromPacketConn(conn net.PacketConn) (int, e
 	return packetCount, nil
 }
 
-// MARK: - PktDescsManager methods for stream file adaptor
+// MARK: - PktDescsManager methods for stream file adapter
 
 // buffersForWritingToConn returns [net.Buffers] to write to the [net.Conn]
 // adjusted their buffer sizes based vm_pkt_size in [VMPktDesc]s read from [Interface].

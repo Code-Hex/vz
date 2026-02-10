@@ -10,9 +10,9 @@ import (
 	"github.com/Code-Hex/vz/v3/vmnet/fileadapter"
 )
 
-// MARK: - FileAdaptorForInterface
+// MARK: - FileAdapterForInterface
 
-// FileAdaptorForInterface returns a file for the given [vmnet.Interface].
+// FileAdapterForInterface returns a file for the given [vmnet.Interface].
 //   - Invoke the returned function in a separate goroutine to start packet forwarding between the vmnet interface and the file.
 //   - The context can be used to stop the goroutines and the interface.
 //   - The returned error channel can be used to receive errors from the goroutines.
@@ -31,11 +31,11 @@ import (
 //
 // VZ:
 //
-//	file, errCh, err := FileAdaptorForInterface(ctx, iface)
+//	file, errCh, err := FileAdapterForInterface(ctx, iface)
 //	attachment := NewFileHandleNetworkDeviceAttachment(file)
-var FileAdaptorForInterface = fileadapter.ForInterface[*PacketForwarder, net.PacketConn]
+var FileAdapterForInterface = fileadapter.ForInterface[*PacketForwarder, net.PacketConn]
 
-// MARK: - PacketForwarder for datagram file adaptor
+// MARK: - PacketForwarder for datagram file adapter
 
 // PacketForwarder implements [fileadapter.PacketForwarder] for datagram file descriptor.
 type PacketForwarder struct {

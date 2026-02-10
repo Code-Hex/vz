@@ -21,9 +21,9 @@ import (
 	"github.com/Code-Hex/vz/v3/vmnet/fileadapter/datagram"
 )
 
-// MARK: - FileAdaptorForInterface
+// MARK: - FileAdapterForInterface
 
-// FileAdaptorForInterface returns a file for the given [Network].
+// FileAdapterForInterface returns a file for the given [Network].
 //   - It uses [recvmsg_x] and [sendmsg_x] for packet transfer.
 //   - Invoke the returned function in a separate goroutine to start packet forwarding between the vmnet interface and the file.
 //   - The context can be used to stop the goroutines and the interface.
@@ -43,17 +43,17 @@ import (
 //
 // VZ:
 //
-//	file, errCh, err := FileAdaptorForInterface(ctx, iface)
+//	file, errCh, err := FileAdapterForInterface(ctx, iface)
 //	attachment := NewFileHandleNetworkDeviceAttachment(file)
 //
 // [recvmsg_x]: https://github.com/apple-oss-distributions/xnu/blob/94d3b452840153a99b38a3a9659680b2a006908e/bsd/sys/socket.h#L1425-L1455
 // [sendmsg_x]: https://github.com/apple-oss-distributions/xnu/blob/94d3b452840153a99b38a3a9659680b2a006908e/bsd/sys/socket.h#L1457-L1487
-var FileAdaptorForInterface = fileadapter.ForInterface[*PacketForwarder, net.PacketConn]
+var FileAdapterForInterface = fileadapter.ForInterface[*PacketForwarder, net.PacketConn]
 
-// MARK: - PacketForwarder for datagram file adaptor
+// MARK: - PacketForwarder for datagram file adapter
 
 // PacketForwarder implements [fileadapter.PacketForwarder] for datagram file descriptor by using [recvmsg_x] and [sendmsg_x].
-// See: [FileAdaptorForInterface]
+// See: [FileAdapterForInterface]
 type PacketForwarder struct {
 	localAddr         net.Addr
 	receiveBufferSize int

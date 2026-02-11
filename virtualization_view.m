@@ -170,11 +170,10 @@
     dispatch_queue_t _queue;
     VZVirtualMachineView *_virtualMachineView;
     NSScrollView *_scrollView;
-    NSView *_liquidGlassBaseView;
     NSWindow *_window;
     NSToolbar *_toolbar;
     BOOL _enableController;
-    BOOL _useWindowCornerSafeLayout;
+    BOOL _useTitlebarWindow;
     // Overlay for pause mode.
     NSVisualEffectView *_pauseOverlayView;
     // Zoom function properties.
@@ -213,7 +212,7 @@
     _window = [self createMainWindowWithTitle:windowTitle width:windowWidth height:windowHeight];
     _toolbar = [self createCustomToolbar];
     _enableController = enableController;
-    _useWindowCornerSafeLayout = [self shouldUseWindowCornerSafeLayout];
+    _useTitlebarWindow = [self shouldUseTitlebarWindow];
     [_virtualMachine addObserver:self
                       forKeyPath:@"state"
                          options:NSKeyValueObservingOptionNew
@@ -239,7 +238,6 @@
         [_virtualMachine removeObserver:self forKeyPath:@"state"];
     }
     _scrollView = nil;
-    _liquidGlassBaseView = nil;
     _virtualMachineView = nil;
     _virtualMachine = nil;
     _queue = nil;
@@ -340,26 +338,42 @@ static NSString *const PlayToolbarIdentifier = @"Play";
 static NSString *const PowerToolbarIdentifier = @"Power";
 static NSString *const SpaceToolbarIdentifier = @"Space";
 static NSString *const Space2ToolbarIdentifier = @"Space2";
+static NSString *const TitleToolbarIdentifier = @"Title";
 
 - (NSArray<NSToolbarItemIdentifier> *)setupToolbarItemIdentifiers
 {
     NSMutableArray<NSToolbarItemIdentifier> *toolbarItems = [NSMutableArray array];
+    if (_useTitlebarWindow) {
+        [toolbarItems addObject:TitleToolbarIdentifier];
+        // macOS 26+ titlebar window: keep controls aligned to the right.
+        [toolbarItems addObject:NSToolbarFlexibleSpaceItemIdentifier];
+    }
     if (_enableController) {
         if ([self canPauseVirtualMachine]) {
             [toolbarItems addObject:PauseToolbarIdentifier];
         }
         if ([self canResumeVirtualMachine]) {
-            [toolbarItems addObject:SpaceToolbarIdentifier];
+            if (_useTitlebarWindow) {
+                [toolbarItems addObject:NSToolbarSpaceItemIdentifier];
+            } else {
+                [toolbarItems addObject:SpaceToolbarIdentifier];
+            }
             [toolbarItems addObject:PlayToolbarIdentifier];
         }
         if ([self canStopVirtualMachine] || [self canStartVirtualMachine]) {
-            [toolbarItems addObject:Space2ToolbarIdentifier];
+            if (_useTitlebarWindow) {
+                [toolbarItems addObject:NSToolbarSpaceItemIdentifier];
+            } else {
+                [toolbarItems addObject:Space2ToolbarIdentifier];
+            }
             [toolbarItems addObject:PowerToolbarIdentifier];
         }
     }
     [toolbarItems addObject:NSToolbarSpaceItemIdentifier];
     [toolbarItems addObject:ZoomToolbarIdentifier];
-    [toolbarItems addObject:NSToolbarFlexibleSpaceItemIdentifier];
+    if (!_useTitlebarWindow) {
+        [toolbarItems addObject:NSToolbarFlexibleSpaceItemIdentifier];
+    }
     return [toolbarItems copy];
 }
 
@@ -411,7 +425,10 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     [NSApp performSelectorOnMainThread:@selector(terminate:) withObject:self waitUntilDone:NO];
 }
 
-- (BOOL)shouldUseWindowCornerSafeLayout
+// On macOS 26+, a toolbar window uses a 26pt corner radius, while a titlebar window uses a 16pt radius.
+// Using a titlebar window keeps corner UI controls operable inside the guest display.
+// See: https://github.com/Code-Hex/vz/issues/210
+- (BOOL)shouldUseTitlebarWindow
 {
     if (@available(macOS 26.0, *)) {
         return YES;
@@ -419,51 +436,37 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     return NO;
 }
 
-- (NSView *)createLiquidGlassBaseView
-{
-    NSView *baseView = [[[NSView alloc] initWithFrame:NSZeroRect] autorelease];
-    baseView.translatesAutoresizingMaskIntoConstraints = NO;
-    baseView.wantsLayer = YES;
-    baseView.layer.cornerRadius = 6.0;
-    baseView.layer.masksToBounds = YES;
-    baseView.layer.backgroundColor = [[NSColor colorWithCalibratedWhite:1.0 alpha:0.06] CGColor];
-    baseView.layer.borderWidth = 1.0;
-    baseView.layer.borderColor = [[NSColor colorWithCalibratedWhite:1.0 alpha:0.16] CGColor];
-    return baseView;
-}
-
 - (NSView *)createWindowContentViewForLiquidGlassLayoutWithScrollView:(NSScrollView *)scrollView
 {
     NSView *contentView = [[[NSView alloc] initWithFrame:_window.contentView.bounds] autorelease];
     contentView.translatesAutoresizingMaskIntoConstraints = NO;
-    _liquidGlassBaseView = [self createLiquidGlassBaseView];
-    [contentView addSubview:_liquidGlassBaseView];
-    [_liquidGlassBaseView addSubview:scrollView];
+    [contentView addSubview:scrollView];
 
     [scrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
-    const CGFloat basePadding = 12.0;
     [NSLayoutConstraint activateConstraints:@[
-        [_liquidGlassBaseView.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor
-                                                           constant:basePadding],
-        [_liquidGlassBaseView.trailingAnchor constraintEqualToAnchor:contentView.trailingAnchor
-                                                            constant:-basePadding],
-        [_liquidGlassBaseView.topAnchor constraintEqualToAnchor:contentView.topAnchor],
-        [_liquidGlassBaseView.bottomAnchor constraintEqualToAnchor:contentView.bottomAnchor
-                                                          constant:-basePadding],
-        [scrollView.leadingAnchor constraintEqualToAnchor:_liquidGlassBaseView.leadingAnchor],
-        [scrollView.trailingAnchor constraintEqualToAnchor:_liquidGlassBaseView.trailingAnchor],
-        [scrollView.topAnchor constraintEqualToAnchor:_liquidGlassBaseView.topAnchor],
-        [scrollView.bottomAnchor constraintEqualToAnchor:_liquidGlassBaseView.bottomAnchor]
+        [scrollView.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor],
+        [scrollView.trailingAnchor constraintEqualToAnchor:contentView.trailingAnchor],
+        [scrollView.topAnchor constraintEqualToAnchor:contentView.topAnchor],
+        [scrollView.bottomAnchor constraintEqualToAnchor:contentView.bottomAnchor]
     ]];
     return contentView;
 }
 
 - (void)setupGraphicWindow
 {
-    // Set custom title bar
-    [_window setTitlebarAppearsTransparent:YES];
+    if (_useTitlebarWindow) {
+        [_window setTitlebarAppearsTransparent:NO];
+        [_window setTitleVisibility:NSWindowTitleHidden];
+        [_window setToolbarStyle:NSWindowToolbarStyleExpanded];
+        [_window setOpaque:YES];
+        [_window setBackgroundColor:[NSColor windowBackgroundColor]];
+        [_toolbar setShowsBaselineSeparator:YES];
+    } else {
+        [_window setTitlebarAppearsTransparent:YES];
+        [_window setOpaque:NO];
+        [_toolbar setShowsBaselineSeparator:NO];
+    }
     [_window setToolbar:_toolbar];
-    [_window setOpaque:NO];
     [_window center];
 
     // Monitoring mouse movement events to control auto-scrolling behavior
@@ -483,7 +486,7 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 
     // Create scroll view for the virtual machine view
     _scrollView = [self createScrollViewForVirtualMachineView:_virtualMachineView];
-    if (_useWindowCornerSafeLayout) {
+    if (_useTitlebarWindow) {
         NSView *contentView = [self createWindowContentViewForLiquidGlassLayoutWithScrollView:_scrollView];
         [_window setContentView:contentView];
     } else {
@@ -563,6 +566,7 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 - (NSArray<NSToolbarItemIdentifier> *)toolbarAllowedItemIdentifiers:(NSToolbar *)toolbar
 {
     return @[
+        TitleToolbarIdentifier,
         ZoomToolbarIdentifier,
         PlayToolbarIdentifier,
         PauseToolbarIdentifier,
@@ -578,7 +582,29 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 {
     NSToolbarItem *item = [[[NSToolbarItem alloc] initWithItemIdentifier:itemIdentifier] autorelease];
 
-    if ([itemIdentifier isEqualToString:PauseToolbarIdentifier]) {
+    if ([itemIdentifier isEqualToString:TitleToolbarIdentifier]) {
+        NSTextField *titleLabel = [NSTextField labelWithString:_window.title ?: @""];
+        titleLabel.font = [NSFont systemFontOfSize:16 weight:NSFontWeightSemibold];
+        titleLabel.textColor = [NSColor labelColor];
+        titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        titleLabel.maximumNumberOfLines = 1;
+        NSView *titleContainer = [[[NSView alloc] initWithFrame:NSMakeRect(0, 0, 420, 20)] autorelease];
+        titleContainer.translatesAutoresizingMaskIntoConstraints = NO;
+        titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        const CGFloat paddingLeft = 26.0;
+        [titleContainer addSubview:titleLabel];
+        [NSLayoutConstraint activateConstraints:@[
+            [titleLabel.leadingAnchor constraintEqualToAnchor:titleContainer.leadingAnchor
+                                                     constant:paddingLeft],
+            [titleLabel.trailingAnchor constraintLessThanOrEqualToAnchor:titleContainer.trailingAnchor],
+            [titleLabel.centerYAnchor constraintEqualToAnchor:titleContainer.centerYAnchor]
+        ]];
+        item.view = titleContainer;
+        item.minSize = NSMakeSize(80, 20);
+        item.maxSize = NSMakeSize(420, 20);
+        [item setBordered:NO];
+        [item setLabel:@"Title"];
+    } else if ([itemIdentifier isEqualToString:PauseToolbarIdentifier]) {
         [item setImage:[NSImage imageWithSystemSymbolName:@"pause.fill" accessibilityDescription:nil]];
         [item setLabel:@"Pause"];
         [item setTarget:self];

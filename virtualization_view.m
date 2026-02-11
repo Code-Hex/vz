@@ -169,9 +169,11 @@
     VZVirtualMachine *_virtualMachine;
     dispatch_queue_t _queue;
     VZVirtualMachineView *_virtualMachineView;
+    NSScrollView *_scrollView;
     NSWindow *_window;
     NSToolbar *_toolbar;
     BOOL _enableController;
+    BOOL _useTitlebarWindow;
     // Overlay for pause mode.
     NSVisualEffectView *_pauseOverlayView;
     // Zoom function properties.
@@ -210,6 +212,7 @@
     _window = [self createMainWindowWithTitle:windowTitle width:windowWidth height:windowHeight];
     _toolbar = [self createCustomToolbar];
     _enableController = enableController;
+    _useTitlebarWindow = [self shouldUseTitlebarWindow];
     [_virtualMachine addObserver:self
                       forKeyPath:@"state"
                          options:NSKeyValueObservingOptionNew
@@ -234,6 +237,7 @@
     if (_virtualMachine) {
         [_virtualMachine removeObserver:self forKeyPath:@"state"];
     }
+    _scrollView = nil;
     _virtualMachineView = nil;
     _virtualMachine = nil;
     _queue = nil;
@@ -334,26 +338,42 @@ static NSString *const PlayToolbarIdentifier = @"Play";
 static NSString *const PowerToolbarIdentifier = @"Power";
 static NSString *const SpaceToolbarIdentifier = @"Space";
 static NSString *const Space2ToolbarIdentifier = @"Space2";
+static NSString *const TitleToolbarIdentifier = @"Title";
 
 - (NSArray<NSToolbarItemIdentifier> *)setupToolbarItemIdentifiers
 {
     NSMutableArray<NSToolbarItemIdentifier> *toolbarItems = [NSMutableArray array];
+    if (_useTitlebarWindow) {
+        [toolbarItems addObject:TitleToolbarIdentifier];
+        // macOS 26+ titlebar window: keep controls aligned to the right.
+        [toolbarItems addObject:NSToolbarFlexibleSpaceItemIdentifier];
+    }
     if (_enableController) {
         if ([self canPauseVirtualMachine]) {
             [toolbarItems addObject:PauseToolbarIdentifier];
         }
         if ([self canResumeVirtualMachine]) {
-            [toolbarItems addObject:SpaceToolbarIdentifier];
+            if (_useTitlebarWindow) {
+                [toolbarItems addObject:NSToolbarSpaceItemIdentifier];
+            } else {
+                [toolbarItems addObject:SpaceToolbarIdentifier];
+            }
             [toolbarItems addObject:PlayToolbarIdentifier];
         }
         if ([self canStopVirtualMachine] || [self canStartVirtualMachine]) {
-            [toolbarItems addObject:Space2ToolbarIdentifier];
+            if (_useTitlebarWindow) {
+                [toolbarItems addObject:NSToolbarSpaceItemIdentifier];
+            } else {
+                [toolbarItems addObject:Space2ToolbarIdentifier];
+            }
             [toolbarItems addObject:PowerToolbarIdentifier];
         }
     }
     [toolbarItems addObject:NSToolbarSpaceItemIdentifier];
     [toolbarItems addObject:ZoomToolbarIdentifier];
-    [toolbarItems addObject:NSToolbarFlexibleSpaceItemIdentifier];
+    if (!_useTitlebarWindow) {
+        [toolbarItems addObject:NSToolbarFlexibleSpaceItemIdentifier];
+    }
     return [toolbarItems copy];
 }
 
@@ -405,12 +425,48 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     [NSApp performSelectorOnMainThread:@selector(terminate:) withObject:self waitUntilDone:NO];
 }
 
+// On macOS 26+, a toolbar window uses a 26pt corner radius, while a titlebar window uses a 16pt radius.
+// Using a titlebar window keeps corner UI controls operable inside the guest display.
+// See: https://github.com/Code-Hex/vz/issues/210
+- (BOOL)shouldUseTitlebarWindow
+{
+    if (@available(macOS 26.0, *)) {
+        return YES;
+    }
+    return NO;
+}
+
+- (NSView *)createWindowContentViewForLiquidGlassLayoutWithScrollView:(NSScrollView *)scrollView
+{
+    NSView *contentView = [[[NSView alloc] initWithFrame:_window.contentView.bounds] autorelease];
+    contentView.translatesAutoresizingMaskIntoConstraints = NO;
+    [contentView addSubview:scrollView];
+
+    [scrollView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [NSLayoutConstraint activateConstraints:@[
+        [scrollView.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor],
+        [scrollView.trailingAnchor constraintEqualToAnchor:contentView.trailingAnchor],
+        [scrollView.topAnchor constraintEqualToAnchor:contentView.topAnchor],
+        [scrollView.bottomAnchor constraintEqualToAnchor:contentView.bottomAnchor]
+    ]];
+    return contentView;
+}
+
 - (void)setupGraphicWindow
 {
-    // Set custom title bar
-    [_window setTitlebarAppearsTransparent:YES];
+    if (_useTitlebarWindow) {
+        [_window setTitlebarAppearsTransparent:NO];
+        [_window setTitleVisibility:NSWindowTitleHidden];
+        [_window setToolbarStyle:NSWindowToolbarStyleExpanded];
+        [_window setOpaque:YES];
+        [_window setBackgroundColor:[NSColor windowBackgroundColor]];
+        [_toolbar setShowsBaselineSeparator:YES];
+    } else {
+        [_window setTitlebarAppearsTransparent:YES];
+        [_window setOpaque:NO];
+        [_toolbar setShowsBaselineSeparator:NO];
+    }
     [_window setToolbar:_toolbar];
-    [_window setOpaque:NO];
     [_window center];
 
     // Monitoring mouse movement events to control auto-scrolling behavior
@@ -423,22 +479,28 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 
     // Add scroll wheel event monitor for zoom functionality
     _scrollWheelMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskScrollWheel
-                                          handler:^NSEvent *(NSEvent *event) {
-                                              [self handleScrollWheel:event];
-                                              return event;
-                                          }];
+                                                                handler:^NSEvent *(NSEvent *event) {
+                                                                    [self handleScrollWheel:event];
+                                                                    return event;
+                                                                }];
 
     // Create scroll view for the virtual machine view
-    NSScrollView *scrollView = [self createScrollViewForVirtualMachineView:_virtualMachineView];
-    [_window setContentView:scrollView];
+    _scrollView = [self createScrollViewForVirtualMachineView:_virtualMachineView];
+    if (_useTitlebarWindow) {
+        NSView *contentView = [self createWindowContentViewForLiquidGlassLayoutWithScrollView:_scrollView];
+        [_window setContentView:contentView];
+    } else {
+        [_window setContentView:_scrollView];
+    }
 
-    // Configure Auto Layout constraints for VirtualMachineView to resize with the window
+    // Configure Auto Layout constraints for VirtualMachineView to resize with the window.
     [_virtualMachineView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    NSClipView *clipView = _scrollView.contentView;
     [NSLayoutConstraint activateConstraints:@[
-        [_virtualMachineView.leadingAnchor constraintEqualToAnchor:_window.contentView.leadingAnchor],
-        [_virtualMachineView.trailingAnchor constraintEqualToAnchor:_window.contentView.trailingAnchor],
-        [_virtualMachineView.topAnchor constraintEqualToAnchor:_window.contentView.topAnchor],
-        [_virtualMachineView.bottomAnchor constraintEqualToAnchor:_window.contentView.bottomAnchor]
+        [_virtualMachineView.leadingAnchor constraintEqualToAnchor:clipView.leadingAnchor],
+        [_virtualMachineView.trailingAnchor constraintEqualToAnchor:clipView.trailingAnchor],
+        [_virtualMachineView.topAnchor constraintEqualToAnchor:clipView.topAnchor],
+        [_virtualMachineView.bottomAnchor constraintEqualToAnchor:clipView.bottomAnchor]
     ]];
 
     NSSize sizeInPixels = [self getVirtualMachineSizeInPixels];
@@ -504,6 +566,7 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 - (NSArray<NSToolbarItemIdentifier> *)toolbarAllowedItemIdentifiers:(NSToolbar *)toolbar
 {
     return @[
+        TitleToolbarIdentifier,
         ZoomToolbarIdentifier,
         PlayToolbarIdentifier,
         PauseToolbarIdentifier,
@@ -519,7 +582,29 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 {
     NSToolbarItem *item = [[[NSToolbarItem alloc] initWithItemIdentifier:itemIdentifier] autorelease];
 
-    if ([itemIdentifier isEqualToString:PauseToolbarIdentifier]) {
+    if ([itemIdentifier isEqualToString:TitleToolbarIdentifier]) {
+        NSTextField *titleLabel = [NSTextField labelWithString:_window.title ?: @""];
+        titleLabel.font = [NSFont systemFontOfSize:16 weight:NSFontWeightSemibold];
+        titleLabel.textColor = [NSColor labelColor];
+        titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        titleLabel.maximumNumberOfLines = 1;
+        NSView *titleContainer = [[[NSView alloc] initWithFrame:NSMakeRect(0, 0, 420, 20)] autorelease];
+        titleContainer.translatesAutoresizingMaskIntoConstraints = NO;
+        titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        const CGFloat paddingLeft = 26.0;
+        [titleContainer addSubview:titleLabel];
+        [NSLayoutConstraint activateConstraints:@[
+            [titleLabel.leadingAnchor constraintEqualToAnchor:titleContainer.leadingAnchor
+                                                     constant:paddingLeft],
+            [titleLabel.trailingAnchor constraintLessThanOrEqualToAnchor:titleContainer.trailingAnchor],
+            [titleLabel.centerYAnchor constraintEqualToAnchor:titleContainer.centerYAnchor]
+        ]];
+        item.view = titleContainer;
+        item.minSize = NSMakeSize(80, 20);
+        item.maxSize = NSMakeSize(420, 20);
+        [item setBordered:NO];
+        [item setLabel:@"Title"];
+    } else if ([itemIdentifier isEqualToString:PauseToolbarIdentifier]) {
         [item setImage:[NSImage imageWithSystemSymbolName:@"pause.fill" accessibilityDescription:nil]];
         [item setLabel:@"Pause"];
         [item setTarget:self];
@@ -649,15 +734,18 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 
 - (void)toggleZoomMode:(id)sender
 {
+    if (_scrollView == nil) {
+        return;
+    }
     _isZoomEnabled = !_isZoomEnabled;
-    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
+    NSScrollView *scrollView = _scrollView;
 
     // Reset zoom when zoom mode is disabled.
     if (!_isZoomEnabled) {
         [NSAnimationContext
             runAnimationGroup:^(NSAnimationContext *context) {
                 [context setDuration:0.3];
-                [[_window.contentView animator] setMagnification:1.0];
+                [[scrollView animator] setMagnification:1.0];
             }
             completionHandler:^{
                 // Hide scrollers when zoom is disabled
@@ -733,12 +821,11 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     }
 
     // Only zoom if Command or Option key is held
-    if (!(event.modifierFlags & NSEventModifierFlagCommand) &&
-        !(event.modifierFlags & NSEventModifierFlagOption)) {
+    if (!(event.modifierFlags & NSEventModifierFlagCommand) && !(event.modifierFlags & NSEventModifierFlagOption)) {
         return;
     }
 
-    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
+    NSScrollView *scrollView = _scrollView;
     if (![scrollView isKindOfClass:[NSScrollView class]]) {
         return;
     }
@@ -752,8 +839,8 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     newMagnification = MIN(scrollView.maxMagnification, MAX(scrollView.minMagnification, newMagnification));
 
     // Get mouse location for centered zooming
-    NSPoint mouseLocation = [_window.contentView convertPoint:event.locationInWindow fromView:nil];
-    NSPoint centeredPoint = [scrollView.contentView convertPoint:mouseLocation fromView:_window.contentView];
+    NSPoint mouseLocation = [scrollView convertPoint:event.locationInWindow fromView:nil];
+    NSPoint centeredPoint = [scrollView.contentView convertPoint:mouseLocation fromView:scrollView];
 
     [scrollView setMagnification:newMagnification centeredAtPoint:centeredPoint];
 }
@@ -767,7 +854,7 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
         return;
     }
 
-    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
+    NSScrollView *scrollView = _scrollView;
     if (![scrollView isKindOfClass:[NSScrollView class]]) {
         [self stopScrollTimer];
         return;
@@ -829,7 +916,7 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 
 - (void)scrollTick:(NSTimer *)timer
 {
-    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
+    NSScrollView *scrollView = _scrollView;
     if (![scrollView isKindOfClass:[NSScrollView class]]) {
         [self stopScrollTimer];
         return;

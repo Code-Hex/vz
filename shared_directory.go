@@ -214,6 +214,31 @@ func (d *VirtioFileSystemDevice) SetShare(share DirectoryShare) {
 	C.setShareVZVirtioFileSystemDevice(objc.Ptr(d), objc.Ptr(share), d.dispatchQueue)
 }
 
+// Share returns the directory share currently set on this running device, or nil if none
+// is set. The concrete type is *SingleDirectoryShare or *MultipleDirectoryShare, matching
+// what was last passed to SetShare or set in the configuration. The read runs on the VM's
+// serial dispatch queue.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzvirtiofilesystemdevice/share?language=objc
+func (d *VirtioFileSystemDevice) Share() DirectoryShare {
+	ptr := C.getShareVZVirtioFileSystemDevice(objc.Ptr(d), d.dispatchQueue)
+	if ptr == nil {
+		return nil
+	}
+	if bool(C.isMultipleDirectoryShare(ptr)) {
+		share := &MultipleDirectoryShare{pointer: objc.NewPointer(ptr)}
+		objc.SetFinalizer(share, func(self *MultipleDirectoryShare) {
+			objc.Release(self)
+		})
+		return share
+	}
+	share := &SingleDirectoryShare{pointer: objc.NewPointer(ptr)}
+	objc.SetFinalizer(share, func(self *SingleDirectoryShare) {
+		objc.Release(self)
+	})
+	return share
+}
+
 // DirectorySharingDevices returns the list of directory sharing devices configured on this
 // running virtual machine, or an empty slice if none is configured. Since vz only creates
 // VirtioFileSystemDevices, every element is one.

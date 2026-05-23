@@ -35,6 +35,8 @@ void setVZVirtioFileSystemDeviceConfigurationShare(void *config, void *share);
 
 void *VZVirtualMachine_directorySharingDevices(void *machine);
 void setShareVZVirtioFileSystemDevice(void *device, void *share, void *queue);
+void *getShareVZVirtioFileSystemDevice(void *device, void *queue);
+bool isMultipleDirectoryShare(void *share);
 
 void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void *directorySharingDevices);
 void setPlatformVZVirtualMachineConfiguration(void *config,

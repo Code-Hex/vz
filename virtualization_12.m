@@ -60,6 +60,39 @@ void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void 
 }
 
 /*!
+ @abstract Return the list of directory sharing devices configured on this virtual machine. Return an empty array if none is configured.
+ @see VZDirectorySharingDevice
+ @see VZVirtualMachineConfiguration
+ */
+void *VZVirtualMachine_directorySharingDevices(void *machine)
+{
+    if (@available(macOS 12, *)) {
+        return [(VZVirtualMachine *)machine directorySharingDevices]; // NSArray<VZDirectorySharingDevice *>
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+/*!
+ @abstract Swap the directory share on a running VZVirtioFileSystemDevice.
+ @discussion
+    VZVirtioFileSystemDevice.share is get/set on the runtime device (macOS 12+), so the
+    host can change which directories a guest sees without recreating the VM. The mutation
+    must run on the VM's serial dispatch queue, like every other VZVirtualMachine interaction.
+ */
+void setShareVZVirtioFileSystemDevice(void *device, void *share, void *queue)
+{
+    if (@available(macOS 12, *)) {
+        dispatch_sync((dispatch_queue_t)queue, ^{
+            [(VZVirtioFileSystemDevice *)device setShare:(VZDirectoryShare *)share];
+        });
+        return;
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+/*!
  @abstract The hardware platform to use.
  @discussion
     Can be an instance of a VZGenericPlatformConfiguration or VZMacPlatformConfiguration. Defaults to VZGenericPlatformConfiguration.

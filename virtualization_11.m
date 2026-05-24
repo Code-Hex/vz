@@ -453,13 +453,16 @@ void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileD
     if (@available(macOS 11, *)) {
         VZFileHandleSerialPortAttachment *ret;
         @autoreleasepool {
+            // Check the returned handle, not `error`: `error` is the void** out-param (always
+            // non-nil), so `if (error != nil)` is always true. newFileHandleDupFd returns nil
+            // and sets *error only on failure. Matches newVZFileHandleNetworkDeviceAttachment.
             NSFileHandle *fileHandleForReading = newFileHandleDupFd(readFileDescriptor, error);
-            if (error != nil) {
+            if (fileHandleForReading == nil) {
                 return nil;
             }
 
             NSFileHandle *fileHandleForWriting = newFileHandleDupFd(writeFileDescriptor, error);
-            if (error != nil) {
+            if (fileHandleForWriting == nil) {
                 return nil;
             }
             ret = [[VZFileHandleSerialPortAttachment alloc]

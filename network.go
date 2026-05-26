@@ -2,9 +2,11 @@ package vz
 
 /*
 #cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization
+#cgo darwin LDFLAGS: -lobjc -framework Foundation -framework Virtualization -framework vmnet
+# include <vmnet/vmnet.h>
 # include "virtualization_11.h"
 # include "virtualization_13.h"
+# include "virtualization_26.h"
 */
 import "C"
 import (
@@ -14,6 +16,7 @@ import (
 	"syscall"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/vmnet"
 )
 
 // BridgedNetwork defines a network interface that bridges a physical interface with a virtual machine.
@@ -264,6 +267,54 @@ func (f *FileHandleNetworkDeviceAttachment) SetMaximumTransmissionUnit(mtu int) 
 // The default MTU is 1500.
 func (f *FileHandleNetworkDeviceAttachment) MaximumTransmissionUnit() int {
 	return f.mtu
+}
+
+// VmnetNetworkDeviceAttachment is a network device attachment backed
+// by an in-process vmnet logical network. The attachment binds the
+// vmnet network to the virtio-net device in-kernel — no userspace
+// pump. The caller builds the network via the vmnet subpackage,
+// which exposes operating mode (host / shared / bridged), IPv4
+// subnet, and DHCP reservations.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzvmnetnetworkdeviceattachment
+type VmnetNetworkDeviceAttachment struct {
+	*pointer
+
+	*baseNetworkDeviceAttachment
+}
+
+func (*VmnetNetworkDeviceAttachment) String() string {
+	return "VmnetNetworkDeviceAttachment"
+}
+
+// Network returns the vmnet network underlying the attachment. The
+// returned wrapper owns its own +1 retain count.
+func (v *VmnetNetworkDeviceAttachment) Network() *vmnet.Network {
+	ptr := C.VZVmnetNetworkDeviceAttachment_network(objc.Ptr(v))
+	return vmnet.NewNetworkFromPointer(objc.NewPointer(ptr))
+}
+
+var _ NetworkDeviceAttachment = (*VmnetNetworkDeviceAttachment)(nil)
+
+// NewVmnetNetworkDeviceAttachment creates a new
+// VmnetNetworkDeviceAttachment wrapping the given vmnet.Network.
+//
+// This is only supported on macOS 26 and newer, error will
+// be returned on older versions.
+func NewVmnetNetworkDeviceAttachment(network *vmnet.Network) (*VmnetNetworkDeviceAttachment, error) {
+	if err := macOSAvailable(26); err != nil {
+		return nil, err
+	}
+
+	attachment := &VmnetNetworkDeviceAttachment{
+		pointer: objc.NewPointer(
+			C.newVZVmnetNetworkDeviceAttachment(objc.Ptr(network)),
+		),
+	}
+	objc.SetFinalizer(attachment, func(self *VmnetNetworkDeviceAttachment) {
+		objc.Release(self)
+	})
+	return attachment, nil
 }
 
 // NetworkDeviceAttachment for a network device attachment.

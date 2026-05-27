@@ -454,12 +454,12 @@ void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileD
         VZFileHandleSerialPortAttachment *ret;
         @autoreleasepool {
             NSFileHandle *fileHandleForReading = newFileHandleDupFd(readFileDescriptor, error);
-            if (error != nil) {
+            if (fileHandleForReading == nil) {
                 return nil;
             }
 
             NSFileHandle *fileHandleForWriting = newFileHandleDupFd(writeFileDescriptor, error);
-            if (error != nil) {
+            if (fileHandleForWriting == nil) {
                 return nil;
             }
             ret = [[VZFileHandleSerialPortAttachment alloc]

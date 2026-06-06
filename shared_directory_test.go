@@ -106,7 +106,7 @@ func TestSingleDirectoryShare(t *testing.T) {
 				var buf bytes.Buffer
 				session.Stderr = &buf
 				if err := session.Run(v.cmd); err != nil && !v.wantErr {
-					t.Fatalf("failed to run command %q: %v\nstderr: %q", v.cmd, err, buf)
+					t.Fatalf("failed to run command %q: %v\nstderr: %q", v.cmd, err, buf.String())
 				}
 				session.Close()
 			}
@@ -132,7 +132,7 @@ func TestSingleDirectoryShare(t *testing.T) {
 			session.Stderr = &buf
 			check := "ls /mnt/shared/" + tmpFile
 			if err := session.Run(check); err != nil {
-				t.Fatalf("failed to run command %q: %v\nstderr: %q", check, err, buf)
+				t.Fatalf("failed to run command %q: %v\nstderr: %q", check, err, buf.String())
 			}
 			session.Close()
 		})
@@ -231,7 +231,7 @@ func TestMultipleDirectoryShare(t *testing.T) {
 		var buf bytes.Buffer
 		session.Stderr = &buf
 		if err := session.Run(v.cmd); err != nil && !v.wantErr {
-			t.Fatalf("failed to run command %q: %v\nstderr: %q", v.cmd, err, buf)
+			t.Fatalf("failed to run command %q: %v\nstderr: %q", v.cmd, err, buf.String())
 		}
 		session.Close()
 	}

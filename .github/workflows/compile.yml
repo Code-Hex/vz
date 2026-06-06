@@ -33,8 +33,7 @@ jobs:
         - macos-15-intel
         - macos-26
         go:
-        - '^1.24'
-        - '^1.25'
+        - '^1.26'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -62,7 +61,7 @@ jobs:
         os:
         - macos-15-intel
         go:
-        - '^1.24'
+        - '^1.26'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4

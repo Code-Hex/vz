@@ -193,7 +193,7 @@ func TestVirtioFileSystemDeviceSetShare(t *testing.T) {
 		t.Skip("VirtioFileSystemDevice is supported from macOS 12")
 	}
 
-	const tag = "swap"
+	const tag = "shared"
 
 	// Initial share: a single directory exposing fileA.
 	dirA := t.TempDir()

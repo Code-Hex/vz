@@ -206,12 +206,17 @@ func newVirtioFileSystemDevice(ptr, dispatchQueue unsafe.Pointer) *VirtioFileSys
 	}
 }
 
-// SetShare swaps the directory share on this running device. The mutation runs on the
+// SetShare swaps the directory share on this running device. Passing a nil share clears
+// it, matching VZVirtioFileSystemDevice.share being nullable. The mutation runs on the
 // VM's serial dispatch queue, as the framework requires for every VZVirtualMachine call.
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiofilesystemdevice/share?language=objc
 func (d *VirtioFileSystemDevice) SetShare(share DirectoryShare) {
-	C.setShareVZVirtioFileSystemDevice(objc.Ptr(d), objc.Ptr(share), d.dispatchQueue)
+	var sharePtr unsafe.Pointer
+	if share != nil {
+		sharePtr = objc.Ptr(share)
+	}
+	C.setShareVZVirtioFileSystemDevice(objc.Ptr(d), sharePtr, d.dispatchQueue)
 }
 
 // Share returns the directory share currently set on this running device, or nil if none

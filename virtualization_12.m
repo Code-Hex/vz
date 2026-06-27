@@ -62,7 +62,7 @@ void setDirectorySharingDevicesVZVirtualMachineConfiguration(void *config, void 
 /*!
  @abstract Return the list of directory sharing devices configured on this virtual machine. Return an empty array if none is configured.
  @see VZDirectorySharingDevice
- @see VZVirtualMachineConfiguration
+ @see VZVirtualMachine
  */
 void *VZVirtualMachine_directorySharingDevices(void *machine)
 {

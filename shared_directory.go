@@ -10,6 +10,7 @@ package vz
 import "C"
 import (
 	"os"
+	"unsafe"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
@@ -181,4 +182,86 @@ func MacOSGuestAutomountTag() (string, error) {
 	}
 	cstring := (*char)(C.getMacOSGuestAutomountTag())
 	return cstring.String(), nil
+}
+
+// VirtioFileSystemDevice is a runtime Virtio file system device obtained from a running
+// VirtualMachine via DirectorySharingDevices. Unlike VirtioFileSystemDeviceConfiguration
+// (a configuration object set before start), this is the live device: its directory share
+// can be swapped while the VM runs (macOS 12+), so the host can add or remove the
+// directories a guest sees without recreating the VM.
+//
+// Don't create a VirtioFileSystemDevice directly. Request a file system device in your
+// configuration and obtain the running instance via VirtualMachine.DirectorySharingDevices.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzvirtiofilesystemdevice?language=objc
+type VirtioFileSystemDevice struct {
+	dispatchQueue unsafe.Pointer
+	*pointer
+}
+
+func newVirtioFileSystemDevice(ptr, dispatchQueue unsafe.Pointer) *VirtioFileSystemDevice {
+	return &VirtioFileSystemDevice{
+		dispatchQueue: dispatchQueue,
+		pointer:       objc.NewPointer(ptr),
+	}
+}
+
+// SetShare swaps the directory share on this running device. Passing a nil share clears
+// it, matching VZVirtioFileSystemDevice.share being nullable. The mutation runs on the
+// VM's serial dispatch queue, as the framework requires for every VZVirtualMachine call.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzvirtiofilesystemdevice/share?language=objc
+func (d *VirtioFileSystemDevice) SetShare(share DirectoryShare) {
+	var sharePtr unsafe.Pointer
+	if share != nil {
+		sharePtr = objc.Ptr(share)
+	}
+	C.setShareVZVirtioFileSystemDevice(objc.Ptr(d), sharePtr, d.dispatchQueue)
+}
+
+// Share returns the directory share currently set on this running device, or nil if none
+// is set. The concrete type is *SingleDirectoryShare or *MultipleDirectoryShare, matching
+// what was last passed to SetShare or set in the configuration. The read runs on the VM's
+// serial dispatch queue.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzvirtiofilesystemdevice/share?language=objc
+func (d *VirtioFileSystemDevice) Share() DirectoryShare {
+	ptr := C.getShareVZVirtioFileSystemDevice(objc.Ptr(d), d.dispatchQueue)
+	if ptr == nil {
+		return nil
+	}
+	if bool(C.isMultipleDirectoryShare(ptr)) {
+		share := &MultipleDirectoryShare{pointer: objc.NewPointer(ptr)}
+		objc.SetFinalizer(share, func(self *MultipleDirectoryShare) {
+			objc.Release(self)
+		})
+		return share
+	}
+	share := &SingleDirectoryShare{pointer: objc.NewPointer(ptr)}
+	objc.SetFinalizer(share, func(self *SingleDirectoryShare) {
+		objc.Release(self)
+	})
+	return share
+}
+
+// DirectorySharingDevices returns the list of directory sharing devices configured on this
+// running virtual machine, or an empty slice if none is configured. Since vz only creates
+// VirtioFileSystemDevices, every element is one.
+//
+// This is only supported on macOS 12 and newer; nil is returned on older versions.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzvirtualmachine/directorysharingdevices?language=objc
+func (v *VirtualMachine) DirectorySharingDevices() []*VirtioFileSystemDevice {
+	if err := macOSAvailable(12); err != nil {
+		return nil
+	}
+	nsArray := objc.NewNSArray(
+		C.VZVirtualMachine_directorySharingDevices(objc.Ptr(v)),
+	)
+	ptrs := nsArray.ToPointerSlice()
+	devices := make([]*VirtioFileSystemDevice, len(ptrs))
+	for i, ptr := range ptrs {
+		devices[i] = newVirtioFileSystemDevice(ptr, v.dispatchQueue)
+	}
+	return devices
 }

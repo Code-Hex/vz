@@ -2,7 +2,7 @@ package vz
 
 /*
 #cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -lobjc -framework Foundation
+#cgo darwin LDFLAGS: -framework Foundation
 # include "virtualization_helper.h"
 */
 import "C"

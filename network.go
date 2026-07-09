@@ -322,6 +322,20 @@ func (v *VirtioNetworkDeviceConfiguration) SetMACAddress(macAddress *MACAddress)
 	C.setNetworkDevicesVZMACAddress(objc.Ptr(v), objc.Ptr(macAddress))
 }
 
+// GetMACAddress returns the media access control address of the device.
+func (v *VirtioNetworkDeviceConfiguration) GetMACAddress() *MACAddress {
+	macAddress := &MACAddress{
+		pointer: objc.NewPointer(
+			C.getNetworkDevicesVZMACAddress(objc.Ptr(v)),
+		),
+	}
+	objc.Retain(macAddress)
+	objc.SetFinalizer(macAddress, func(self *MACAddress) {
+		objc.Release(self)
+	})
+	return macAddress
+}
+
 func (v *VirtioNetworkDeviceConfiguration) Attachment() NetworkDeviceAttachment {
 	return v.attachment
 }

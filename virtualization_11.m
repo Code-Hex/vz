@@ -918,6 +918,18 @@ void setNetworkDevicesVZMACAddress(void *config, void *macAddress)
 }
 
 /*!
+ @abstract The media access control address of the device.
+ */
+void *getNetworkDevicesVZMACAddress(void *config)
+{
+    if (@available(macOS 11, *)) {
+        return [(VZNetworkDeviceConfiguration *)config macAddress];
+    }
+
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+/*!
  @abstract The address represented as a string.
  @discussion
     The 6 bytes are represented in hexadecimal form, separated by a colon character.

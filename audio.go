@@ -109,6 +109,37 @@ func NewVirtioSoundDeviceHostInputStreamConfiguration() (*VirtioSoundDeviceHostI
 	return config, nil
 }
 
+// VirtioSoundDeviceOutputStreamConfiguration defines a PCM output stream whose
+// audio is suppressed by the host. Virtualization keeps the stream clocked while
+// discarding the samples when no sink is configured.
+type VirtioSoundDeviceOutputStreamConfiguration struct {
+	*pointer
+
+	*baseVirtioSoundDeviceStreamConfiguration
+}
+
+var _ VirtioSoundDeviceStreamConfiguration = (*VirtioSoundDeviceOutputStreamConfiguration)(nil)
+
+// NewVirtioSoundDeviceOutputStreamConfiguration creates a new sound device
+// output stream configuration without a host audio sink.
+//
+// This is only supported on macOS 12 and newer, error will be returned
+// on older versions.
+func NewVirtioSoundDeviceOutputStreamConfiguration() (*VirtioSoundDeviceOutputStreamConfiguration, error) {
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
+	}
+	config := &VirtioSoundDeviceOutputStreamConfiguration{
+		pointer: objc.NewPointer(
+			C.newVZVirtioSoundDeviceOutputStreamConfiguration(),
+		),
+	}
+	objc.SetFinalizer(config, func(self *VirtioSoundDeviceOutputStreamConfiguration) {
+		objc.Release(self)
+	})
+	return config, nil
+}
+
 // VirtioSoundDeviceHostOutputStreamConfiguration is a struct that
 // defines a Virtio host sound device output stream configuration.
 //

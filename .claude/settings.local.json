@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go build *)",
+      "Bash(go vet *)",
+      "Bash(go test *)",
+      "Bash(PWD)",
+      "Bash(make download_kernel)",
+      "Bash(gh auth *)",
+      "Bash(gh repo *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(gh pr create --repo Code-Hex/vz --base main --head jlagedo:feat/runtime-directory-share --title 'feat: expose runtime directory-sharing devices with live share swap' --body ' *)",
+      "Bash(gh pr *)"
+    ]
+  }
+}

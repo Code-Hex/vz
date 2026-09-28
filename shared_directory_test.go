@@ -139,6 +139,165 @@ func TestSingleDirectoryShare(t *testing.T) {
 	}
 }
 
+func TestDirectorySharingDevices(t *testing.T) {
+	if vz.Available(12) {
+		t.Skip("VirtioFileSystemDevice is supported from macOS 12")
+	}
+
+	bootLoader, err := vz.NewLinuxBootLoader(
+		"./testdata/Image",
+		vz.WithCommandLine("console=hvc0"),
+	)
+	if err != nil {
+		t.Fatalf("failed to create boot loader: %v", err)
+	}
+
+	config, err := vz.NewVirtualMachineConfiguration(bootLoader, 1, 256*1024*1024)
+	if err != nil {
+		t.Fatalf("failed to create virtual machine configuration: %v", err)
+	}
+
+	sharedDirectory, err := vz.NewSharedDirectory(t.TempDir(), false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	single, err := vz.NewSingleDirectoryShare(sharedDirectory)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fsConfig, err := vz.NewVirtioFileSystemDeviceConfiguration("share")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fsConfig.SetDirectoryShare(single)
+	config.SetDirectorySharingDevicesVirtualMachineConfiguration(
+		[]vz.DirectorySharingDeviceConfiguration{fsConfig},
+	)
+
+	vm, err := vz.NewVirtualMachine(config)
+	if err != nil {
+		t.Fatalf("failed to create virtual machine: %v", err)
+	}
+
+	devices := vm.DirectorySharingDevices()
+	if len(devices) != 1 {
+		t.Fatalf("expected 1 directory sharing device, got %d", len(devices))
+	}
+	if devices[0] == nil {
+		t.Fatal("directory sharing device should not be nil")
+	}
+}
+
+func TestVirtioFileSystemDeviceSetShare(t *testing.T) {
+	if vz.Available(12) {
+		t.Skip("VirtioFileSystemDevice is supported from macOS 12")
+	}
+
+	const tag = "shared"
+
+	// Initial share: a single directory exposing fileA.
+	dirA := t.TempDir()
+	fileA := "a.txt"
+	if f, err := os.Create(filepath.Join(dirA, fileA)); err != nil {
+		t.Fatal(err)
+	} else {
+		f.Close()
+	}
+	sharedA, err := vz.NewSharedDirectory(dirA, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	single, err := vz.NewSingleDirectoryShare(sharedA)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fsConfig, err := vz.NewVirtioFileSystemDeviceConfiguration(tag)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fsConfig.SetDirectoryShare(single)
+
+	container := newVirtualizationMachine(t,
+		func(vmc *vz.VirtualMachineConfiguration) error {
+			vmc.SetDirectorySharingDevicesVirtualMachineConfiguration(
+				[]vz.DirectorySharingDeviceConfiguration{fsConfig},
+			)
+			return nil
+		},
+	)
+	t.Cleanup(func() {
+		if err := container.Shutdown(); err != nil {
+			log.Println(err)
+		}
+	})
+
+	run := func(cmd string, wantErr bool) {
+		t.Helper()
+		session := container.NewSession(t)
+		defer session.Close()
+		var buf bytes.Buffer
+		session.Stderr = &buf
+		err := session.Run(cmd)
+		switch {
+		case err != nil && !wantErr:
+			t.Fatalf("failed to run command %q: %v\nstderr: %q", cmd, err, buf)
+		case err == nil && wantErr:
+			t.Fatalf("expected command %q to fail but it succeeded", cmd)
+		}
+	}
+
+	devices := container.DirectorySharingDevices()
+	if len(devices) != 1 {
+		t.Fatalf("expected 1 directory sharing device, got %d", len(devices))
+	}
+	device := devices[0]
+
+	// The running device reports the single share it was configured with.
+	if got := device.Share(); got == nil {
+		t.Fatal("expected a share on the running device, got nil")
+	} else if _, ok := got.(*vz.SingleDirectoryShare); !ok {
+		t.Fatalf("expected *vz.SingleDirectoryShare, got %T", got)
+	}
+
+	// The guest sees fileA through the initial share.
+	run("mkdir -p /mnt/shared", false)
+	run(fmt.Sprintf("mount -t virtiofs %s /mnt/shared", tag), false)
+	run("ls /mnt/shared/"+fileA, false)
+
+	// Swap to a multiple share exposing a different directory under "sub".
+	dirB := t.TempDir()
+	fileB := "b.txt"
+	if f, err := os.Create(filepath.Join(dirB, fileB)); err != nil {
+		t.Fatal(err)
+	} else {
+		f.Close()
+	}
+	sharedB, err := vz.NewSharedDirectory(dirB, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	multiple, err := vz.NewMultipleDirectoryShare(map[string]*vz.SharedDirectory{
+		"sub": sharedB,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	device.SetShare(multiple)
+
+	// The running device now reports the swapped-in multiple share.
+	if got := device.Share(); got == nil {
+		t.Fatal("expected a share after swap, got nil")
+	} else if _, ok := got.(*vz.MultipleDirectoryShare); !ok {
+		t.Fatalf("expected *vz.MultipleDirectoryShare after swap, got %T", got)
+	}
+
+	// After remounting, the guest sees the swapped-in content and no longer fileA.
+	run("umount /mnt/shared", false)
+	run(fmt.Sprintf("mount -t virtiofs %s /mnt/shared", tag), false)
+	run("ls /mnt/shared/sub/"+fileB, false)
+	run("ls /mnt/shared/"+fileA, true)
+}
+
 func TestMultipleDirectoryShare(t *testing.T) {
 	if vz.Available(12) {
 		t.Skip("MultipleDirectoryShare is supported from macOS 12")

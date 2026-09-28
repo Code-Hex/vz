@@ -7,6 +7,7 @@ import (
 	"math"
 	"net"
 	"os"
+	"regexp"
 	"runtime"
 	"syscall"
 	"testing"
@@ -108,6 +109,46 @@ func (c *Container) NewSession(t *testing.T) *ssh.Session {
 	}
 	testhelper.SetKeepAlive(t, sshSession)
 	return sshSession
+}
+
+func (c *Container) DetectIPv4(t *testing.T, ifname string) string {
+	sshSession, err := c.Client.NewSession()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer sshSession.Close()
+
+	output, err := sshSession.Output(fmt.Sprintf("ip address show dev %s scope global", ifname))
+	if err != nil {
+		t.Fatal(err)
+	}
+	re := regexp.MustCompile(`(?ms)^\s+inet\s+([0-9.]+)/`)
+	matches := re.FindStringSubmatch(string(output))
+	if len(matches) == 2 {
+		return matches[1]
+	}
+	t.Fatalf("failed to parse IP address from output: %s", output)
+
+	return ""
+}
+
+func (c *Container) exec(t *testing.T, cmds ...string) {
+	t.Helper()
+	for _, cmd := range cmds {
+		session := c.NewSession(t)
+		defer session.Close()
+		output, err := session.CombinedOutput(cmd)
+		if err != nil {
+			if len(output) > 0 {
+				t.Fatalf("failed to run command %q: %v, outputs:\n%s", cmd, err, string(output))
+			} else {
+				t.Fatalf("failed to run command %q: %v", cmd, err)
+			}
+		}
+		if len(output) > 0 {
+			t.Logf("command %q outputs:\n%s", cmd, string(output))
+		}
+	}
 }
 
 func (c *Container) Shutdown() error {

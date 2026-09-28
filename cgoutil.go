@@ -1,7 +1,7 @@
 package vz
 
 /*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c
+#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
 #cgo darwin LDFLAGS: -lobjc -framework Foundation
 #import <Foundation/Foundation.h>
 

@@ -1,4 +1,10 @@
+---
 BasedOnStyle: WebKit
 Language: ObjC
+TabWidth: 4
+PointerAlignment: Right
+---
+BasedOnStyle: WebKit
+Language: Cpp
 TabWidth: 4
 PointerAlignment: Right

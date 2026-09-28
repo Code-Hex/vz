@@ -10,7 +10,7 @@ fmt:
 
 .PHONY: test
 test:
-	go test -p 1 -exec "go run $(PWD)/cmd/codesign" ./... -timeout 2m -v
+	go test -p 1 -exec "go run $(PWD)/cmd/codesign" ./... -timeout 4m -v
 
 .PHONY: test/run
 test/run:

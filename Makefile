@@ -16,6 +16,13 @@ test:
 test/run:
 	go test -p 1 -exec "go run $(PWD)/cmd/codesign" ./... -timeout 5m -v -run $(TARGET)
 
+.PHONY: test/graphics
+test/graphics:
+	@binary=$$(mktemp -t vz-graphics-test) || exit 1; \
+	trap 'rm -f "$$binary"' EXIT; \
+	xcrun clang -fblocks -I . internal/graphicstest/main.m virtualization_view.m \
+		-framework Cocoa -framework Virtualization -framework QuartzCore -o "$$binary" && "$$binary"
+
 .PHONY: test/run/124
 test/run/124:
 	TEST_ISSUE_124=1 $(MAKE) test/run TARGET=TestRunIssue124

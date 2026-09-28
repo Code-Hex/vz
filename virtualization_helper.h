@@ -2,6 +2,12 @@
 
 #import <Availability.h>
 #import <Foundation/Foundation.h>
+// vmnet.h declares vmnet_network_ref, which Virtualization.framework's
+// VZVmnetNetworkDeviceAttachment.h references via a @property. Every
+// compilation unit that ends up pulling in <Virtualization/Virtualization.h>
+// needs this in scope first, so include it here in the helper that
+// every per-version header imports.
+#import <vmnet/vmnet.h>
 
 NSDictionary *dumpProcessinfo();
 NSFileHandle *newFileHandleDupFd(int fileDescriptor, void **error);
@@ -45,6 +51,13 @@ NSFileHandle *newFileHandleDupFd(int fileDescriptor, void **error);
 #define INCLUDE_TARGET_OSX_15 1
 #else
 #pragma message("macOS 15 API has been disabled")
+#endif
+
+// for macOS 26 API
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+#define INCLUDE_TARGET_OSX_26 1
+#else
+#pragma message("macOS 26 API has been disabled")
 #endif
 
 static inline int mac_os_x_version_max_allowed()

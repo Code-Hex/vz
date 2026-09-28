@@ -97,6 +97,7 @@ void *newVZNATNetworkDeviceAttachment(void);
 void *newVZFileHandleNetworkDeviceAttachment(int fileDescriptor, void **error);
 void *newVZVirtioNetworkDeviceConfiguration(void *attachment);
 void setNetworkDevicesVZMACAddress(void *config, void *macAddress);
+void *getNetworkDevicesVZMACAddress(void *config);
 void *newVZVirtioEntropyDeviceConfiguration(void);
 void *newVZVirtioBlockDeviceConfiguration(void *attachment);
 void *newVZDiskImageStorageDeviceAttachment(const char *diskPath, bool readOnly, void **error);

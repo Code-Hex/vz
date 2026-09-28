@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"runtime"
 	"syscall"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
@@ -320,6 +321,22 @@ func newVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) *Vi
 
 func (v *VirtioNetworkDeviceConfiguration) SetMACAddress(macAddress *MACAddress) {
 	C.setNetworkDevicesVZMACAddress(objc.Ptr(v), objc.Ptr(macAddress))
+}
+
+// GetMACAddress returns the media access control address of the device.
+func (v *VirtioNetworkDeviceConfiguration) GetMACAddress() *MACAddress {
+	ptr := C.getNetworkDevicesVZMACAddress(objc.Ptr(v))
+	runtime.KeepAlive(v)
+	if ptr == nil {
+		return nil
+	}
+	macAddress := &MACAddress{
+		pointer: objc.NewPointer(ptr),
+	}
+	objc.SetFinalizer(macAddress, func(self *MACAddress) {
+		objc.Release(self)
+	})
+	return macAddress
 }
 
 func (v *VirtioNetworkDeviceConfiguration) Attachment() NetworkDeviceAttachment {

@@ -453,18 +453,28 @@ void *newVZFileHandleSerialPortAttachment(int readFileDescriptor, int writeFileD
     if (@available(macOS 11, *)) {
         VZFileHandleSerialPortAttachment *ret;
         @autoreleasepool {
+            // The Go caller reads and releases errors after this pool drains.
             NSFileHandle *fileHandleForReading = newFileHandleDupFd(readFileDescriptor, error);
             if (fileHandleForReading == nil) {
+                if (error != nil) {
+                    [(NSError *)*error retain];
+                }
                 return nil;
             }
 
             NSFileHandle *fileHandleForWriting = newFileHandleDupFd(writeFileDescriptor, error);
             if (fileHandleForWriting == nil) {
+                [fileHandleForReading release];
+                if (error != nil) {
+                    [(NSError *)*error retain];
+                }
                 return nil;
             }
             ret = [[VZFileHandleSerialPortAttachment alloc]
                 initWithFileHandleForReading:fileHandleForReading
                         fileHandleForWriting:fileHandleForWriting];
+            [fileHandleForReading release];
+            [fileHandleForWriting release];
         }
         return ret;
     }

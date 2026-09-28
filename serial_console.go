@@ -60,6 +60,7 @@ func NewFileHandleSerialPortAttachment(read, write *os.File) (*FileHandleSerialP
 		),
 	}
 	if err := newNSError(nserrPtr); err != nil {
+		objc.Release(objc.NewPointer(nserrPtr))
 		return nil, err
 	}
 	objc.SetFinalizer(attachment, func(self *FileHandleSerialPortAttachment) {

@@ -2,7 +2,7 @@ package objc
 
 /*
 #cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c
-#cgo darwin LDFLAGS: -lobjc -framework Foundation
+#cgo darwin LDFLAGS: -framework Foundation
 #import <Foundation/Foundation.h>
 
 void *makeNSMutableArray(unsigned long cap)

@@ -254,6 +254,98 @@ static void checkDisplayResizing(NSWindow *window)
     }
 }
 
+static void doubleClickHeader(NSView *header)
+{
+    NSWindow *window = header.window;
+    NSPoint point = [header convertPoint:NSMakePoint(NSMidX(header.bounds), NSMidY(header.bounds)) toView:nil];
+    NSTimeInterval timestamp = NSProcessInfo.processInfo.systemUptime;
+    NSEvent *down = [NSEvent mouseEventWithType:NSEventTypeLeftMouseDown
+                                       location:point
+                                  modifierFlags:0
+                                      timestamp:timestamp
+                                   windowNumber:window.windowNumber
+                                        context:nil
+                                    eventNumber:1
+                                     clickCount:2
+                                       pressure:1];
+    NSEvent *up = [NSEvent mouseEventWithType:NSEventTypeLeftMouseUp
+                                     location:point
+                                modifierFlags:0
+                                    timestamp:timestamp + 0.01
+                                 windowNumber:window.windowNumber
+                                      context:nil
+                                  eventNumber:2
+                                   clickCount:2
+                                     pressure:0];
+    [NSApp postEvent:up atStart:YES];
+    [header mouseDown:down];
+    [header mouseUp:up];
+    [NSApp nextEventMatchingMask:NSEventMaskLeftMouseUp untilDate:NSDate.distantPast inMode:NSDefaultRunLoopMode dequeue:YES];
+    settle(window);
+}
+
+static void checkHeaderDoubleClick(NSWindow *window)
+{
+    if (@available(macOS 26.0, *)) {
+        NSView *header = nil;
+        for (NSView *view in window.contentView.subviews) {
+            if ([view isKindOfClass:NSClassFromString(@"VZGraphicsHeaderView")]) {
+                header = view;
+                break;
+            }
+        }
+        check(header != nil, @"double-click test uses the real graphics header");
+        if (!header) {
+            return;
+        }
+        NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+        NSDictionary *saved = [[defaults volatileDomainForName:NSArgumentDomain] copy];
+        NSRect initial = window.frame;
+        NSMutableArray *actions = [NSMutableArray arrayWithArray:@[ @"Maximize", @"Minimize", @"None", @"unknown" ]];
+        if ([defaults objectForKey:@"AppleActionOnDoubleClick"] == nil) {
+            [actions addObject:NSNull.null];
+        } else {
+            printf("SKIP effective double-click preference is already defined\n");
+        }
+        @try {
+            for (id action in actions) {
+                BOOL unset = action == NSNull.null;
+                NSMutableDictionary *arguments = [NSMutableDictionary dictionaryWithDictionary:saved];
+                if (unset) {
+                    [arguments removeObjectForKey:@"AppleActionOnDoubleClick"];
+                } else {
+                    arguments[@"AppleActionOnDoubleClick"] = action;
+                }
+                [defaults setVolatileDomain:arguments forName:NSArgumentDomain];
+                NSString *label = unset ? @"unset preference" : action;
+                [window setFrame:initial display:YES];
+                doubleClickHeader(header);
+                if ([action isEqual:@"Minimize"]) {
+                    check(window.miniaturized, @"Minimize double-click sends the window to the Dock");
+                    [window deminiaturize:nil];
+                    settle(window);
+                } else if ([action isEqual:@"None"] || [action isEqual:@"unknown"]) {
+                    check(!window.miniaturized && NSEqualRects(window.frame, initial),
+                        [NSString stringWithFormat:@"%@ double-click leaves the window frame unchanged", label]);
+                } else {
+                    BOOL changed = !window.miniaturized && !NSEqualRects(window.frame, initial);
+                    check(changed, [NSString stringWithFormat:@"%@ double-click enlarges the window, before %@, after %@", label, NSStringFromRect(initial), NSStringFromRect(window.frame)]);
+                    doubleClickHeader(header);
+                    check(changed && NSEqualRects(window.frame, initial),
+                        [NSString stringWithFormat:@"%@ second double-click restores the window frame", label]);
+                }
+            }
+        } @finally {
+            [defaults setVolatileDomain:saved forName:NSArgumentDomain];
+            [saved release];
+            if (window.miniaturized) {
+                [window deminiaturize:nil];
+            }
+            [window setFrame:initial display:YES];
+        }
+    }
+}
+
 static void checkWindowActions(void) API_AVAILABLE(macos(12.0));
 static void checkWindowActions(void)
 {
@@ -279,6 +371,7 @@ static void checkWindowActions(void)
         dispatch_release(queue);
         return;
     }
+    checkHeaderDoubleClick(window);
     checkDisplayResizing(window);
     CloseDecisionDelegate *decision = [[CloseDecisionDelegate alloc] init];
     window.delegate = decision;

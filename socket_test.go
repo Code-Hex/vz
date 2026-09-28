@@ -67,7 +67,7 @@ func TestVirtioSocketListener(t *testing.T) {
 	session.Stderr = &buf
 	cmd := fmt.Sprintf("echo %s | socat - VSOCK-CONNECT:2:%d", wantData, port)
 	if err := session.Run(cmd); err != nil {
-		t.Fatalf("failed to write data to vsock: %v\nstderr: %q", err, buf)
+		t.Fatalf("failed to write data to vsock: %v\nstderr: %q", err, buf.String())
 	}
 	session.Close()
 

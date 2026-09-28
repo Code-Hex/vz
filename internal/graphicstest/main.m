@@ -335,7 +335,62 @@ static void checkHeaderDoubleClick(NSWindow *window)
                         [NSString stringWithFormat:@"%@ second double-click restores the window frame", label]);
                 }
             }
+            NSMutableDictionary *arguments = [NSMutableDictionary dictionaryWithDictionary:saved];
+            arguments[@"AppleActionOnDoubleClick"] = @"Fill";
+            [defaults setVolatileDomain:arguments forName:NSArgumentDomain];
+            for (NSValue *value in @[ [NSValue valueWithSize:NSZeroSize], [NSValue valueWithSize:NSMakeSize(1920, 1080)] ]) {
+                NSSize ratio = value.sizeValue;
+                [window setDisplayAspectRatio:ratio];
+                NSRect unfilled = initial;
+                if (!NSEqualSizes(ratio, NSZeroSize)) {
+                    unfilled.size = NSMakeSize(640, 400);
+                }
+                [window setFrame:unfilled display:YES];
+                doubleClickHeader(header);
+                check(window.zoomed,
+                    [NSString stringWithFormat:@"Fill with display ratio %@ enters the zoomed state", NSStringFromSize(ratio)]);
+                NSRect filled = window.frame;
+                NSRect visible = window.screen.visibleFrame;
+                BOOL fits = !window.miniaturized && NSContainsRect(NSInsetRect(visible, -0.5, -0.5), filled);
+                if (NSEqualSizes(ratio, NSZeroSize)) {
+                    fits &= fabs(NSMinX(filled) - NSMinX(visible)) < 0.5
+                        && fabs(NSMinY(filled) - NSMinY(visible)) < 0.5
+                        && fabs(NSWidth(filled) - NSWidth(visible)) < 0.5
+                        && fabs(NSHeight(filled) - NSHeight(visible)) < 0.5;
+                } else {
+                    NSSize display = findScrollView(window.contentView).documentView.bounds.size;
+                    fits &= display.width > 0 && display.height > 0
+                        && fabs(display.height - display.width * 9.0 / 16.0) < 1
+                        && fabs(NSHeight(filled) - display.height - 40) < 1
+                        && fabs(NSMidX(filled) - NSMidX(visible)) < 0.5
+                        && fabs(NSMidY(filled) - NSMidY(visible)) < 0.5
+                        && (fabs(NSWidth(filled) - NSWidth(visible)) < 0.5
+                            || fabs(NSHeight(filled) - NSHeight(visible)) < 0.5);
+                }
+                check(fits, [NSString stringWithFormat:@"Fill with display ratio %@ uses the largest centered frame, frame %@, screen %@", NSStringFromSize(ratio), NSStringFromRect(filled), NSStringFromRect(visible)]);
+                doubleClickHeader(header);
+                check(NSEqualRects(window.frame, filled),
+                    [NSString stringWithFormat:@"Fill with display ratio %@ is unchanged on repetition", NSStringFromSize(ratio)]);
+                [window performZoom:nil];
+                settle(window);
+                check(NSEqualRects(window.frame, unfilled),
+                    [NSString stringWithFormat:@"Zoom after Fill with display ratio %@ restores the original frame, actual %@", NSStringFromSize(ratio), NSStringFromRect(window.frame)]);
+            }
+            [window setDisplayAspectRatio:NSMakeSize(1920, 1080)];
+            NSRect beforeZoom = initial;
+            beforeZoom.size = NSMakeSize(640, 400);
+            [window setFrame:beforeZoom display:YES];
+            [window performZoom:nil];
+            settle(window);
+            BOOL zoomed = !NSEqualRects(window.frame, beforeZoom);
+            doubleClickHeader(header);
+            check(window.zoomed, @"Fill after ordinary Zoom keeps the zoomed state");
+            [window performZoom:nil];
+            settle(window);
+            check(zoomed && NSEqualRects(window.frame, beforeZoom),
+                [NSString stringWithFormat:@"Zoom then Fill then Zoom restores the original frame, expected %@, actual %@", NSStringFromRect(beforeZoom), NSStringFromRect(window.frame)]);
         } @finally {
+            [window setDisplayAspectRatio:NSZeroSize];
             [defaults setVolatileDomain:saved forName:NSArgumentDomain];
             [saved release];
             if (window.miniaturized) {

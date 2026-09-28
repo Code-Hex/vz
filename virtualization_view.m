@@ -10,6 +10,16 @@
 
 static const CGFloat VZGraphicsHeaderHeight = 40.0;
 
+static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRatio)
+{
+    if (displayAspectRatio.width <= 0 || displayAspectRatio.height <= 0) {
+        return availableSize;
+    }
+    CGFloat scale = displayAspectRatio.height / displayAspectRatio.width;
+    CGFloat height = MIN(availableSize.height, availableSize.width * scale + VZGraphicsHeaderHeight);
+    return NSMakeSize((height - VZGraphicsHeaderHeight) / scale, height);
+}
+
 @interface VZGraphicsControlButton : NSButton
 @end
 
@@ -91,6 +101,16 @@ static const CGFloat VZGraphicsHeaderHeight = 40.0;
 
 @end
 
+@interface VZGraphicsWindow : NSWindow
+@property NSSize displayAspectRatio;
+@property (readonly) BOOL fillsScreen;
+- (instancetype)initWithDisplayRect:(NSRect)rect;
+- (void)setDisplayView:(NSView *)view;
+- (void)setDisplaySize:(NSSize)size;
+- (void)setControlItems:(NSArray<NSToolbarItem *> *)items;
+- (void)performTitlebarDoubleClick:(id)sender;
+@end
+
 @interface VZGraphicsHeaderView : NSVisualEffectView
 @property (readonly) NSTextField *titleLabel;
 @property (readonly) NSStackView *controls;
@@ -139,17 +159,18 @@ static const CGFloat VZGraphicsHeaderHeight = 40.0;
 
 - (void)mouseDown:(NSEvent *)event
 {
-    [self.window performWindowDragWithEvent:event];
+    if (event.clickCount != 2) {
+        [self.window performWindowDragWithEvent:event];
+    }
 }
 
-@end
+- (void)mouseUp:(NSEvent *)event
+{
+    if (event.clickCount == 2 && NSPointInRect([self convertPoint:event.locationInWindow fromView:nil], self.bounds)) {
+        [(VZGraphicsWindow *)self.window performTitlebarDoubleClick:self];
+    }
+}
 
-@interface VZGraphicsWindow : NSWindow
-@property NSSize displayAspectRatio;
-- (instancetype)initWithDisplayRect:(NSRect)rect;
-- (void)setDisplayView:(NSView *)view;
-- (void)setDisplaySize:(NSSize)size;
-- (void)setControlItems:(NSArray<NSToolbarItem *> *)items;
 @end
 
 @implementation VZGraphicsWindow {
@@ -240,6 +261,34 @@ static const CGFloat VZGraphicsHeaderHeight = 40.0;
 - (void)performMiniaturize:(id)sender
 {
     [self miniaturize:sender];
+}
+
+- (void)performTitlebarDoubleClick:(id)sender
+{
+    NSString *action = [[NSUserDefaults standardUserDefaults] stringForKey:@"AppleActionOnDoubleClick"];
+    if (action == nil || [action isEqualToString:@"Maximize"]) {
+        [self performZoom:sender];
+    } else if ([action isEqualToString:@"Minimize"]) {
+        [self performMiniaturize:sender];
+    } else if ([action isEqualToString:@"Fill"]) {
+        if ((self.styleMask & NSWindowStyleMaskFullScreen) || (_fillsScreen && self.isZoomed)) {
+            return;
+        }
+        if (self.isZoomed) {
+            [self performZoom:sender];
+        }
+        _fillsScreen = YES;
+        [super performZoom:sender];
+    }
+}
+
+- (void)performZoom:(id)sender
+{
+    if (!self.isZoomed) {
+        _fillsScreen = NO;
+    }
+    [super performZoom:sender];
+    _fillsScreen = NO;
 }
 
 - (void)setTitle:(NSString *)title
@@ -706,12 +755,15 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 - (NSRect)windowWillUseStandardFrame:(NSWindow *)sender defaultFrame:(NSRect)frame
 {
     if ([sender isKindOfClass:[VZGraphicsWindow class]]) {
-        NSSize ratio = [(VZGraphicsWindow *)sender displayAspectRatio];
-        if (ratio.width > 0 && ratio.height > 0) {
-            CGFloat scale = ratio.height / ratio.width;
-            CGFloat height = MIN(frame.size.height, frame.size.width * scale + VZGraphicsHeaderHeight);
-            frame.origin.y += frame.size.height - height;
-            frame.size = NSMakeSize((height - VZGraphicsHeaderHeight) / scale, height);
+        VZGraphicsWindow *window = (VZGraphicsWindow *)sender;
+        if (window.fillsScreen && window.screen != nil) {
+            frame = window.screen.visibleFrame;
+            NSSize size = VZGraphicsSizeToFit(frame.size, window.displayAspectRatio);
+            frame = NSMakeRect(NSMidX(frame) - size.width / 2, NSMidY(frame) - size.height / 2, size.width, size.height);
+        } else {
+            NSSize size = VZGraphicsSizeToFit(frame.size, window.displayAspectRatio);
+            frame.origin.y += frame.size.height - size.height;
+            frame.size = size;
         }
     }
     return frame;

@@ -448,6 +448,14 @@ func TestVirtualMachineStateString(t *testing.T) {
 			state: vz.VirtualMachineStateStopping,
 			want:  "VirtualMachineStateStopping",
 		},
+		{
+			state: vz.VirtualMachineStateSaving,
+			want:  "VirtualMachineStateSaving",
+		},
+		{
+			state: vz.VirtualMachineStateRestoring,
+			want:  "VirtualMachineStateRestoring",
+		},
 	}
 	for _, tc := range cases {
 		got := tc.state.String()

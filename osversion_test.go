@@ -119,6 +119,10 @@ func TestAvailableVersion(t *testing.T) {
 				_, err := NewVirtioSoundDeviceHostInputStreamConfiguration()
 				return err
 			},
+			"NewVirtioSoundDeviceOutputStreamConfiguration": func() error {
+				_, err := NewVirtioSoundDeviceOutputStreamConfiguration()
+				return err
+			},
 			"NewVirtioSoundDeviceHostOutputStreamConfiguration": func() error {
 				_, err := NewVirtioSoundDeviceHostOutputStreamConfiguration()
 				return err

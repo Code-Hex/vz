@@ -923,7 +923,7 @@ void setNetworkDevicesVZMACAddress(void *config, void *macAddress)
 void *getNetworkDevicesVZMACAddress(void *config)
 {
     if (@available(macOS 11, *)) {
-        return [(VZNetworkDeviceConfiguration *)config macAddress];
+        return [[(VZNetworkDeviceConfiguration *)config MACAddress] retain];
     }
 
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();

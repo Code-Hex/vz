@@ -74,6 +74,14 @@ func TestVirtioNetworkDeviceConfigurationGetMACAddress(t *testing.T) {
 	if gotHardwareAddr := got.HardwareAddr(); !bytes.Equal(gotHardwareAddr, want) {
 		t.Fatalf("want hardware address %q but got %q", want, gotHardwareAddr)
 	}
+	replacement, err := vz.NewMACAddress(net.HardwareAddr{0x02, 0x00, 0x5e, 0x10, 0x00, 0x02})
+	if err != nil {
+		t.Fatal(err)
+	}
+	config.SetMACAddress(replacement)
+	if got.String() != want.String() {
+		t.Fatalf("want retained MAC address %q but got %q", want, got)
+	}
 }
 
 func TestVirtioNetworkDeviceConfigurationGetDefaultMACAddress(t *testing.T) {

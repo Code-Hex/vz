@@ -3,6 +3,7 @@ package vz_test
 import (
 	"runtime"
 	"testing"
+	"time"
 
 	"github.com/Code-Hex/vz/v3"
 	"github.com/Code-Hex/vz/v3/internal/objc"
@@ -40,6 +41,7 @@ func TestVmnetNetworkDeviceAttachmentNetworkOutlivesAttachment(t *testing.T) {
 		t.Skipf("vmnet attachment requires macOS 26: %v", err)
 	}
 
+	collected := make(chan struct{})
 	borrowed := func() *vmnet.Network {
 		config, err := vmnet.NewNetworkConfiguration(vmnet.HostMode)
 		if err != nil {
@@ -53,11 +55,22 @@ func TestVmnetNetworkDeviceAttachmentNetworkOutlivesAttachment(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		runtime.AddCleanup(attachment, func(done chan struct{}) { close(done) }, collected)
 		return attachment.Network()
 	}()
 
-	for range 3 {
+	deadline := time.NewTimer(5 * time.Second)
+	defer deadline.Stop()
+waitForCollection:
+	for {
 		runtime.GC()
+		select {
+		case <-collected:
+			break waitForCollection
+		case <-deadline.C:
+			t.Fatal("attachment was not collected")
+		case <-time.After(10 * time.Millisecond):
+		}
 	}
 	subnet, err := borrowed.IPv4Subnet()
 	if err != nil {

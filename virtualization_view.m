@@ -6,6 +6,342 @@
 
 #import "virtualization_view.h"
 
+#import <QuartzCore/QuartzCore.h>
+
+static const CGFloat VZGraphicsHeaderHeight = 40.0;
+
+static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRatio)
+{
+    if (displayAspectRatio.width <= 0 || displayAspectRatio.height <= 0) {
+        return availableSize;
+    }
+    CGFloat scale = displayAspectRatio.height / displayAspectRatio.width;
+    CGFloat height = MIN(availableSize.height, availableSize.width * scale + VZGraphicsHeaderHeight);
+    return NSMakeSize((height - VZGraphicsHeaderHeight) / scale, height);
+}
+
+@interface VZGraphicsControlButton : NSButton
+@end
+
+@implementation VZGraphicsControlButton {
+    NSTrackingArea *_hoverTrackingArea;
+    BOOL _hovered;
+}
+
+- (void)dealloc
+{
+    [_hoverTrackingArea release];
+    [super dealloc];
+}
+
+- (NSSize)intrinsicContentSize
+{
+    return NSMakeSize(32, 32);
+}
+
+- (NSEdgeInsets)alignmentRectInsets
+{
+    return NSEdgeInsetsMake(0, 0, 0, 0);
+}
+
+- (void)updateTrackingAreas
+{
+    if (_hoverTrackingArea) {
+        [self removeTrackingArea:_hoverTrackingArea];
+        [_hoverTrackingArea release];
+    }
+    [super updateTrackingAreas];
+    _hoverTrackingArea = [[NSTrackingArea alloc] initWithRect:NSZeroRect
+                                                      options:NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways | NSTrackingInVisibleRect
+                                                        owner:self
+                                                     userInfo:nil];
+    [self addTrackingArea:_hoverTrackingArea];
+    _hovered = self.window != nil && NSPointInRect([self convertPoint:self.window.mouseLocationOutsideOfEventStream fromView:nil], self.bounds);
+    self.needsDisplay = YES;
+}
+
+- (void)mouseEntered:(NSEvent *)event
+{
+    _hovered = YES;
+    self.needsDisplay = YES;
+}
+
+- (void)mouseExited:(NSEvent *)event
+{
+    _hovered = NO;
+    self.needsDisplay = YES;
+}
+
+- (void)drawRect:(NSRect)dirtyRect
+{
+    BOOL emphasized = _hovered || self.state == NSControlStateValueOn || self.cell.isHighlighted;
+    NSColor *tint = self.enabled && !emphasized ? NSColor.secondaryLabelColor : NSColor.labelColor;
+    if (![self.contentTintColor isEqual:tint]) {
+        self.contentTintColor = tint;
+    }
+    NSButtonCell *cell = (NSButtonCell *)self.cell;
+    if (cell.showsStateBy != NSNoCellMask) {
+        cell.showsStateBy = NSNoCellMask;
+    }
+    BOOL dark = [[self.effectiveAppearance bestMatchFromAppearancesWithNames:@[ NSAppearanceNameAqua, NSAppearanceNameDarkAqua ]] isEqualToString:NSAppearanceNameDarkAqua];
+    CGFloat opacity = 0;
+    if (self.enabled) {
+        if (self.cell.isHighlighted) {
+            opacity = dark ? 0.24 : 0.18;
+        } else if (self.state == NSControlStateValueOn) {
+            opacity = _hovered ? (dark ? 0.20 : 0.14) : (dark ? 0.16 : 0.10);
+        } else if (_hovered) {
+            opacity = dark ? 0.10 : 0.06;
+        }
+    }
+    [[NSColor.labelColor colorWithAlphaComponent:opacity] setFill];
+    [[NSBezierPath bezierPathWithRoundedRect:self.bounds xRadius:8 yRadius:8] fill];
+    [super drawRect:dirtyRect];
+}
+
+@end
+
+@interface VZGraphicsWindow : NSWindow
+@property NSSize displayAspectRatio;
+@property (readonly) BOOL fillsScreen;
+- (instancetype)initWithDisplayRect:(NSRect)rect;
+- (void)setDisplayView:(NSView *)view;
+- (void)setDisplaySize:(NSSize)size;
+- (void)setControlItems:(NSArray<NSToolbarItem *> *)items;
+- (void)performTitlebarDoubleClick:(id)sender;
+@end
+
+@interface VZGraphicsHeaderView : NSVisualEffectView
+@property (readonly) NSTextField *titleLabel;
+@property (readonly) NSStackView *controls;
+@end
+
+@implementation VZGraphicsHeaderView
+
+- (instancetype)initWithFrame:(NSRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        self.material = NSVisualEffectMaterialTitlebar;
+        self.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+        self.state = NSVisualEffectStateFollowsWindowActiveState;
+        self.wantsLayer = YES;
+        self.layer.cornerRadius = 16;
+        self.layer.maskedCorners = kCALayerMinXMaxYCorner | kCALayerMaxXMaxYCorner;
+        self.layer.masksToBounds = YES;
+
+        _titleLabel = [NSTextField labelWithString:@""];
+        _titleLabel.font = [NSFont systemFontOfSize:13 weight:NSFontWeightSemibold];
+        _titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        [_titleLabel setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
+        _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+        [self addSubview:_titleLabel];
+
+        _controls = [NSStackView stackViewWithViews:@[]];
+        _controls.orientation = NSUserInterfaceLayoutOrientationHorizontal;
+        _controls.alignment = NSLayoutAttributeCenterY;
+        _controls.spacing = 8;
+        _controls.translatesAutoresizingMaskIntoConstraints = NO;
+        [self addSubview:_controls];
+        [NSLayoutConstraint activateConstraints:@[
+            [_titleLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor
+                                                      constant:88],
+            [_titleLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
+            [_titleLabel.trailingAnchor constraintLessThanOrEqualToAnchor:_controls.leadingAnchor
+                                                                 constant:-12],
+            [_controls.trailingAnchor constraintEqualToAnchor:self.trailingAnchor
+                                                     constant:-12],
+            [_controls.centerYAnchor constraintEqualToAnchor:self.centerYAnchor]
+        ]];
+    }
+    return self;
+}
+
+- (void)mouseDown:(NSEvent *)event
+{
+    if (event.clickCount != 2) {
+        [self.window performWindowDragWithEvent:event];
+    }
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+    if (event.clickCount == 2 && NSPointInRect([self convertPoint:event.locationInWindow fromView:nil], self.bounds)) {
+        [(VZGraphicsWindow *)self.window performTitlebarDoubleClick:self];
+    }
+}
+
+@end
+
+@implementation VZGraphicsWindow {
+    VZGraphicsHeaderView *_header;
+}
+
+- (instancetype)initWithDisplayRect:(NSRect)rect
+{
+    rect.size.height += VZGraphicsHeaderHeight;
+    self = [super initWithContentRect:rect
+                            styleMask:NSWindowStyleMaskBorderless | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable
+                              backing:NSBackingStoreBuffered
+                                defer:NO];
+    if (self) {
+        self.opaque = NO;
+        self.backgroundColor = NSColor.clearColor;
+        self.hasShadow = YES;
+        self.collectionBehavior = NSWindowCollectionBehaviorFullScreenPrimary;
+        self.minSize = NSMakeSize(320, 240 + VZGraphicsHeaderHeight);
+        _header = [[[VZGraphicsHeaderView alloc] initWithFrame:NSZeroRect] autorelease];
+        _header.translatesAutoresizingMaskIntoConstraints = NO;
+        [self.contentView addSubview:_header];
+        [NSLayoutConstraint activateConstraints:@[
+            [_header.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor],
+            [_header.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor],
+            [_header.topAnchor constraintEqualToAnchor:self.contentView.topAnchor],
+            [_header.heightAnchor constraintEqualToConstant:VZGraphicsHeaderHeight]
+        ]];
+
+        const struct {
+            NSWindowButton type;
+            SEL action;
+            NSAccessibilitySubrole subrole;
+        } controls[] = {
+            { NSWindowCloseButton, @selector(performClose:), NSAccessibilityCloseButtonSubrole },
+            { NSWindowMiniaturizeButton, @selector(performMiniaturize:), NSAccessibilityMinimizeButtonSubrole },
+            { NSWindowZoomButton, @selector(toggleFullScreen:), NSAccessibilityFullScreenButtonSubrole },
+        };
+        for (NSUInteger index = 0; index < sizeof(controls) / sizeof(controls[0]); index++) {
+            NSButton *button = [NSWindow standardWindowButton:controls[index].type
+                                                 forStyleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable];
+            button.target = self;
+            button.action = controls[index].action;
+            button.accessibilityElement = YES;
+            button.accessibilityRole = NSAccessibilityButtonRole;
+            button.accessibilitySubrole = controls[index].subrole;
+            button.accessibilityLabel = NSAccessibilityRoleDescription(NSAccessibilityButtonRole, controls[index].subrole);
+            button.translatesAutoresizingMaskIntoConstraints = NO;
+            [_header addSubview:button];
+            [NSLayoutConstraint activateConstraints:@[
+                [button.leadingAnchor constraintEqualToAnchor:_header.leadingAnchor
+                                                     constant:14 + index * 20],
+                [button.centerYAnchor constraintEqualToAnchor:_header.centerYAnchor],
+                [button.widthAnchor constraintEqualToConstant:14],
+                [button.heightAnchor constraintEqualToConstant:14]
+            ]];
+            if (controls[index].type == NSWindowCloseButton) {
+                self.accessibilityCloseButton = button;
+            } else if (controls[index].type == NSWindowMiniaturizeButton) {
+                self.accessibilityMinimizeButton = button;
+            } else {
+                self.accessibilityZoomButton = button;
+                self.accessibilityFullScreenButton = button;
+            }
+        }
+    }
+    return self;
+}
+
+- (BOOL)canBecomeKeyWindow
+{
+    return YES;
+}
+
+- (BOOL)canBecomeMainWindow
+{
+    return YES;
+}
+
+- (void)performClose:(id)sender
+{
+    if ([self.delegate respondsToSelector:@selector(windowShouldClose:)] && ![self.delegate windowShouldClose:self]) {
+        return;
+    }
+    [self close];
+}
+
+- (void)performMiniaturize:(id)sender
+{
+    [self miniaturize:sender];
+}
+
+- (void)performTitlebarDoubleClick:(id)sender
+{
+    NSString *action = [[NSUserDefaults standardUserDefaults] stringForKey:@"AppleActionOnDoubleClick"];
+    if (action == nil || [action isEqualToString:@"Maximize"]) {
+        [self performZoom:sender];
+    } else if ([action isEqualToString:@"Minimize"]) {
+        [self performMiniaturize:sender];
+    } else if ([action isEqualToString:@"Fill"]) {
+        if ((self.styleMask & NSWindowStyleMaskFullScreen) || (_fillsScreen && self.isZoomed)) {
+            return;
+        }
+        if (self.isZoomed) {
+            [self performZoom:sender];
+        }
+        _fillsScreen = YES;
+        [super performZoom:sender];
+    }
+}
+
+- (void)performZoom:(id)sender
+{
+    if (!self.isZoomed) {
+        _fillsScreen = NO;
+    }
+    [super performZoom:sender];
+    _fillsScreen = NO;
+}
+
+- (void)setTitle:(NSString *)title
+{
+    [super setTitle:title];
+    _header.titleLabel.stringValue = title;
+}
+
+- (void)setDisplayView:(NSView *)view
+{
+    view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.contentView addSubview:view];
+    [NSLayoutConstraint activateConstraints:@[
+        [view.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor],
+        [view.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor],
+        [view.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor],
+        [view.topAnchor constraintEqualToAnchor:_header.bottomAnchor]
+    ]];
+}
+
+- (void)setDisplaySize:(NSSize)size
+{
+    size.height += VZGraphicsHeaderHeight;
+    [self setContentSize:size];
+}
+
+- (void)setControlItems:(NSArray<NSToolbarItem *> *)items
+{
+    for (NSView *view in [[_header.controls.arrangedSubviews copy] autorelease]) {
+        [_header.controls removeArrangedSubview:view];
+        [view removeFromSuperview];
+    }
+    for (NSToolbarItem *item in items) {
+        NSButton *button;
+        if ([item.view isKindOfClass:[NSButton class]]) {
+            button = (NSButton *)item.view;
+        } else {
+            if (!item.action) {
+                continue;
+            }
+            button = [VZGraphicsControlButton buttonWithImage:item.image target:item.target action:item.action];
+            button.enabled = item.enabled;
+        }
+        button.bordered = NO;
+        button.contentTintColor = NSColor.labelColor;
+        button.toolTip = item.toolTip;
+        button.accessibilityLabel = item.label;
+        [_header.controls addArrangedSubview:button];
+    }
+}
+
+@end
+
 @implementation VZApplication
 
 - (void)run
@@ -169,6 +505,7 @@
     VZVirtualMachine *_virtualMachine;
     dispatch_queue_t _queue;
     VZVirtualMachineView *_virtualMachineView;
+    NSScrollView *_scrollView;
     NSWindow *_window;
     NSToolbar *_toolbar;
     BOOL _enableController;
@@ -208,7 +545,9 @@
 
     // Setup some window configs
     _window = [self createMainWindowWithTitle:windowTitle width:windowWidth height:windowHeight];
-    _toolbar = [self createCustomToolbar];
+    if (![_window isKindOfClass:[VZGraphicsWindow class]]) {
+        _toolbar = [self createCustomToolbar];
+    }
     _enableController = enableController;
     [_virtualMachine addObserver:self
                       forKeyPath:@"state"
@@ -234,6 +573,7 @@
     if (_virtualMachine) {
         [_virtualMachine removeObserver:self forKeyPath:@"state"];
     }
+    _scrollView = nil;
     _virtualMachineView = nil;
     _virtualMachine = nil;
     _queue = nil;
@@ -354,17 +694,24 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     [toolbarItems addObject:NSToolbarSpaceItemIdentifier];
     [toolbarItems addObject:ZoomToolbarIdentifier];
     [toolbarItems addObject:NSToolbarFlexibleSpaceItemIdentifier];
-    return [toolbarItems copy];
+    return toolbarItems;
 }
 
 - (void)updateToolbarItems
 {
-    NSArray<NSToolbarItemIdentifier> *toolbarItems = [self setupToolbarItemIdentifiers];
-    [self setToolBarItems:toolbarItems];
+    [self setToolBarItems:[self setupToolbarItemIdentifiers]];
 }
 
 - (void)setToolBarItems:(NSArray<NSToolbarItemIdentifier> *)desiredItems
 {
+    if ([_window isKindOfClass:[VZGraphicsWindow class]]) {
+        NSMutableArray<NSToolbarItem *> *items = [NSMutableArray arrayWithCapacity:desiredItems.count];
+        for (NSToolbarItemIdentifier identifier in desiredItems) {
+            [items addObject:[self toolbarItemWithIdentifier:identifier]];
+        }
+        [(VZGraphicsWindow *)_window setControlItems:items];
+        return;
+    }
     if (_toolbar) {
         while (_toolbar.items.count > 0) {
             [_toolbar removeItemAtIndex:0];
@@ -405,12 +752,50 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     [NSApp performSelectorOnMainThread:@selector(terminate:) withObject:self waitUntilDone:NO];
 }
 
+- (NSRect)windowWillUseStandardFrame:(NSWindow *)sender defaultFrame:(NSRect)frame
+{
+    if ([sender isKindOfClass:[VZGraphicsWindow class]]) {
+        VZGraphicsWindow *window = (VZGraphicsWindow *)sender;
+        if (window.fillsScreen && window.screen != nil) {
+            frame = window.screen.visibleFrame;
+            NSSize size = VZGraphicsSizeToFit(frame.size, window.displayAspectRatio);
+            frame = NSMakeRect(NSMidX(frame) - size.width / 2, NSMidY(frame) - size.height / 2, size.width, size.height);
+        } else {
+            NSSize size = VZGraphicsSizeToFit(frame.size, window.displayAspectRatio);
+            frame.origin.y += frame.size.height - size.height;
+            frame.size = size;
+        }
+    }
+    return frame;
+}
+
+- (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)frameSize
+{
+    if ([sender isKindOfClass:[VZGraphicsWindow class]] && !(sender.styleMask & NSWindowStyleMaskFullScreen)) {
+        NSSize ratio = [(VZGraphicsWindow *)sender displayAspectRatio];
+        if (ratio.width > 0 && ratio.height > 0) {
+            CGFloat scale = ratio.height / ratio.width;
+            NSSize previousSize = sender.frame.size;
+            if (fabs(frameSize.width - previousSize.width) < fabs(frameSize.height - previousSize.height) / scale) {
+                frameSize.width = (frameSize.height - VZGraphicsHeaderHeight) / scale;
+            }
+            CGFloat minimumWidth = MAX(sender.minSize.width, (sender.minSize.height - VZGraphicsHeaderHeight) / scale);
+            frameSize.width = MAX(frameSize.width, minimumWidth);
+            frameSize.height = frameSize.width * scale + VZGraphicsHeaderHeight;
+        }
+    }
+    return frameSize;
+}
+
 - (void)setupGraphicWindow
 {
-    // Set custom title bar
     [_window setTitlebarAppearsTransparent:YES];
-    [_window setToolbar:_toolbar];
     [_window setOpaque:NO];
+    if ([_window isKindOfClass:[VZGraphicsWindow class]]) {
+        [self updateToolbarItems];
+    } else {
+        [_window setToolbar:_toolbar];
+    }
     [_window center];
 
     // Monitoring mouse movement events to control auto-scrolling behavior
@@ -423,33 +808,41 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 
     // Add scroll wheel event monitor for zoom functionality
     _scrollWheelMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskScrollWheel
-                                          handler:^NSEvent *(NSEvent *event) {
-                                              [self handleScrollWheel:event];
-                                              return event;
-                                          }];
+                                                                handler:^NSEvent *(NSEvent *event) {
+                                                                    [self handleScrollWheel:event];
+                                                                    return event;
+                                                                }];
 
     // Create scroll view for the virtual machine view
-    NSScrollView *scrollView = [self createScrollViewForVirtualMachineView:_virtualMachineView];
-    [_window setContentView:scrollView];
+    _scrollView = [self createScrollViewForVirtualMachineView:_virtualMachineView];
+    if ([_window isKindOfClass:[VZGraphicsWindow class]]) {
+        [(VZGraphicsWindow *)_window setDisplayView:_scrollView];
+    } else {
+        [_window setContentView:_scrollView];
+    }
 
-    // Configure Auto Layout constraints for VirtualMachineView to resize with the window
+    // Configure Auto Layout constraints for VirtualMachineView to resize with the window.
     [_virtualMachineView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    NSClipView *clipView = _scrollView.contentView;
     [NSLayoutConstraint activateConstraints:@[
-        [_virtualMachineView.leadingAnchor constraintEqualToAnchor:_window.contentView.leadingAnchor],
-        [_virtualMachineView.trailingAnchor constraintEqualToAnchor:_window.contentView.trailingAnchor],
-        [_virtualMachineView.topAnchor constraintEqualToAnchor:_window.contentView.topAnchor],
-        [_virtualMachineView.bottomAnchor constraintEqualToAnchor:_window.contentView.bottomAnchor]
+        [_virtualMachineView.leadingAnchor constraintEqualToAnchor:clipView.leadingAnchor],
+        [_virtualMachineView.trailingAnchor constraintEqualToAnchor:clipView.trailingAnchor],
+        [_virtualMachineView.topAnchor constraintEqualToAnchor:clipView.topAnchor],
+        [_virtualMachineView.bottomAnchor constraintEqualToAnchor:clipView.bottomAnchor]
     ]];
 
     NSSize sizeInPixels = [self getVirtualMachineSizeInPixels];
     if (!NSEqualSizes(sizeInPixels, NSZeroSize)) {
-        // setContentAspectRatio is used to maintain the aspect ratio when the user resizes the window.
-        [_window setContentAspectRatio:sizeInPixels];
-
-        // setContentSize is used to set the initial window size based on the calculated aspect ratio.
         CGFloat windowWidth = _window.frame.size.width;
         CGFloat initialHeight = windowWidth * (sizeInPixels.height / sizeInPixels.width);
-        [_window setContentSize:NSMakeSize(windowWidth, initialHeight)];
+        if ([_window isKindOfClass:[VZGraphicsWindow class]]) {
+            VZGraphicsWindow *window = (VZGraphicsWindow *)_window;
+            window.displayAspectRatio = sizeInPixels;
+            [window setDisplaySize:NSMakeSize(windowWidth, initialHeight)];
+        } else {
+            [_window setContentAspectRatio:sizeInPixels];
+            [_window setContentSize:NSMakeSize(windowWidth, initialHeight)];
+        }
     }
 
     [_window setDelegate:self];
@@ -488,10 +881,15 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
                                  height:(CGFloat)height
 {
     NSRect rect = NSMakeRect(0, 0, width, height);
-    NSWindow *window = [[[NSWindow alloc] initWithContentRect:rect
-                                                    styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable
-                                                      backing:NSBackingStoreBuffered
-                                                        defer:NO] autorelease];
+    NSWindow *window;
+    if (@available(macOS 26.0, *)) {
+        window = [[[VZGraphicsWindow alloc] initWithDisplayRect:rect] autorelease];
+    } else {
+        window = [[[NSWindow alloc] initWithContentRect:rect
+                                              styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable
+                                                backing:NSBackingStoreBuffered
+                                                  defer:NO] autorelease];
+    }
     [window setTitle:title];
     return window;
 }
@@ -517,6 +915,11 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 
 - (NSToolbarItem *)toolbar:(NSToolbar *)toolbar itemForItemIdentifier:(NSToolbarItemIdentifier)itemIdentifier willBeInsertedIntoToolbar:(BOOL)flag
 {
+    return [self toolbarItemWithIdentifier:itemIdentifier];
+}
+
+- (NSToolbarItem *)toolbarItemWithIdentifier:(NSToolbarItemIdentifier)itemIdentifier
+{
     NSToolbarItem *item = [[[NSToolbarItem alloc] initWithItemIdentifier:itemIdentifier] autorelease];
 
     if ([itemIdentifier isEqualToString:PauseToolbarIdentifier]) {
@@ -541,12 +944,18 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
         [item setBordered:YES];
         [item setAction:@selector(playButtonClicked:)];
     } else if ([itemIdentifier isEqualToString:ZoomToolbarIdentifier]) {
-        NSButton *zoomButton = [[[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 40, 40)] autorelease];
-        zoomButton.bezelStyle = NSBezelStyleTexturedRounded;
+        NSButton *zoomButton;
+        if ([_window isKindOfClass:[VZGraphicsWindow class]]) {
+            zoomButton = [[[VZGraphicsControlButton alloc] initWithFrame:NSMakeRect(0, 0, 32, 32)] autorelease];
+        } else {
+            zoomButton = [[[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 40, 40)] autorelease];
+            zoomButton.bezelStyle = NSBezelStyleTexturedRounded;
+        }
         [zoomButton setImage:[NSImage imageWithSystemSymbolName:@"plus.magnifyingglass" accessibilityDescription:nil]];
         [zoomButton setTarget:self];
         [zoomButton setAction:@selector(toggleZoomMode:)];
         [zoomButton setButtonType:NSButtonTypeToggle];
+        [zoomButton setState:_isZoomEnabled ? NSControlStateValueOn : NSControlStateValueOff];
         [item setView:zoomButton];
         [item setLabel:@"Zoom"];
         [item setToolTip:@"Toggle Zoom"];
@@ -649,30 +1058,29 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 
 - (void)toggleZoomMode:(id)sender
 {
+    if (_scrollView == nil) {
+        return;
+    }
     _isZoomEnabled = !_isZoomEnabled;
-    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
+    NSScrollView *scrollView = _scrollView;
 
     // Reset zoom when zoom mode is disabled.
     if (!_isZoomEnabled) {
         [NSAnimationContext
             runAnimationGroup:^(NSAnimationContext *context) {
                 [context setDuration:0.3];
-                [[_window.contentView animator] setMagnification:1.0];
+                [[scrollView animator] setMagnification:1.0];
             }
             completionHandler:^{
                 // Hide scrollers when zoom is disabled
-                if ([scrollView isKindOfClass:[NSScrollView class]]) {
-                    scrollView.hasVerticalScroller = NO;
-                    scrollView.hasHorizontalScroller = NO;
-                }
+                scrollView.hasVerticalScroller = NO;
+                scrollView.hasHorizontalScroller = NO;
             }];
     } else {
         // Show scrollers when zoom is enabled (they'll auto-hide when not needed)
-        if ([scrollView isKindOfClass:[NSScrollView class]]) {
-            scrollView.hasVerticalScroller = YES;
-            scrollView.hasHorizontalScroller = YES;
-            scrollView.autohidesScrollers = YES;
-        }
+        scrollView.hasVerticalScroller = YES;
+        scrollView.hasHorizontalScroller = YES;
+        scrollView.autohidesScrollers = YES;
     }
 }
 
@@ -733,13 +1141,12 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     }
 
     // Only zoom if Command or Option key is held
-    if (!(event.modifierFlags & NSEventModifierFlagCommand) &&
-        !(event.modifierFlags & NSEventModifierFlagOption)) {
+    if (!(event.modifierFlags & NSEventModifierFlagCommand) && !(event.modifierFlags & NSEventModifierFlagOption)) {
         return;
     }
 
-    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
-    if (![scrollView isKindOfClass:[NSScrollView class]]) {
+    NSScrollView *scrollView = _scrollView;
+    if (scrollView == nil) {
         return;
     }
 
@@ -752,14 +1159,12 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     newMagnification = MIN(scrollView.maxMagnification, MAX(scrollView.minMagnification, newMagnification));
 
     // Get mouse location for centered zooming
-    NSPoint mouseLocation = [_window.contentView convertPoint:event.locationInWindow fromView:nil];
-    NSPoint centeredPoint = [scrollView.contentView convertPoint:mouseLocation fromView:_window.contentView];
+    NSPoint mouseLocation = [scrollView convertPoint:event.locationInWindow fromView:nil];
+    NSPoint centeredPoint = [scrollView.contentView convertPoint:mouseLocation fromView:scrollView];
 
     [scrollView setMagnification:newMagnification centeredAtPoint:centeredPoint];
 }
 
-// When the mouse approaches the window's edges, this handler adjusts the scroll position
-// to provide a smooth panning experience without requiring manual scroll input.
 - (void)handleMouseMovement:(NSEvent *)event
 {
     if (!_isZoomEnabled) {
@@ -767,42 +1172,36 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
         return;
     }
 
-    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
-    if (![scrollView isKindOfClass:[NSScrollView class]]) {
+    NSScrollView *scrollView = _scrollView;
+    if (scrollView == nil || event.window != scrollView.window) {
         [self stopScrollTimer];
         return;
     }
 
-    // Take the mouse position.
-    NSPoint mouseLocation = [scrollView.window convertPointToScreen:event.locationInWindow];
-    NSRect windowFrame = scrollView.window.frame;
+    NSClipView *clipView = scrollView.contentView;
+    NSRect visibleFrame = [clipView convertRect:clipView.bounds toView:nil];
+    NSPoint mouseLocation = event.locationInWindow;
+    if (!NSPointInRect(mouseLocation, visibleFrame)) {
+        [self stopScrollTimer];
+        return;
+    }
 
-    const CGFloat margin = 24.0; // Set scrolling boundary margins.
-    const CGFloat baseScrollSpeed = 5.0; // Basic scrolling speed
-
-    // Calculate scroll direction and speed from here.
+    const CGFloat margin = 24.0;
+    const CGFloat baseScrollSpeed = 5.0;
     _scrollDelta = NSMakePoint(0, 0);
 
-    // X-axis scrollmeter
-    if (mouseLocation.x < NSMinX(windowFrame) + margin) {
+    if (mouseLocation.x < NSMinX(visibleFrame) + margin) {
         _scrollDelta.x = -baseScrollSpeed;
-    } else if (mouseLocation.x > NSMaxX(windowFrame) - margin) {
+    } else if (mouseLocation.x > NSMaxX(visibleFrame) - margin) {
         _scrollDelta.x = baseScrollSpeed;
     }
 
-    CGFloat titleBarHeight = scrollView.window.frame.size.height - scrollView.window.contentView.frame.size.height;
-
-    // Y-axis scrollmeter
-    // No Y-axis scrolling when the mouse is in the title bar area.
-    if (mouseLocation.y >= (NSMaxY(windowFrame) - titleBarHeight)) {
-        _scrollDelta.y = 0;
-    } else if (mouseLocation.y < NSMinY(windowFrame) + margin) {
+    if (mouseLocation.y < NSMinY(visibleFrame) + margin) {
         _scrollDelta.y = -baseScrollSpeed;
-    } else if (mouseLocation.y > NSMaxY(windowFrame) - margin - titleBarHeight) {
+    } else if (mouseLocation.y > NSMaxY(visibleFrame) - margin) {
         _scrollDelta.y = baseScrollSpeed;
     }
 
-    // Start timer if scrolling is required, stop if not required.
     if (_scrollDelta.x != 0 || _scrollDelta.y != 0) {
         [self startScrollTimer];
     } else {
@@ -829,8 +1228,8 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 
 - (void)scrollTick:(NSTimer *)timer
 {
-    NSScrollView *scrollView = (NSScrollView *)_window.contentView;
-    if (![scrollView isKindOfClass:[NSScrollView class]]) {
+    NSScrollView *scrollView = _scrollView;
+    if (scrollView == nil) {
         [self stopScrollTimer];
         return;
     }

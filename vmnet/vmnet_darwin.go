@@ -397,9 +397,15 @@ func NewNetworkWithSerialization(serialization xpc.Object) (*Network, error) {
 	return network, nil
 }
 
-// NewNetworkFromPointer wraps an existing vmnet network pointer.
+// NewNetworkFromPointer retains an existing vmnet network pointer.
 func NewNetworkFromPointer(p *objc.Pointer) *Network {
-	return &Network{Pointer: p}
+	if objc.Ptr(p) == nil {
+		return nil
+	}
+	C.vmnetRetain(objc.Ptr(p))
+	network := &Network{Pointer: p}
+	ReleaseOnCleanup(network)
+	return network
 }
 
 // CopySerialization returns a serialized copy of [Network] as an [xpc.Object].

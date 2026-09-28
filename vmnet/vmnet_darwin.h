@@ -9,6 +9,7 @@
 // MARK: - CFRelease Wrapper
 
 void vmnetRelease(void *obj);
+void vmnetRetain(void *obj);
 
 // MARK: - vmnet_network_configuration_t (macOS 26+)
 

@@ -9,6 +9,13 @@ void vmnetRelease(void *obj)
     }
 }
 
+void vmnetRetain(void *obj)
+{
+    if (obj != NULL) {
+        CFRetain((CFTypeRef)obj);
+    }
+}
+
 // MARK: - vmnet_network_configuration_t (macOS 26+)
 
 // see: https://developer.apple.com/documentation/vmnet/vmnet_network_configuration_add_dhcp_reservation(_:_:_:)?language=objc

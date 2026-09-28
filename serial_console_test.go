@@ -11,6 +11,20 @@ import (
 	"github.com/Code-Hex/vz/v3/internal/objc"
 )
 
+func openFileDescriptorCount(t *testing.T) int {
+	t.Helper()
+	dir, err := os.Open("/dev/fd")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer dir.Close()
+	names, err := dir.Readdirnames(-1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return len(names)
+}
+
 // TestNewFileHandleSerialPortAttachment guards against a regression where the
 // constructor checked the error out-parameter pointer (always non-nil) instead
 // of the duplicated file handle, causing it to return a non-nil wrapper around a
@@ -48,10 +62,7 @@ func TestNewFileHandleSerialPortAttachmentClosedFile(t *testing.T) {
 		{name: "write", read: os.Stdin, write: file},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			before, err := os.ReadDir("/dev/fd")
-			if err != nil {
-				t.Fatal(err)
-			}
+			before := openFileDescriptorCount(t)
 			attachment, err := vz.NewFileHandleSerialPortAttachment(tt.read, tt.write)
 			if errors.Is(err, vz.ErrUnsupportedOSVersion) {
 				t.Skipf("not supported on this macOS version: %v", err)
@@ -63,22 +74,16 @@ func TestNewFileHandleSerialPortAttachmentClosedFile(t *testing.T) {
 			if !errors.As(err, &nsErr) || nsErr.Code != int(syscall.EBADF) {
 				t.Fatalf("expected EBADF, got %v", err)
 			}
-			after, err := os.ReadDir("/dev/fd")
-			if err != nil {
-				t.Fatal(err)
-			}
-			if len(after) != len(before) {
-				t.Fatalf("open file descriptors changed from %d to %d", len(before), len(after))
+			after := openFileDescriptorCount(t)
+			if after != before {
+				t.Fatalf("open file descriptors changed from %d to %d", before, after)
 			}
 		})
 	}
 }
 
 func TestNewFileHandleSerialPortAttachmentClosesDuplicatedFiles(t *testing.T) {
-	before, err := os.ReadDir("/dev/fd")
-	if err != nil {
-		t.Fatal(err)
-	}
+	before := openFileDescriptorCount(t)
 
 	for range 4 {
 		attachment, err := vz.NewFileHandleSerialPortAttachment(os.Stdin, os.Stderr)
@@ -92,11 +97,8 @@ func TestNewFileHandleSerialPortAttachmentClosesDuplicatedFiles(t *testing.T) {
 		objc.Release(attachment)
 	}
 
-	after, err := os.ReadDir("/dev/fd")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(after) != len(before) {
-		t.Fatalf("open file descriptors changed from %d to %d", len(before), len(after))
+	after := openFileDescriptorCount(t)
+	if after != before {
+		t.Fatalf("open file descriptors changed from %d to %d", before, after)
 	}
 }

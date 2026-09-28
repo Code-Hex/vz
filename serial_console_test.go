@@ -3,6 +3,8 @@ package vz_test
 import (
 	"errors"
 	"os"
+	"runtime"
+	"syscall"
 	"testing"
 
 	"github.com/Code-Hex/vz/v3"
@@ -23,5 +25,78 @@ func TestNewFileHandleSerialPortAttachment(t *testing.T) {
 	}
 	if objc.Ptr(attachment) == nil {
 		t.Fatal("attachment wraps a NULL pointer: constructor reported success but built nothing")
+	}
+	runtime.SetFinalizer(attachment, nil)
+	objc.Release(attachment)
+}
+
+func TestNewFileHandleSerialPortAttachmentClosedFile(t *testing.T) {
+	file, err := os.Open("/dev/null")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := file.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	for _, tt := range []struct {
+		name  string
+		read  *os.File
+		write *os.File
+	}{
+		{name: "read", read: file, write: os.Stderr},
+		{name: "write", read: os.Stdin, write: file},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			before, err := os.ReadDir("/dev/fd")
+			if err != nil {
+				t.Fatal(err)
+			}
+			attachment, err := vz.NewFileHandleSerialPortAttachment(tt.read, tt.write)
+			if errors.Is(err, vz.ErrUnsupportedOSVersion) {
+				t.Skipf("not supported on this macOS version: %v", err)
+			}
+			if attachment != nil {
+				t.Fatal("expected no attachment for a closed file")
+			}
+			var nsErr *vz.NSError
+			if !errors.As(err, &nsErr) || nsErr.Code != int(syscall.EBADF) {
+				t.Fatalf("expected EBADF, got %v", err)
+			}
+			after, err := os.ReadDir("/dev/fd")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(after) != len(before) {
+				t.Fatalf("open file descriptors changed from %d to %d", len(before), len(after))
+			}
+		})
+	}
+}
+
+func TestNewFileHandleSerialPortAttachmentClosesDuplicatedFiles(t *testing.T) {
+	before, err := os.ReadDir("/dev/fd")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for range 4 {
+		attachment, err := vz.NewFileHandleSerialPortAttachment(os.Stdin, os.Stderr)
+		if errors.Is(err, vz.ErrUnsupportedOSVersion) {
+			t.Skipf("not supported on this macOS version: %v", err)
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		runtime.SetFinalizer(attachment, nil)
+		objc.Release(attachment)
+	}
+
+	after, err := os.ReadDir("/dev/fd")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(after) != len(before) {
+		t.Fatalf("open file descriptors changed from %d to %d", len(before), len(after))
 	}
 }

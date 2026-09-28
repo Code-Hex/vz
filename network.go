@@ -13,9 +13,9 @@ import (
 	"net"
 	"os"
 	"syscall"
-	"unsafe"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/vmnet"
 )
 
 // BridgedNetwork defines a network interface that bridges a physical interface with a virtual machine.
@@ -286,8 +286,9 @@ func (*VmnetNetworkDeviceAttachment) String() string {
 	return "VmnetNetworkDeviceAttachment"
 }
 
-func (v *VmnetNetworkDeviceAttachment) Network() unsafe.Pointer {
-	return C.VZVmnetNetworkDeviceAttachment_network(objc.Ptr(v))
+func (v *VmnetNetworkDeviceAttachment) Network() *vmnet.Network {
+	ptr := C.VZVmnetNetworkDeviceAttachment_network(objc.Ptr(v))
+	return vmnet.NewNetworkFromPointer(objc.NewPointer(ptr))
 }
 
 var _ NetworkDeviceAttachment = (*VmnetNetworkDeviceAttachment)(nil)
@@ -296,14 +297,14 @@ var _ NetworkDeviceAttachment = (*VmnetNetworkDeviceAttachment)(nil)
 //
 // This is only supported on macOS 26 and newer, error will
 // be returned on older versions.
-func NewVmnetNetworkDeviceAttachment(network unsafe.Pointer) (*VmnetNetworkDeviceAttachment, error) {
+func NewVmnetNetworkDeviceAttachment(network *vmnet.Network) (*VmnetNetworkDeviceAttachment, error) {
 	if err := macOSAvailable(26); err != nil {
 		return nil, err
 	}
 
 	attachment := &VmnetNetworkDeviceAttachment{
 		pointer: objc.NewPointer(
-			C.newVZVmnetNetworkDeviceAttachment(network),
+			C.newVZVmnetNetworkDeviceAttachment(objc.Ptr(network)),
 		),
 	}
 	objc.SetFinalizer(attachment, func(self *VmnetNetworkDeviceAttachment) {

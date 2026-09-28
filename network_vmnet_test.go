@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/Code-Hex/vz/v3"
+	"github.com/Code-Hex/vz/v3/internal/objc"
 	"github.com/Code-Hex/vz/v3/internal/osversion"
 	"github.com/Code-Hex/vz/v3/vmnet"
 )
@@ -21,14 +22,14 @@ func TestVmnetNetworkDeviceAttachment(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	attachment, err := vz.NewVmnetNetworkDeviceAttachment(network.Raw())
+	attachment, err := vz.NewVmnetNetworkDeviceAttachment(network)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if attachment == nil {
 		t.Fatal("expected vmnet attachment")
 	}
-	if got := attachment.Network(); got != network.Raw() {
-		t.Fatalf("attachment.Network() = %p, want %p", got, network.Raw())
+	if got := attachment.Network(); objc.Ptr(got) != objc.Ptr(network) {
+		t.Fatalf("attachment.Network() = %p, want %p", objc.Ptr(got), objc.Ptr(network))
 	}
 }

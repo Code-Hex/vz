@@ -14,7 +14,9 @@ import (
 	"runtime"
 	"unsafe"
 
+	"github.com/Code-Hex/vz/v3/internal/objc"
 	"github.com/Code-Hex/vz/v3/internal/osversion"
+	"github.com/Code-Hex/vz/v3/xpc"
 	"golang.org/x/sys/unix"
 )
 
@@ -345,7 +347,7 @@ func (c *NetworkConfiguration) SetMtu(mtu uint32) error {
 // Network represents a [Network].
 //   - https://developer.apple.com/documentation/vmnet/vmnet_network_create(_:_:)?language=objc
 type Network struct {
-	*object
+	*objc.Pointer
 }
 
 // NewNetwork creates a new [Network] with [NetworkConfiguration].
@@ -363,44 +365,55 @@ func NewNetwork(config *NetworkConfiguration) (*Network, error) {
 	if !errors.Is(status, ErrSuccess) {
 		return nil, fmt.Errorf("failed to create VmnetNetwork: %w", status)
 	}
-	network := &Network{object: &object{p: ptr}}
+	network := &Network{Pointer: objc.NewPointer(ptr)}
 	ReleaseOnCleanup(network)
 	return network, nil
+}
+
+func (n *Network) releaseOnCleanup() {
+	runtime.AddCleanup(n, func(p unsafe.Pointer) {
+		C.vmnetRelease(p)
+	}, objc.Ptr(n))
 }
 
 // NewNetworkWithSerialization creates a new [Network] from a serialized representation.
 // This is only supported on macOS 26 and newer, error will be returned on older versions.
 //   - https://developer.apple.com/documentation/vmnet/vmnet_network_create_with_serialization(_:_:)?language=objc
-func NewNetworkWithSerialization(serialization unsafe.Pointer) (*Network, error) {
+func NewNetworkWithSerialization(serialization xpc.Object) (*Network, error) {
 	if err := macOSAvailable(26); err != nil {
 		return nil, err
 	}
 
 	var status Return
 	ptr := C.VmnetNetworkCreateWithSerialization(
-		serialization,
+		objc.Ptr(serialization),
 		(*C.uint32_t)(unsafe.Pointer(&status)),
 	)
 	if !errors.Is(status, ErrSuccess) {
 		return nil, fmt.Errorf("failed to create VmnetNetwork with serialization: %w", status)
 	}
-	network := &Network{object: &object{p: ptr}}
+	network := &Network{Pointer: objc.NewPointer(ptr)}
 	ReleaseOnCleanup(network)
 	return network, nil
 }
 
-// CopySerialization returns a serialized copy of [Network] in xpc_object_t as [unsafe.Pointer].
+// NewNetworkFromPointer wraps an existing vmnet network pointer.
+func NewNetworkFromPointer(p *objc.Pointer) *Network {
+	return &Network{Pointer: p}
+}
+
+// CopySerialization returns a serialized copy of [Network] as an [xpc.Object].
 //   - https://developer.apple.com/documentation/vmnet/vmnet_network_copy_serialization(_:_:)?language=objc
-func (n *Network) CopySerialization() (unsafe.Pointer, error) {
+func (n *Network) CopySerialization() (xpc.Object, error) {
 	var status Return
 	ptr := C.VmnetNetwork_copySerialization(
-		n.Raw(),
+		objc.Ptr(n),
 		(*C.uint32_t)(unsafe.Pointer(&status)),
 	)
 	if !errors.Is(status, ErrSuccess) {
 		return nil, fmt.Errorf("failed to copy serialization: %w", status)
 	}
-	return ptr, nil
+	return xpc.ReleaseOnCleanup(xpc.NewObject(ptr)), nil
 }
 
 // IPv4Subnet returns the IPv4 subnet of the [Network].
@@ -409,7 +422,7 @@ func (n *Network) IPv4Subnet() (subnet netip.Prefix, err error) {
 	var cSubnet C.struct_in_addr
 	var cMask C.struct_in_addr
 
-	C.VmnetNetwork_getIPv4Subnet(n.Raw(), &cSubnet, &cMask)
+	C.VmnetNetwork_getIPv4Subnet(objc.Ptr(n), &cSubnet, &cMask)
 
 	sIP := inAddrToNetipAddr(cSubnet)
 	mIP := inAddrToIP(cMask)
@@ -439,7 +452,7 @@ func (n *Network) IPv6Prefix() (netip.Prefix, error) {
 	var prefix C.struct_in6_addr
 	var prefixLen C.uint8_t
 
-	C.VmnetNetwork_getIPv6Prefix(n.Raw(), &prefix, &prefixLen)
+	C.VmnetNetwork_getIPv6Prefix(objc.Ptr(n), &prefix, &prefixLen)
 
 	addr := in6AddrToNetipAddr(prefix)
 	pfx := netip.PrefixFrom(addr, int(prefixLen))

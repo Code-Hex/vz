@@ -16,6 +16,13 @@ void vmnetRetain(void *obj)
     }
 }
 
+void vmnetXpcRelease(void *obj)
+{
+    if (obj != NULL) {
+        xpc_release((xpc_object_t)obj);
+    }
+}
+
 // MARK: - vmnet_network_configuration_t (macOS 26+)
 
 // see: https://developer.apple.com/documentation/vmnet/vmnet_network_configuration_add_dhcp_reservation(_:_:_:)?language=objc
@@ -210,6 +217,66 @@ void VmnetNetwork_getIPv6Prefix(void *network, struct in6_addr *prefix, uint8_t 
     if (@available(macOS 26, *)) {
         vmnet_network_get_ipv6_prefix((vmnet_network_ref)network, prefix, prefix_len);
         return;
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+// MARK: - interface_ref (macOS 26+)
+
+uint32_t VmnetStopInterface(void *interface)
+{
+#ifdef INCLUDE_TARGET_OSX_26
+    if (@available(macOS 26, *)) {
+        dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+        dispatch_queue_t queue = dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0);
+        __block vmnet_return_t status;
+        vmnet_return_t scheduleStatus = vmnet_stop_interface((interface_ref)interface, queue, ^(vmnet_return_t stopStatus) {
+            status = stopStatus;
+            dispatch_semaphore_signal(sem);
+        });
+        if (scheduleStatus != VMNET_SUCCESS) {
+            dispatch_release(sem);
+            return scheduleStatus;
+        }
+        dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+        dispatch_release(sem);
+        return status;
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+struct vmnetInterfaceStartResult VmnetInterfaceStartWithNetwork(void *network, void *interfaceDesc)
+{
+#ifdef INCLUDE_TARGET_OSX_26
+    if (@available(macOS 26, *)) {
+        dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+        dispatch_queue_t queue = dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0);
+        __block struct vmnetInterfaceStartResult result = {0};
+        vmnet_start_interface_completion_handler_t handler = ^(vmnet_return_t vmnetReturn, xpc_object_t ifaceParam) {
+            if (vmnetReturn == VMNET_SUCCESS && ifaceParam != NULL) {
+                result.ifaceParam = xpc_retain(ifaceParam);
+                result.maxPacketSize = xpc_dictionary_get_uint64(ifaceParam, vmnet_max_packet_size_key);
+                result.maxReadPacketCount = xpc_dictionary_get_uint64(ifaceParam, vmnet_read_max_packets_key);
+                result.maxWritePacketCount = xpc_dictionary_get_uint64(ifaceParam, vmnet_write_max_packets_key);
+            }
+            result.vmnetReturn = vmnetReturn;
+            dispatch_semaphore_signal(sem);
+        };
+        interface_ref iface = vmnet_interface_start_with_network((vmnet_network_ref)network, (xpc_object_t)interfaceDesc, queue, handler);
+        result.iface = iface;
+        dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+        dispatch_release(sem);
+        if (result.vmnetReturn != VMNET_SUCCESS) {
+            vmnetRelease(result.iface);
+            if (result.ifaceParam != NULL) {
+                xpc_release(result.ifaceParam);
+            }
+            result.iface = NULL;
+            result.ifaceParam = NULL;
+        }
+        return result;
     }
 #endif
     RAISE_UNSUPPORTED_MACOS_EXCEPTION();

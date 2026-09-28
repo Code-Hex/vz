@@ -473,3 +473,64 @@ func in6AddrToNetipAddr(a C.struct_in6_addr) netip.Addr {
 	p := (*[16]byte)(unsafe.Pointer(&a))
 	return netip.AddrFrom16(*p)
 }
+
+// MARK: - Interface
+
+// Interface represents an interface_ref in vmnet.
+type Interface struct {
+	*objc.Pointer
+	Param               *xpc.Dictionary
+	MaxPacketSize       uint64
+	MaxReadPacketCount  int
+	MaxWritePacketCount int
+}
+
+// StartInterfaceWithNetwork starts an Interface on a Network.
+// It requires macOS 26 or newer.
+func StartInterfaceWithNetwork(network *Network, interfaceDesc *xpc.Dictionary) (*Interface, error) {
+	if err := macOSAvailable(26); err != nil {
+		return nil, err
+	}
+	if network == nil {
+		return nil, fmt.Errorf("network is nil")
+	}
+	if interfaceDesc == nil {
+		interfaceDesc = xpc.NewDictionary()
+	}
+	result := C.VmnetInterfaceStartWithNetwork(objc.Ptr(network), objc.Ptr(interfaceDesc))
+	runtime.KeepAlive(network)
+	runtime.KeepAlive(interfaceDesc)
+	if status := Return(result.vmnetReturn); status != ErrSuccess {
+		return nil, fmt.Errorf("start vmnet interface: %w", status)
+	}
+	if result.iface == nil || result.ifaceParam == nil {
+		C.vmnetRelease(result.iface)
+		C.vmnetXpcRelease(result.ifaceParam)
+		return nil, fmt.Errorf("start vmnet interface: incomplete result")
+	}
+	iface := &Interface{
+		Pointer:             objc.NewPointer(result.iface),
+		Param:               xpc.ReleaseOnCleanup(xpc.NewObject(result.ifaceParam).(*xpc.Dictionary)),
+		MaxPacketSize:       uint64(result.maxPacketSize),
+		MaxReadPacketCount:  int(result.maxReadPacketCount),
+		MaxWritePacketCount: int(result.maxWritePacketCount),
+	}
+	ReleaseOnCleanup(iface)
+	return iface, nil
+}
+
+func (i *Interface) releaseOnCleanup() {
+	runtime.AddCleanup(i, func(p unsafe.Pointer) {
+		C.vmnetRelease(p)
+	}, objc.Ptr(i))
+}
+
+// Stop stops I/O on the Interface and releases its associated Network.
+func (i *Interface) Stop() error {
+	result := Return(C.VmnetStopInterface(objc.Ptr(i)))
+	runtime.KeepAlive(i)
+	if result != ErrSuccess {
+		return fmt.Errorf("stop vmnet interface: %w", result)
+	}
+	return nil
+}

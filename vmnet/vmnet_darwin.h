@@ -10,6 +10,7 @@
 
 void vmnetRelease(void *obj);
 void vmnetRetain(void *obj);
+void vmnetXpcRelease(void *obj);
 
 // MARK: - vmnet_network_configuration_t (macOS 26+)
 
@@ -35,3 +36,18 @@ void *VmnetNetworkCreate(void *config, uint32_t *status);
 void *VmnetNetworkCreateWithSerialization(void *serialization, uint32_t *status);
 void VmnetNetwork_getIPv4Subnet(void *network, struct in_addr *subnet, struct in_addr *mask);
 void VmnetNetwork_getIPv6Prefix(void *network, struct in6_addr *prefix, uint8_t *prefix_len);
+
+// MARK: - interface_ref (macOS 26+)
+
+uint32_t VmnetStopInterface(void *interface);
+
+struct vmnetInterfaceStartResult {
+    void *iface; // interface_ref
+    void *ifaceParam; // xpc_object_t
+    uint64_t maxPacketSize;
+    int maxReadPacketCount;
+    int maxWritePacketCount;
+    uint32_t vmnetReturn;
+};
+
+struct vmnetInterfaceStartResult VmnetInterfaceStartWithNetwork(void *network, void *interfaceDesc);

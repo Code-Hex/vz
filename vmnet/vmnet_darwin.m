@@ -1,4 +1,5 @@
 #import "vmnet_darwin.h"
+#import <limits.h>
 
 // MARK: - CFRelease Wrapper
 
@@ -223,6 +224,48 @@ void VmnetNetwork_getIPv6Prefix(void *network, struct in6_addr *prefix, uint8_t 
 }
 
 // MARK: - interface_ref (macOS 26+)
+
+extern void callPacketsAvailableEventCallback(uintptr_t handle, int estimatedCount);
+extern void releasePacketsAvailableEventCallback(uintptr_t handle);
+
+void *VmnetSetPacketsAvailableEventCallback(void *iface, uintptr_t callback, uint32_t *status)
+{
+#ifdef INCLUDE_TARGET_OSX_26
+    if (@available(macOS 26, *)) {
+        dispatch_queue_t queue = dispatch_queue_create("vmnet.interface.packets", DISPATCH_QUEUE_SERIAL);
+        *status = vmnet_interface_set_event_callback((interface_ref)iface, VMNET_INTERFACE_PACKETS_AVAILABLE, queue, ^(interface_event_t eventMask, xpc_object_t event) {
+            if ((eventMask & VMNET_INTERFACE_PACKETS_AVAILABLE) != 0) {
+                uint64_t estimated = xpc_dictionary_get_uint64(event, vmnet_estimated_packets_available_key);
+                callPacketsAvailableEventCallback(callback, estimated > INT_MAX ? INT_MAX : (int)estimated);
+            }
+        });
+        if (*status != VMNET_SUCCESS) {
+            dispatch_release(queue);
+            return NULL;
+        }
+        return queue;
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+uint32_t VmnetClearPacketsAvailableEventCallback(void *iface, void *queuePointer, uintptr_t callback)
+{
+#ifdef INCLUDE_TARGET_OSX_26
+    if (@available(macOS 26, *)) {
+        vmnet_return_t status = vmnet_interface_set_event_callback((interface_ref)iface, VMNET_INTERFACE_PACKETS_AVAILABLE, NULL, NULL);
+        if (status == VMNET_SUCCESS) {
+            dispatch_queue_t queue = (dispatch_queue_t)queuePointer;
+            dispatch_async(queue, ^{
+                releasePacketsAvailableEventCallback(callback);
+                dispatch_release(queue);
+            });
+        }
+        return status;
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
 
 uint32_t VmnetRead(void *interface, struct vmpktdesc *packets, int *pktcnt)
 {

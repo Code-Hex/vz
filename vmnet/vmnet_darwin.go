@@ -483,6 +483,7 @@ type Interface struct {
 	MaxPacketSize       uint64
 	MaxReadPacketCount  int
 	MaxWritePacketCount int
+	callbackState       *interfaceCallbackState
 }
 
 // StartInterfaceWithNetwork starts an Interface on a Network.
@@ -514,25 +515,27 @@ func StartInterfaceWithNetwork(network *Network, interfaceDesc *xpc.Dictionary) 
 		MaxPacketSize:       uint64(result.maxPacketSize),
 		MaxReadPacketCount:  int(result.maxReadPacketCount),
 		MaxWritePacketCount: int(result.maxWritePacketCount),
+		callbackState:       &interfaceCallbackState{iface: result.iface},
 	}
 	ReleaseOnCleanup(iface)
 	return iface, nil
 }
 
 func (i *Interface) releaseOnCleanup() {
-	runtime.AddCleanup(i, func(p unsafe.Pointer) {
-		C.vmnetRelease(p)
-	}, objc.Ptr(i))
+	runtime.AddCleanup(i, func(state *interfaceCallbackState) {
+		state.cleanup()
+		C.vmnetRelease(state.iface)
+	}, i.callbackState)
 }
 
 // Stop stops I/O on the Interface and releases its associated Network.
 func (i *Interface) Stop() error {
-	result := Return(C.VmnetStopInterface(objc.Ptr(i)))
-	runtime.KeepAlive(i)
-	if result != ErrSuccess {
-		return fmt.Errorf("stop vmnet interface: %w", result)
+	if i == nil || i.callbackState == nil {
+		return fmt.Errorf("interface is nil")
 	}
-	return nil
+	result := i.callbackState.stop()
+	runtime.KeepAlive(i)
+	return result
 }
 
 // ReadPackets reads up to packetCount packets into manager.

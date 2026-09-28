@@ -40,6 +40,8 @@ void VmnetNetwork_getIPv6Prefix(void *network, struct in6_addr *prefix, uint8_t 
 
 // MARK: - interface_ref (macOS 26+)
 
+void *VmnetSetPacketsAvailableEventCallback(void *interface, uintptr_t callback, uint32_t *status);
+uint32_t VmnetClearPacketsAvailableEventCallback(void *interface, void *queue, uintptr_t callback);
 uint32_t VmnetStopInterface(void *interface);
 uint32_t VmnetRead(void *interface, struct vmpktdesc *packets, int *pktcnt);
 uint32_t VmnetWrite(void *interface, struct vmpktdesc *packets, int *pktcnt);

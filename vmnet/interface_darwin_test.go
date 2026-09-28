@@ -2,6 +2,7 @@ package vmnet_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/Code-Hex/vz/v3/internal/osversion"
 	"github.com/Code-Hex/vz/v3/vmnet"
@@ -79,5 +80,76 @@ func TestInterfaceStartAndStop(t *testing.T) {
 func TestStartInterfaceWithNilNetwork(t *testing.T) {
 	if _, err := vmnet.StartInterfaceWithNetwork(nil, nil); err == nil {
 		t.Fatal("expected an error for a nil network")
+	}
+}
+
+func TestPacketsAvailableEventCallback(t *testing.T) {
+	if err := osversion.MacOSAvailable(26); err != nil {
+		t.Skipf("vmnet interface requires macOS 26: %v", err)
+	}
+	config, err := vmnet.NewNetworkConfiguration(vmnet.HostMode)
+	if err != nil {
+		t.Fatal(err)
+	}
+	network, err := vmnet.NewNetwork(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	receiver, err := vmnet.StartInterfaceWithNetwork(network, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = receiver.Stop() })
+	sender, err := vmnet.StartInterfaceWithNetwork(network, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = sender.Stop() })
+	type eventResult struct {
+		count int
+		err   error
+	}
+	available := make(chan eventResult, 1)
+	if err := receiver.SetPacketsAvailableEventCallback(func(count int) {
+		err := receiver.SetPacketsAvailableEventCallback(nil)
+		select {
+		case available <- eventResult{count, err}:
+		default:
+		}
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if err := receiver.SetPacketsAvailableEventCallback(func(int) {}); err == nil {
+		t.Fatal("second callback registration must fail")
+	}
+	manager, err := vmnet.NewPktDescsManager(1, sender.MaxPacketSize)
+	if err != nil {
+		t.Fatal(err)
+	}
+	packet := make([]byte, 60)
+	for index := range 6 {
+		packet[index] = 0xff
+	}
+	packet[6] = 0x02
+	packet[12], packet[13] = 0x08, 0x06
+	if err := manager.SetPacket(0, packet); err != nil {
+		t.Fatal(err)
+	}
+	if err := sender.WritePackets(manager, 1); err != nil {
+		t.Fatal(err)
+	}
+	select {
+	case event := <-available:
+		if event.err != nil {
+			t.Fatal(event.err)
+		}
+		if event.count < 1 {
+			t.Fatalf("estimated packet count = %d", event.count)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("no packets available event")
+	}
+	if err := receiver.SetPacketsAvailableEventCallback(nil); err != nil {
+		t.Fatal(err)
 	}
 }

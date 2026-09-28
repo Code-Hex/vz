@@ -2,6 +2,7 @@
 
 #import <net/ethernet.h>
 #import <netinet/in.h>
+#import <stdlib.h>
 // In older SDKs, vmnet.h does not include above headers, so we include them here.
 #import "../internal/osversion/virtualization_helper.h"
 #import <vmnet/vmnet.h>
@@ -40,6 +41,11 @@ void VmnetNetwork_getIPv6Prefix(void *network, struct in6_addr *prefix, uint8_t 
 // MARK: - interface_ref (macOS 26+)
 
 uint32_t VmnetStopInterface(void *interface);
+uint32_t VmnetRead(void *interface, struct vmpktdesc *packets, int *pktcnt);
+uint32_t VmnetWrite(void *interface, struct vmpktdesc *packets, int *pktcnt);
+
+struct vmpktdesc *allocateVMPktDescArray(int count);
+void initializeVMPktDescArray(struct vmpktdesc *packets, int count, size_t packetSize, void *buffer);
 
 struct vmnetInterfaceStartResult {
     void *iface; // interface_ref

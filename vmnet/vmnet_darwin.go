@@ -534,3 +534,83 @@ func (i *Interface) Stop() error {
 	}
 	return nil
 }
+
+// ReadPackets reads up to packetCount packets into manager.
+func (i *Interface) ReadPackets(manager *PktDescsManager, packetCount int) (int, error) {
+	if i == nil {
+		return 0, fmt.Errorf("interface is nil")
+	}
+	if err := i.validatePacketRequest(manager, packetCount, i.MaxReadPacketCount); err != nil {
+		return 0, err
+	}
+	if manager.maxPacketSize < i.MaxPacketSize {
+		return 0, fmt.Errorf("read packet buffer size %d is smaller than interface maximum %d", manager.maxPacketSize, i.MaxPacketSize)
+	}
+	defer runtime.KeepAlive(manager)
+	defer runtime.KeepAlive(i)
+	descriptors := unsafe.Slice(manager.packets, manager.count)
+	for index := range packetCount {
+		descriptors[index].vm_pkt_size = C.size_t(manager.maxPacketSize)
+		descriptors[index].vm_pkt_iov.iov_len = C.size_t(manager.maxPacketSize)
+		manager.valid[index] = false
+	}
+	count := C.int(packetCount)
+	status := Return(C.VmnetRead(objc.Ptr(i), manager.packets, &count))
+	if status != ErrSuccess {
+		return 0, fmt.Errorf("read vmnet packets: %w", status)
+	}
+	if count < 0 || int(count) > packetCount {
+		return 0, fmt.Errorf("read vmnet packets: invalid result count %d", count)
+	}
+	for index := range int(count) {
+		if uint64(descriptors[index].vm_pkt_size) > manager.maxPacketSize {
+			return 0, fmt.Errorf("read vmnet packets: packet %d exceeds maximum size", index)
+		}
+	}
+	for index := range int(count) {
+		manager.valid[index] = true
+	}
+	return int(count), nil
+}
+
+// WritePackets writes packetCount packets previously set in manager.
+func (i *Interface) WritePackets(manager *PktDescsManager, packetCount int) error {
+	if i == nil {
+		return fmt.Errorf("interface is nil")
+	}
+	if err := i.validatePacketRequest(manager, packetCount, i.MaxWritePacketCount); err != nil {
+		return err
+	}
+	defer runtime.KeepAlive(manager)
+	defer runtime.KeepAlive(i)
+	for index := range packetCount {
+		if !manager.valid[index] {
+			return fmt.Errorf("packet %d has no data", index)
+		}
+	}
+	count := C.int(packetCount)
+	status := Return(C.VmnetWrite(objc.Ptr(i), manager.packets, &count))
+	if status != ErrSuccess {
+		return fmt.Errorf("write vmnet packets: %w", status)
+	}
+	if int(count) != packetCount {
+		return fmt.Errorf("write vmnet packets: wrote %d of %d packets", count, packetCount)
+	}
+	return nil
+}
+
+func (i *Interface) validatePacketRequest(manager *PktDescsManager, count, limit int) error {
+	if i == nil || i.Pointer == nil {
+		return fmt.Errorf("interface is nil")
+	}
+	if manager == nil || manager.packets == nil {
+		return fmt.Errorf("packet manager is nil")
+	}
+	if count <= 0 || count > manager.count || count > limit {
+		return fmt.Errorf("packet count %d outside interface limit %d and manager capacity %d", count, limit, manager.count)
+	}
+	if manager.maxPacketSize > i.MaxPacketSize {
+		return fmt.Errorf("packet size %d exceeds interface maximum %d", manager.maxPacketSize, i.MaxPacketSize)
+	}
+	return nil
+}

@@ -224,6 +224,43 @@ void VmnetNetwork_getIPv6Prefix(void *network, struct in6_addr *prefix, uint8_t 
 
 // MARK: - interface_ref (macOS 26+)
 
+uint32_t VmnetRead(void *interface, struct vmpktdesc *packets, int *pktcnt)
+{
+#ifdef INCLUDE_TARGET_OSX_26
+    if (@available(macOS 26, *)) {
+        return vmnet_read((interface_ref)interface, packets, pktcnt);
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+uint32_t VmnetWrite(void *interface, struct vmpktdesc *packets, int *pktcnt)
+{
+#ifdef INCLUDE_TARGET_OSX_26
+    if (@available(macOS 26, *)) {
+        return vmnet_write((interface_ref)interface, packets, pktcnt);
+    }
+#endif
+    RAISE_UNSUPPORTED_MACOS_EXCEPTION();
+}
+
+struct vmpktdesc *allocateVMPktDescArray(int count)
+{
+    return calloc((size_t)count, sizeof(struct vmpktdesc) + sizeof(struct iovec));
+}
+
+void initializeVMPktDescArray(struct vmpktdesc *packets, int count, size_t packetSize, void *buffer)
+{
+    struct iovec *iovecs = (struct iovec *)(packets + count);
+    for (int index = 0; index < count; index++) {
+        packets[index].vm_pkt_size = packetSize;
+        packets[index].vm_pkt_iov = &iovecs[index];
+        packets[index].vm_pkt_iovcnt = 1;
+        iovecs[index].iov_base = (char *)buffer + (size_t)index * packetSize;
+        iovecs[index].iov_len = packetSize;
+    }
+}
+
 uint32_t VmnetStopInterface(void *interface)
 {
 #ifdef INCLUDE_TARGET_OSX_26

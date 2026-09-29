@@ -74,12 +74,8 @@ func testFrameworkGeneratedBridge(t *testing.T, goarch string) {
 	if err := os.WriteFile(filepath.Join(dir, "Generated.swift"), []byte(source), 0644); err != nil {
 		t.Fatal(err)
 	}
-	support, err := os.ReadFile("../../internal/vzbridge/source/Runtime.swift")
+	support, err := splitSwiftSources([]string{"../../internal/vzbridge/source/Runtime.swift"}, []string{}, filepath.Join(dir, "support"))
 	if err != nil {
-		t.Fatal(err)
-	}
-	support = support[:strings.Index(string(support), "private typealias BridgeCallback")]
-	if err := os.WriteFile(filepath.Join(dir, "Support.swift"), support, 0644); err != nil {
 		t.Fatal(err)
 	}
 	main := `import Foundation
@@ -130,7 +126,7 @@ print("framework bridge passed")
 		t.Fatal(err)
 	}
 	header := filepath.Join(dir, "Generated.h")
-	args := []string{"swiftc", "-swift-version", "6", "-strict-concurrency=complete", "-warnings-as-errors", "-module-cache-path", filepath.Join(dir, "cache"), "-sdk", sdk, "-target", target, "-emit-objc-header", "-emit-objc-header-path", header, filepath.Join(dir, "Generated.swift"), filepath.Join(dir, "Support.swift"), filepath.Join(dir, "main.swift"), "-o", filepath.Join(dir, "check")}
+	args := []string{"swiftc", "-swift-version", "6", "-strict-concurrency=complete", "-warnings-as-errors", "-module-cache-path", filepath.Join(dir, "cache"), "-sdk", sdk, "-target", target, "-emit-objc-header", "-emit-objc-header-path", header, filepath.Join(dir, "Generated.swift"), support[0], filepath.Join(dir, "main.swift"), "-o", filepath.Join(dir, "check")}
 	if _, err := command("xcrun", args...); err != nil {
 		t.Fatal(err)
 	}

@@ -146,7 +146,7 @@ public func macOSRestoreImagePatchVersion(_ object: BorrowedObject) -> Int64 {
 
 @available(macOS 12, *)
 // Every payload access and final release is confined to bridgeQueue.
-private final class ManagedMacOSInstaller: NSObject, @unchecked Sendable {
+final class ManagedMacOSInstaller: NSObject, @unchecked Sendable {
     private var installer: VZMacOSInstaller?
     private var observation: NSKeyValueObservation?
     private var progressContext: UInt64?

@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"sort"
 	"strconv"
@@ -161,6 +162,9 @@ func build(source, output string, framework bool) error {
 		if err != nil {
 			return err
 		}
+		if private.Architecture != runtime.GOARCH {
+			return fmt.Errorf("private runtime architecture %q differs from generator host %s", private.Architecture, runtime.GOARCH)
+		}
 	}
 	for _, arch := range []string{"arm64", "amd64"} {
 		if err := buildArchitecture(in, source, temp, sdk, sdkVersion, arch, framework, private); err != nil {
@@ -215,13 +219,16 @@ func buildArchitecture(in inputs, source, temp, sdk string, sdkVersion int, arch
 		for _, reason := range skipped {
 			fmt.Fprintf(os.Stderr, "%s SDK: %s\n", arch, reason)
 		}
-		privateCode, privateOperations, err := generateSelectedPrivate(private, privateSelection)
+		privateCode, privateOperations, skippedPrivate, err := generatePrivate(private)
 		if err != nil {
 			return err
 		}
 		generated.Write(privateCode)
 		contracts = append(contracts, privateOperations...)
-		fmt.Fprintf(os.Stderr, "%s: generated %d runtime bindings from %d selected methods\n", arch, len(privateOperations), len(privateSelection))
+		fmt.Fprintf(os.Stderr, "%s: generated %d runtime bindings from %s host runtime %s; %d methods skipped\n", arch, len(privateOperations), private.Architecture, private.OSVersion, len(skippedPrivate))
+		for _, reason := range skippedPrivate {
+			fmt.Fprintf(os.Stderr, "%s runtime: %s\n", arch, reason)
+		}
 	}
 	generatedPath := filepath.Join(dir, "Framework.swift")
 	if err := os.WriteFile(generatedPath, []byte(generated.String()), 0644); err != nil {
@@ -241,16 +248,17 @@ func buildArchitecture(in inputs, source, temp, sdk string, sdkVersion int, arch
 	}
 	header := filepath.Join(temp, "Bridge_"+arch+".h")
 	library := filepath.Join(temp, "Swift_"+arch+".a")
-	args := []string{"swiftc", "-swift-version", "6", "-strict-concurrency=complete", "-warnings-as-errors", "-diagnostic-style", "llvm", "-no-color-diagnostics", "-parse-as-library", "-emit-library", "-static", "-disable-autolinking-runtime-compatibility", "-disable-autolinking-runtime-compatibility-concurrency", "-emit-objc-header", "-emit-objc-header-path", header, "-module-name", fmt.Sprintf("VZNativeBridge_%s_%d", in.Hash[:16], sdkVersion), "-sdk", sdk, "-target", target, "-module-cache-path", cache, "-I", source, "-o", library}
+	swiftArgs := []string{"swiftc", "-swift-version", "6", "-strict-concurrency=complete", "-warnings-as-errors", "-diagnostic-style", "llvm", "-no-color-diagnostics", "-parse-as-library", "-disable-autolinking-runtime-compatibility", "-disable-autolinking-runtime-compatibility-concurrency", "-module-name", fmt.Sprintf("VZNativeBridge_%s_%d", in.Hash[:16], sdkVersion), "-sdk", sdk, "-target", target, "-module-cache-path", cache, "-I", source}
 	if _, err := os.Stat(filepath.Join(source, "BridgeSupport.h")); err == nil {
-		args = append(args, "-import-objc-header", filepath.Join(source, "BridgeSupport.h"))
+		swiftArgs = append(swiftArgs, "-import-objc-header", filepath.Join(source, "BridgeSupport.h"))
 	}
+	args := append(append([]string(nil), swiftArgs...), "-emit-library", "-static", "-emit-objc-header", "-emit-objc-header-path", header, "-o", library)
 	args = append(args, in.Swift...)
 	args = append(args, objects...)
 	if _, err := command("xcrun", args...); err != nil {
 		return err
 	}
-	ast, err := command("xcrun", "clang", "-target", target, "-isysroot", sdk, "-fsyntax-only", "-x", "objective-c", "-Xclang", "-ast-dump=json", "-Xclang", "-ast-dump-filter=vz_", header)
+	ast, err := command("xcrun", "clang", "-target", target, "-isysroot", sdk, "-fsyntax-only", "-x", "objective-c", "-Xclang", "-ast-dump=json", "-Xclang", "-ast-dump-filter=vz_", "-include", "Virtualization/Virtualization.h", header)
 	if err != nil {
 		return err
 	}
@@ -286,17 +294,53 @@ func buildArchitecture(in inputs, source, temp, sdk string, sdkVersion int, arch
 	if err := os.WriteFile(abiSource, []byte(code.String()), 0644); err != nil {
 		return err
 	}
-	args = append(args, abiSource)
-	if _, err := command("xcrun", args...); err != nil {
+	symbols := []string{"vz_bridge_abi"}
+	for _, call := range calls {
+		symbols = append(symbols, call.Symbol)
+	}
+	splitDirectory := filepath.Join(temp, "split_"+arch)
+	splitSources, err := splitSwiftSources(append(in.Swift, abiSource), symbols, splitDirectory)
+	if err != nil {
 		return err
 	}
-	if err := bundleStaticLibrary(library, filepath.Join(dir, "libBridge.a"), target, targetArch, sdk, sdkVersion); err != nil {
+	splitHeader := filepath.Join(splitDirectory, "Bridge.h")
+	swiftObjects, err := compileSwiftObjects(swiftArgs, splitSources, splitHeader, splitDirectory)
+	if err != nil {
+		return err
+	}
+	ast, err = command("xcrun", "clang", "-target", target, "-isysroot", sdk, "-fsyntax-only", "-x", "objective-c", "-Xclang", "-ast-dump=json", "-Xclang", "-ast-dump-filter=vz_", "-include", "Virtualization/Virtualization.h", splitHeader)
+	if err != nil {
+		return err
+	}
+	splitCalls, err := checkHeader(strings.NewReader(string(ast)), contracts, arch)
+	if err != nil {
+		return err
+	}
+	if !reflect.DeepEqual(calls, splitCalls) {
+		return fmt.Errorf("split Swift sources changed the bridge ABI for %s", arch)
+	}
+	abiObject, err := checkObjectExports(swiftObjects, symbols)
+	if err != nil {
+		return err
+	}
+	objects = append(objects, swiftObjects...)
+	if err := bundleStaticLibrary(objects, abiObject, filepath.Join(dir, "libBridge.a"), target, targetArch, sdk, sdkVersion); err != nil {
 		return err
 	}
 	goCode, err := bindings(calls, hash, arch, sdkVersion)
 	if err != nil {
 		return err
 	}
+	linkHash := sha256.New()
+	for _, name := range []string{"libBridge.a", "Virtualization.tbd"} {
+		data, err := os.ReadFile(filepath.Join(dir, name))
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(linkHash, "%s\x00%d\x00", name, len(data))
+		linkHash.Write(data)
+	}
+	goCode = []byte(strings.Replace(string(goCode), "\n", fmt.Sprintf("\n// Native link inputs SHA-256: %x\n", linkHash.Sum(nil)), 1))
 	return os.WriteFile(filepath.Join(temp, "binding_"+arch+".go"), goCode, 0644)
 }
 

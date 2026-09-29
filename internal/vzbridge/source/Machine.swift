@@ -16,7 +16,7 @@ private final class MachineDelegate: NSObject, VZVirtualMachineDelegate {
     }
 }
 
-private final class ManagedVirtualMachine: VZVirtualMachine {
+final class ManagedVirtualMachine: VZVirtualMachine {
     private var observation: NSKeyValueObservation?
     private let events: MachineDelegate
     private let stateContext: UInt64
@@ -56,7 +56,7 @@ private final class SocketDelegate: NSObject, VZVirtioSocketListenerDelegate {
     }
 }
 
-private final class ManagedSocketListener: VZVirtioSocketListener {
+final class ManagedSocketListener: VZVirtioSocketListener {
     private let events: SocketDelegate
     init(_ context: UInt64) {
         events = SocketDelegate(context)
@@ -304,7 +304,7 @@ public func detachDeviceVZUSBController(_ usbController: BorrowedObject, _ usbDe
 }
 
 @available(macOS 15, *)
-private func checkedUSBDevice(_ pointer: UnsafeMutableRawPointer?) -> any VZUSBDevice {
+func checkedUSBDevice(_ pointer: UnsafeMutableRawPointer?) -> any VZUSBDevice {
     guard let device = borrow(pointer, as: NSObject.self) as? any VZUSBDevice else {
         preconditionFailure("expected a VZUSBDevice")
     }

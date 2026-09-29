@@ -92,7 +92,9 @@ After modifying native bridge sources or updating Xcode, run:
 make generate/bridge
 ```
 
-Regeneration requires Xcode with Swift 6.4 and a macOS SDK. The generator inspects Virtualization.framework's Swift symbol graph, resolves enum storage types with Clang, generates Swift wrappers, and compiles both arm64 and amd64 architectures under Swift 6 strict concurrency checks. It then emits static archives and Go bindings. The static archives bundle the compiler-selected Swift compatibility code, so application builds do not need to locate it in a Swift toolchain. Generated Swift is written to `internal/vzbridge/abi_arm64/Framework.swift` and `internal/vzbridge/abi_amd64/Framework.swift` for review.
+Regenerating the bridge requires Xcode with Swift 6.4 and a macOS SDK. The generator inspects Virtualization.framework's Swift symbol graph, resolves enum storage types with Clang, generates Swift wrappers, and compiles binaries for both arm64 and amd64 under Swift 6 strict concurrency checks. It then produces static archives and Go bindings.
+
+Each native entry point occupies a separate archive member, and Go registers bindings only on first call. The linker pulls in only reachable entry points and their dependencies. The archives also bundle Swift compatibility code, so application builds do not need to locate runtime support in a Swift toolchain. For review, generated Swift code is written to `internal/vzbridge/abi_arm64/Framework.swift` and `internal/vzbridge/abi_amd64/Framework.swift`.
 
 Handwritten code in `internal/vzbridge/source` handles callbacks, delegates, KVO, resource lifetimes, and library-specific behavior. Pointer types declare ownership using `BorrowedObject`, `OwnedObject`, `CString`, `ErrorOut`, `RawPointer`, and `RawBytes`. The generator reads these declarations from the Swift compiler AST and verifies the generated C ABI. There are no separate JSON contracts; intermediate JSON remains in temporary directories.
 
@@ -120,9 +122,9 @@ List methods exposed by the running framework's Objective-C runtime:
 go run ./cmd/vzbridgegen -list-private
 ```
 
-Add the private methods you need to `cmd/vzbridgegen/private_selection.go`, then run `make generate/bridge`. Each entry specifies only the class, selector, and method kind. Only listed methods are generated as `UnsafePrivate_` bindings in the bundle. Missing, duplicate, or unsupported selections stop generation with an error.
+Run `make generate/bridge` to generate `UnsafePrivate_` bindings for every discovered method with a supported ABI. No selection list is needed. Unused bindings do not pull their native entry points into the executable. The generator reports unsupported methods along with their type encodings.
 
-Types come directly from the running framework's Objective-C metadata, so no `ipsw` installation is required. The `-list-private` flag lists all discovered methods, including those outside the selection. Private bindings reflect the host framework, which may differ from the installed SDK.
+Types come directly from the running framework's Objective-C metadata, so no `ipsw` installation is required. Both target architectures use the method set discovered on the generation host. This set can differ across macOS versions and architectures, and from the installed SDK. It does not enumerate methods found only on the other architecture.
 
 Private bindings remain raw calls and are not memory safe merely because of validation. Runtime metadata provides argument widths and signedness, but does not indicate ownership, consumed arguments, variadic arguments, or executor requirements. Verify those rules before calling a private binding. Object arguments and results use `unsafe.Pointer`; callers must keep Go owners alive through the call and arrange native releases. For an object result, pass `retainResult = true` to retain it before the bridge autorelease pool drains. Pass `false` only when the method already returns an owned reference or the object's lifetime is otherwise guaranteed. Initializers take a raw allocation from `UnsafePrivateAllocate`.
 

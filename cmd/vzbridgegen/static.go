@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -24,7 +25,84 @@ type swiftTargetInfo struct {
 	}
 }
 
-func bundleStaticLibrary(input, output, target, arch, sdkPath string, sdkVersion int) error {
+func compileSwiftObjects(arguments, sources []string, header, directory string) ([]string, error) {
+	outputs := make(map[string]map[string]string, len(sources))
+	objects := make([]string, 0, len(sources))
+	for _, source := range sources {
+		object := strings.TrimSuffix(source, ".swift") + ".o"
+		outputs[source] = map[string]string{"object": object}
+		objects = append(objects, object)
+	}
+	data, err := json.Marshal(outputs)
+	if err != nil {
+		return nil, err
+	}
+	outputMap := filepath.Join(directory, "outputs.json")
+	if err := os.WriteFile(outputMap, data, 0600); err != nil {
+		return nil, err
+	}
+	filelist := filepath.Join(directory, "sources.rsp")
+	var quoted []string
+	for _, source := range sources {
+		quoted = append(quoted, strconv.Quote(source))
+	}
+	if err := os.WriteFile(filelist, []byte(strings.Join(quoted, "\n")+"\n"), 0600); err != nil {
+		return nil, err
+	}
+	args := append(append([]string(nil), arguments...), "-c", "-enable-batch-mode", "-driver-batch-count", "1", "-emit-objc-header", "-emit-objc-header-path", header, "-output-file-map", outputMap, "-driver-force-response-files", "@"+filelist)
+	if _, err := command("xcrun", args...); err != nil {
+		return nil, err
+	}
+	return objects, nil
+}
+
+func checkObjectExports(objects, symbols []string) (string, error) {
+	remaining := make(map[string]bool, len(symbols))
+	for _, symbol := range symbols {
+		remaining["_"+symbol] = true
+	}
+	var abiObject string
+	for _, object := range objects {
+		file, err := macho.Open(object)
+		if err != nil {
+			return "", err
+		}
+		if file.Symtab == nil {
+			file.Close()
+			return "", fmt.Errorf("Swift object has no symbol table: %s", object)
+		}
+		var exports []string
+		for _, symbol := range file.Symtab.Syms {
+			if symbol.Type == 0xf && strings.HasPrefix(symbol.Name, "_vz_") {
+				exports = append(exports, symbol.Name)
+			}
+		}
+		file.Close()
+		if len(exports) > 1 {
+			return "", fmt.Errorf("Swift object %s contains multiple bridge exports: %v", object, exports)
+		}
+		for _, symbol := range exports {
+			if !remaining[symbol] {
+				return "", fmt.Errorf("unexpected or duplicate bridge export %s in %s", symbol, object)
+			}
+			delete(remaining, symbol)
+			if symbol == "_vz_bridge_abi" {
+				abiObject = object
+			}
+		}
+	}
+	if len(remaining) != 0 {
+		var missing []string
+		for symbol := range remaining {
+			missing = append(missing, symbol)
+		}
+		sort.Strings(missing)
+		return "", fmt.Errorf("missing Swift object exports: %v", missing)
+	}
+	return abiObject, nil
+}
+
+func bundleStaticLibrary(objects []string, abiObject, output, target, arch, sdkPath string, sdkVersion int) error {
 	data, err := command("xcrun", "swiftc", "-print-target-info", "-target", target)
 	if err != nil {
 		return err
@@ -34,8 +112,9 @@ func bundleStaticLibrary(input, output, target, arch, sdkPath string, sdkVersion
 		return fmt.Errorf("Swift target information: %w", err)
 	}
 	sdk := fmt.Sprintf("%d.%d.%d", sdkVersion/10000, sdkVersion/100%100, sdkVersion%100)
-	object := input + ".o"
-	args := []string{"ld", "-r", "-arch", arch, "-platform_version", "macos", "11.0", sdk, "-force_load", input}
+	object := abiObject + ".compat.o"
+	args := []string{"ld", "-r", "-arch", arch, "-platform_version", "macos", "11.0", sdk, abiObject}
+	var optionalLibraries []string
 	for _, dependency := range info.Target.CompatibilityLibraries {
 		if dependency.Filter != "all" {
 			return fmt.Errorf("unsupported Swift compatibility library filter %q for %s", dependency.Filter, dependency.LibraryName)
@@ -59,19 +138,32 @@ func bundleStaticLibrary(input, output, target, arch, sdkPath string, sdkVersion
 			return fmt.Errorf("Swift compatibility library %s not found in %v", dependency.LibraryName, info.Paths.RuntimeLibraryPaths)
 		}
 		if dependency.ForceLoad == nil || *dependency.ForceLoad {
-			args = append(args, "-force_load")
+			args = append(args, "-force_load", library)
+		} else {
+			optionalLibraries = append(optionalLibraries, library)
 		}
-		args = append(args, library)
 	}
 	args = append(args, "-o", object)
 	if _, err := command("xcrun", args...); err != nil {
 		return err
 	}
-	if _, err := command("xcrun", "libtool", "-static", "-o", output, object); err != nil {
+	var members []string
+	for _, member := range objects {
+		if member != abiObject {
+			members = append(members, member)
+		}
+	}
+	members = append(members, object)
+	members = append(members, optionalLibraries...)
+	filelist := output + ".filelist"
+	if err := os.WriteFile(filelist, []byte(strings.Join(members, "\n")+"\n"), 0600); err != nil {
 		return err
 	}
-	probe := input + ".dylib"
-	if _, err := command("xcrun", "clang", "-dynamiclib", "-target", target, "-isysroot", sdkPath, object, "-L/usr/lib/swift", "-framework", "Foundation", "-framework", "Virtualization", "-framework", "Cocoa", "-o", probe); err != nil {
+	if _, err := command("xcrun", "libtool", "-static", "-arch_only", arch, "-no_warning_for_no_symbols", "-filelist", filelist, "-o", output); err != nil {
+		return err
+	}
+	probe := output + ".dylib"
+	if _, err := command("xcrun", "clang", "-dynamiclib", "-target", target, "-isysroot", sdkPath, "-Xlinker", "-force_load", "-Xlinker", output, "-L/usr/lib/swift", "-framework", "Foundation", "-framework", "Virtualization", "-framework", "Cocoa", "-o", probe); err != nil {
 		return err
 	}
 	return writeFrameworkStub(probe, filepath.Join(filepath.Dir(output), "Virtualization.tbd"), arch)

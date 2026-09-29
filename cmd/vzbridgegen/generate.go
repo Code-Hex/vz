@@ -30,33 +30,23 @@ func bindings(calls []checkedOperation, hash [4]uint64, arch string, sdkVersion 
 		}
 		fmt.Fprintf(&b, "%s %s(%s);\n", call.Result.C, call.Symbol, strings.Join(parameters, ", "))
 	}
-	b.WriteString("*/\nimport \"C\"\n\nimport (\"github.com/ebitengine/purego\";\n")
+	b.WriteString("*/\nimport \"C\"\n\nimport (\"sync\";\"github.com/ebitengine/purego\";\n")
 	writeTypeImports(&b, calls)
-	fmt.Fprintf(&b, ")\n\nconst SDKVersion = %d\n\nvar native struct {\n", sdkVersion)
-	for i, call := range calls {
-		var args []string
-		for _, p := range call.Parameters {
-			args = append(args, p.ABI)
-		}
-		fmt.Fprintf(&b, "call%d func(%s) %s\n", i, strings.Join(args, ","), call.Result.ABI)
-	}
-	b.WriteString("}\n\nfunc init(){\nvar abi func(uint32)uint64\npurego.RegisterFunc(&abi,uintptr(C.vz_bridge_abi))\n")
+	fmt.Fprintf(&b, ")\n\nconst SDKVersion = %d\n\n", sdkVersion)
+	b.WriteString("func init(){\nvar abi func(uint32)uint64\npurego.RegisterFunc(&abi,uintptr(C.vz_bridge_abi))\n")
 	fmt.Fprintf(&b, "expected:=[4]uint64{%d,%d,%d,%d}\n", hash[0], hash[1], hash[2], hash[3])
 	b.WriteString("for i,want:=range expected{if abi(uint32(i))!=want{panic(\"vz: bridge ABI mismatch\")}}\n")
-	for i, call := range calls {
-		fmt.Fprintf(&b, "purego.RegisterFunc(&native.call%d,uintptr(C.%s))\n", i, call.Symbol)
-	}
 	b.WriteString("}\n\n")
 
-	releaseIndex := 0
 	for i, call := range calls {
-		if call.Name == "ReleaseObject" {
-			releaseIndex = i
+		var abiArgs []string
+		for _, p := range call.Parameters {
+			abiArgs = append(abiArgs, p.ABI)
 		}
-	}
-	for i, call := range calls {
+		fmt.Fprintf(&b, "var native%d struct {once sync.Once;call func(%s) %s}\n\n", i, strings.Join(abiArgs, ","), call.Result.ABI)
 		p := signature(call)
 		fmt.Fprintf(&b, "func %s(%s) %s {\n", call.Name, p, call.Result.Go)
+		fmt.Fprintf(&b, "native%d.once.Do(func(){purego.RegisterFunc(&native%d.call,uintptr(C.%s))})\n", i, i, call.Symbol)
 		var args []string
 		for j, a := range call.Parameters {
 			name := fmt.Sprintf("p%d", j)
@@ -69,10 +59,10 @@ func bindings(calls []checkedOperation, hash [4]uint64, arch string, sdkVersion 
 		if call.Result.Go != "" {
 			b.WriteString("result := ")
 		}
-		fmt.Fprintf(&b, "native.call%d(%s)\n", i, strings.Join(args, ","))
+		fmt.Fprintf(&b, "native%d.call(%s)\n", i, strings.Join(args, ","))
 		switch call.Result.Role {
 		case "owned":
-			fmt.Fprintf(&b, "value:=objc.NewManagedPointer(result,native.call%d)\n", releaseIndex)
+			b.WriteString("value:=objc.NewManagedPointer(result,ReleaseObject)\n")
 		}
 		for j, a := range call.Parameters {
 			if a.Role == "object" || a.Role == "cstring" {

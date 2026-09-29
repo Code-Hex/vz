@@ -40,11 +40,11 @@ func fail(_ error: Error, _ output: UnsafeMutablePointer<UnsafeMutableRawPointer
     output?.pointee = own(error as NSError)
 }
 
-private typealias BridgeCallback = @convention(c) (UInt32, UInt64, UnsafeMutableRawPointer?, UnsafeMutableRawPointer?, UInt64) -> UInt64
-private final class CallbackStorage: @unchecked Sendable {
+typealias BridgeCallback = @convention(c) (UInt32, UInt64, UnsafeMutableRawPointer?, UnsafeMutableRawPointer?, UInt64) -> UInt64
+final class CallbackStorage: @unchecked Sendable {
     var callback: BridgeCallback?
 }
-private let callbacks = CallbackStorage()
+let callbacks = CallbackStorage()
 
 @discardableResult
 func emit(_ kind: UInt32, _ context: UInt64, _ first: UnsafeMutableRawPointer? = nil, _ second: UnsafeMutableRawPointer? = nil, _ value: UInt64 = 0) -> UInt64 {

@@ -27,7 +27,16 @@ public typealias CString = UnsafePointer<CChar>?
 public typealias RawPointer = UnsafeMutableRawPointer?
 public typealias BorrowedObject = UnsafeMutableRawPointer
 public typealias OwnedObject = UnsafeMutableRawPointer
-private final class ValueBox: NSObject { let value: Int64 = 42 }
+final class ValueBox: NSObject {
+    let value: Int64 = 42
+    let onRelease: (@convention(c) () -> Void)?
+    init(_ onRelease: (@convention(c) () -> Void)? = nil) { self.onRelease = onRelease }
+    deinit { onRelease?() }
+}
+@c(vz_unusedProbe)
+public func unusedProbe() -> Int64 { 99 }
+@c(vz_privateProbe)
+public func privateProbe(_ value: Int64) -> Int64 { value + 1 }
 @c(vz_sum)
 public func sum(_ left: Int32, _ right: Int32) -> Int32 { left + right }
 @c(vz_length)
@@ -36,6 +45,11 @@ public func length(_ string: CString) -> UInt64 { UInt64(String(cString: string!
 public func releaseObject(_ pointer: RawPointer) { if let pointer { Unmanaged<NSObject>.fromOpaque(pointer).release() } }
 @c(vz_newObject)
 public func newObject() -> OwnedObject { Unmanaged.passRetained(ValueBox()).toOpaque() }
+@c(vz_newTrackedObject)
+public func newTrackedObject(_ address: UInt64) -> OwnedObject {
+    let callback = unsafeBitCast(UInt(address), to: (@convention(c) () -> Void).self)
+    return Unmanaged.passRetained(ValueBox(callback)).toOpaque()
+}
 @c(vz_value)
 public func value(_ object: BorrowedObject) -> Int64 { (Unmanaged<NSObject>.fromOpaque(object).takeUnretainedValue() as! ValueBox).value }
 
@@ -104,7 +118,41 @@ import (
     "github.com/Code-Hex/vz/v3/internal/vzbridgegentest/api"
     "github.com/ebitengine/purego"
 )
+//go:noinline
+func abandonObject(callback uint64) {
+    object := vzbridge.NewTrackedObject(callback)
+    if vzbridge.Value(object) != 42 { panic("cleanup object") }
+    runtime.KeepAlive(object)
+}
 func main() {
+    released := make(chan struct{}, 2)
+    releaseCallback := purego.NewCallback(func() { released <- struct{}{} })
+    abandonObject(uint64(releaseCallback))
+    deadline := time.After(5 * time.Second)
+cleanup:
+    for {
+        runtime.GC()
+        select {
+        case <-released:
+            break cleanup
+        case <-deadline:
+            panic("owned object cleanup timed out")
+        case <-time.After(10 * time.Millisecond):
+        }
+    }
+    tracked := vzbridge.NewTrackedObject(uint64(releaseCallback))
+    objc.Release(tracked)
+    objc.Release(tracked)
+    select {
+    case <-released:
+    default:
+        panic("owned object was not released")
+    }
+    select {
+    case <-released:
+        panic("owned object released twice")
+    default:
+    }
     if vzbridge.Sum(20,22) != 42 { panic("sum") }
     if vzbridge.Length("\u65e5\u672c\u8a9e") != 9 { panic("UTF-8 length") }
     vzbridge.ReleaseObject(nil)
@@ -132,9 +180,6 @@ func main() {
 }
 `
 
-	if err := os.WriteFile(filepath.Join(client, "main.go"), []byte(program), 0644); err != nil {
-		t.Fatal(err)
-	}
 	frameworks := filepath.Join(directory, "frameworks")
 	framework := filepath.Join(frameworks, "Virtualization.framework")
 	if err := os.MkdirAll(framework, 0755); err != nil {
@@ -157,29 +202,102 @@ exports:
 	if err := os.WriteFile(filepath.Join(framework, "Virtualization.tbd"), []byte(stub), 0644); err != nil {
 		t.Fatal(err)
 	}
-	binary := filepath.Join(directory, "native-client")
-	cmd := exec.Command(filepath.Join(runtime.GOROOT(), "bin", "go"), "build", "-modcacherw", "-mod=mod", "-o", binary, ".")
-	cmd.Dir = client
-	cmd.Env = append(os.Environ(), "CGO_ENABLED=1", "CGO_LDFLAGS=-F"+frameworks, "GOCACHE="+filepath.Join(directory, "gocache"), "GOMODCACHE="+filepath.Join(directory, "modcache"))
-	data, err := cmd.CombinedOutput()
-	if err != nil {
-		t.Fatalf("build native client: %v\n%s", err, data)
+	concurrentProgram := func(extra string) string {
+		return `package main
+import (
+    "sync"
+    "github.com/Code-Hex/vz/v3/internal/vzbridgegentest/api"
+)
+func main() {
+    start := make(chan struct{})
+    var group sync.WaitGroup
+    for range 64 {
+        group.Add(1)
+        go func() {
+            defer group.Done()
+            <-start
+            if vzbridge.Sum(20, 22) != 42 { panic("concurrent sum") }
+            ` + extra + `
+        }()
+    }
+    close(start)
+    group.Wait()
+}
+`
 	}
-	image, err := macho.Open(binary)
-	if err != nil {
-		t.Fatal(err)
+	tests := []struct {
+		name    string
+		program string
+		linked  []string
+	}{
+		{
+			name:    "one",
+			program: concurrentProgram(""),
+			linked:  []string{"sum"},
+		},
+		{
+			name:    "two",
+			program: concurrentProgram(`if vzbridge.PrivateProbe(41) != 42 { panic("private probe") }`),
+			linked:  []string{"sum", "privateProbe"},
+		},
+		{
+			name:    "lifecycle_and_callbacks",
+			program: program,
+			linked: []string{
+				"sum", "length", "releaseObject", "newObject", "newTrackedObject",
+				"value", "newBootLoader", "newMACAddress", "callback", "callbackAsync",
+			},
+		},
 	}
-	defer image.Close()
-	linkedSum := false
-	if image.Symtab != nil {
-		for _, symbol := range image.Symtab.Syms {
-			linkedSum = linkedSum || symbol.Name == "_vz_sum" && symbol.Sect != 0
-		}
+	nativeSymbols := []string{
+		"bridge_abi", "sum", "privateProbe", "unusedProbe", "length", "releaseObject",
+		"newObject", "newTrackedObject", "value", "newBootLoader", "newMACAddress", "callback", "callbackAsync",
 	}
-	if !linkedSum {
-		t.Fatal("Swift function is not linked into the executable")
-	}
-	if data, err := exec.Command(binary).CombinedOutput(); err != nil {
-		t.Fatalf("run native client: %v\n%s", err, data)
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if err := os.WriteFile(filepath.Join(client, "main.go"), []byte(test.program), 0644); err != nil {
+				t.Fatal(err)
+			}
+			binary := filepath.Join(directory, test.name)
+			cmd := exec.Command(
+				filepath.Join(runtime.GOROOT(), "bin", "go"),
+				"build", "-race", "-modcacherw", "-mod=mod", "-o", binary, ".",
+			)
+			cmd.Dir = client
+			cmd.Env = append(os.Environ(),
+				"CGO_ENABLED=1", "CGO_LDFLAGS=-F"+frameworks,
+				"GOCACHE="+filepath.Join(directory, "gocache"),
+				"GOMODCACHE="+filepath.Join(directory, "modcache"),
+			)
+			if data, err := cmd.CombinedOutput(); err != nil {
+				t.Fatalf("build native client: %v\n%s", err, data)
+			}
+			image, err := macho.Open(binary)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer image.Close()
+			if image.Symtab == nil {
+				t.Fatal("native client has no symbol table")
+			}
+			linked := make(map[string]bool)
+			for _, symbol := range image.Symtab.Syms {
+				if symbol.Sect != 0 {
+					linked[symbol.Name] = true
+				}
+			}
+			want := map[string]bool{"bridge_abi": true}
+			for _, name := range test.linked {
+				want[name] = true
+			}
+			for _, name := range nativeSymbols {
+				if got := linked["_vz_"+name]; got != want[name] {
+					t.Errorf("native function vz_%s linked = %t, want %t", name, got, want[name])
+				}
+			}
+			if data, err := exec.Command(binary).CombinedOutput(); err != nil {
+				t.Fatalf("run native client: %v\n%s", err, data)
+			}
+		})
 	}
 }

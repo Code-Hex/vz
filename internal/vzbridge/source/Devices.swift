@@ -787,14 +787,14 @@ public func linuxInstallRosetta(_ context: UInt64) {
 }
 #endif
 
-private func duplicateDeviceFile(_ descriptor: Int32) throws -> FileHandle {
+func duplicateDeviceFile(_ descriptor: Int32) throws -> FileHandle {
     let copied = dup(descriptor)
     guard copied >= 0 else { throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno)) }
     return FileHandle(fileDescriptor: copied, closeOnDealloc: true)
 }
 
 @available(macOS 14.0, *)
-private final class NetworkAttachmentDelegate: NSObject, VZNetworkBlockDeviceStorageDeviceAttachmentDelegate {
+final class NetworkAttachmentDelegate: NSObject, VZNetworkBlockDeviceStorageDeviceAttachmentDelegate {
     let context: UInt64
     init(context: UInt64) { self.context = context }
     func attachment(_ attachment: VZNetworkBlockDeviceStorageDeviceAttachment, didEncounterError error: Error) {

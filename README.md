@@ -13,7 +13,7 @@ Please see the [example](https://github.com/Code-Hex/vz/tree/main/example) direc
 
 ## Requirements
 
-- Higher or equal to macOS Big Sur (11.0.0).
+- macOS Monterey 12 or later with Go 1.25. Individual framework APIs may require a newer macOS version.
 - Latest version of vz supports last two Go major [releases](https://go.dev/doc/devel/release) and might work with older versions.
 
 ## Installation
@@ -38,7 +38,7 @@ Deprecated older versions (v1, v2).
 - ✅ Running Intel Binaries in Linux VMs with Rosetta **(arm64)**
 - ✅ [Shared Directories](https://github.com/Code-Hex/vz/wiki/Shared-Directories)
 - ✅ [Virtio Sockets](https://github.com/Code-Hex/vz/wiki/Sockets)
-- ✅ Less dependent (only under golang.org/x/*)
+- ✅ Native calls via purego with a precompiled Swift bridge
 
 ## Important
 
@@ -68,27 +68,65 @@ $ codesign --entitlements vz.entitlements -s - <YOUR BINARY PATH>
 
 If you want to use [`VZBridgedNetworkDeviceAttachment`](https://developer.apple.com/documentation/virtualization/vzbridgednetworkdeviceattachment?language=objc), you need to add also `com.apple.vm.networking` entitlement.
 
-## Known compile-time warnings
+## Native bridge
 
-If you compile using an older Xcode SDK, you will get the following warnings.
+Build with standard Go tooling and `CGO_ENABLED=1`. A small cgo adapter links the precompiled Swift archive, `libBridge.a`, into your executable on macOS arm64 and amd64. Calls use purego. Application builds require Clang and a macOS SDK, but do not compile Swift sources. The public Go API is unchanged. Runtime feature availability depends on both the host macOS version and the SDK used to generate the bridge.
 
-This example warns that macOS 12.3 API and macOS 13 API are not available in the binary build. This means these APIs are not available even if you are running this binary on a modern OS (macOS 12.3 or macOS 13). 
+Framework calls and native destruction run on the bridge dispatch queue. Go wrappers keep arguments alive across calls, and aliases share an owner until the last alias is collected. Asynchronous completions use request IDs without storing Go pointers in Swift. Window and UI operations still use Objective-C and must run on the main thread.
 
+Signing your executable also covers the bridge code. There is no separate bridge dylib to extract, load, or sign. System frameworks and the Swift runtime stay dynamic and are loaded directly from macOS.
+
+Go 1.25 requires macOS 12 or later. When targeting macOS 12 with a newer SDK, set the deployment target across both cgo compile flags and linker flags:
+
+```sh
+CGO_CFLAGS="-O2 -g -mmacosx-version-min=12.0" \
+CGO_LDFLAGS="-O2 -g -mmacosx-version-min=12.0" \
+CGO_ENABLED=1 go build .
 ```
-$ go build .
-# github.com/Code-Hex/vz/v3
-In file included from _cgo_export.c:4:
-In file included from socket.go:6:
-In file included from ./virtualization_11.h:9:
-./virtualization_helper.h:25:9: warning: macOS 12.3 API has been disabled [-W#pragma-messages]
-./virtualization_helper.h:32:9: warning: macOS 13 API has been disabled [-W#pragma-messages]
+
+### Rebuilding the bridge
+
+After modifying native bridge sources or updating Xcode, run:
+
+```sh
+make generate/bridge
 ```
 
-If you want to build a binary that can use the API on all operating systems, make sure the Xcode SDK is up-to-date.
+Regeneration requires Xcode with Swift 6.4 and a macOS SDK. The generator inspects Virtualization.framework's Swift symbol graph, resolves enum storage types with Clang, generates Swift wrappers, and compiles both arm64 and amd64 architectures under Swift 6 strict concurrency checks. It then emits static archives and Go bindings. The static archives bundle the compiler-selected Swift compatibility code, so application builds do not need to locate it in a Swift toolchain. Generated Swift is written to `internal/vzbridge/abi_arm64/Framework.swift` and `internal/vzbridge/abi_amd64/Framework.swift` for review.
 
-You can check the version of the Xcode SDK available for each macOS on this site.
+Handwritten code in `internal/vzbridge/source` handles callbacks, delegates, KVO, resource lifetimes, and library-specific behavior. Pointer types declare ownership using `BorrowedObject`, `OwnedObject`, `CString`, `ErrorOut`, `RawPointer`, and `RawBytes`. The generator reads these declarations from the Swift compiler AST and verifies the generated C ABI. There are no separate JSON contracts; intermediate JSON remains in temporary directories.
 
-https://xcodereleases.com/
+The generator also produces a small `Virtualization.tbd` linker stub from verified weak imports. This supplies declarations missing from older SDKs to allow linking while preserving runtime availability checks. Application builds continue to link against the dynamic system framework.
+
+Commit regenerated Swift files, Go bindings, `libBridge.a` static archives, and linker stubs alongside your source changes. ABI checks reject mismatched versions. If file replacement is interrupted, rerun generation.
+
+### Adding framework APIs
+
+List Swift declarations in the current SDK:
+
+```sh
+go run ./cmd/vzbridgegen -list
+```
+
+Regeneration scans every declaration in the SDK and generates bindings for all supported initializers, synchronous methods, factories, and property getters and setters. Public APIs do not need a selection list. You can call the generated bindings directly from the public Go API. Internal names combine the declaration path with a hash of its SDK identifier, so adding an overload does not rename an existing binding.
+
+Parameter types, return types, and availability come from the SDK metadata, and unsupported declarations are reported with a reason. Asynchronous calls, actor-isolated declarations, collections, optional string inputs, and types without a supported C representation still require handwritten adapters. Classes with an external superclass other than `NSObject` also need an executor adapter. Inherited initializers absent from the symbol graph are not generated.
+
+### Private APIs
+
+List methods exposed by the running framework's Objective-C runtime:
+
+```sh
+go run ./cmd/vzbridgegen -list-private
+```
+
+Add the private methods you need to `cmd/vzbridgegen/private_selection.go`, then run `make generate/bridge`. Each entry specifies only the class, selector, and method kind. Only listed methods are generated as `UnsafePrivate_` bindings in the bundle. Missing, duplicate, or unsupported selections stop generation with an error.
+
+Types come directly from the running framework's Objective-C metadata, so no `ipsw` installation is required. The `-list-private` flag lists all discovered methods, including those outside the selection. Private bindings reflect the host framework, which may differ from the installed SDK.
+
+Private bindings remain raw calls and are not memory safe merely because of validation. Runtime metadata provides argument widths and signedness, but does not indicate ownership, consumed arguments, variadic arguments, or executor requirements. Verify those rules before calling a private binding. Object arguments and results use `unsafe.Pointer`; callers must keep Go owners alive through the call and arrange native releases. For an object result, pass `retainResult = true` to retain it before the bridge autorelease pool drains. Pass `false` only when the method already returns an owned reference or the object's lifetime is otherwise guaranteed. Initializers take a raw allocation from `UnsafePrivateAllocate`.
+
+Generated calls validate the receiver, selector, return type, and every argument type on the target machine before invocation. A missing method or changed signature terminates the process unless an object-returning call receives an `invoked` output pointer. In that case, it returns nil and sets `invoked` to false, letting initializer callers release an allocation that was never consumed. A true value means the method ran, even if it returned nil. Runtime validation does not establish ownership or thread safety. Scalar values and raw pointers are supported. Swift-only private declarations, blocks, function pointers, and structs passed by value are not.
 
 ## Version compatibility check
 

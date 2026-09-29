@@ -1,4 +1,6 @@
 name: Build
+env:
+  CGO_ENABLED: '1'
 on:
   push:
     paths-ignore:

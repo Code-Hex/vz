@@ -1,11 +1,5 @@
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation
-# include "virtualization_helper.h"
-*/
-import "C"
 import (
 	"errors"
 	"fmt"
@@ -14,6 +8,7 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 	"golang.org/x/mod/semver"
 )
 
@@ -73,7 +68,7 @@ var (
 	maxAllowedVersionOnce interface{ Do(func()) } = &sync.Once{}
 
 	getMaxAllowedVersion = func() int {
-		return int(C.mac_os_x_version_max_allowed())
+		return vzbridge.SDKVersion
 	}
 )
 

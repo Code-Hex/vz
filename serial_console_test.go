@@ -3,16 +3,17 @@ package vz_test
 import (
 	"errors"
 	"os"
-	"runtime"
 	"syscall"
 	"testing"
 
 	"github.com/Code-Hex/vz/v3"
 	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 )
 
 func openFileDescriptorCount(t *testing.T) int {
 	t.Helper()
+	vzbridge.Drain()
 	dir, err := os.Open("/dev/fd")
 	if err != nil {
 		t.Fatal(err)
@@ -40,7 +41,6 @@ func TestNewFileHandleSerialPortAttachment(t *testing.T) {
 	if objc.Ptr(attachment) == nil {
 		t.Fatal("attachment wraps a NULL pointer: constructor reported success but built nothing")
 	}
-	runtime.SetFinalizer(attachment, nil)
 	objc.Release(attachment)
 }
 
@@ -93,7 +93,6 @@ func TestNewFileHandleSerialPortAttachmentClosesDuplicatedFiles(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		runtime.SetFinalizer(attachment, nil)
 		objc.Release(attachment)
 	}
 

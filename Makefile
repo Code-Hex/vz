@@ -6,7 +6,11 @@ KERNEL_DOWNLOAD_URL := https://github.com/Code-Hex/puipui-linux/releases/downloa
 
 .PHONY: fmt
 fmt:
-	@ls | grep -E '\.(h|m)$$' | xargs clang-format -i --verbose
+	@clang-format -i --verbose internal/vzbridge/source/*.h internal/vzbridge/source/*.m internal/vzbridge/source/ui/*.h internal/vzbridge/source/ui/*.m
+
+.PHONY: generate/bridge
+generate/bridge:
+	go run ./cmd/vzbridgegen
 
 .PHONY: test
 test:
@@ -20,7 +24,8 @@ test/run:
 test/graphics:
 	@binary=$$(mktemp -t vz-graphics-test) || exit 1; \
 	trap 'rm -f "$$binary"' EXIT; \
-	xcrun clang -fblocks -I . internal/graphicstest/main.m virtualization_view.m \
+	xcrun clang -fblocks -I internal/vzbridge/source/ui \
+		internal/graphicstest/main.m internal/vzbridge/source/ui/virtualization_view.m \
 		-framework Cocoa -framework Virtualization -framework QuartzCore -o "$$binary" && "$$binary"
 
 .PHONY: test/run/124

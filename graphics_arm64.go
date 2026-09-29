@@ -3,14 +3,8 @@
 
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_12_arm64.h"
-*/
-import "C"
 import (
-	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 )
 
 // MacGraphicsDeviceConfiguration is a configuration for a display attached to a Mac graphics device.
@@ -32,24 +26,15 @@ func NewMacGraphicsDeviceConfiguration() (*MacGraphicsDeviceConfiguration, error
 	}
 
 	graphicsConfiguration := &MacGraphicsDeviceConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZMacGraphicsDeviceConfiguration(),
-		),
+		pointer: vzbridge.Framework_VZMacGraphicsDeviceConfiguration_init_860f608f(),
 	}
-	objc.SetFinalizer(graphicsConfiguration, func(self *MacGraphicsDeviceConfiguration) {
-		objc.Release(self)
-	})
 	return graphicsConfiguration, nil
 }
 
 // SetDisplays sets the displays associated with this graphics device.
 func (m *MacGraphicsDeviceConfiguration) SetDisplays(displayConfigs ...*MacGraphicsDisplayConfiguration) {
-	ptrs := make([]objc.NSObject, len(displayConfigs))
-	for i, val := range displayConfigs {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setDisplaysVZMacGraphicsDeviceConfiguration(objc.Ptr(m), objc.Ptr(array))
+	array := nativeObjectArray(displayConfigs)
+	vzbridge.SetMacGraphicsDisplays(m, array)
 }
 
 // MacGraphicsDisplayConfiguration is the configuration for a Mac graphics device.
@@ -69,16 +54,7 @@ func NewMacGraphicsDisplayConfiguration(widthInPixels int64, heightInPixels int6
 	}
 
 	graphicsDisplayConfiguration := &MacGraphicsDisplayConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZMacGraphicsDisplayConfiguration(
-				C.NSInteger(widthInPixels),
-				C.NSInteger(heightInPixels),
-				C.NSInteger(pixelsPerInch),
-			),
-		),
+		pointer: vzbridge.NewMacGraphicsDisplayConfiguration(widthInPixels, heightInPixels, pixelsPerInch),
 	}
-	objc.SetFinalizer(graphicsDisplayConfiguration, func(self *MacGraphicsDisplayConfiguration) {
-		objc.Release(self)
-	})
 	return graphicsDisplayConfiguration, nil
 }

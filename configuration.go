@@ -1,16 +1,8 @@
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_11.h"
-# include "virtualization_12.h"
-# include "virtualization_13.h"
-# include "virtualization_15.h"
-*/
-import "C"
 import (
 	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 )
 
 // VirtualMachineConfiguration defines the configuration of a VirtualMachine.
@@ -35,8 +27,6 @@ import (
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtualmachineconfiguration?language=objc
 type VirtualMachineConfiguration struct {
-	cpuCount   uint
-	memorySize uint64
 	*pointer
 
 	networkDeviceConfiguration []*VirtioNetworkDeviceConfiguration
@@ -61,19 +51,12 @@ func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize 
 	}
 
 	config := &VirtualMachineConfiguration{
-		cpuCount:   cpu,
-		memorySize: memorySize,
-		pointer: objc.NewPointer(
-			C.newVZVirtualMachineConfiguration(
-				objc.Ptr(bootLoader),
-				C.uint(cpu),
-				C.ulonglong(memorySize),
-			),
+		pointer: vzbridge.NewVZVirtualMachineConfiguration(
+			bootLoader,
+			uint32(cpu),
+			uint64(memorySize),
 		),
 	}
-	objc.SetFinalizer(config, func(self *VirtualMachineConfiguration) {
-		objc.Release(self)
-	})
 	return config, nil
 }
 
@@ -83,7 +66,7 @@ func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize 
 // If error is not nil, assigned with the validation error if the validation failed.
 func (v *VirtualMachineConfiguration) Validate() (bool, error) {
 	nserrPtr := newNSErrorAsNil()
-	ret := C.validateVZVirtualMachineConfiguration(objc.Ptr(v), &nserrPtr)
+	ret := vzbridge.ValidateVZVirtualMachineConfiguration(v, &nserrPtr)
 	err := newNSError(nserrPtr)
 	if err != nil {
 		return false, err
@@ -93,32 +76,20 @@ func (v *VirtualMachineConfiguration) Validate() (bool, error) {
 
 // SetEntropyDevicesVirtualMachineConfiguration sets list of entropy devices. Empty by default.
 func (v *VirtualMachineConfiguration) SetEntropyDevicesVirtualMachineConfiguration(cs []*VirtioEntropyDeviceConfiguration) {
-	ptrs := make([]objc.NSObject, len(cs))
-	for i, val := range cs {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setEntropyDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	array := nativeObjectArray(cs)
+	vzbridge.SetEntropyDevicesVZVirtualMachineConfiguration(v, array)
 }
 
 // SetMemoryBalloonDevicesVirtualMachineConfiguration sets list of memory balloon devices. Empty by default.
 func (v *VirtualMachineConfiguration) SetMemoryBalloonDevicesVirtualMachineConfiguration(cs []MemoryBalloonDeviceConfiguration) {
-	ptrs := make([]objc.NSObject, len(cs))
-	for i, val := range cs {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setMemoryBalloonDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	array := nativeObjectArray(cs)
+	vzbridge.SetMemoryBalloonDevicesVZVirtualMachineConfiguration(v, array)
 }
 
 // SetNetworkDevicesVirtualMachineConfiguration sets list of network adapters. Empty by default.
 func (v *VirtualMachineConfiguration) SetNetworkDevicesVirtualMachineConfiguration(cs []*VirtioNetworkDeviceConfiguration) {
-	ptrs := make([]objc.NSObject, len(cs))
-	for i, val := range cs {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setNetworkDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	array := nativeObjectArray(cs)
+	vzbridge.SetNetworkDevicesVZVirtualMachineConfiguration(v, array)
 	v.networkDeviceConfiguration = cs
 }
 
@@ -130,31 +101,25 @@ func (v *VirtualMachineConfiguration) NetworkDevices() []*VirtioNetworkDeviceCon
 
 // SetSerialPortsVirtualMachineConfiguration sets list of serial ports. Empty by default.
 func (v *VirtualMachineConfiguration) SetSerialPortsVirtualMachineConfiguration(cs []*VirtioConsoleDeviceSerialPortConfiguration) {
-	ptrs := make([]objc.NSObject, len(cs))
-	for i, val := range cs {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setSerialPortsVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	array := nativeObjectArray(cs)
+	vzbridge.SetSerialPortsVZVirtualMachineConfiguration(v, array)
 }
 
 // SetSocketDevicesVirtualMachineConfiguration sets list of socket devices. Empty by default.
 func (v *VirtualMachineConfiguration) SetSocketDevicesVirtualMachineConfiguration(cs []SocketDeviceConfiguration) {
-	ptrs := make([]objc.NSObject, len(cs))
-	for i, val := range cs {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setSocketDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	array := nativeObjectArray(cs)
+	vzbridge.SetSocketDevicesVZVirtualMachineConfiguration(v, array)
 }
 
 // SocketDevices return the list of socket device configuration configured in this virtual machine configuration.
 // Return an empty array if no socket device configuration is set.
 func (v *VirtualMachineConfiguration) SocketDevices() []SocketDeviceConfiguration {
-	nsArray := objc.NewNSArray(
-		C.socketDevicesVZVirtualMachineConfiguration(objc.Ptr(v)),
-	)
-	ptrs := nsArray.ToPointerSlice()
+	array := vzbridge.SocketDevicesVZVirtualMachineConfiguration(v)
+	defer objc.Release(array)
+	ptrs := make([]*objc.Pointer, int(vzbridge.ArrayCount(array)))
+	for i := range ptrs {
+		ptrs[i] = vzbridge.ArrayObject(array, uint64(i))
+	}
 	socketDevices := make([]SocketDeviceConfiguration, len(ptrs))
 	for i, ptr := range ptrs {
 		socketDevices[i] = newVirtioSocketDeviceConfiguration(ptr)
@@ -164,12 +129,8 @@ func (v *VirtualMachineConfiguration) SocketDevices() []SocketDeviceConfiguratio
 
 // SetStorageDevicesVirtualMachineConfiguration sets list of disk devices. Empty by default.
 func (v *VirtualMachineConfiguration) SetStorageDevicesVirtualMachineConfiguration(cs []StorageDeviceConfiguration) {
-	ptrs := make([]objc.NSObject, len(cs))
-	for i, val := range cs {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setStorageDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	array := nativeObjectArray(cs)
+	vzbridge.SetStorageDevicesVZVirtualMachineConfiguration(v, array)
 	v.storageDeviceConfiguration = cs
 }
 
@@ -186,12 +147,8 @@ func (v *VirtualMachineConfiguration) SetDirectorySharingDevicesVirtualMachineCo
 	if err := macOSAvailable(12); err != nil {
 		return
 	}
-	ptrs := make([]objc.NSObject, len(cs))
-	for i, val := range cs {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setDirectorySharingDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	array := nativeObjectArray(cs)
+	vzbridge.SetDirectorySharingDevicesVZVirtualMachineConfiguration(v, array)
 }
 
 // SetPlatformVirtualMachineConfiguration sets the hardware platform to use. Defaults to GenericPlatformConfiguration.
@@ -201,7 +158,7 @@ func (v *VirtualMachineConfiguration) SetPlatformVirtualMachineConfiguration(c P
 	if err := macOSAvailable(12); err != nil {
 		return
 	}
-	C.setPlatformVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(c))
+	vzbridge.SetPlatformVZVirtualMachineConfiguration(v, c)
 }
 
 // SetGraphicsDevicesVirtualMachineConfiguration sets list of graphics devices. Empty by default.
@@ -211,12 +168,8 @@ func (v *VirtualMachineConfiguration) SetGraphicsDevicesVirtualMachineConfigurat
 	if err := macOSAvailable(12); err != nil {
 		return
 	}
-	ptrs := make([]objc.NSObject, len(cs))
-	for i, val := range cs {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setGraphicsDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	array := nativeObjectArray(cs)
+	vzbridge.SetGraphicsDevicesVZVirtualMachineConfiguration(v, array)
 }
 
 // SetPointingDevicesVirtualMachineConfiguration sets list of pointing devices. Empty by default.
@@ -226,12 +179,8 @@ func (v *VirtualMachineConfiguration) SetPointingDevicesVirtualMachineConfigurat
 	if err := macOSAvailable(12); err != nil {
 		return
 	}
-	ptrs := make([]objc.NSObject, len(cs))
-	for i, val := range cs {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setPointingDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	array := nativeObjectArray(cs)
+	vzbridge.SetPointingDevicesVZVirtualMachineConfiguration(v, array)
 }
 
 // SetKeyboardsVirtualMachineConfiguration sets list of keyboards. Empty by default.
@@ -241,12 +190,8 @@ func (v *VirtualMachineConfiguration) SetKeyboardsVirtualMachineConfiguration(cs
 	if err := macOSAvailable(12); err != nil {
 		return
 	}
-	ptrs := make([]objc.NSObject, len(cs))
-	for i, val := range cs {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setKeyboardsVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	array := nativeObjectArray(cs)
+	vzbridge.SetKeyboardsVZVirtualMachineConfiguration(v, array)
 }
 
 // SetAudioDevicesVirtualMachineConfiguration sets list of audio devices. Empty by default.
@@ -256,12 +201,8 @@ func (v *VirtualMachineConfiguration) SetAudioDevicesVirtualMachineConfiguration
 	if err := macOSAvailable(12); err != nil {
 		return
 	}
-	ptrs := make([]objc.NSObject, len(cs))
-	for i, val := range cs {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setAudioDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	array := nativeObjectArray(cs)
+	vzbridge.SetAudioDevicesVZVirtualMachineConfiguration(v, array)
 }
 
 // SetConsoleDevicesVirtualMachineConfiguration sets list of console devices. Empty by default.
@@ -271,12 +212,8 @@ func (v *VirtualMachineConfiguration) SetConsoleDevicesVirtualMachineConfigurati
 	if err := macOSAvailable(13); err != nil {
 		return
 	}
-	ptrs := make([]objc.NSObject, len(cs))
-	for i, val := range cs {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setConsoleDevicesVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	array := nativeObjectArray(cs)
+	vzbridge.SetConsoleDevicesVZVirtualMachineConfiguration(v, array)
 }
 
 // SetUSBControllerConfiguration sets list of USB controllers. Empty by default.
@@ -286,12 +223,8 @@ func (v *VirtualMachineConfiguration) SetUSBControllersVirtualMachineConfigurati
 	if err := macOSAvailable(15); err != nil {
 		return
 	}
-	ptrs := make([]objc.NSObject, len(us))
-	for i, val := range us {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setUSBControllersVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(array))
+	array := nativeObjectArray(us)
+	vzbridge.SetUSBControllersVZVirtualMachineConfiguration(v, array)
 	v.usbControllerConfiguration = us
 }
 
@@ -304,23 +237,23 @@ func (v *VirtualMachineConfiguration) USBControllers() []USBControllerConfigurat
 // VirtualMachineConfigurationMinimumAllowedMemorySize returns minimum
 // amount of memory required by virtual machines.
 func VirtualMachineConfigurationMinimumAllowedMemorySize() uint64 {
-	return uint64(C.minimumAllowedMemorySizeVZVirtualMachineConfiguration())
+	return vzbridge.Framework_VZVirtualMachineConfiguration_minimumAllowedMemorySize_ae8299f7()
 }
 
 // VirtualMachineConfigurationMaximumAllowedMemorySize returns maximum
 // amount of memory allowed for a virtual machine.
 func VirtualMachineConfigurationMaximumAllowedMemorySize() uint64 {
-	return uint64(C.maximumAllowedMemorySizeVZVirtualMachineConfiguration())
+	return vzbridge.Framework_VZVirtualMachineConfiguration_maximumAllowedMemorySize_07007ab6()
 }
 
 // VirtualMachineConfigurationMinimumAllowedCPUCount returns minimum
 // number of CPUs for a virtual machine.
 func VirtualMachineConfigurationMinimumAllowedCPUCount() uint {
-	return uint(C.minimumAllowedCPUCountVZVirtualMachineConfiguration())
+	return uint(vzbridge.Framework_VZVirtualMachineConfiguration_minimumAllowedCPUCount_5acdc155())
 }
 
 // VirtualMachineConfigurationMaximumAllowedCPUCount returns maximum
 // number of CPUs for a virtual machine.
 func VirtualMachineConfigurationMaximumAllowedCPUCount() uint {
-	return uint(C.maximumAllowedCPUCountVZVirtualMachineConfiguration())
+	return uint(vzbridge.Framework_VZVirtualMachineConfiguration_maximumAllowedCPUCount_d9efda41())
 }

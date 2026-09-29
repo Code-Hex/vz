@@ -1,23 +1,14 @@
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_11.h"
-# include "virtualization_12.h"
-# include "virtualization_12_3.h"
-# include "virtualization_13.h"
-# include "virtualization_14.h"
-*/
-import "C"
 import (
 	"os"
-	"runtime/cgo"
+	"runtime"
 	"time"
 	"unsafe"
 
 	infinity "github.com/Code-Hex/go-infinity-channel"
 	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 )
 
 type baseStorageDeviceAttachment struct{}
@@ -86,24 +77,16 @@ func NewDiskImageStorageDeviceAttachment(diskPath string, readOnly bool) (*DiskI
 	}
 
 	nserrPtr := newNSErrorAsNil()
-
-	diskPathChar := charWithGoString(diskPath)
-	defer diskPathChar.Free()
 	attachment := &DiskImageStorageDeviceAttachment{
-		pointer: objc.NewPointer(
-			C.newVZDiskImageStorageDeviceAttachment(
-				diskPathChar.CString(),
-				C.bool(readOnly),
-				&nserrPtr,
-			),
+		pointer: vzbridge.NewVZDiskImageStorageDeviceAttachment(
+			diskPath,
+			bool(readOnly),
+			&nserrPtr,
 		),
 	}
 	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
 	}
-	objc.SetFinalizer(attachment, func(self *DiskImageStorageDeviceAttachment) {
-		objc.Release(self)
-	})
 	return attachment, nil
 }
 
@@ -126,26 +109,18 @@ func NewDiskImageStorageDeviceAttachmentWithCacheAndSync(diskPath string, readOn
 	}
 
 	nserrPtr := newNSErrorAsNil()
-
-	diskPathChar := charWithGoString(diskPath)
-	defer diskPathChar.Free()
 	attachment := &DiskImageStorageDeviceAttachment{
-		pointer: objc.NewPointer(
-			C.newVZDiskImageStorageDeviceAttachmentWithCacheAndSyncMode(
-				diskPathChar.CString(),
-				C.bool(readOnly),
-				C.int(cachingMode),
-				C.int(syncMode),
-				&nserrPtr,
-			),
+		pointer: vzbridge.NewVZDiskImageStorageDeviceAttachmentWithCacheAndSyncMode(
+			diskPath,
+			bool(readOnly),
+			int32(cachingMode),
+			int32(syncMode),
+			&nserrPtr,
 		),
 	}
 	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
 	}
-	objc.SetFinalizer(attachment, func(self *DiskImageStorageDeviceAttachment) {
-		objc.Release(self)
-	})
 	return attachment, nil
 }
 
@@ -196,18 +171,13 @@ func NewVirtioBlockDeviceConfiguration(attachment StorageDeviceAttachment) (*Vir
 	}
 
 	config := &VirtioBlockDeviceConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZVirtioBlockDeviceConfiguration(
-				objc.Ptr(attachment),
-			),
+		pointer: vzbridge.NewVZVirtioBlockDeviceConfiguration(
+			attachment,
 		),
 		baseStorageDeviceConfiguration: &baseStorageDeviceConfiguration{
 			attachment: attachment,
 		},
 	}
-	objc.SetFinalizer(config, func(self *VirtioBlockDeviceConfiguration) {
-		objc.Release(self)
-	})
 	return config, nil
 }
 
@@ -237,13 +207,11 @@ func (v *VirtioBlockDeviceConfiguration) SetBlockDeviceIdentifier(identifier str
 	if err := macOSAvailable(12.3); err != nil {
 		return err
 	}
-	idChar := charWithGoString(identifier)
-	defer idChar.Free()
 
 	nserrPtr := newNSErrorAsNil()
-	C.setBlockDeviceIdentifierVZVirtioBlockDeviceConfiguration(
-		objc.Ptr(v),
-		idChar.CString(),
+	vzbridge.SetBlockDeviceIdentifierVZVirtioBlockDeviceConfiguration(
+		v,
+		identifier,
 		&nserrPtr,
 	)
 	if err := newNSError(nserrPtr); err != nil {
@@ -274,16 +242,11 @@ func NewUSBMassStorageDeviceConfiguration(attachment StorageDeviceAttachment) (*
 		return nil, err
 	}
 	usbMass := &USBMassStorageDeviceConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZUSBMassStorageDeviceConfiguration(objc.Ptr(attachment)),
-		),
+		pointer: vzbridge.NewVZUSBMassStorageDeviceConfiguration(attachment),
 		baseStorageDeviceConfiguration: &baseStorageDeviceConfiguration{
 			attachment: attachment,
 		},
 	}
-	objc.SetFinalizer(usbMass, func(self *USBMassStorageDeviceConfiguration) {
-		objc.Release(self)
-	})
 	return usbMass, nil
 }
 
@@ -309,16 +272,11 @@ func NewNVMExpressControllerDeviceConfiguration(attachment StorageDeviceAttachme
 		return nil, err
 	}
 	nvmExpress := &NVMExpressControllerDeviceConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZNVMExpressControllerDeviceConfiguration(objc.Ptr(attachment)),
-		),
+		pointer: vzbridge.NewVZNVMExpressControllerDeviceConfiguration(attachment),
 		baseStorageDeviceConfiguration: &baseStorageDeviceConfiguration{
 			attachment: attachment,
 		},
 	}
-	objc.SetFinalizer(nvmExpress, func(self *NVMExpressControllerDeviceConfiguration) {
-		objc.Release(self)
-	})
 	return nvmExpress, nil
 }
 
@@ -382,6 +340,7 @@ var _ StorageDeviceAttachment = (*DiskBlockDeviceStorageDeviceAttachment)(nil)
 // This is only supported on macOS 14 and newer, error will
 // be returned on older versions.
 func NewDiskBlockDeviceStorageDeviceAttachment(file *os.File, readOnly bool, syncMode DiskSynchronizationMode) (*DiskBlockDeviceStorageDeviceAttachment, error) {
+	defer runtime.KeepAlive(file)
 	if err := macOSAvailable(14); err != nil {
 		return nil, err
 	}
@@ -389,21 +348,16 @@ func NewDiskBlockDeviceStorageDeviceAttachment(file *os.File, readOnly bool, syn
 	nserrPtr := newNSErrorAsNil()
 
 	attachment := &DiskBlockDeviceStorageDeviceAttachment{
-		pointer: objc.NewPointer(
-			C.newVZDiskBlockDeviceStorageDeviceAttachment(
-				C.int(file.Fd()),
-				C.bool(readOnly),
-				C.int(syncMode),
-				&nserrPtr,
-			),
+		pointer: vzbridge.NewVZDiskBlockDeviceStorageDeviceAttachment(
+			int32(file.Fd()),
+			bool(readOnly),
+			int32(syncMode),
+			&nserrPtr,
 		),
 	}
 	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
 	}
-	objc.SetFinalizer(attachment, func(self *DiskBlockDeviceStorageDeviceAttachment) {
-		objc.Release(self)
-	})
 	return attachment, nil
 }
 
@@ -448,38 +402,38 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 	didEncounterError := infinity.NewChannel[error]()
 	connected := infinity.NewChannel[struct{}]()
 
-	handle := cgo.NewHandle(func(err error) {
-		if err != nil {
-			didEncounterError.In() <- err
-			return
+	handle := registerNativeCallback(func(kind uint32, first, second unsafe.Pointer, value uint64) uint64 {
+		switch kind {
+		case 7:
+			didEncounterError.In() <- newNSError(first)
+		case 8:
+			connected.In() <- struct{}{}
+		case 4:
+			didEncounterError.Close()
+			connected.Close()
 		}
-		connected.In() <- struct{}{}
+		return 0
 	})
 
 	nserrPtr := newNSErrorAsNil()
-
-	urlChar := charWithGoString(url)
-	defer urlChar.Free()
 	attachment := &NetworkBlockDeviceStorageDeviceAttachment{
-		pointer: objc.NewPointer(
-			C.newVZNetworkBlockDeviceStorageDeviceAttachment(
-				urlChar.CString(),
-				C.double(timeout.Seconds()),
-				C.bool(forcedReadOnly),
-				C.int(syncMode),
-				&nserrPtr,
-				C.uintptr_t(handle),
-			),
+		pointer: vzbridge.NewVZNetworkBlockDeviceStorageDeviceAttachment(
+			url,
+			float64(timeout.Seconds()),
+			bool(forcedReadOnly),
+			int32(syncMode),
+			&nserrPtr,
+			uint64(handle),
 		),
 		didEncounterError: didEncounterError,
 		connected:         connected,
 	}
 	if err := newNSError(nserrPtr); err != nil {
+		unregisterNativeCallback(handle)
+		didEncounterError.Close()
+		connected.Close()
 		return nil, err
 	}
-	objc.SetFinalizer(attachment, func(self *NetworkBlockDeviceStorageDeviceAttachment) {
-		objc.Release(self)
-	})
 	return attachment, nil
 }
 
@@ -498,33 +452,4 @@ func (n *NetworkBlockDeviceStorageDeviceAttachment) Connected() <-chan struct{} 
 // If the server resumes operation, the connection will recover automatically; however, until the server is restored, the client will continue to experience errors.
 func (n *NetworkBlockDeviceStorageDeviceAttachment) DidEncounterError() <-chan error {
 	return n.didEncounterError.Out()
-}
-
-// attachmentDidEncounterErrorHandler function is called when the NBD client encounters a nonrecoverable error.
-// After the attachment object calls this method, the NBD client is in a nonfunctional state.
-//
-//export attachmentDidEncounterErrorHandler
-func attachmentDidEncounterErrorHandler(cgoHandleUintptr C.uintptr_t, errorPtr unsafe.Pointer) {
-	cgoHandle := cgo.Handle(cgoHandleUintptr)
-	handler := cgoHandle.Value().(func(error))
-
-	err := newNSError(errorPtr)
-
-	handler(err)
-}
-
-// attachmentWasConnectedHandler function is called when a connection to the server is first established as the VM starts,
-// and during any reconnection attempts triggered by connection timeouts or recoverable errors encountered by the NBD client,
-// such as server-side I/O errors.
-//
-// Note that the Virtualization framework may invoke this method multiple times throughout the VM’s lifecycle,
-// ensuring reconnection processes remain seamless and transparent to the guest.
-// For more details, see: https://developer.apple.com/documentation/virtualization/vznetworkblockdevicestoragedeviceattachmentdelegate/4168511-attachmentwasconnected?language=objc
-//
-//export attachmentWasConnectedHandler
-func attachmentWasConnectedHandler(cgoHandleUintptr C.uintptr_t) {
-	cgoHandle := cgo.Handle(cgoHandleUintptr)
-	handler := cgoHandle.Value().(func(error))
-
-	handler(nil)
 }

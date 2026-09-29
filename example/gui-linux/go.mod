@@ -11,6 +11,7 @@ require (
 
 require (
 	github.com/Code-Hex/go-infinity-channel v1.0.0 // indirect
+	github.com/ebitengine/purego v0.10.1 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/sys v0.45.0 // indirect

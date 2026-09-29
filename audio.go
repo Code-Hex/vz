@@ -1,14 +1,10 @@
+//go:build darwin
+
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_11.h"
-# include "virtualization_12.h"
-*/
-import "C"
 import (
 	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 )
 
 // AudioDeviceConfiguration interface for an audio device configuration.
@@ -47,26 +43,15 @@ func NewVirtioSoundDeviceConfiguration() (*VirtioSoundDeviceConfiguration, error
 		return nil, err
 	}
 	config := &VirtioSoundDeviceConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZVirtioSoundDeviceConfiguration(),
-		),
+		pointer: vzbridge.Framework_VZVirtioSoundDeviceConfiguration_init_6435e630(),
 	}
-	objc.SetFinalizer(config, func(self *VirtioSoundDeviceConfiguration) {
-		objc.Release(self)
-	})
 	return config, nil
 }
 
 // SetStreams sets the list of audio streams exposed by this device.
 func (v *VirtioSoundDeviceConfiguration) SetStreams(streams ...VirtioSoundDeviceStreamConfiguration) {
-	ptrs := make([]objc.NSObject, len(streams))
-	for i, val := range streams {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setStreamsVZVirtioSoundDeviceConfiguration(
-		objc.Ptr(v), objc.Ptr(array),
-	)
+	array := nativeObjectArray(streams)
+	vzbridge.SetSoundStreams(v, array)
 }
 
 // VirtioSoundDeviceStreamConfiguration interface for Virtio Sound Device Stream Configuration.
@@ -99,13 +84,8 @@ func NewVirtioSoundDeviceHostInputStreamConfiguration() (*VirtioSoundDeviceHostI
 		return nil, err
 	}
 	config := &VirtioSoundDeviceHostInputStreamConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZVirtioSoundDeviceHostInputStreamConfiguration(),
-		),
+		pointer: vzbridge.NewVirtioSoundDeviceHostInputStreamConfiguration(),
 	}
-	objc.SetFinalizer(config, func(self *VirtioSoundDeviceHostInputStreamConfiguration) {
-		objc.Release(self)
-	})
 	return config, nil
 }
 
@@ -130,13 +110,8 @@ func NewVirtioSoundDeviceOutputStreamConfiguration() (*VirtioSoundDeviceOutputSt
 		return nil, err
 	}
 	config := &VirtioSoundDeviceOutputStreamConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZVirtioSoundDeviceOutputStreamConfiguration(),
-		),
+		pointer: vzbridge.Framework_VZVirtioSoundDeviceOutputStreamConfiguration_init_225412a0(),
 	}
-	objc.SetFinalizer(config, func(self *VirtioSoundDeviceOutputStreamConfiguration) {
-		objc.Release(self)
-	})
 	return config, nil
 }
 
@@ -161,12 +136,7 @@ func NewVirtioSoundDeviceHostOutputStreamConfiguration() (*VirtioSoundDeviceHost
 		return nil, err
 	}
 	config := &VirtioSoundDeviceHostOutputStreamConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZVirtioSoundDeviceHostOutputStreamConfiguration(),
-		),
+		pointer: vzbridge.NewVirtioSoundDeviceHostOutputStreamConfiguration(),
 	}
-	objc.SetFinalizer(config, func(self *VirtioSoundDeviceHostOutputStreamConfiguration) {
-		objc.Release(self)
-	})
 	return config, nil
 }

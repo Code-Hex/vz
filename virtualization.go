@@ -1,23 +1,13 @@
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization -framework Cocoa
-# include "virtualization_11.h"
-# include "virtualization_12.h"
-# include "virtualization_13.h"
-# include "virtualization_15.h"
-*/
-import "C"
 import (
 	"fmt"
-	"runtime/cgo"
 	"sync"
 	"unsafe"
 
 	infinity "github.com/Code-Hex/go-infinity-channel"
-	"github.com/Code-Hex/vz/v3/internal/objc"
 	"github.com/Code-Hex/vz/v3/internal/sliceutil"
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 )
 
 // VirtualMachineState represents execution state of the virtual machine.
@@ -81,15 +71,6 @@ const (
 // Creating a virtual machine using the Virtualization framework requires the app to have the "com.apple.security.virtualization" entitlement.
 // see: https://developer.apple.com/documentation/virtualization/vzvirtualmachine?language=objc
 type VirtualMachine struct {
-	// id for this struct.
-	id string
-
-	// Indicate whether or not virtualization is available.
-	//
-	// If virtualization is unavailable, no VirtualMachineConfiguration will validate.
-	// The validation error of the VirtualMachineConfiguration provides more information about why virtualization is unavailable.
-	supported bool
-
 	*pointer
 	dispatchQueue unsafe.Pointer
 	machineState  *machineState
@@ -98,11 +79,7 @@ type VirtualMachine struct {
 	disconnectedOut       *infinity.Channel[*DisconnectedError]
 	watchDisconnectedOnce sync.Once
 
-	finalizeOnce sync.Once
-
 	config *VirtualMachineConfiguration
-
-	mu sync.RWMutex
 }
 
 type machineState struct {
@@ -123,50 +100,38 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 	if err := macOSAvailable(11); err != nil {
 		return nil, err
 	}
-
-	// should not call Free function for this string.
-	cs := (*char)(objc.GetUUID())
-	dispatchQueue := C.makeDispatchQueue(cs.CString())
-
-	machineState := &machineState{
-		state:       VirtualMachineState(0),
-		stateNotify: infinity.NewChannel[VirtualMachineState](),
-	}
-	stateHandle := cgo.NewHandle(machineState)
-
+	queue := vzbridge.DispatchQueuePointer()
+	state := &machineState{stateNotify: infinity.NewChannel[VirtualMachineState]()}
+	stateHandle := registerNativeCallback(func(kind uint32, _, _ unsafe.Pointer, value uint64) uint64 {
+		if kind == 4 {
+			state.stateNotify.Close()
+			return 0
+		}
+		state.mu.Lock()
+		state.state = VirtualMachineState(value)
+		state.stateNotify.In() <- state.state
+		state.mu.Unlock()
+		return 0
+	})
 	disconnectedIn := infinity.NewChannel[*disconnected]()
-	disconnectedOut := infinity.NewChannel[*DisconnectedError]()
-	disconnectedHandle := cgo.NewHandle(disconnectedIn)
-
-	v := &VirtualMachine{
-		id: cs.String(),
-		pointer: objc.NewPointer(
-			C.newVZVirtualMachineWithDispatchQueue(
-				objc.Ptr(config),
-				dispatchQueue,
-				C.uintptr_t(stateHandle),
-				C.uintptr_t(disconnectedHandle),
-			),
-		),
-		dispatchQueue:   dispatchQueue,
-		machineState:    machineState,
-		disconnectedIn:  disconnectedIn,
-		disconnectedOut: disconnectedOut,
-		config:          config,
+	disconnectedHandle := registerNativeCallback(func(kind uint32, errorPointer, _ unsafe.Pointer, value uint64) uint64 {
+		if kind == 4 {
+			disconnectedIn.Close()
+			return 0
+		}
+		disconnectedIn.In() <- &disconnected{err: newNSError(errorPointer), index: int(value)}
+		return 0
+	})
+	object := vzbridge.NewVZVirtualMachineWithDispatchQueue(config, stateHandle, disconnectedHandle)
+	if object == nil {
+		unregisterNativeCallback(stateHandle)
+		unregisterNativeCallback(disconnectedHandle)
+		state.stateNotify.Close()
+		disconnectedIn.Close()
+		return nil, fmt.Errorf("could not create virtual machine")
 	}
-
-	objc.SetFinalizer(v, func(self *VirtualMachine) {
-		self.finalize()
-		stateHandle.Delete()
-	})
-	return v, nil
-}
-
-func (v *VirtualMachine) finalize() {
-	v.finalizeOnce.Do(func() {
-		objc.ReleaseDispatch(v.dispatchQueue)
-		objc.Release(v)
-	})
+	return &VirtualMachine{pointer: object, dispatchQueue: queue, machineState: state,
+		disconnectedIn: disconnectedIn, config: config}, nil
 }
 
 // SocketDevices return the list of socket devices configured on this virtual machine.
@@ -176,15 +141,13 @@ func (v *VirtualMachine) finalize() {
 // it will always return VirtioSocketDevice.
 // see: https://developer.apple.com/documentation/virtualization/vzvirtualmachine/3656702-socketdevices?language=objc
 func (v *VirtualMachine) SocketDevices() []*VirtioSocketDevice {
-	nsArray := objc.NewNSArray(
-		C.VZVirtualMachine_socketDevices(objc.Ptr(v)),
-	)
-	ptrs := nsArray.ToPointerSlice()
-	socketDevices := make([]*VirtioSocketDevice, len(ptrs))
-	for i, ptr := range ptrs {
-		socketDevices[i] = newVirtioSocketDevice(ptr, v.dispatchQueue)
+
+	pointers := nativeArray(vzbridge.VZVirtualMachine_socketDevices(v))
+	values := make([]*VirtioSocketDevice, len(pointers))
+	for i, ptr := range pointers {
+		values[i] = newVirtioSocketDevice(ptr, v)
 	}
-	return socketDevices
+	return values
 }
 
 // USBControllers return the list of USB controllers configured on this virtual machine. Return an empty array if no USB controller is configured.
@@ -192,32 +155,15 @@ func (v *VirtualMachine) SocketDevices() []*VirtioSocketDevice {
 // This is only supported on macOS 15 and newer, nil will
 // be returned on older versions.
 func (v *VirtualMachine) USBControllers() []*USBController {
-	if err := macOSAvailable(15); err != nil {
+	if macOSAvailable(15) != nil {
 		return nil
 	}
-	nsArray := objc.NewNSArray(
-		C.VZVirtualMachine_usbControllers(objc.Ptr(v)),
-	)
-	ptrs := nsArray.ToPointerSlice()
-	usbControllers := make([]*USBController, len(ptrs))
-	for i, ptr := range ptrs {
-		usbControllers[i] = newUSBController(ptr, v.dispatchQueue)
+	pointers := nativeArray(vzbridge.VZVirtualMachine_usbControllers(v))
+	values := make([]*USBController, len(pointers))
+	for i, ptr := range pointers {
+		values[i] = newUSBController(ptr, v)
 	}
-	return usbControllers
-}
-
-
-//export changeStateOnObserver
-func changeStateOnObserver(newStateRaw C.int, cgoHandleUintptr C.uintptr_t) {
-	stateHandle := cgo.Handle(cgoHandleUintptr)
-	// I expected it will not cause panic.
-	// if caused panic, that's unexpected behavior.
-	v, _ := stateHandle.Value().(*machineState)
-	v.mu.Lock()
-	newState := VirtualMachineState(newStateRaw)
-	v.state = newState
-	v.stateNotify.In() <- newState
-	v.mu.Unlock()
+	return values
 }
 
 // State represents execution state of the virtual machine.
@@ -236,22 +182,22 @@ func (v *VirtualMachine) StateChangedNotify() <-chan VirtualMachineState {
 
 // CanStart returns true if the machine is in a state that can be started.
 func (v *VirtualMachine) CanStart() bool {
-	return bool(C.vmCanStart(objc.Ptr(v), v.dispatchQueue))
+	return bool(vzbridge.VmCanStart(v))
 }
 
 // CanPause returns true if the machine is in a state that can be paused.
 func (v *VirtualMachine) CanPause() bool {
-	return bool(C.vmCanPause(objc.Ptr(v), v.dispatchQueue))
+	return bool(vzbridge.VmCanPause(v))
 }
 
 // CanResume returns true if the machine is in a state that can be resumed.
 func (v *VirtualMachine) CanResume() bool {
-	return (bool)(C.vmCanResume(objc.Ptr(v), v.dispatchQueue))
+	return (bool)(vzbridge.VmCanResume(v))
 }
 
 // CanRequestStop returns whether the machine is in a state where the guest can be asked to stop.
 func (v *VirtualMachine) CanRequestStop() bool {
-	return (bool)(C.vmCanRequestStop(objc.Ptr(v), v.dispatchQueue))
+	return (bool)(vzbridge.VmCanRequestStop(v))
 }
 
 // CanStop returns whether the machine is in a state that can be stopped.
@@ -262,32 +208,11 @@ func (v *VirtualMachine) CanStop() bool {
 	if err := macOSAvailable(12); err != nil {
 		return false
 	}
-	return (bool)(C.vmCanStop(objc.Ptr(v), v.dispatchQueue))
-}
-
-//export virtualMachineCompletionHandler
-func virtualMachineCompletionHandler(cgoHandleUintptr C.uintptr_t, errPtr unsafe.Pointer) {
-	cgoHandle := cgo.Handle(cgoHandleUintptr)
-
-	handler := cgoHandle.Value().(func(error))
-
-	if err := newNSError(errPtr); err != nil {
-		handler(err)
-	} else {
-		handler(nil)
-	}
-}
-
-func makeHandler() (func(error), chan error) {
-	ch := make(chan error, 1)
-	return func(err error) {
-		ch <- err
-		close(ch)
-	}, ch
+	return (bool)(vzbridge.VmCanStop(v))
 }
 
 type virtualMachineStartOptions struct {
-	macOSVirtualMachineStartOptionsPtr unsafe.Pointer
+	macOSVirtualMachineStartOptionsPtr *pointer
 }
 
 // VirtualMachineStartOption is an option for virtual machine start.
@@ -307,19 +232,16 @@ func (v *VirtualMachine) Start(opts ...VirtualMachineStartOption) error {
 		}
 	}
 
-	h, errCh := makeHandler()
-	handle := cgo.NewHandle(h)
-	defer handle.Delete()
+	handle, errCh := nativeCompletion()
 
 	if o.macOSVirtualMachineStartOptionsPtr != nil {
-		C.startWithOptionsCompletionHandler(
-			objc.Ptr(v),
-			v.dispatchQueue,
+		vzbridge.StartWithOptionsCompletionHandler(
+			v,
 			o.macOSVirtualMachineStartOptionsPtr,
-			C.uintptr_t(handle),
+			handle,
 		)
 	} else {
-		C.startWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
+		vzbridge.StartWithCompletionHandler(v, handle)
 	}
 	return <-errCh
 }
@@ -328,10 +250,8 @@ func (v *VirtualMachine) Start(opts ...VirtualMachineStartOption) error {
 //
 // If you want to listen status change events, use the "StateChangedNotify" method.
 func (v *VirtualMachine) Pause() error {
-	h, errCh := makeHandler()
-	handle := cgo.NewHandle(h)
-	defer handle.Delete()
-	C.pauseWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
+	handle, errCh := nativeCompletion()
+	vzbridge.PauseWithCompletionHandler(v, handle)
 	return <-errCh
 }
 
@@ -339,10 +259,8 @@ func (v *VirtualMachine) Pause() error {
 //
 // If you want to listen status change events, use the "StateChangedNotify" method.
 func (v *VirtualMachine) Resume() error {
-	h, errCh := makeHandler()
-	handle := cgo.NewHandle(h)
-	defer handle.Delete()
-	C.resumeWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
+	handle, errCh := nativeCompletion()
+	vzbridge.ResumeWithCompletionHandler(v, handle)
 	return <-errCh
 }
 
@@ -352,7 +270,7 @@ func (v *VirtualMachine) Resume() error {
 // Returns true if the request was made successfully.
 func (v *VirtualMachine) RequestStop() (bool, error) {
 	nserrPtr := newNSErrorAsNil()
-	ret := (bool)(C.requestStopVirtualMachine(objc.Ptr(v), v.dispatchQueue, &nserrPtr))
+	ret := (bool)(vzbridge.RequestStopVirtualMachine(v, &nserrPtr))
 	if err := newNSError(nserrPtr); err != nil {
 		return ret, err
 	}
@@ -374,10 +292,8 @@ func (v *VirtualMachine) Stop() error {
 	if err := macOSAvailable(12); err != nil {
 		return err
 	}
-	h, errCh := makeHandler()
-	handle := cgo.NewHandle(h)
-	defer handle.Delete()
-	C.stopWithCompletionHandler(objc.Ptr(v), v.dispatchQueue, C.uintptr_t(handle))
+	handle, errCh := nativeCompletion()
+	vzbridge.StopWithCompletionHandler(v, handle)
 	return <-errCh
 }
 
@@ -420,15 +336,13 @@ func (v *VirtualMachine) StartGraphicApplication(width, height float64, opts ...
 			return err
 		}
 	}
-	windowTitle := charWithGoString(defaultOpts.title)
-	defer windowTitle.Free()
-	C.startVirtualMachineWindow(
-		objc.Ptr(v),
+	vzbridge.StartVirtualMachineWindow(
+		v,
 		v.dispatchQueue,
-		C.double(width),
-		C.double(height),
-		windowTitle.CString(),
-		C.bool(defaultOpts.enableController),
+		width,
+		height,
+		defaultOpts.title,
+		defaultOpts.enableController,
 	)
 	return nil
 }
@@ -471,46 +385,29 @@ func (v *VirtualMachine) NetworkDeviceAttachmentWasDisconnected() (<-chan *Disco
 		return nil, err
 	}
 	v.watchDisconnectedOnce.Do(func() {
-		go v.watchDisconnected()
+		v.disconnectedOut = infinity.NewChannel[*DisconnectedError]()
+		go watchDisconnected(v.config.networkDeviceConfiguration, v.disconnectedIn, v.disconnectedOut)
 	})
 	return v.disconnectedOut.Out(), nil
 }
 
-// TODO(codehex): refactoring to leave using machineState's mutex lock.
-func (v *VirtualMachine) watchDisconnected() {
-	for disconnected := range v.disconnectedIn.Out() {
-		v.mu.RLock()
-		config := sliceutil.FindValueByIndex(
-			v.config.networkDeviceConfiguration,
-			disconnected.index,
-		)
-		v.mu.RUnlock()
-		v.disconnectedOut.In() <- &DisconnectedError{
-			Err:    disconnected.err,
-			Config: config,
+func watchDisconnected(configs []*VirtioNetworkDeviceConfiguration, input *infinity.Channel[*disconnected], output *infinity.Channel[*DisconnectedError]) {
+	for event := range input.Out() {
+		output.In() <- &DisconnectedError{Err: event.err, Config: sliceutil.FindValueByIndex(configs, event.index)}
+	}
+	output.Close()
+}
+
+func nativeCompletion() (uint64, <-chan error) {
+	channel := make(chan error, 1)
+	handle := registerNativeRequest(func(_ uint32, errorPointer, _ unsafe.Pointer, _ uint64) uint64 {
+		if err := newNSError(errorPointer); err != nil {
+			channel <- err
+		} else {
+			channel <- nil
 		}
-	}
-	v.disconnectedOut.Close()
-}
-
-//export emitAttachmentWasDisconnected
-func emitAttachmentWasDisconnected(index C.int, errPtr unsafe.Pointer, cgoHandleUintptr C.uintptr_t) {
-	handler := cgo.Handle(cgoHandleUintptr)
-	err := newNSError(errPtr)
-	// I expected it will not cause panic.
-	// if caused panic, that's unexpected behavior.
-	ch, _ := handler.Value().(*infinity.Channel[*disconnected])
-	ch.In() <- &disconnected{
-		err:   err,
-		index: int(index),
-	}
-}
-
-//export closeAttachmentWasDisconnectedChannel
-func closeAttachmentWasDisconnectedChannel(cgoHandleUintptr C.uintptr_t) {
-	handler := cgo.Handle(cgoHandleUintptr)
-	// I expected it will not cause panic.
-	// if caused panic, that's unexpected behavior.
-	ch, _ := handler.Value().(*infinity.Channel[*disconnected])
-	ch.Close()
+		close(channel)
+		return 0
+	})
+	return handle, channel
 }

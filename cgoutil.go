@@ -1,70 +1,11 @@
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c
-#cgo darwin LDFLAGS: -framework Foundation
-#import <Foundation/Foundation.h>
-
-
-const char *getNSErrorLocalizedDescription(void *err)
-{
-	NSString *ld = (NSString *)[(NSError *)err localizedDescription];
-	return [ld UTF8String];
-}
-
-const char *getNSErrorDomain(void *err)
-{
-	NSString *domain = (NSString *)[(NSError *)err domain];
-	return [domain UTF8String];
-}
-
-const char *getNSErrorUserInfo(void *err)
-{
-	NSDictionary<NSErrorUserInfoKey, id> *ui = [(NSError *)err userInfo];
-	NSString *uis = [NSString stringWithFormat:@"%@", ui];
-	return [uis UTF8String];
-}
-
-NSInteger getNSErrorCode(void *err)
-{
-	return (NSInteger)[(NSError *)err code];
-}
-
-typedef struct NSErrorFlat {
-	const char *domain;
-    const char *localizedDescription;
-	const char *userinfo;
-    int code;
-} NSErrorFlat;
-
-NSErrorFlat convertNSError2Flat(void *err)
-{
-	NSErrorFlat ret;
-	ret.domain = getNSErrorDomain(err);
-	ret.localizedDescription = getNSErrorLocalizedDescription(err);
-	ret.userinfo = getNSErrorUserInfo(err);
-	ret.code = (int)getNSErrorCode(err);
-
-	return ret;
-}
-
-void *newNSError()
-{
-	NSError *err = nil;
-	return err;
-}
-
-bool hasError(void *err)
-{
-	return (NSError *)err != nil;
-}
-*/
-import "C"
 import (
 	"fmt"
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 )
 
 // pointer is a type alias which is able to use as embedded type and
@@ -79,15 +20,7 @@ type NSError struct {
 	UserInfo             string
 }
 
-// newNSErrorAsNil makes nil NSError in objective-c world.
-func newNSErrorAsNil() unsafe.Pointer {
-	return unsafe.Pointer(C.newNSError())
-}
-
-// hasNSError checks passed pointer is NSError or not.
-func hasNSError(nserrPtr unsafe.Pointer) bool {
-	return (bool)(C.hasError(nserrPtr))
-}
+func newNSErrorAsNil() unsafe.Pointer { return nil }
 
 func (n *NSError) Error() string {
 	if n == nil {
@@ -103,37 +36,64 @@ func (n *NSError) Error() string {
 }
 
 func newNSError(p unsafe.Pointer) *NSError {
-	if !hasNSError(p) {
+	if p == nil {
 		return nil
 	}
-	nsError := C.convertNSError2Flat(p)
+	object := objc.NewManagedPointer(p, vzbridge.ReleaseObject)
+	defer objc.Release(object)
 	return &NSError{
-		Domain:               (*char)(nsError.domain).String(),
-		Code:                 int((nsError.code)),
-		LocalizedDescription: (*char)(nsError.localizedDescription).String(),
-		UserInfo:             (*char)(nsError.userinfo).String(), // NOTE(codehex): maybe we can convert to map[string]interface{}
+		Domain:               nativeString(vzbridge.ErrorDomain(object)),
+		Code:                 int(vzbridge.ErrorCode(object)),
+		LocalizedDescription: nativeString(vzbridge.ErrorDescription(object)),
+		UserInfo:             nativeString(vzbridge.ErrorUserInfo(object)),
 	}
 }
 
-// CharWithGoString makes *Char which is *C.Char wrapper from Go string.
-func charWithGoString(s string) *char {
-	return (*char)(unsafe.Pointer(C.CString(s)))
+func nativeString(object *objc.Pointer) string {
+	if object == nil {
+		return ""
+	}
+	defer objc.Release(object)
+	return string(nativeBytes(vzbridge.ObjectStringData(object)))
 }
 
-// Char is a wrapper of C.char
-type char C.char
-
-// CString converts *C.char from *Char
-func (c *char) CString() *C.char {
-	return (*C.char)(c)
+func nativeBytes(object *objc.Pointer) []byte {
+	if object == nil {
+		return nil
+	}
+	defer objc.Release(object)
+	size := vzbridge.DataLength(object)
+	if size == 0 {
+		return nil
+	}
+	data := vzbridge.DataBytes(object)
+	return append([]byte(nil), unsafe.Slice((*byte)(data), int(size))...)
 }
 
-// String converts Go string from *Char
-func (c *char) String() string {
-	return C.GoString((*C.char)(c))
+func nativeArray(object *objc.Pointer) []*objc.Pointer {
+	if object == nil {
+		return nil
+	}
+	defer objc.Release(object)
+	objects := make([]*objc.Pointer, int(vzbridge.ArrayCount(object)))
+	for i := range objects {
+		objects[i] = vzbridge.ArrayObject(object, uint64(i))
+	}
+	return objects
 }
 
-// Free frees allocated *C.char in Go code
-func (c *char) Free() {
-	C.free(unsafe.Pointer(c))
+func nativeObjectArray[T objc.NSObject](objects []T) *objc.Pointer {
+	array := vzbridge.NewArray()
+	for _, object := range objects {
+		vzbridge.ArrayAppend(array, object)
+	}
+	return array
+}
+
+func nativeObjectDictionary[T objc.NSObject](objects map[string]T) *objc.Pointer {
+	dictionary := vzbridge.NewDictionary()
+	for key, object := range objects {
+		vzbridge.DictionarySet(dictionary, key, object)
+	}
+	return dictionary
 }

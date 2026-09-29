@@ -5,3 +5,10 @@ virtualization
 RestoreImage.ipsw
 testdata/*
 !testdata/.gitkeep
+
+# Keep local development artifacts out of version control.
+/docs/
+/scripts/
+/AGENTS.md
+
+/internal/vzbridge/**/*.json

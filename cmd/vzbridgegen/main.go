@@ -249,6 +249,8 @@ func buildArchitecture(in inputs, source, temp, sdk string, sdkVersion int, arch
 	header := filepath.Join(temp, "Bridge_"+arch+".h")
 	library := filepath.Join(temp, "Swift_"+arch+".a")
 	swiftArgs := []string{"swiftc", "-swift-version", "6", "-strict-concurrency=complete", "-warnings-as-errors", "-diagnostic-style", "llvm", "-no-color-diagnostics", "-parse-as-library", "-disable-autolinking-runtime-compatibility", "-disable-autolinking-runtime-compatibility-concurrency", "-module-name", fmt.Sprintf("VZNativeBridge_%s_%d", in.Hash[:16], sdkVersion), "-sdk", sdk, "-target", target, "-module-cache-path", cache, "-I", source}
+	// The bridge does not use Darwin's float constants. Their overlay's force-load symbol requires macOS 15.
+	swiftArgs = append(swiftArgs, "-Xfrontend", "-disable-autolink-library", "-Xfrontend", "swift_Builtin_float")
 	if _, err := os.Stat(filepath.Join(source, "BridgeSupport.h")); err == nil {
 		swiftArgs = append(swiftArgs, "-import-objc-header", filepath.Join(source, "BridgeSupport.h"))
 	}

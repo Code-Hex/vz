@@ -39,6 +39,8 @@ public func unusedProbe() -> Int64 { 99 }
 public func privateProbe(_ value: Int64) -> Int64 { value + 1 }
 @c(vz_sum)
 public func sum(_ left: Int32, _ right: Int32) -> Int32 { left + right }
+@c(vz_addFloat)
+public func addFloat(_ value: Float) -> Double { Double(value) + 0.5 }
 @c(vz_length)
 public func length(_ string: CString) -> UInt64 { UInt64(String(cString: string!).utf8.count) }
 @c(vz_releaseObject)
@@ -154,6 +156,7 @@ cleanup:
     default:
     }
     if vzbridge.Sum(20,22) != 42 { panic("sum") }
+    if vzbridge.AddFloat(1.25) != 1.75 { panic("float conversion") }
     if vzbridge.Length("\u65e5\u672c\u8a9e") != 9 { panic("UTF-8 length") }
     vzbridge.ReleaseObject(nil)
     object := vzbridge.NewObject()
@@ -202,6 +205,21 @@ exports:
 	if err := os.WriteFile(filepath.Join(framework, "Virtualization.tbd"), []byte(stub), 0644); err != nil {
 		t.Fatal(err)
 	}
+	libraries := filepath.Join(directory, "libraries")
+	if err := os.Mkdir(libraries, 0755); err != nil {
+		t.Fatal(err)
+	}
+	// Older SDKs lack this overlay and its force-load symbol.
+	floatStub := fmt.Sprintf(`--- !tapi-tbd
+tbd-version: 4
+targets: [ %s-macos ]
+install-name: '/usr/lib/swift/libswift_Builtin_float.dylib'
+exports: []
+...
+`, arch)
+	if err := os.WriteFile(filepath.Join(libraries, "libswift_Builtin_float.tbd"), []byte(floatStub), 0644); err != nil {
+		t.Fatal(err)
+	}
 	concurrentProgram := func(extra string) string {
 		return `package main
 import (
@@ -244,13 +262,13 @@ func main() {
 			name:    "lifecycle_and_callbacks",
 			program: program,
 			linked: []string{
-				"sum", "length", "releaseObject", "newObject", "newTrackedObject",
+				"sum", "addFloat", "length", "releaseObject", "newObject", "newTrackedObject",
 				"value", "newBootLoader", "newMACAddress", "callback", "callbackAsync",
 			},
 		},
 	}
 	nativeSymbols := []string{
-		"bridge_abi", "sum", "privateProbe", "unusedProbe", "length", "releaseObject",
+		"bridge_abi", "sum", "addFloat", "privateProbe", "unusedProbe", "length", "releaseObject",
 		"newObject", "newTrackedObject", "value", "newBootLoader", "newMACAddress", "callback", "callbackAsync",
 	}
 	for _, test := range tests {
@@ -265,7 +283,7 @@ func main() {
 			)
 			cmd.Dir = client
 			cmd.Env = append(os.Environ(),
-				"CGO_ENABLED=1", "CGO_LDFLAGS=-F"+frameworks,
+				"CGO_ENABLED=1", "CGO_LDFLAGS=-L"+libraries+" -F"+frameworks,
 				"GOCACHE="+filepath.Join(directory, "gocache"),
 				"GOMODCACHE="+filepath.Join(directory, "modcache"),
 			)

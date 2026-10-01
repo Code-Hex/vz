@@ -28,11 +28,20 @@ func NewSshClient(conn net.Conn, addr string, config *ssh.ClientConfig) (*ssh.Cl
 func SetKeepAlive(t *testing.T, session *ssh.Session) {
 	t.Helper()
 	go func() {
-		for range time.Tick(5 * time.Second) {
-			_, err := session.SendRequest("keepalive@codehex.vz", true, nil)
-			if err != nil && err != io.EOF {
-				t.Logf("failed to send keep-alive request: %v", err)
+		ticker := time.NewTicker(5 * time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-t.Context().Done():
 				return
+			case <-ticker.C:
+				_, err := session.SendRequest("keepalive@codehex.vz", true, nil)
+				if err != nil {
+					if err != io.EOF {
+						t.Logf("failed to send keep-alive request: %v", err)
+					}
+					return
+				}
 			}
 		}
 	}()

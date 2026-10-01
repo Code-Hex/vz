@@ -44,6 +44,31 @@ jobs:
           go-version: ${{ matrix.go }}
       - name: vet
         run: go vet ./...
+      - name: Test binding generators
+        run: |
+          go test ./cmd/vzbridgegen ./internal/vzbridge/nativegen
+      - name: Verify source and vendor builds
+        run: |
+          repo="$PWD"
+          consumer=$(mktemp -d)
+          cd "$consumer"
+          go mod init vendor-check
+          go mod edit -require=github.com/Code-Hex/vz/v3@v3.0.0 -replace=github.com/Code-Hex/vz/v3="$repo"
+          cat > main.go <<'EOF'
+          package main
+          import "github.com/Code-Hex/vz/v3"
+          func main() {
+              address, err := vz.NewRandomLocallyAdministeredMACAddress()
+              if err != nil { panic(err) }
+              if len(address.HardwareAddr()) != 6 { panic("invalid MAC address") }
+          }
+          EOF
+          go mod tidy
+          go build -o source-check .
+          ./source-check
+          go mod vendor
+          go build -mod=vendor -o vendor-check .
+          ./vendor-check
       - name: Build Linux
         run: make -C example/linux
       - name: Build GUI Linux

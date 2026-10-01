@@ -1,19 +1,13 @@
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_11.h"
-# include "virtualization_12.h"
-# include "virtualization_13.h"
-# include "virtualization_15.h"
-*/
-import "C"
 import (
+	"fmt"
 	"os"
+	"runtime"
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 )
 
 // PlatformConfiguration is an interface for a platform configuration.
@@ -47,7 +41,7 @@ func IsNestedVirtualizationSupported() bool {
 		return false
 	}
 
-	return (bool)(C.isNestedVirtualizationSupported())
+	return vzbridge.VZGenericPlatformConfiguration_IsNestedVirtualizationSupported()
 }
 
 // SetNestedVirtualizationEnabled toggles nested virtualization.
@@ -56,10 +50,7 @@ func (m *GenericPlatformConfiguration) SetNestedVirtualizationEnabled(enable boo
 		return err
 	}
 
-	C.setNestedVirtualizationEnabled(
-		objc.Ptr(m),
-		C.bool(enable),
-	)
+	vzbridge.VZGenericPlatformConfiguration_SetNestedVirtualizationEnabled(m, bool(enable))
 	return nil
 }
 
@@ -75,18 +66,13 @@ func NewGenericPlatformConfiguration(opts ...GenericPlatformConfigurationOption)
 	}
 
 	platformConfig := &GenericPlatformConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZGenericPlatformConfiguration(),
-		),
+		pointer: vzbridge.VZGenericPlatformConfiguration_Init(),
 	}
 	for _, optFunc := range opts {
 		if err := optFunc(platformConfig); err != nil {
 			return nil, err
 		}
 	}
-	objc.SetFinalizer(platformConfig, func(self *GenericPlatformConfiguration) {
-		objc.Release(self)
-	})
 	return platformConfig, nil
 }
 
@@ -119,10 +105,14 @@ func NewGenericMachineIdentifierWithData(b []byte) (*GenericMachineIdentifier, e
 		return nil, err
 	}
 
-	ptr := C.newVZGenericMachineIdentifierWithBytes(
-		unsafe.Pointer(&b[0]),
-		C.int(len(b)),
+	ptr := vzbridge.NewVZGenericMachineIdentifierWithBytes(
+		unsafe.Pointer(unsafe.SliceData(b)),
+		int32(len(b)),
 	)
+	runtime.KeepAlive(b)
+	if objc.Ptr(ptr) == nil {
+		return nil, fmt.Errorf("invalid generic machine identifier data")
+	}
 	return newGenericMachineIdentifier(ptr), nil
 }
 
@@ -141,16 +131,13 @@ func NewGenericMachineIdentifier() (*GenericMachineIdentifier, error) {
 	if err := macOSAvailable(13); err != nil {
 		return nil, err
 	}
-	return newGenericMachineIdentifier(C.newVZGenericMachineIdentifier()), nil
+	return newGenericMachineIdentifier(vzbridge.VZGenericMachineIdentifier_New()), nil
 }
 
-func newGenericMachineIdentifier(ptr unsafe.Pointer) *GenericMachineIdentifier {
-	dataRepresentation := C.getVZGenericMachineIdentifierDataRepresentation(ptr)
-	bytePointer := (*byte)(unsafe.Pointer(dataRepresentation.ptr))
+func newGenericMachineIdentifier(ptr *objc.Pointer) *GenericMachineIdentifier {
 	return &GenericMachineIdentifier{
-		pointer: objc.NewPointer(ptr),
-		// https://github.com/golang/go/wiki/cgo#turning-c-arrays-into-go-slices
-		dataRepresentation: unsafe.Slice(bytePointer, dataRepresentation.len),
+		pointer:            ptr,
+		dataRepresentation: nativeBytes(vzbridge.VZGenericMachineIdentifier_DataRepresentation(ptr)),
 	}
 }
 
@@ -171,7 +158,7 @@ func WithGenericMachineIdentifier(m *GenericMachineIdentifier) GenericPlatformCo
 			return err
 		}
 		mpc.machineIdentifier = m
-		C.setMachineIdentifierVZGenericPlatformConfiguration(objc.Ptr(mpc), objc.Ptr(m))
+		vzbridge.VZGenericPlatformConfiguration_SetMachineIdentifier(mpc, m)
 		return nil
 	}
 }

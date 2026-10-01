@@ -3,14 +3,8 @@
 
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_12_arm64.h"
-*/
-import "C"
 import (
-	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 )
 
 // MacPlatformConfiguration is the platform configuration for booting macOS on Apple silicon.
@@ -46,7 +40,7 @@ type MacPlatformConfigurationOption func(*MacPlatformConfiguration)
 func WithMacHardwareModel(m *MacHardwareModel) MacPlatformConfigurationOption {
 	return func(mpc *MacPlatformConfiguration) {
 		mpc.hardwareModel = m
-		C.setHardwareModelVZMacPlatformConfiguration(objc.Ptr(mpc), objc.Ptr(m))
+		vzbridge.VZMacPlatformConfiguration_SetHardwareModel(mpc, m)
 	}
 }
 
@@ -54,7 +48,7 @@ func WithMacHardwareModel(m *MacHardwareModel) MacPlatformConfigurationOption {
 func WithMacMachineIdentifier(m *MacMachineIdentifier) MacPlatformConfigurationOption {
 	return func(mpc *MacPlatformConfiguration) {
 		mpc.machineIdentifier = m
-		C.setMachineIdentifierVZMacPlatformConfiguration(objc.Ptr(mpc), objc.Ptr(m))
+		vzbridge.VZMacPlatformConfiguration_SetMachineIdentifier(mpc, m)
 	}
 }
 
@@ -62,7 +56,7 @@ func WithMacMachineIdentifier(m *MacMachineIdentifier) MacPlatformConfigurationO
 func WithMacAuxiliaryStorage(m *MacAuxiliaryStorage) MacPlatformConfigurationOption {
 	return func(mpc *MacPlatformConfiguration) {
 		mpc.auxiliaryStorage = m
-		C.setAuxiliaryStorageVZMacPlatformConfiguration(objc.Ptr(mpc), objc.Ptr(m))
+		vzbridge.VZMacPlatformConfiguration_SetAuxiliaryStorage(mpc, m)
 	}
 }
 
@@ -76,16 +70,11 @@ func NewMacPlatformConfiguration(opts ...MacPlatformConfigurationOption) (*MacPl
 	}
 
 	platformConfig := &MacPlatformConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZMacPlatformConfiguration(),
-		),
+		pointer: vzbridge.VZMacPlatformConfiguration_Init(),
 	}
 	for _, optFunc := range opts {
 		optFunc(platformConfig)
 	}
-	objc.SetFinalizer(platformConfig, func(self *MacPlatformConfiguration) {
-		objc.Release(self)
-	})
 	return platformConfig, nil
 }
 

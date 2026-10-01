@@ -3,14 +3,8 @@
 
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_13_arm64.h"
-*/
-import "C"
 import (
-	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 )
 
 // MacTrackpadConfiguration is a struct that defines the configuration
@@ -40,12 +34,7 @@ func NewMacTrackpadConfiguration() (*MacTrackpadConfiguration, error) {
 		return nil, err
 	}
 	config := &MacTrackpadConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZMacTrackpadConfiguration(),
-		),
+		pointer: vzbridge.VZMacTrackpadConfiguration_Init(),
 	}
-	objc.SetFinalizer(config, func(self *MacTrackpadConfiguration) {
-		objc.Release(self)
-	})
 	return config, nil
 }

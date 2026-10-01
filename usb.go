@@ -1,16 +1,10 @@
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_15.h"
-*/
-import "C"
 import (
-	"runtime/cgo"
-	"unsafe"
+	"runtime"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 )
 
 // NewUSBMassStorageDevice initialize the runtime USB Mass Storage device object.
@@ -21,8 +15,8 @@ func NewUSBMassStorageDevice(config *USBMassStorageDeviceConfiguration) (USBDevi
 	if err := macOSAvailable(15); err != nil {
 		return nil, err
 	}
-	ptr := C.newVZUSBMassStorageDeviceWithConfiguration(objc.Ptr(config))
-	return newUSBDevice(ptr), nil
+	ptr := vzbridge.VZUSBMassStorageDevice_InitWithConfiguration(config)
+	return &usbDevice{pointer: ptr}, nil
 }
 
 // USBControllerConfiguration for a usb controller configuration.
@@ -58,39 +52,15 @@ func NewXHCIControllerConfiguration() (*XHCIControllerConfiguration, error) {
 	}
 
 	config := &XHCIControllerConfiguration{
-		pointer: objc.NewPointer(C.newVZXHCIControllerConfiguration()),
+		pointer: vzbridge.VZXHCIControllerConfiguration_Init(),
 	}
-
-	objc.SetFinalizer(config, func(self *XHCIControllerConfiguration) {
-		objc.Release(self)
-	})
 	return config, nil
 }
 
 // USBController is representing a USB controller in a virtual machine.
 type USBController struct {
-	dispatchQueue unsafe.Pointer
+	vm *VirtualMachine
 	*pointer
-}
-
-func newUSBController(ptr, dispatchQueue unsafe.Pointer) *USBController {
-	return &USBController{
-		dispatchQueue: dispatchQueue,
-		pointer:       objc.NewPointer(ptr),
-	}
-}
-
-//export usbAttachDetachCompletionHandler
-func usbAttachDetachCompletionHandler(cgoHandleUintptr C.uintptr_t, errPtr unsafe.Pointer) {
-	cgoHandle := cgo.Handle(cgoHandleUintptr)
-
-	handler := cgoHandle.Value().(func(error))
-
-	if err := newNSError(errPtr); err != nil {
-		handler(err)
-	} else {
-		handler(nil)
-	}
 }
 
 // Attach attaches a USB device.
@@ -108,14 +78,13 @@ func (u *USBController) Attach(device USBDevice) error {
 	if err := macOSAvailable(15); err != nil {
 		return err
 	}
-	h, errCh := makeHandler()
-	handle := cgo.NewHandle(h)
-	defer handle.Delete()
-	C.attachDeviceVZUSBController(
-		objc.Ptr(u),
-		objc.Ptr(device),
-		u.dispatchQueue,
-		C.uintptr_t(handle),
+	handle, errCh := nativeCompletion()
+	defer runtime.KeepAlive(u)
+	defer runtime.KeepAlive(device)
+	vzbridge.AttachDeviceVZUSBController(
+		u,
+		device,
+		uint64(handle),
 	)
 	return <-errCh
 }
@@ -133,14 +102,13 @@ func (u *USBController) Detach(device USBDevice) error {
 	if err := macOSAvailable(15); err != nil {
 		return err
 	}
-	h, errCh := makeHandler()
-	handle := cgo.NewHandle(h)
-	defer handle.Delete()
-	C.detachDeviceVZUSBController(
-		objc.Ptr(u),
-		objc.Ptr(device),
-		u.dispatchQueue,
-		C.uintptr_t(handle),
+	handle, errCh := nativeCompletion()
+	defer runtime.KeepAlive(u)
+	defer runtime.KeepAlive(device)
+	vzbridge.DetachDeviceVZUSBController(
+		u,
+		device,
+		uint64(handle),
 	)
 	return <-errCh
 }
@@ -153,14 +121,12 @@ func (u *USBController) USBDevices() []USBDevice {
 	if err := macOSAvailable(15); err != nil {
 		return nil
 	}
-	nsArray := objc.NewNSArray(
-		C.usbDevicesVZUSBController(objc.Ptr(u)),
-	)
-	ptrs := nsArray.ToPointerSlice()
-	usbDevices := make([]USBDevice, len(ptrs))
-	for i, ptr := range ptrs {
-		usbDevices[i] = newUSBDevice(ptr)
+	pointers := nativeArray(vzbridge.VZUSBController_UsbDevices(u))
+	usbDevices := make([]USBDevice, len(pointers))
+	for i, ptr := range pointers {
+		usbDevices[i] = &usbDevice{pointer: ptr}
 	}
+
 	return usbDevices
 }
 
@@ -173,12 +139,6 @@ type USBDevice interface {
 	usbDevice()
 }
 
-func newUSBDevice(ptr unsafe.Pointer) *usbDevice {
-	return &usbDevice{
-		pointer: objc.NewPointer(ptr),
-	}
-}
-
 type usbDevice struct {
 	*pointer
 }
@@ -189,6 +149,5 @@ var _ USBDevice = (*usbDevice)(nil)
 
 // UUID returns the device UUID.
 func (u *usbDevice) UUID() string {
-	cs := (*char)(C.getUUIDUSBDevice(objc.Ptr(u)))
-	return cs.String()
+	return nativeString(vzbridge.GetUUIDUSBDevice(u))
 }

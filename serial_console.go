@@ -1,15 +1,12 @@
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_11.h"
-*/
-import "C"
 import (
 	"os"
+	"runtime"
+	"unsafe"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 )
 
 // SerialPortAttachment interface for a serial port attachment.
@@ -45,27 +42,23 @@ type FileHandleSerialPortAttachment struct {
 // This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewFileHandleSerialPortAttachment(read, write *os.File) (*FileHandleSerialPortAttachment, error) {
+	defer runtime.KeepAlive(read)
+	defer runtime.KeepAlive(write)
 	if err := macOSAvailable(11); err != nil {
 		return nil, err
 	}
 
-	nserrPtr := newNSErrorAsNil()
+	var nserrPtr unsafe.Pointer
 	attachment := &FileHandleSerialPortAttachment{
-		pointer: objc.NewPointer(
-			C.newVZFileHandleSerialPortAttachment(
-				C.int(read.Fd()),
-				C.int(write.Fd()),
-				&nserrPtr,
-			),
+		pointer: vzbridge.NewVZFileHandleSerialPortAttachment(
+			int32(read.Fd()),
+			int32(write.Fd()),
+			&nserrPtr,
 		),
 	}
 	if err := newNSError(nserrPtr); err != nil {
-		objc.Release(objc.NewPointer(nserrPtr))
 		return nil, err
 	}
-	objc.SetFinalizer(attachment, func(self *FileHandleSerialPortAttachment) {
-		objc.Release(self)
-	})
 	return attachment, nil
 }
 
@@ -96,25 +89,13 @@ func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPor
 		return nil, err
 	}
 
-	cpath := charWithGoString(path)
-	defer cpath.Free()
-
-	nserrPtr := newNSErrorAsNil()
+	var nserrPtr unsafe.Pointer
 	attachment := &FileSerialPortAttachment{
-		pointer: objc.NewPointer(
-			C.newVZFileSerialPortAttachment(
-				cpath.CString(),
-				C.bool(shouldAppend),
-				&nserrPtr,
-			),
-		),
+		pointer: vzbridge.VZFileSerialPortAttachment_InitWithURL_Append_Error(vzbridge.NSURL_FileURLWithPath(vzbridge.NSString_StringWithUTF8String(path)), bool(shouldAppend), &nserrPtr),
 	}
 	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
 	}
-	objc.SetFinalizer(attachment, func(self *FileSerialPortAttachment) {
-		objc.Release(self)
-	})
 	return attachment, nil
 }
 
@@ -137,14 +118,8 @@ func NewVirtioConsoleDeviceSerialPortConfiguration(attachment SerialPortAttachme
 	}
 
 	config := &VirtioConsoleDeviceSerialPortConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZVirtioConsoleDeviceSerialPortConfiguration(
-				objc.Ptr(attachment),
-			),
-		),
+		pointer: vzbridge.VZVirtioConsoleDeviceSerialPortConfiguration_Init(),
 	}
-	objc.SetFinalizer(config, func(self *VirtioConsoleDeviceSerialPortConfiguration) {
-		objc.Release(self)
-	})
+	vzbridge.VZSerialPortConfiguration_SetAttachment(config, attachment)
 	return config, nil
 }

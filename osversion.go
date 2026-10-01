@@ -1,11 +1,5 @@
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation
-# include "virtualization_helper.h"
-*/
-import "C"
 import (
 	"errors"
 	"fmt"
@@ -14,6 +8,7 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 	"golang.org/x/mod/semver"
 )
 
@@ -31,12 +26,12 @@ func macOSAvailable(version float64) error {
 	if macOSMajorMinorVersion() < version {
 		return ErrUnsupportedOSVersion
 	}
-	return macOSBuildTargetAvailable(version)
+	return macOSBuildTargetAvailable(version, vzbridge.SDKVersion)
 }
 
 var (
 	majorMinorVersion     float64
-	majorMinorVersionOnce interface{ Do(func()) } = &sync.Once{}
+	majorMinorVersionOnce sync.Once
 
 	// This can be replaced in the test code to enable mock.
 	// It will not be changed in production.
@@ -68,25 +63,8 @@ func macOSMajorMinorVersion() float64 {
 	return majorMinorVersion
 }
 
-var (
-	maxAllowedVersion     int
-	maxAllowedVersionOnce interface{ Do(func()) } = &sync.Once{}
-
-	getMaxAllowedVersion = func() int {
-		return int(C.mac_os_x_version_max_allowed())
-	}
-)
-
-func fetchMaxAllowedVersion() int {
-	maxAllowedVersionOnce.Do(func() {
-		maxAllowedVersion = getMaxAllowedVersion()
-	})
-	return maxAllowedVersion
-}
-
 // macOSBuildTargetAvailable checks whether the API available in a given version has been compiled.
-func macOSBuildTargetAvailable(version float64) error {
-	allowedVersion := fetchMaxAllowedVersion()
+func macOSBuildTargetAvailable(version float64, allowedVersion int) error {
 	if allowedVersion == 0 {
 		return fmt.Errorf("undefined __MAC_OS_X_VERSION_MAX_ALLOWED: %w", ErrBuildTargetOSVersion)
 	}

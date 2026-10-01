@@ -1,23 +1,16 @@
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_11.h"
-*/
-import "C"
 import (
-	"errors"
 	"fmt"
 	"net"
 	"os"
 	"runtime"
-	"runtime/cgo"
 	"sync"
 	"time"
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 )
 
 // SocketDeviceConfiguration for a socket device configuration.
@@ -52,19 +45,10 @@ func NewVirtioSocketDeviceConfiguration() (*VirtioSocketDeviceConfiguration, err
 	if err := macOSAvailable(11); err != nil {
 		return nil, err
 	}
-
-	config := newVirtioSocketDeviceConfiguration(C.newVZVirtioSocketDeviceConfiguration())
-
-	objc.SetFinalizer(config, func(self *VirtioSocketDeviceConfiguration) {
-		objc.Release(self)
-	})
-	return config, nil
-}
-
-func newVirtioSocketDeviceConfiguration(ptr unsafe.Pointer) *VirtioSocketDeviceConfiguration {
-	return &VirtioSocketDeviceConfiguration{
-		pointer: objc.NewPointer(ptr),
+	config := &VirtioSocketDeviceConfiguration{
+		pointer: vzbridge.VZVirtioSocketDeviceConfiguration_Init(),
 	}
+	return config, nil
 }
 
 // VirtioSocketDevice a device that manages port-based connections between the guest system and the host computer.
@@ -73,15 +57,8 @@ func newVirtioSocketDeviceConfiguration(ptr unsafe.Pointer) *VirtioSocketDeviceC
 // the virtual machine creates it and you can get it via SocketDevices method.
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdevice?language=objc
 type VirtioSocketDevice struct {
-	dispatchQueue unsafe.Pointer
+	vm *VirtualMachine
 	*pointer
-}
-
-func newVirtioSocketDevice(ptr, dispatchQueue unsafe.Pointer) *VirtioSocketDevice {
-	return &VirtioSocketDevice{
-		dispatchQueue: dispatchQueue,
-		pointer:       objc.NewPointer(ptr),
-	}
 }
 
 // Listen creates a new VirtioSocketListener which is a struct that listens for port-based connection requests
@@ -95,45 +72,29 @@ func (v *VirtioSocketDevice) Listen(port uint32) (*VirtioSocketListener, error) 
 	if err := macOSAvailable(11); err != nil {
 		return nil, err
 	}
-
-	ch := make(chan connResults, 1) // should I increase more caps?
-
-	handle := cgo.NewHandle(func(conn *VirtioSocketConnection, err error) {
-		ch <- connResults{conn, err}
+	state := &socketAcceptState{wake: make(chan struct{}, 1)}
+	handle := registerNativeCallback(func(kind uint32, first, second unsafe.Pointer, value uint64) uint64 {
+		if kind == 4 {
+			state.close()
+			return 0
+		}
+		connection, err := newVirtioSocketConnection(objc.NewManagedPointer(first, vzbridge.ReleaseObject))
+		if state.enqueue(connResults{connection, err}) && err == nil {
+			return 1
+		}
+		return 0
 	})
-	ptr := C.newVZVirtioSocketListener(
-		C.uintptr_t(handle),
-	)
-	listener := &VirtioSocketListener{
-		pointer:     objc.NewPointer(ptr),
-		vsockDevice: v,
-		port:        port,
-		handle:      handle,
-		acceptch:    ch,
-	}
-
-	C.VZVirtioSocketDevice_setSocketListenerForPort(
-		objc.Ptr(v),
-		v.dispatchQueue,
-		objc.Ptr(listener),
-		C.uint32_t(port),
-	)
-
+	pointer := vzbridge.NewVZVirtioSocketListener(handle)
+	cleanup := &socketListenerCleanup{listener: pointer, device: v, port: port, accepts: state, handle: handle}
+	owner := &socketListenerOwner{cleanup: cleanup}
+	listener := &VirtioSocketListener{pointer: pointer, port: port, owner: owner}
+	runtime.AddCleanup(owner, (*socketListenerCleanup).close, cleanup)
+	socketListenerPorts.Lock()
+	socketListenerPorts.current[cleanup.key()] = handle
+	vzbridge.VZVirtioSocketDevice_SetSocketListener_ForPort(v, pointer, port)
+	socketListenerPorts.Unlock()
+	runtime.KeepAlive(listener)
 	return listener, nil
-}
-
-//export connectionHandler
-func connectionHandler(connPtr, errPtr unsafe.Pointer, cgoHandleUintptr C.uintptr_t) {
-	cgoHandle := cgo.Handle(cgoHandleUintptr)
-	handler := cgoHandle.Value().(func(*VirtioSocketConnection, error))
-	defer cgoHandle.Delete()
-	// see: startHandler
-	if err := newNSError(errPtr); err != nil {
-		handler(nil, err)
-	} else {
-		conn, err := newVirtioSocketConnection(connPtr)
-		handler(conn, err)
-	}
 }
 
 // Connect Initiates a connection to the specified port of the guest operating system.
@@ -145,16 +106,19 @@ func connectionHandler(connPtr, errPtr unsafe.Pointer, cgoHandleUintptr C.uintpt
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdevice/3656677-connecttoport?language=objc
 func (v *VirtioSocketDevice) Connect(port uint32) (*VirtioSocketConnection, error) {
 	ch := make(chan connResults, 1)
-	cgoHandle := cgo.NewHandle(func(conn *VirtioSocketConnection, err error) {
-		ch <- connResults{conn, err}
-		close(ch)
+	request := registerNativeRequest(func(kind uint32, first, second unsafe.Pointer, value uint64) uint64 {
+		if second != nil {
+			if first != nil {
+				vzbridge.ReleaseObject(first)
+			}
+			ch <- connResults{err: newNSError(second)}
+			return 0
+		}
+		connection, err := newVirtioSocketConnection(objc.NewManagedPointer(first, vzbridge.ReleaseObject))
+		ch <- connResults{connection, err}
+		return 0
 	})
-	C.VZVirtioSocketDevice_connectToPort(
-		objc.Ptr(v),
-		v.dispatchQueue,
-		C.uint32_t(port),
-		C.uintptr_t(cgoHandle),
-	)
+	vzbridge.VZVirtioSocketDevice_connectToPort(v, port, request)
 	result := <-ch
 	runtime.KeepAlive(v)
 	return result.conn, result.err
@@ -170,11 +134,117 @@ type connResults struct {
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketlistener?language=objc
 type VirtioSocketListener struct {
 	*pointer
-	vsockDevice *VirtioSocketDevice
-	handle      cgo.Handle
-	port        uint32
-	acceptch    chan connResults
-	closeOnce   sync.Once
+	port  uint32
+	owner *socketListenerOwner
+}
+
+type socketListenerOwner struct{ cleanup *socketListenerCleanup }
+
+type socketListenerKey struct {
+	device uintptr
+	port   uint32
+}
+
+var socketListenerPorts = struct {
+	sync.Mutex
+	current map[socketListenerKey]uint64
+}{current: make(map[socketListenerKey]uint64)}
+
+type socketListenerCleanup struct {
+	handle   uint64
+	once     sync.Once
+	listener *objc.Pointer
+	device   *VirtioSocketDevice
+	port     uint32
+	accepts  *socketAcceptState
+}
+
+func (s *socketListenerCleanup) key() socketListenerKey {
+	return socketListenerKey{device: uintptr(objc.Ptr(s.device)), port: s.port}
+}
+
+func (s *socketListenerCleanup) close() {
+	s.once.Do(func() {
+		s.accepts.close()
+		socketListenerPorts.Lock()
+		key := s.key()
+		if socketListenerPorts.current[key] == s.handle {
+			delete(socketListenerPorts.current, key)
+			vzbridge.VZVirtioSocketDevice_RemoveSocketListenerForPort(s.device, s.port)
+		}
+		socketListenerPorts.Unlock()
+		vzbridge.InvalidateVZVirtioSocketListener(s.listener)
+		s.device = nil
+		s.listener = nil
+	})
+}
+
+type socketAcceptState struct {
+	mu      sync.Mutex
+	pending []connResults
+	wake    chan struct{}
+	closed  bool
+}
+
+func (s *socketAcceptState) enqueue(result connResults) bool {
+	s.mu.Lock()
+	if s.closed {
+		s.mu.Unlock()
+		if result.conn != nil {
+			result.conn.Close()
+		}
+		return false
+	}
+	s.pending = append(s.pending, result)
+	select {
+	case s.wake <- struct{}{}:
+	default:
+	}
+	s.mu.Unlock()
+	return true
+}
+
+func (s *socketAcceptState) accept() (*VirtioSocketConnection, error) {
+	for {
+		s.mu.Lock()
+		if s.closed {
+			s.mu.Unlock()
+			return nil, fmt.Errorf("accept failed: listener has been closed: %w", net.ErrClosed)
+		}
+		if len(s.pending) != 0 {
+			result := s.pending[0]
+			s.pending[0] = connResults{}
+			s.pending = s.pending[1:]
+			if len(s.pending) != 0 {
+				select {
+				case s.wake <- struct{}{}:
+				default:
+				}
+			}
+			s.mu.Unlock()
+			return result.conn, result.err
+		}
+		s.mu.Unlock()
+		<-s.wake
+	}
+}
+
+func (s *socketAcceptState) close() {
+	s.mu.Lock()
+	if s.closed {
+		s.mu.Unlock()
+		return
+	}
+	s.closed = true
+	pending := s.pending
+	s.pending = nil
+	close(s.wake)
+	s.mu.Unlock()
+	for _, result := range pending {
+		if result.conn != nil {
+			result.conn.Close()
+		}
+	}
 }
 
 var _ net.Listener = (*VirtioSocketListener)(nil)
@@ -186,25 +256,14 @@ func (v *VirtioSocketListener) Accept() (net.Conn, error) {
 
 // AcceptVirtioSocketConnection accepts the next incoming call and returns the new connection.
 func (v *VirtioSocketListener) AcceptVirtioSocketConnection() (*VirtioSocketConnection, error) {
-	result := <-v.acceptch
-	return result.conn, result.err
+	defer runtime.KeepAlive(v)
+	return v.owner.cleanup.accepts.accept()
 }
 
 // Close stops listening on the virtio socket.
 func (v *VirtioSocketListener) Close() error {
-	v.closeOnce.Do(func() {
-		C.VZVirtioSocketDevice_removeSocketListenerForPort(
-			objc.Ptr(v.vsockDevice),
-			v.vsockDevice.dispatchQueue,
-			C.uint32_t(v.port),
-		)
-		v.handle.Delete()
-		v.acceptch <- connResults{
-			conn: nil,
-			err:  errors.New("accept failed: listener has been closed"),
-		}
-		close(v.acceptch)
-	})
+	v.owner.cleanup.close()
+	runtime.KeepAlive(v)
 	return nil
 }
 
@@ -230,17 +289,6 @@ func (a *VirtioSocketListenerAddr) Network() string { return "vsock" }
 
 // String returns string of "<cid>:<port>"
 func (a *VirtioSocketListenerAddr) String() string { return fmt.Sprintf("%d:%d", a.CID, a.Port) }
-
-//export shouldAcceptNewConnectionHandler
-func shouldAcceptNewConnectionHandler(cgoHandleUintptr C.uintptr_t, connPtr, devicePtr unsafe.Pointer) C.bool {
-	cgoHandle := cgo.Handle(cgoHandleUintptr)
-	handler := cgoHandle.Value().(func(*VirtioSocketConnection, error))
-
-	// see: startHandler
-	conn, err := newVirtioSocketConnection(connPtr)
-	go handler(conn, err)
-	return (C.bool)(true)
-}
 
 // VirtioSocketConnection is a port-based connection between the guest operating system and the host computer.
 //
@@ -271,20 +319,30 @@ type VirtioSocketConnection struct {
 
 var _ net.Conn = (*VirtioSocketConnection)(nil)
 
-func newVirtioSocketConnection(ptr unsafe.Pointer) (*VirtioSocketConnection, error) {
-	vzVirtioSocketConnection := C.convertVZVirtioSocketConnection2Flat(ptr)
-	file := os.NewFile((uintptr)(vzVirtioSocketConnection.fileDescriptor), "")
+func newVirtioSocketConnection(ptr *objc.Pointer) (*VirtioSocketConnection, error) {
+	if ptr == nil || objc.Ptr(ptr) == nil {
+		return nil, fmt.Errorf("socket completion returned no connection")
+	}
+	defer objc.Release(ptr)
+	var nativeError unsafe.Pointer
+	descriptor := vzbridge.SocketConnectionDuplicatedFileDescriptor(ptr, &nativeError)
+	if nativeError != nil {
+		return nil, newNSError(nativeError)
+	}
+	if descriptor < 0 {
+		return nil, fmt.Errorf("socket connection has an invalid descriptor")
+	}
+	file := os.NewFile(uintptr(descriptor), "vsock")
 	defer file.Close()
-	rawConn, err := net.FileConn(file)
+	connection, err := net.FileConn(file)
 	if err != nil {
 		return nil, err
 	}
-	conn := &VirtioSocketConnection{
-		rawConn:         rawConn,
-		destinationPort: (uint32)(vzVirtioSocketConnection.destinationPort),
-		sourcePort:      (uint32)(vzVirtioSocketConnection.sourcePort),
-	}
-	return conn, nil
+	return &VirtioSocketConnection{
+		rawConn:         connection,
+		destinationPort: vzbridge.VZVirtioSocketConnection_DestinationPort(ptr),
+		sourcePort:      vzbridge.VZVirtioSocketConnection_SourcePort(ptr),
+	}, nil
 }
 
 // Read reads data from connection of the vsock protocol.

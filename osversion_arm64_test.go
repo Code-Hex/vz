@@ -10,13 +10,15 @@ import (
 	"path/filepath"
 	"sync"
 	"testing"
+
+	"github.com/Code-Hex/vz/v3/internal/vzbridge"
 )
 
 func TestAvailableVersionArm64(t *testing.T) {
-	majorMinorVersionOnce = &nopDoer{}
+	majorMinorVersionOnce.Do(func() {})
 	defer func() {
 		majorMinorVersion = 0
-		majorMinorVersionOnce = &sync.Once{}
+		majorMinorVersionOnce = sync.Once{}
 	}()
 	t.Run("macOS 12", func(t *testing.T) {
 		majorMinorVersion = 11
@@ -75,7 +77,7 @@ func TestAvailableVersionArm64(t *testing.T) {
 	})
 
 	t.Run("macOS 13", func(t *testing.T) {
-		if macOSBuildTargetAvailable(13) != nil {
+		if macOSBuildTargetAvailable(13, vzbridge.SDKVersion) != nil {
 			t.Skip("disabled build target for macOS 13")
 		}
 
@@ -98,7 +100,7 @@ func TestAvailableVersionArm64(t *testing.T) {
 	})
 
 	t.Run("macOS 14", func(t *testing.T) {
-		if macOSBuildTargetAvailable(14) != nil {
+		if macOSBuildTargetAvailable(14, vzbridge.SDKVersion) != nil {
 			t.Skip("disabled build target for macOS 13")
 		}
 

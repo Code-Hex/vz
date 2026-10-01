@@ -15,6 +15,34 @@ func TestSDKProtocolAvailability(t *testing.T) {
 	}
 }
 
+func TestSDKForwardDeclaredClassProtocolAvailability(t *testing.T) {
+	for _, unavailable := range []bool{false, true} {
+		name, attr := "versioned", "availability(macos,introduced=27.0,deprecated=28.0,obsoleted=29.0)"
+		if unavailable {
+			name, attr = "unavailable", "unavailable"
+		}
+		t.Run(name, func(t *testing.T) {
+			target := compileFixture(t, fixture+`
+@class VZFuture;
+@protocol ExistingProtocol
+- (id)protocolValue;
+@end
+__attribute__((`+attr+`))
+@interface VZFuture : NSObject <ExistingProtocol>
+@end
+`)
+			m := findMethod(t, target, "VZFuture_ProtocolValue")
+			if unavailable {
+				if !m.Unavailable || len(m.Unsupported) == 0 {
+					t.Fatalf("unavailable class exposes adopted protocol method: %+v", m)
+				}
+			} else if m.Introduced != "27.0" || m.Deprecated != "28.0" || m.Obsoleted != "29.0" {
+				t.Fatalf("forward-declared class availability lost on adopted protocol method: %+v", m)
+			}
+		})
+	}
+}
+
 func TestSDKProtocolInCategory(t *testing.T) {
 	target := compileFixture(t, fixture+"\n@protocol CategoryProtocol\n- (id)categoryValue;\n@end\n@interface VZFixture (ProtocolCategory) <CategoryProtocol>\n@end\n")
 	findMethod(t, target, "VZFixture_CategoryValue")

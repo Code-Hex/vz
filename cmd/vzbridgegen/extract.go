@@ -258,8 +258,9 @@ func extractTarget(input, architecture, triple, directory string) (sdkTarget, er
 		if err != nil {
 			return target, err
 		}
-		if category != "" {
-			base, err := attributes(interfaces[owner], source)
+		if definition, ok := interfaces[owner]; ok {
+			// Clang also lists adopted protocols on forward declarations without class attributes.
+			base, err := attributes(definition, source)
 			if err != nil {
 				return target, err
 			}

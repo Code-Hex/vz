@@ -10669,7 +10669,7 @@ func NSUUID_SupportsSecureCoding() bool {
 	})
 	var result bool
 	onQueue(func() {
-		sdkRequire("NSUUID", "supportsSecureCoding", "", "", false)
+		sdkRequire("NSUUID", "supportsSecureCoding", "10.8", "", false)
 		result = binding.call(directClass("NSUUID"), binding.selector)
 	})
 	return result
@@ -10714,7 +10714,7 @@ func NSUUID_EncodeWithCoder(receiver objc.NSObject, p0 objc.NSObject) {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("encodeWithCoder:")
 	})
 	onQueue(func() {
-		sdkRequire("NSUUID", "encodeWithCoder:", "", "", true, objc.Ptr(receiver))
+		sdkRequire("NSUUID", "encodeWithCoder:", "10.8", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
 	runtime.KeepAlive(receiver)
@@ -10759,9 +10759,9 @@ func NSUUID_InitWithCoder(p0 objc.NSObject) *objc.Pointer {
 	})
 	var result unsafe.Pointer
 	onQueue(func() {
-		sdkRequireVersion("NSUUID_InitWithCoder", "", "")
+		sdkRequireVersion("NSUUID_InitWithCoder", "10.8", "")
 		allocated := directAllocate(directClass("NSUUID"))
-		sdkRequireInitializer("NSUUID", "initWithCoder:", "", "", allocated)
+		sdkRequireInitializer("NSUUID", "initWithCoder:", "10.8", "", allocated)
 		result = binding.call(allocated, binding.selector, objc.Ptr(p0))
 	})
 	runtime.KeepAlive(p0)
@@ -13972,7 +13972,7 @@ func VZUSBPassthroughDevice_Class(receiver objc.NSObject) unsafe.Pointer {
 	})
 	var result unsafe.Pointer
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDevice", "class", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDevice", "class", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
 	runtime.KeepAlive(receiver)
@@ -13987,7 +13987,7 @@ func VZUSBPassthroughDevice_ConformsToProtocol(receiver objc.NSObject, p0 objc.N
 	})
 	var result bool
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDevice", "conformsToProtocol:", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDevice", "conformsToProtocol:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
 	runtime.KeepAlive(receiver)
@@ -14003,7 +14003,7 @@ func VZUSBPassthroughDevice_DebugDescription(receiver objc.NSObject) *objc.Point
 	})
 	var result unsafe.Pointer
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDevice", "debugDescription", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDevice", "debugDescription", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
 	})
@@ -14019,7 +14019,7 @@ func VZUSBPassthroughDevice_Description(receiver objc.NSObject) *objc.Pointer {
 	})
 	var result unsafe.Pointer
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDevice", "description", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDevice", "description", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
 	})
@@ -14035,7 +14035,7 @@ func VZUSBPassthroughDevice_Hash(receiver objc.NSObject) uint64 {
 	})
 	var result uint64
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDevice", "hash", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDevice", "hash", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
 	runtime.KeepAlive(receiver)
@@ -14074,7 +14074,7 @@ func VZUSBPassthroughDevice_IsEqual(receiver objc.NSObject, p0 objc.NSObject) bo
 	})
 	var result bool
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDevice", "isEqual:", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDevice", "isEqual:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
 	runtime.KeepAlive(receiver)
@@ -14090,7 +14090,7 @@ func VZUSBPassthroughDevice_IsKindOfClass(receiver objc.NSObject, p0 unsafe.Poin
 	})
 	var result bool
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDevice", "isKindOfClass:", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDevice", "isKindOfClass:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
 	runtime.KeepAlive(receiver)
@@ -14106,7 +14106,7 @@ func VZUSBPassthroughDevice_IsMemberOfClass(receiver objc.NSObject, p0 unsafe.Po
 	})
 	var result bool
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDevice", "isMemberOfClass:", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDevice", "isMemberOfClass:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
 	runtime.KeepAlive(receiver)
@@ -14122,7 +14122,7 @@ func VZUSBPassthroughDevice_IsProxy(receiver objc.NSObject) bool {
 	})
 	var result bool
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDevice", "isProxy", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDevice", "isProxy", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
 	runtime.KeepAlive(receiver)
@@ -14137,7 +14137,7 @@ func VZUSBPassthroughDevice_Self(receiver objc.NSObject) *objc.Pointer {
 	})
 	var result unsafe.Pointer
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDevice", "self", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDevice", "self", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
 	})
@@ -14153,7 +14153,7 @@ func VZUSBPassthroughDevice_Superclass(receiver objc.NSObject) unsafe.Pointer {
 	})
 	var result unsafe.Pointer
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDevice", "superclass", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDevice", "superclass", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
 	runtime.KeepAlive(receiver)
@@ -14168,7 +14168,7 @@ func VZUSBPassthroughDevice_UsbController(receiver objc.NSObject) *objc.Pointer 
 	})
 	var result unsafe.Pointer
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDevice", "usbController", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDevice", "usbController", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
 	})
@@ -14184,7 +14184,7 @@ func VZUSBPassthroughDevice_Uuid(receiver objc.NSObject) *objc.Pointer {
 	})
 	var result unsafe.Pointer
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDevice", "uuid", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDevice", "uuid", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
 	})
@@ -14200,7 +14200,7 @@ func VZUSBPassthroughDeviceConfiguration_Class(receiver objc.NSObject) unsafe.Po
 	})
 	var result unsafe.Pointer
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDeviceConfiguration", "class", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDeviceConfiguration", "class", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
 	runtime.KeepAlive(receiver)
@@ -14215,7 +14215,7 @@ func VZUSBPassthroughDeviceConfiguration_ConformsToProtocol(receiver objc.NSObje
 	})
 	var result bool
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDeviceConfiguration", "conformsToProtocol:", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDeviceConfiguration", "conformsToProtocol:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
 	runtime.KeepAlive(receiver)
@@ -14231,7 +14231,7 @@ func VZUSBPassthroughDeviceConfiguration_DebugDescription(receiver objc.NSObject
 	})
 	var result unsafe.Pointer
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDeviceConfiguration", "debugDescription", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDeviceConfiguration", "debugDescription", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
 	})
@@ -14247,7 +14247,7 @@ func VZUSBPassthroughDeviceConfiguration_Description(receiver objc.NSObject) *ob
 	})
 	var result unsafe.Pointer
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDeviceConfiguration", "description", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDeviceConfiguration", "description", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
 	})
@@ -14263,7 +14263,7 @@ func VZUSBPassthroughDeviceConfiguration_Hash(receiver objc.NSObject) uint64 {
 	})
 	var result uint64
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDeviceConfiguration", "hash", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDeviceConfiguration", "hash", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
 	runtime.KeepAlive(receiver)
@@ -14295,7 +14295,7 @@ func VZUSBPassthroughDeviceConfiguration_IsEqual(receiver objc.NSObject, p0 objc
 	})
 	var result bool
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDeviceConfiguration", "isEqual:", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDeviceConfiguration", "isEqual:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
 	runtime.KeepAlive(receiver)
@@ -14311,7 +14311,7 @@ func VZUSBPassthroughDeviceConfiguration_IsKindOfClass(receiver objc.NSObject, p
 	})
 	var result bool
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDeviceConfiguration", "isKindOfClass:", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDeviceConfiguration", "isKindOfClass:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
 	runtime.KeepAlive(receiver)
@@ -14327,7 +14327,7 @@ func VZUSBPassthroughDeviceConfiguration_IsMemberOfClass(receiver objc.NSObject,
 	})
 	var result bool
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDeviceConfiguration", "isMemberOfClass:", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDeviceConfiguration", "isMemberOfClass:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
 	runtime.KeepAlive(receiver)
@@ -14343,7 +14343,7 @@ func VZUSBPassthroughDeviceConfiguration_IsProxy(receiver objc.NSObject) bool {
 	})
 	var result bool
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDeviceConfiguration", "isProxy", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDeviceConfiguration", "isProxy", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
 	runtime.KeepAlive(receiver)
@@ -14358,7 +14358,7 @@ func VZUSBPassthroughDeviceConfiguration_Self(receiver objc.NSObject) *objc.Poin
 	})
 	var result unsafe.Pointer
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDeviceConfiguration", "self", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDeviceConfiguration", "self", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
 	})
@@ -14373,7 +14373,7 @@ func VZUSBPassthroughDeviceConfiguration_SetUuid(receiver objc.NSObject, p0 objc
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUuid:")
 	})
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDeviceConfiguration", "setUuid:", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDeviceConfiguration", "setUuid:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
 	runtime.KeepAlive(receiver)
@@ -14388,7 +14388,7 @@ func VZUSBPassthroughDeviceConfiguration_Superclass(receiver objc.NSObject) unsa
 	})
 	var result unsafe.Pointer
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDeviceConfiguration", "superclass", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDeviceConfiguration", "superclass", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
 	runtime.KeepAlive(receiver)
@@ -14403,7 +14403,7 @@ func VZUSBPassthroughDeviceConfiguration_Uuid(receiver objc.NSObject) *objc.Poin
 	})
 	var result unsafe.Pointer
 	onQueue(func() {
-		sdkRequire("VZUSBPassthroughDeviceConfiguration", "uuid", "15.0", "", true, objc.Ptr(receiver))
+		sdkRequire("VZUSBPassthroughDeviceConfiguration", "uuid", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
 	})

@@ -534,7 +534,7 @@ static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRati
     VZVirtualMachineView *view = [[[VZVirtualMachineView alloc] init] autorelease];
     view.capturesSystemKeys = YES;
     view.virtualMachine = _virtualMachine;
-#ifdef INCLUDE_TARGET_OSX_14
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
     if (@available(macOS 14.0, *)) {
         // Configure the app to automatically respond to changes in the display size.
         view.automaticallyReconfiguresDisplay = YES;
@@ -860,7 +860,7 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 - (NSSize)getVirtualMachineSizeInPixels
 {
     __block NSSize sizeInPixels = NSZeroSize;
-#ifdef INCLUDE_TARGET_OSX_14
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
     if (@available(macOS 14.0, *)) {
         dispatch_sync(_queue, ^{
             if (_virtualMachine.graphicsDevices.count > 0) {

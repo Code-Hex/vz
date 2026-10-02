@@ -20,6 +20,29 @@ jobs:
       uses: jidicula/clang-format-action@v4.13.0
       with:
         clang-format-version: '13'
+  generated-code:
+    name: Generated code reproducibility (Go ${{ matrix.go }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.25.x', '1.26.x', '1.27.1']
+    env:
+      GOTOOLCHAIN: local
+      CGO_ENABLED: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ matrix.go }}
+      - name: Verify saved metadata
+        run: go test ./cmd/vzbridgegen ./internal/vzbridge/nativegen -run '^TestMetadata' -count=1
+      - name: Regenerate bindings
+        run: |
+          go run ./cmd/vzbridgegen
+          go run ./internal/vzbridge/nativegen -input cmd/vzbridgegen/metadata/native.json -header internal/vzbridge/native.h -output internal/vzbridge/native_bindings.go
+          git diff --exit-code -- internal/vzbridge
+          test -z "$(git ls-files --others --exclude-standard -- internal/vzbridge)"
   build:
     needs: formatting-check
     runs-on: ${{ matrix.os }}

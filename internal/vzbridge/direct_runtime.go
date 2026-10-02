@@ -13,7 +13,7 @@ import (
 	runtimeobjc "github.com/ebitengine/purego/objc"
 )
 
-//go:generate go run ../../cmd/vzbridgegen -output .
+//go:generate go run ../../cmd/vzbridgegen -input ../../cmd/vzbridgegen/metadata/sdk.json -output .
 
 type directBinding[T any] struct {
 	call     T

@@ -2,31 +2,38 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"go/format"
 	"os"
 	"strings"
 )
 
-type parameter struct{ Name, Type string }
-type binding struct {
-	Name, Symbol, Result string
-	Parameters           []parameter
-	Queue                bool
+func main() {
+	input := flag.String("input", "../../cmd/vzbridgegen/metadata/native.json", "saved generation metadata")
+	header := flag.String("header", "native.h", "native bridge header")
+	output := flag.String("output", "native_bindings.go", "generated Go output file")
+	extract := flag.Bool("extract", false, "refresh metadata from the header without generating code")
+	flag.Parse()
+	if err := run(*input, *header, *output, *extract); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }
 
-func main() {
-	bindings, err := discoverBindings("native.h")
+func run(input, header, output string, extract bool) error {
+	if extract {
+		return extractMetadata(input, header)
+	}
+	metadata, err := readMetadata(input, header)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	source, err := generate(bindings)
+	source, err := generate(metadata.Bindings)
 	if err != nil {
-		panic(err)
+		return err
 	}
-	if err := os.WriteFile("native_bindings.go", source, 0644); err != nil {
-		panic(err)
-	}
+	return os.WriteFile(output, source, 0644)
 }
 
 func generate(bindings []binding) ([]byte, error) {

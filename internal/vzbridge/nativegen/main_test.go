@@ -141,7 +141,12 @@ func TestGeneratorDoesNotOverwriteHeader(t *testing.T) {
 	if err := os.WriteFile("native.h", source, 0600); err != nil {
 		t.Fatal(err)
 	}
-	main()
+	if err := run("metadata.json", "native.h", "native_bindings.go", true); err != nil {
+		t.Fatal(err)
+	}
+	if err := run("metadata.json", "native.h", "native_bindings.go", false); err != nil {
+		t.Fatal(err)
+	}
 	after, err := os.ReadFile("native.h")
 	if err != nil {
 		t.Fatal(err)

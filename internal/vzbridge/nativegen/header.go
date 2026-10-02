@@ -12,6 +12,13 @@ import (
 	"unicode/utf8"
 )
 
+type parameter struct{ Name, Type string }
+type binding struct {
+	Name, Symbol, Result string
+	Parameters           []parameter
+	Queue                bool
+}
+
 type clangType struct {
 	QualType string `json:"qualType"`
 }

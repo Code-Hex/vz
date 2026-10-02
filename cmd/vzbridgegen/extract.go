@@ -505,3 +505,45 @@ func mergeAttributes(a, b sdkAttributes) sdkAttributes {
 	b.Unavailable = b.Unavailable || a.Unavailable
 	return b
 }
+
+func extractMetadata() (generationMetadata, error) {
+	var result generationMetadata
+	directory, err := os.MkdirTemp("", "vz-sdk-")
+	if err != nil {
+		return result, err
+	}
+	defer os.RemoveAll(directory)
+	input := filepath.Join(directory, "scan.m")
+	if err = os.WriteFile(input, []byte("#import <Virtualization/Virtualization.h>\n"), 0600); err != nil {
+		return result, err
+	}
+	version, err := exec.Command("xcrun", "--show-sdk-version").Output()
+	if err != nil {
+		return result, err
+	}
+	compiler, err := exec.Command("xcrun", "clang", "--version").Output()
+	if err != nil {
+		return result, err
+	}
+	result.SDK = sdkReport{Schema: 1, SDKVersion: strings.TrimSpace(string(version)), Compiler: strings.Split(string(compiler), "\n")[0]}
+	result.Private, err = discoverPrivate(directory)
+	if err != nil {
+		return result, err
+	}
+	sort.Slice(result.Private.Methods, func(i, j int) bool {
+		return privateBindingName(result.Private.Methods[i]) < privateBindingName(result.Private.Methods[j])
+	})
+	for _, arch := range []string{"arm64", "amd64"} {
+		targetArch := arch
+		if arch == "amd64" {
+			targetArch = "x86_64"
+		}
+		target, err := extractTarget(input, arch, targetArch+"-apple-macos11", directory)
+		if err != nil {
+			return result, err
+		}
+		result.SDK.Targets = append(result.SDK.Targets, target)
+	}
+	result.ExtractorSHA256 = extractorSHA256()
+	return result, nil
+}

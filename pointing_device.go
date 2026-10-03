@@ -1,14 +1,10 @@
+//go:build darwin
+
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_11.h"
-# include "virtualization_12.h"
-*/
-import "C"
 import (
-	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 // PointingDeviceConfiguration is an interface for a pointing device configuration.
@@ -41,12 +37,7 @@ func NewUSBScreenCoordinatePointingDeviceConfiguration() (*USBScreenCoordinatePo
 		return nil, err
 	}
 	config := &USBScreenCoordinatePointingDeviceConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZUSBScreenCoordinatePointingDeviceConfiguration(),
-		),
+		pointer: vzbridge.VZUSBScreenCoordinatePointingDeviceConfiguration_Init(),
 	}
-	objc.SetFinalizer(config, func(self *USBScreenCoordinatePointingDeviceConfiguration) {
-		objc.Release(self)
-	})
 	return config, nil
 }

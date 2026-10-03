@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Code-Hex/vz/v3"
+	"github.com/Code-Hex/vz/v4"
 )
 
 func TestVirtioFileSystemDeviceConfigurationTag(t *testing.T) {

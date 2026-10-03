@@ -3,7 +3,7 @@ package sliceutil_test
 import (
 	"testing"
 
-	"github.com/Code-Hex/vz/v3/internal/sliceutil"
+	"github.com/Code-Hex/vz/v4/internal/sliceutil"
 )
 
 func TestFindValueByIndex(t *testing.T) {

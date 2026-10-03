@@ -3,14 +3,8 @@
 
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_12_arm64.h"
-*/
-import "C"
 import (
-	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 // MacOSBootLoader is a boot loader configuration for booting macOS on Apple Silicon.
@@ -32,12 +26,7 @@ func NewMacOSBootLoader() (*MacOSBootLoader, error) {
 	}
 
 	bootLoader := &MacOSBootLoader{
-		pointer: objc.NewPointer(
-			C.newVZMacOSBootLoader(),
-		),
+		pointer: vzbridge.VZMacOSBootLoader_Init(),
 	}
-	objc.SetFinalizer(bootLoader, func(self *MacOSBootLoader) {
-		objc.Release(self)
-	})
 	return bootLoader, nil
 }

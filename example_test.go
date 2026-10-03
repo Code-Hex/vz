@@ -3,7 +3,7 @@ package vz_test
 import (
 	"errors"
 
-	"github.com/Code-Hex/vz/v3"
+	"github.com/Code-Hex/vz/v4"
 )
 
 func ExampleErrUnsupportedOSVersion() {

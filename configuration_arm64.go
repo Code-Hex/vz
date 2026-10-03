@@ -6,7 +6,7 @@ package vz
 import (
 	"unsafe"
 
-	"github.com/Code-Hex/vz/v3/internal/vzbridge"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 // ValidateSaveRestoreSupport Determines whether the framework can save or restore the VM’s current configuration.

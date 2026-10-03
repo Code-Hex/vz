@@ -3,8 +3,8 @@
 package vz
 
 import (
-	"github.com/Code-Hex/vz/v3/internal/objc"
-	"github.com/Code-Hex/vz/v3/internal/vzbridge"
+	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 // AudioDeviceConfiguration interface for an audio device configuration.

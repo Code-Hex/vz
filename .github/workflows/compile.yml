@@ -76,10 +76,10 @@ jobs:
           consumer=$(mktemp -d)
           cd "$consumer"
           go mod init vendor-check
-          go mod edit -require=github.com/Code-Hex/vz/v3@v3.0.0 -replace=github.com/Code-Hex/vz/v3="$repo"
+          go mod edit -require=github.com/Code-Hex/vz/v4@v4.0.0 -replace=github.com/Code-Hex/vz/v4="$repo"
           cat > main.go <<'EOF'
           package main
-          import "github.com/Code-Hex/vz/v3"
+          import "github.com/Code-Hex/vz/v4"
           func main() {
               address, err := vz.NewRandomLocallyAdministeredMACAddress()
               if err != nil { panic(err) }

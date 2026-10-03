@@ -4,7 +4,7 @@
 package vz
 
 import (
-	"github.com/Code-Hex/vz/v3/internal/vzbridge"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 // MacOSBootLoader is a boot loader configuration for booting macOS on Apple Silicon.

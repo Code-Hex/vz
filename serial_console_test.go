@@ -6,9 +6,9 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/Code-Hex/vz/v3"
-	"github.com/Code-Hex/vz/v3/internal/objc"
-	"github.com/Code-Hex/vz/v3/internal/vzbridge"
+	"github.com/Code-Hex/vz/v4"
+	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 func openFileDescriptorCount(t *testing.T) int {

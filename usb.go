@@ -3,8 +3,8 @@ package vz
 import (
 	"runtime"
 
-	"github.com/Code-Hex/vz/v3/internal/objc"
-	"github.com/Code-Hex/vz/v3/internal/vzbridge"
+	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 // NewUSBMassStorageDevice initialize the runtime USB Mass Storage device object.

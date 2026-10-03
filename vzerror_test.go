@@ -3,7 +3,7 @@ package vz_test
 import (
 	"testing"
 
-	"github.com/Code-Hex/vz/v3"
+	"github.com/Code-Hex/vz/v4"
 )
 
 func TestErrorCodeString(t *testing.T) {

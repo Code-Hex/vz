@@ -8,7 +8,7 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objc"
 	"github.com/ebitengine/purego"
 	pureobjc "github.com/ebitengine/purego/objc"
 )

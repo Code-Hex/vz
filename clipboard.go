@@ -1,6 +1,6 @@
 package vz
 
-import "github.com/Code-Hex/vz/v3/internal/vzbridge"
+import "github.com/Code-Hex/vz/v4/internal/vzbridge"
 
 // SpiceAgentPortAttachment is an attachment point that enables
 // the Spice clipboard sharing capability.

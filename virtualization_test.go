@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Code-Hex/vz/v3"
-	"github.com/Code-Hex/vz/v3/internal/testhelper"
+	"github.com/Code-Hex/vz/v4"
+	"github.com/Code-Hex/vz/v4/internal/testhelper"
 	"golang.org/x/crypto/ssh"
 )
 

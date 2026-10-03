@@ -6,8 +6,8 @@ import (
 	"unsafe"
 
 	infinity "github.com/Code-Hex/go-infinity-channel"
-	"github.com/Code-Hex/vz/v3/internal/sliceutil"
-	"github.com/Code-Hex/vz/v3/internal/vzbridge"
+	"github.com/Code-Hex/vz/v4/internal/sliceutil"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 // VirtualMachineState represents execution state of the virtual machine.

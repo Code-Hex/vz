@@ -10,7 +10,7 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/Code-Hex/vz/v3/internal/vzbridge"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 func TestAvailableVersion(t *testing.T) {

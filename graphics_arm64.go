@@ -4,7 +4,7 @@
 package vz
 
 import (
-	"github.com/Code-Hex/vz/v3/internal/vzbridge"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 // MacGraphicsDeviceConfiguration is a configuration for a display attached to a Mac graphics device.

@@ -18,11 +18,11 @@ func TestUnusedBindingsAreNotLinked(t *testing.T) {
 	}
 	dir := t.TempDir()
 	files := map[string]string{
-		"go.mod": fmt.Sprintf("module bindingconsumer\n\ngo 1.25.0\n\nrequire github.com/Code-Hex/vz/v3 v3.0.0\nreplace github.com/Code-Hex/vz/v3 => %q\n", root),
+		"go.mod": fmt.Sprintf("module bindingconsumer\n\ngo 1.25.0\n\nrequire github.com/Code-Hex/vz/v4 v4.0.0\nreplace github.com/Code-Hex/vz/v4 => %q\n", root),
 		"main.go": `package main
 import (
  "fmt"
- vz "github.com/Code-Hex/vz/v3"
+ vz "github.com/Code-Hex/vz/v4"
 )
 func main() { fmt.Println(vz.VirtualMachineConfigurationMinimumAllowedCPUCount()) }
 `,
@@ -46,7 +46,7 @@ func main() { fmt.Println(vz.VirtualMachineConfigurationMinimumAllowedCPUCount()
 	if err != nil {
 		t.Fatalf("inspect consumer: %v\n%s", err, out)
 	}
-	const bridge = "github.com/Code-Hex/vz/v3/internal/vzbridge."
+	const bridge = "github.com/Code-Hex/vz/v4/internal/vzbridge."
 	const used = bridge + "sdkCallVZVirtualMachineConfiguration_MinimumAllowedCPUCount"
 	foundUsed := false
 	var unused []string

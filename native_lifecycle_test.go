@@ -9,7 +9,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/Code-Hex/vz/v3/internal/vzbridge"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 	pureobjc "github.com/ebitengine/purego/objc"
 )
 

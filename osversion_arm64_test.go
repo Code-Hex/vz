@@ -11,7 +11,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Code-Hex/vz/v3/internal/vzbridge"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 func TestAvailableVersionArm64(t *testing.T) {

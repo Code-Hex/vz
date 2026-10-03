@@ -1,7 +1,7 @@
 vz - Go binding with Apple [Virtualization.framework](https://developer.apple.com/documentation/virtualization?language=objc)
 =======
 
-[![Build](https://github.com/Code-Hex/vz/actions/workflows/compile.yml/badge.svg)](https://github.com/Code-Hex/vz/actions/workflows/compile.yml) [![Go Reference](https://pkg.go.dev/badge/github.com/Code-Hex/vz/v3.svg)](https://pkg.go.dev/github.com/Code-Hex/vz/v3)
+[![Build](https://github.com/Code-Hex/vz/actions/workflows/compile.yml/badge.svg)](https://github.com/Code-Hex/vz/actions/workflows/compile.yml) [![Go Reference](https://pkg.go.dev/badge/github.com/Code-Hex/vz/v4.svg)](https://pkg.go.dev/github.com/Code-Hex/vz/v4)
 
 vz provides the power of the Apple Virtualization.framework in Go. Put here is block quote of overreview which is written what is Virtualization.framework from the document.
 
@@ -26,7 +26,7 @@ binaries, or a generation step. `go mod vendor` builds from the same sources.
 Initialize your project by creating a folder and then running `go mod init github.com/your/repo` ([learn more](https://go.dev/blog/using-go-modules)) inside the folder. Then install vz with the go get command:
 
 ```
-$ go get github.com/Code-Hex/vz/v3
+$ go get github.com/Code-Hex/vz/v4
 ```
 
 Deprecated older versions (v1, v2).

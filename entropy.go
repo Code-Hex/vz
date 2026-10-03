@@ -3,7 +3,7 @@
 package vz
 
 import (
-	"github.com/Code-Hex/vz/v3/internal/vzbridge"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 // VirtioEntropyDeviceConfiguration is used to expose a source of entropy for the guest operating system’s random-number generator.

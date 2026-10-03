@@ -5,7 +5,7 @@ package vzbridge
 import (
 	"unsafe"
 
-	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objc"
 )
 
 func NewVZGenericMachineIdentifierWithBytes(bytes unsafe.Pointer, length int32) *objc.Pointer {

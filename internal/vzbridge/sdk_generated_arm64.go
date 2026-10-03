@@ -6,7 +6,7 @@
 package vzbridge
 
 import (
-	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objc"
 	runtimeobjc "github.com/ebitengine/purego/objc"
 	"runtime"
 	"unsafe"

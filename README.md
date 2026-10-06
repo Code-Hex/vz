@@ -1,7 +1,7 @@
 vz - Go binding with Apple [Virtualization.framework](https://developer.apple.com/documentation/virtualization?language=objc)
 =======
 
-[![Build](https://github.com/Code-Hex/vz/actions/workflows/compile.yml/badge.svg)](https://github.com/Code-Hex/vz/actions/workflows/compile.yml) [![Go Reference](https://pkg.go.dev/badge/github.com/Code-Hex/vz/v3.svg)](https://pkg.go.dev/github.com/Code-Hex/vz/v3)
+[![Build](https://github.com/Code-Hex/vz/actions/workflows/compile.yml/badge.svg)](https://github.com/Code-Hex/vz/actions/workflows/compile.yml) [![Go Reference](https://pkg.go.dev/badge/github.com/Code-Hex/vz/v4.svg)](https://pkg.go.dev/github.com/Code-Hex/vz/v4)
 
 vz provides the power of the Apple Virtualization.framework in Go. Put here is block quote of overreview which is written what is Virtualization.framework from the document.
 
@@ -13,15 +13,20 @@ Please see the [example](https://github.com/Code-Hex/vz/tree/main/example) direc
 
 ## Requirements
 
-- Higher or equal to macOS Big Sur (11.0.0).
-- Latest version of vz supports last two Go major [releases](https://go.dev/doc/devel/release) and might work with older versions.
+- macOS Monterey (12.0) or later.
+- Go 1.25 or later.
+- Xcode or Command Line Tools, with `CGO_ENABLED=1`.
+
+A normal `go build` compiles the Objective-C helpers and links Apple's frameworks.
+The Go bindings use purego for API calls. Consumers do not need Swift, prebuilt bridge
+binaries, or a generation step. `go mod vendor` builds from the same sources.
 
 ## Installation
 
 Initialize your project by creating a folder and then running `go mod init github.com/your/repo` ([learn more](https://go.dev/blog/using-go-modules)) inside the folder. Then install vz with the go get command:
 
 ```
-$ go get github.com/Code-Hex/vz/v3
+$ go get github.com/Code-Hex/vz/v4
 ```
 
 Deprecated older versions (v1, v2).
@@ -38,7 +43,6 @@ Deprecated older versions (v1, v2).
 - ✅ Running Intel Binaries in Linux VMs with Rosetta **(arm64)**
 - ✅ [Shared Directories](https://github.com/Code-Hex/vz/wiki/Shared-Directories)
 - ✅ [Virtio Sockets](https://github.com/Code-Hex/vz/wiki/Sockets)
-- ✅ Less dependent (only under golang.org/x/*)
 
 ## Important
 
@@ -68,27 +72,11 @@ $ codesign --entitlements vz.entitlements -s - <YOUR BINARY PATH>
 
 If you want to use [`VZBridgedNetworkDeviceAttachment`](https://developer.apple.com/documentation/virtualization/vzbridgednetworkdeviceattachment?language=objc), you need to add also `com.apple.vm.networking` entitlement.
 
-## Known compile-time warnings
+## Build SDK
 
-If you compile using an older Xcode SDK, you will get the following warnings.
-
-This example warns that macOS 12.3 API and macOS 13 API are not available in the binary build. This means these APIs are not available even if you are running this binary on a modern OS (macOS 12.3 or macOS 13). 
-
-```
-$ go build .
-# github.com/Code-Hex/vz/v3
-In file included from _cgo_export.c:4:
-In file included from socket.go:6:
-In file included from ./virtualization_11.h:9:
-./virtualization_helper.h:25:9: warning: macOS 12.3 API has been disabled [-W#pragma-messages]
-./virtualization_helper.h:32:9: warning: macOS 13 API has been disabled [-W#pragma-messages]
-```
-
-If you want to build a binary that can use the API on all operating systems, make sure the Xcode SDK is up-to-date.
-
-You can check the version of the Xcode SDK available for each macOS on this site.
-
-https://xcodereleases.com/
+API availability depends on both the running macOS version and the build SDK.
+A binary built with an older SDK can return `ErrBuildTargetOSVersion` for newer APIs.
+Build with an SDK that includes the APIs you need.
 
 ## Version compatibility check
 
@@ -131,6 +119,27 @@ $ # Download PUI PUI Linux, Only required the first time.
 $ make download_kernel
 $ make test
 ```
+
+The public Go API wraps bindings generated from SDK types, ownership attributes,
+and availability declarations. To regenerate bindings with your installed SDK and
+Virtualization runtime, run:
+
+```sh
+go generate ./internal/vzbridge
+go test ./cmd/vzbridgegen ./internal/vzbridge/nativegen
+make test/graphics
+```
+
+The generator discovers all methods in the Virtualization runtime image, including
+private methods. Unsupported signatures remain listed with reasons in the generated
+Go files. For detailed compiler and runtime facts, pass `-report /tmp/vzbridge.json`
+to `go run ./cmd/vzbridgegen`. Reports are not generation inputs.
+
+Private bindings are internal and unsafe. Runtime encodings do not describe
+ownership or variadic arguments. Callers must establish those contracts. The
+runtime scan describes the generating host, and every private call checks its
+receiver and ABI before dispatch. Regenerate on another host to discover methods
+specific to that host. Unused bindings have no startup registration.
 
 ## Which projects use this library?
 

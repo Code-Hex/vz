@@ -3,14 +3,13 @@
 
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_debug.h"
-*/
-import "C"
 import (
-	"github.com/Code-Hex/vz/v3/internal/objc"
+	"fmt"
+	"runtime"
+	"unsafe"
+
+	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 // DebugStubConfiguration is an interface to debug configuration.
@@ -44,20 +43,29 @@ func NewGDBDebugStubConfiguration(port uint32) (*GDBDebugStubConfiguration, erro
 		return nil, err
 	}
 
-	config := &GDBDebugStubConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZGDBDebugStubConfiguration(C.uint32_t(port)),
-		),
+	allocation := vzbridge.UnsafePrivateAllocate("_VZGDBDebugStubConfiguration")
+	if allocation == nil {
+		return nil, fmt.Errorf("private GDB debug configuration is unavailable")
 	}
-	objc.SetFinalizer(config, func(self *GDBDebugStubConfiguration) {
-		objc.Release(self)
-	})
-	return config, nil
+	var invoked bool
+	raw := vzbridge.UnsafePrivate__VZGDBDebugStubConfiguration_Instance_initWithPort__be82df9e(allocation, uint16(port), false, unsafe.Pointer(&invoked))
+	// An initializer consumes its receiver even when it returns nil.
+	if !invoked {
+		vzbridge.ReleaseObject(allocation)
+		return nil, fmt.Errorf("private GDB debug initializer is unavailable")
+	}
+	object := objc.NewManagedPointer(raw, vzbridge.ReleaseObject)
+	if object == nil {
+		return nil, fmt.Errorf("private GDB debug configuration is unavailable")
+	}
+	return &GDBDebugStubConfiguration{pointer: object}, nil
 }
 
 // SetDebugStubVirtualMachineConfiguration sets debug stub configuration. Empty by default.
 //
 // This API is not officially published and is subject to change without notice.
 func (v *VirtualMachineConfiguration) SetDebugStubVirtualMachineConfiguration(dc DebugStubConfiguration) {
-	C.setDebugStubVZVirtualMachineConfiguration(objc.Ptr(v), objc.Ptr(dc))
+	vzbridge.UnsafePrivate_VZVirtualMachineConfiguration_Instance__setDebugStub__cc718b50(objc.Ptr(v), objc.Ptr(dc))
+	runtime.KeepAlive(v)
+	runtime.KeepAlive(dc)
 }

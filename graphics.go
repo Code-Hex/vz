@@ -1,13 +1,10 @@
+//go:build darwin
+
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_13.h"
-*/
-import "C"
 import (
-	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 // GraphicsDeviceConfiguration is an interface for a graphics device configuration.
@@ -45,13 +42,8 @@ func NewVirtioGraphicsDeviceConfiguration() (*VirtioGraphicsDeviceConfiguration,
 		return nil, err
 	}
 	graphicsConfiguration := &VirtioGraphicsDeviceConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZVirtioGraphicsDeviceConfiguration(),
-		),
+		pointer: vzbridge.VZVirtioGraphicsDeviceConfiguration_Init(),
 	}
-	objc.SetFinalizer(graphicsConfiguration, func(self *VirtioGraphicsDeviceConfiguration) {
-		objc.Release(self)
-	})
 	return graphicsConfiguration, nil
 }
 
@@ -59,12 +51,8 @@ func NewVirtioGraphicsDeviceConfiguration() (*VirtioGraphicsDeviceConfiguration,
 //
 // Maximum of one scanout is supported.
 func (v *VirtioGraphicsDeviceConfiguration) SetScanouts(scanoutConfigs ...*VirtioGraphicsScanoutConfiguration) {
-	ptrs := make([]objc.NSObject, len(scanoutConfigs))
-	for i, val := range scanoutConfigs {
-		ptrs[i] = val
-	}
-	array := objc.ConvertToNSMutableArray(ptrs)
-	C.setScanoutsVZVirtioGraphicsDeviceConfiguration(objc.Ptr(v), objc.Ptr(array))
+	array := nativeObjectArray(scanoutConfigs)
+	vzbridge.VZVirtioGraphicsDeviceConfiguration_SetScanouts(v, array)
 }
 
 // VirtioGraphicsScanoutConfiguration is the configuration for a Virtio graphics device
@@ -84,15 +72,7 @@ func NewVirtioGraphicsScanoutConfiguration(widthInPixels int64, heightInPixels i
 	}
 
 	graphicsScanoutConfiguration := &VirtioGraphicsScanoutConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZVirtioGraphicsScanoutConfiguration(
-				C.NSInteger(widthInPixels),
-				C.NSInteger(heightInPixels),
-			),
-		),
+		pointer: vzbridge.VZVirtioGraphicsScanoutConfiguration_InitWithWidthInPixels_HeightInPixels(int64(widthInPixels), int64(heightInPixels)),
 	}
-	objc.SetFinalizer(graphicsScanoutConfiguration, func(self *VirtioGraphicsScanoutConfiguration) {
-		objc.Release(self)
-	})
 	return graphicsScanoutConfiguration, nil
 }

@@ -1,17 +1,12 @@
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_11.h"
-# include "virtualization_13.h"
-*/
-import "C"
 import (
 	"fmt"
 	"os"
+	"unsafe"
 
-	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 // BootLoader is the interface of boot loader definitions.
@@ -55,9 +50,7 @@ type LinuxBootLoaderOption func(b *LinuxBootLoader) error
 func WithCommandLine(cmdLine string) LinuxBootLoaderOption {
 	return func(b *LinuxBootLoader) error {
 		b.cmdLine = cmdLine
-		cs := charWithGoString(cmdLine)
-		defer cs.Free()
-		C.setCommandLineVZLinuxBootLoader(objc.Ptr(b), cs.CString())
+		vzbridge.VZLinuxBootLoader_SetCommandLine(b, vzbridge.NSString_StringWithUTF8String(cmdLine))
 		return nil
 	}
 }
@@ -69,9 +62,7 @@ func WithInitrd(initrdPath string) LinuxBootLoaderOption {
 			return fmt.Errorf("invalid initial RAM disk path: %w", err)
 		}
 		b.initrdPath = initrdPath
-		cs := charWithGoString(initrdPath)
-		defer cs.Free()
-		C.setInitialRamdiskURLVZLinuxBootLoader(objc.Ptr(b), cs.CString())
+		vzbridge.VZLinuxBootLoader_SetInitialRamdiskURL(b, vzbridge.NSURL_FileURLWithPath(vzbridge.NSString_StringWithUTF8String(initrdPath)))
 		return nil
 	}
 }
@@ -87,18 +78,10 @@ func NewLinuxBootLoader(vmlinuz string, opts ...LinuxBootLoaderOption) (*LinuxBo
 	if _, err := os.Stat(vmlinuz); err != nil {
 		return nil, fmt.Errorf("invalid linux kernel path: %w", err)
 	}
-
-	vmlinuzPath := charWithGoString(vmlinuz)
-	defer vmlinuzPath.Free()
 	bootLoader := &LinuxBootLoader{
 		vmlinuzPath: vmlinuz,
-		pointer: objc.NewPointer(
-			C.newVZLinuxBootLoader(vmlinuzPath.CString()),
-		),
+		pointer:     vzbridge.VZLinuxBootLoader_InitWithKernelURL(vzbridge.NSURL_FileURLWithPath(vzbridge.NSString_StringWithUTF8String(vmlinuz))),
 	}
-	objc.SetFinalizer(bootLoader, func(self *LinuxBootLoader) {
-		objc.Release(self)
-	})
 	for _, opt := range opts {
 		if err := opt(bootLoader); err != nil {
 			return nil, err
@@ -125,7 +108,7 @@ type NewEFIBootLoaderOption func(b *EFIBootLoader)
 // WithEFIVariableStore sets the optional EFI variable store.
 func WithEFIVariableStore(variableStore *EFIVariableStore) NewEFIBootLoaderOption {
 	return func(e *EFIBootLoader) {
-		C.setVariableStoreVZEFIBootLoader(objc.Ptr(e), objc.Ptr(variableStore))
+		vzbridge.VZEFIBootLoader_SetVariableStore(e, variableStore)
 		e.variableStore = variableStore
 	}
 }
@@ -139,16 +122,11 @@ func NewEFIBootLoader(opts ...NewEFIBootLoaderOption) (*EFIBootLoader, error) {
 		return nil, err
 	}
 	bootLoader := &EFIBootLoader{
-		pointer: objc.NewPointer(
-			C.newVZEFIBootLoader(),
-		),
+		pointer: vzbridge.VZEFIBootLoader_Init(),
 	}
 	for _, optFunc := range opts {
 		optFunc(bootLoader)
 	}
-	objc.SetFinalizer(bootLoader, func(self *EFIBootLoader) {
-		objc.Release(self)
-	})
 	return bootLoader, nil
 }
 
@@ -174,16 +152,9 @@ type NewEFIVariableStoreOption func(*EFIVariableStore) error
 // If the variable store already exists in path, it is overwritten.
 func WithCreatingEFIVariableStore() NewEFIVariableStoreOption {
 	return func(es *EFIVariableStore) error {
-		cpath := charWithGoString(es.path)
-		defer cpath.Free()
 
-		nserrPtr := newNSErrorAsNil()
-		es.pointer = objc.NewPointer(
-			C.newCreatingVZEFIVariableStoreAtPath(
-				cpath.CString(),
-				&nserrPtr,
-			),
-		)
+		var nserrPtr unsafe.Pointer
+		es.pointer = vzbridge.VZEFIVariableStore_InitCreatingVariableStoreAtURL_Options_Error(vzbridge.NSURL_FileURLWithPath(vzbridge.NSString_StringWithUTF8String(es.path)), vzbridge.VZEFIVariableStoreInitializationOptionAllowOverwrite, &nserrPtr)
 		if err := newNSError(nserrPtr); err != nil {
 			return err
 		}
@@ -210,15 +181,8 @@ func NewEFIVariableStore(path string, opts ...NewEFIVariableStoreOption) (*EFIVa
 		if _, err := os.Stat(path); err != nil {
 			return nil, err
 		}
-		cpath := charWithGoString(path)
-		defer cpath.Free()
-		variableStore.pointer = objc.NewPointer(
-			C.newVZEFIVariableStorePath(cpath.CString()),
-		)
+		variableStore.pointer = vzbridge.VZEFIVariableStore_InitWithURL(vzbridge.NSURL_FileURLWithPath(vzbridge.NSString_StringWithUTF8String(path)))
 	}
-	objc.SetFinalizer(variableStore, func(self *EFIVariableStore) {
-		objc.Release(self)
-	})
 	return variableStore, nil
 }
 

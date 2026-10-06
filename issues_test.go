@@ -10,7 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 func newTestConfig(t *testing.T) *VirtualMachineConfiguration {
@@ -312,8 +313,9 @@ func TestIssue119(t *testing.T) {
 
 	// Simulates Go's VirtualMachine struct has been destructured but
 	// Objective-C VZVirtualMachine object has not been destructured.
-	objc.Retain(vm.pointer)
-	vm.finalize()
+	retained := vzbridge.RetainObject(vm)
+	defer objc.Release(retained)
+	objc.Release(vm)
 
 	sendStop := false
 	if vm.CanStop() {

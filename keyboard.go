@@ -1,14 +1,10 @@
+//go:build darwin
+
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_11.h"
-# include "virtualization_12.h"
-*/
-import "C"
 import (
-	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 // KeyboardConfiguration interface for a keyboard configuration.
@@ -40,10 +36,7 @@ func NewUSBKeyboardConfiguration() (*USBKeyboardConfiguration, error) {
 		return nil, err
 	}
 	config := &USBKeyboardConfiguration{
-		pointer: objc.NewPointer(C.newVZUSBKeyboardConfiguration()),
+		pointer: vzbridge.VZUSBKeyboardConfiguration_Init(),
 	}
-	objc.SetFinalizer(config, func(self *USBKeyboardConfiguration) {
-		objc.Release(self)
-	})
 	return config, nil
 }

@@ -20,6 +20,29 @@ jobs:
       uses: jidicula/clang-format-action@v4.13.0
       with:
         clang-format-version: '13'
+  generated-code:
+    name: Generated code reproducibility (Go ${{ matrix.go }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.25.x', '1.26.x', '1.27.1']
+    env:
+      GOTOOLCHAIN: local
+      CGO_ENABLED: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ matrix.go }}
+      - name: Verify saved metadata
+        run: go test ./cmd/vzbridgegen ./internal/vzbridge/nativegen -run '^TestMetadata' -count=1
+      - name: Regenerate bindings
+        run: |
+          go run ./cmd/vzbridgegen
+          go run ./internal/vzbridge/nativegen -input cmd/vzbridgegen/metadata/native.json -header internal/vzbridge/native.h -output internal/vzbridge/native_bindings.go
+          git diff --exit-code -- internal/vzbridge
+          test -z "$(git ls-files --others --exclude-standard -- internal/vzbridge)"
   build:
     needs: formatting-check
     runs-on: ${{ matrix.os }}
@@ -44,6 +67,31 @@ jobs:
           go-version: ${{ matrix.go }}
       - name: vet
         run: go vet ./...
+      - name: Test binding generators
+        run: |
+          go test ./cmd/vzbridgegen ./internal/vzbridge/nativegen
+      - name: Verify source and vendor builds
+        run: |
+          repo="$PWD"
+          consumer=$(mktemp -d)
+          cd "$consumer"
+          go mod init vendor-check
+          go mod edit -require=github.com/Code-Hex/vz/v4@v4.0.0 -replace=github.com/Code-Hex/vz/v4="$repo"
+          cat > main.go <<'EOF'
+          package main
+          import "github.com/Code-Hex/vz/v4"
+          func main() {
+              address, err := vz.NewRandomLocallyAdministeredMACAddress()
+              if err != nil { panic(err) }
+              if len(address.HardwareAddr()) != 6 { panic("invalid MAC address") }
+          }
+          EOF
+          go mod tidy
+          go build -o source-check .
+          ./source-check
+          go mod vendor
+          go build -mod=vendor -o vendor-check .
+          ./vendor-check
       - name: Build Linux
         run: make -C example/linux
       - name: Build GUI Linux

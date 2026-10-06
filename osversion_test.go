@@ -9,17 +9,15 @@ import (
 	"sync"
 	"syscall"
 	"testing"
+
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
-type nopDoer struct{}
-
-func (*nopDoer) Do(func()) {}
-
 func TestAvailableVersion(t *testing.T) {
-	majorMinorVersionOnce = &nopDoer{}
+	majorMinorVersionOnce.Do(func() {})
 	defer func() {
 		majorMinorVersion = 0
-		majorMinorVersionOnce = &sync.Once{}
+		majorMinorVersionOnce = sync.Once{}
 	}()
 
 	t.Run("macOS 11", func(t *testing.T) {
@@ -177,7 +175,7 @@ func TestAvailableVersion(t *testing.T) {
 	})
 
 	t.Run("macOS 12.3", func(t *testing.T) {
-		if macOSBuildTargetAvailable(12.3) != nil {
+		if macOSBuildTargetAvailable(12.3, vzbridge.SDKVersion) != nil {
 			t.Skip("disabled build target for macOS 12.3")
 		}
 
@@ -202,7 +200,7 @@ func TestAvailableVersion(t *testing.T) {
 	})
 
 	t.Run("macOS 13", func(t *testing.T) {
-		if macOSBuildTargetAvailable(13) != nil {
+		if macOSBuildTargetAvailable(13, vzbridge.SDKVersion) != nil {
 			t.Skip("disabled build target for macOS 13")
 		}
 
@@ -302,7 +300,7 @@ func TestAvailableVersion(t *testing.T) {
 	})
 
 	t.Run("macOS 14", func(t *testing.T) {
-		if macOSBuildTargetAvailable(14) != nil {
+		if macOSBuildTargetAvailable(14, vzbridge.SDKVersion) != nil {
 			t.Skip("disabled build target for macOS 14")
 		}
 		dir := t.TempDir()
@@ -399,11 +397,6 @@ func Test_fetchMajorMinorVersion(t *testing.T) {
 }
 
 func Test_macOSBuildTargetAvailable(t *testing.T) {
-	maxAllowedVersionOnce = &nopDoer{}
-	defer func() {
-		maxAllowedVersionOnce = &sync.Once{}
-	}()
-
 	wantErrMsgFor := func(version float64, maxAllowedVersion int) string {
 		return fmt.Sprintf("for %.1f (the binary was built with __MAC_OS_X_VERSION_MAX_ALLOWED=%d; needs recompilation)", version, maxAllowedVersion)
 	}
@@ -494,11 +487,7 @@ func Test_macOSBuildTargetAvailable(t *testing.T) {
 			tc.version,
 		)
 		t.Run(name, func(t *testing.T) {
-			tmp := maxAllowedVersion
-			defer func() { maxAllowedVersion = tmp }()
-			maxAllowedVersion = tc.maxAllowedVersion
-
-			err := macOSBuildTargetAvailable(tc.version)
+			err := macOSBuildTargetAvailable(tc.version, tc.maxAllowedVersion)
 			if (err != nil) != tc.wantErr {
 				t.Fatalf("macOSBuildTargetAvailable(%.1f) error = %v, wantErr %v", tc.version, err, tc.wantErr)
 			}

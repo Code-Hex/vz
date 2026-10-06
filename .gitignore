@@ -5,3 +5,7 @@ virtualization
 RestoreImage.ipsw
 testdata/*
 !testdata/.gitkeep
+/docs/
+/scripts/
+/internal/vzbridge/*.json
+/AGENTS.md

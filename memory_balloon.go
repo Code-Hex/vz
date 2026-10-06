@@ -1,13 +1,8 @@
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_11.h"
-*/
-import "C"
 import (
-	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 // MemoryBalloonDeviceConfiguration for a memory balloon device configuration.
@@ -42,13 +37,8 @@ func NewVirtioTraditionalMemoryBalloonDeviceConfiguration() (*VirtioTraditionalM
 	}
 
 	config := &VirtioTraditionalMemoryBalloonDeviceConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZVirtioTraditionalMemoryBalloonDeviceConfiguration(),
-		),
+		pointer: vzbridge.VZVirtioTraditionalMemoryBalloonDeviceConfiguration_Init(),
 	}
-	objc.SetFinalizer(config, func(self *VirtioTraditionalMemoryBalloonDeviceConfiguration) {
-		objc.Release(self)
-	})
 	return config, nil
 }
 
@@ -74,17 +64,19 @@ func (*baseMemoryBalloonDevice) memoryBalloonDevice() {}
 //
 // This is only supported on macOS 11 and newer.
 func (v *VirtualMachine) MemoryBalloonDevices() []MemoryBalloonDevice {
-	nsArray := objc.NewNSArray(
-		C.VZVirtualMachine_memoryBalloonDevices(objc.Ptr(v)),
-	)
-	ptrs := nsArray.ToPointerSlice()
+	array := vzbridge.VZVirtualMachine_MemoryBalloonDevices(v)
+	defer objc.Release(array)
+	ptrs := make([]*objc.Pointer, int(vzbridge.NSArray_Count(array)))
+	for i := range ptrs {
+		ptrs[i] = vzbridge.NSArray_ObjectAtIndex(array, uint64(i))
+	}
 	devices := make([]MemoryBalloonDevice, len(ptrs))
 	for i, ptr := range ptrs {
 		// TODO: When Apple adds more memory balloon device types in future macOS versions,
 		// implement type checking here to create the appropriate device wrapper.
 		// Currently, VirtioTraditionalMemoryBalloonDevice is the only type supported.
 		devices[i] = &VirtioTraditionalMemoryBalloonDevice{
-			pointer: objc.NewPointer(ptr),
+			pointer: ptr,
 			vm:      v,
 		}
 	}
@@ -125,10 +117,9 @@ func AsVirtioTraditionalMemoryBalloonDevice(device MemoryBalloonDevice) *VirtioT
 //
 // This is only supported on macOS 11 and newer.
 func (v *VirtioTraditionalMemoryBalloonDevice) SetTargetVirtualMachineMemorySize(targetMemorySize uint64) {
-	C.VZVirtioTraditionalMemoryBalloonDevice_setTargetVirtualMachineMemorySize(
-		objc.Ptr(v),
-		v.vm.dispatchQueue,
-		C.ulonglong(targetMemorySize),
+	vzbridge.VZVirtioTraditionalMemoryBalloonDevice_SetTargetVirtualMachineMemorySize(
+		v,
+		uint64(targetMemorySize),
 	)
 }
 
@@ -136,5 +127,5 @@ func (v *VirtioTraditionalMemoryBalloonDevice) SetTargetVirtualMachineMemorySize
 //
 // This is only supported on macOS 11 and newer.
 func (v *VirtioTraditionalMemoryBalloonDevice) GetTargetVirtualMachineMemorySize() uint64 {
-	return uint64(C.VZVirtioTraditionalMemoryBalloonDevice_getTargetVirtualMachineMemorySize(objc.Ptr(v), v.vm.dispatchQueue))
+	return uint64(vzbridge.VZVirtioTraditionalMemoryBalloonDevice_TargetVirtualMachineMemorySize(v))
 }

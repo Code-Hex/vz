@@ -1,17 +1,11 @@
 package vz
 
-/*
-#cgo darwin CFLAGS: -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo darwin LDFLAGS: -framework Foundation -framework Virtualization
-# include "virtualization_11.h"
-# include "virtualization_12.h"
-# include "virtualization_13.h"
-*/
-import "C"
 import (
 	"os"
+	"unsafe"
 
-	"github.com/Code-Hex/vz/v3/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 // DirectorySharingDeviceConfiguration for a directory sharing device configuration.
@@ -44,27 +38,20 @@ func NewVirtioFileSystemDeviceConfiguration(tag string) (*VirtioFileSystemDevice
 	if err := macOSAvailable(12); err != nil {
 		return nil, err
 	}
-	tagChar := charWithGoString(tag)
-	defer tagChar.Free()
 
-	nserrPtr := newNSErrorAsNil()
+	var nserrPtr unsafe.Pointer
 	fsdConfig := &VirtioFileSystemDeviceConfiguration{
-		pointer: objc.NewPointer(
-			C.newVZVirtioFileSystemDeviceConfiguration(tagChar.CString(), &nserrPtr),
-		),
+		pointer: vzbridge.NewVZVirtioFileSystemDeviceConfiguration(tag, &nserrPtr),
 	}
 	if err := newNSError(nserrPtr); err != nil {
 		return nil, err
 	}
-	objc.SetFinalizer(fsdConfig, func(self *VirtioFileSystemDeviceConfiguration) {
-		objc.Release(self)
-	})
 	return fsdConfig, nil
 }
 
 // SetDirectoryShare sets the directory share associated with this configuration.
 func (c *VirtioFileSystemDeviceConfiguration) SetDirectoryShare(share DirectoryShare) {
-	C.setVZVirtioFileSystemDeviceConfigurationShare(objc.Ptr(c), objc.Ptr(share))
+	vzbridge.VZVirtioFileSystemDeviceConfiguration_SetShare(c, share)
 }
 
 // SharedDirectory is a shared directory.
@@ -83,17 +70,9 @@ func NewSharedDirectory(dirPath string, readOnly bool) (*SharedDirectory, error)
 	if _, err := os.Stat(dirPath); err != nil {
 		return nil, err
 	}
-
-	dirPathChar := charWithGoString(dirPath)
-	defer dirPathChar.Free()
 	sd := &SharedDirectory{
-		pointer: objc.NewPointer(
-			C.newVZSharedDirectory(dirPathChar.CString(), C.bool(readOnly)),
-		),
+		pointer: vzbridge.VZSharedDirectory_InitWithURL_ReadOnly(vzbridge.NSURL_FileURLWithPath(vzbridge.NSString_StringWithUTF8String(dirPath)), bool(readOnly)),
 	}
-	objc.SetFinalizer(sd, func(self *SharedDirectory) {
-		objc.Release(self)
-	})
 	return sd, nil
 }
 
@@ -126,13 +105,8 @@ func NewSingleDirectoryShare(share *SharedDirectory) (*SingleDirectoryShare, err
 		return nil, err
 	}
 	config := &SingleDirectoryShare{
-		pointer: objc.NewPointer(
-			C.newVZSingleDirectoryShare(objc.Ptr(share)),
-		),
+		pointer: vzbridge.VZSingleDirectoryShare_InitWithDirectory(share),
 	}
-	objc.SetFinalizer(config, func(self *SingleDirectoryShare) {
-		objc.Release(self)
-	})
 	return config, nil
 }
 
@@ -158,16 +132,11 @@ func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) (*MultipleDir
 		directories[k] = v
 	}
 
-	dict := objc.ConvertToNSMutableDictionary(directories)
+	dict := nativeObjectDictionary(directories)
 
 	config := &MultipleDirectoryShare{
-		pointer: objc.NewPointer(
-			C.newVZMultipleDirectoryShare(objc.Ptr(dict)),
-		),
+		pointer: vzbridge.VZMultipleDirectoryShare_InitWithDirectories(dict),
 	}
-	objc.SetFinalizer(config, func(self *MultipleDirectoryShare) {
-		objc.Release(self)
-	})
 	return config, nil
 }
 
@@ -179,6 +148,5 @@ func MacOSGuestAutomountTag() (string, error) {
 	if err := macOSAvailable(13); err != nil {
 		return "", err
 	}
-	cstring := (*char)(C.getMacOSGuestAutomountTag())
-	return cstring.String(), nil
+	return nativeString(vzbridge.VZVirtioFileSystemDeviceConfiguration_MacOSGuestAutomountTag()), nil
 }

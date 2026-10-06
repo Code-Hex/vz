@@ -10,7 +10,7 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/Code-Hex/vz/v3"
+	"github.com/Code-Hex/vz/v4"
 )
 
 var install bool

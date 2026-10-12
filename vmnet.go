@@ -3,7 +3,6 @@ package vz
 import (
 	"encoding/binary"
 	"fmt"
-	"math/bits"
 	"net"
 	"net/netip"
 	"runtime"
@@ -62,7 +61,7 @@ func (c *VMNetNetworkConfiguration) SetIPv4Subnet(prefix netip.Prefix) error {
 	}
 	// vmnet needs the host address to start DHCP-backed attachments.
 	address := prefix.Masked().Addr().Next().As4()
-	mask := uint32(0xffffffff) << uint(32-prefix.Bits())
+	mask := binary.BigEndian.Uint32(net.CIDRMask(prefix.Bits(), 32))
 	var errorPtr unsafe.Pointer
 	vzbridge.SetVmnetIPv4Subnet(c.pointer, binary.BigEndian.Uint32(address[:]), mask, &errorPtr)
 	return vmnetError(errorPtr)
@@ -134,9 +133,10 @@ func (n *VMNetNetwork) IPv4Subnet() (netip.Prefix, error) {
 	packed := vzbridge.VmnetIPv4Subnet(n.pointer)
 	var bytes [4]byte
 	binary.BigEndian.PutUint32(bytes[:], uint32(packed>>32))
-	mask := uint32(packed)
-	prefixBits := bits.LeadingZeros32(^mask)
-	if mask != uint32(0xffffffff)<<uint(32-prefixBits) {
+	var mask [4]byte
+	binary.BigEndian.PutUint32(mask[:], uint32(packed))
+	prefixBits, maskBits := net.IPMask(mask[:]).Size()
+	if maskBits != 32 {
 		return netip.Prefix{}, fmt.Errorf("vmnet returned an invalid IPv4 subnet mask")
 	}
 	return netip.PrefixFrom(netip.AddrFrom4(bytes), prefixBits).Masked(), nil

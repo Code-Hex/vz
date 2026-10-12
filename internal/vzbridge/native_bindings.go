@@ -509,3 +509,129 @@ func VZVirtioSocketDevice_connectToPort(p0 objc.NSObject, p1 uint32, p2 uint64) 
 	})
 	runtime.KeepAlive(p0)
 }
+
+var callNewVmnetNetworkConfiguration lazyBinding[func(int32, *unsafe.Pointer) unsafe.Pointer]
+
+func NewVmnetNetworkConfiguration(mode int32, errorOut *unsafe.Pointer) unsafe.Pointer {
+	call := callNewVmnetNetworkConfiguration.get(func() func(int32, *unsafe.Pointer) unsafe.Pointer {
+		var call func(int32, *unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_newVmnetNetworkConfiguration))
+		return call
+	})
+	var result unsafe.Pointer
+	onQueue(func() {
+		result = call(mode, errorOut)
+	})
+	runtime.KeepAlive(errorOut)
+	return result
+}
+
+var callNewVmnetNetwork lazyBinding[func(unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer]
+
+func NewVmnetNetwork(configuration objc.NSObject, errorOut *unsafe.Pointer) unsafe.Pointer {
+	call := callNewVmnetNetwork.get(func() func(unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer {
+		var call func(unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_newVmnetNetwork))
+		return call
+	})
+	var result unsafe.Pointer
+	onQueue(func() {
+		result = call(objc.Ptr(configuration), errorOut)
+	})
+	runtime.KeepAlive(configuration)
+	runtime.KeepAlive(errorOut)
+	return result
+}
+
+var callSetVmnetIPv4Subnet lazyBinding[func(unsafe.Pointer, uint32, uint32, *unsafe.Pointer)]
+
+func SetVmnetIPv4Subnet(configuration objc.NSObject, address uint32, mask uint32, errorOut *unsafe.Pointer) {
+	call := callSetVmnetIPv4Subnet.get(func() func(unsafe.Pointer, uint32, uint32, *unsafe.Pointer) {
+		var call func(unsafe.Pointer, uint32, uint32, *unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_setVmnetIPv4Subnet))
+		return call
+	})
+	onQueue(func() {
+		call(objc.Ptr(configuration), address, mask, errorOut)
+	})
+	runtime.KeepAlive(configuration)
+	runtime.KeepAlive(errorOut)
+}
+
+var callAddVmnetDHCPReservation lazyBinding[func(unsafe.Pointer, unsafe.Pointer, uint32, *unsafe.Pointer)]
+
+func AddVmnetDHCPReservation(configuration objc.NSObject, mac unsafe.Pointer, address uint32, errorOut *unsafe.Pointer) {
+	call := callAddVmnetDHCPReservation.get(func() func(unsafe.Pointer, unsafe.Pointer, uint32, *unsafe.Pointer) {
+		var call func(unsafe.Pointer, unsafe.Pointer, uint32, *unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_addVmnetDHCPReservation))
+		return call
+	})
+	onQueue(func() {
+		call(objc.Ptr(configuration), mac, address, errorOut)
+	})
+	runtime.KeepAlive(configuration)
+	runtime.KeepAlive(mac)
+	runtime.KeepAlive(errorOut)
+}
+
+var callVmnetIPv4Subnet lazyBinding[func(unsafe.Pointer) uint64]
+
+func VmnetIPv4Subnet(network objc.NSObject) uint64 {
+	call := callVmnetIPv4Subnet.get(func() func(unsafe.Pointer) uint64 {
+		var call func(unsafe.Pointer) uint64
+		purego.RegisterFunc(&call, uintptr(C.vz_vmnetIPv4Subnet))
+		return call
+	})
+	var result uint64
+	onQueue(func() {
+		result = call(objc.Ptr(network))
+	})
+	runtime.KeepAlive(network)
+	return result
+}
+
+var callNewVmnetNetworkDeviceAttachment lazyBinding[func(unsafe.Pointer) unsafe.Pointer]
+
+func NewVmnetNetworkDeviceAttachment(network objc.NSObject) *objc.Pointer {
+	call := callNewVmnetNetworkDeviceAttachment.get(func() func(unsafe.Pointer) unsafe.Pointer {
+		var call func(unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_newVmnetNetworkDeviceAttachment))
+		return call
+	})
+	var result unsafe.Pointer
+	onQueue(func() {
+		result = call(objc.Ptr(network))
+	})
+	runtime.KeepAlive(network)
+	return objc.NewManagedPointer(result, ReleaseObject)
+}
+
+var callVmnetNetworkDeviceAttachmentNetwork lazyBinding[func(unsafe.Pointer) unsafe.Pointer]
+
+func VmnetNetworkDeviceAttachmentNetwork(attachment objc.NSObject) unsafe.Pointer {
+	call := callVmnetNetworkDeviceAttachmentNetwork.get(func() func(unsafe.Pointer) unsafe.Pointer {
+		var call func(unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_vmnetNetworkDeviceAttachmentNetwork))
+		return call
+	})
+	var result unsafe.Pointer
+	onQueue(func() {
+		result = call(objc.Ptr(attachment))
+	})
+	runtime.KeepAlive(attachment)
+	return result
+}
+
+var callReleaseCFObject lazyBinding[func(unsafe.Pointer)]
+
+func ReleaseCFObject(object unsafe.Pointer) {
+	call := callReleaseCFObject.get(func() func(unsafe.Pointer) {
+		var call func(unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_releaseCFObject))
+		return call
+	})
+	onQueue(func() {
+		call(object)
+	})
+	runtime.KeepAlive(object)
+}

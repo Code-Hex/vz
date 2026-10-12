@@ -4,7 +4,7 @@ package vzbridge
 
 /*
 #cgo CFLAGS: -flto -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo LDFLAGS: -framework Foundation -framework Virtualization -framework Cocoa
+#cgo LDFLAGS: -framework Foundation -framework Virtualization -framework Cocoa -framework vmnet
 #include "native.h"
 */
 import "C"

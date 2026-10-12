@@ -348,3 +348,44 @@ func (m *MACAddress) HardwareAddr() net.HardwareAddr {
 	hw, _ := net.ParseMAC(m.String())
 	return hw
 }
+
+// VmnetNetworkDeviceAttachment connects a network device to a logical vmnet network.
+// It requires macOS 26 and newer.
+type VmnetNetworkDeviceAttachment struct {
+	*pointer
+	*baseNetworkDeviceAttachment
+}
+
+func (*VmnetNetworkDeviceAttachment) String() string { return "VmnetNetworkDeviceAttachment" }
+
+var _ NetworkDeviceAttachment = (*VmnetNetworkDeviceAttachment)(nil)
+
+// NewVmnetNetworkDeviceAttachment creates an attachment sharing network with
+// other attachments. It requires macOS 26 and newer.
+func NewVmnetNetworkDeviceAttachment(network *VmnetNetwork) (*VmnetNetworkDeviceAttachment, error) {
+	if err := macOSAvailable(26); err != nil {
+		return nil, err
+	}
+	if network == nil || network.pointer == nil {
+		return nil, fmt.Errorf("vmnet network is nil or uninitialized")
+	}
+	ptr := vzbridge.NewVmnetNetworkDeviceAttachment(network.pointer)
+	if ptr == nil {
+		return nil, fmt.Errorf("vmnet returned no network device attachment")
+	}
+	return &VmnetNetworkDeviceAttachment{pointer: ptr}, nil
+}
+
+// Network returns the logical network used by this attachment. The returned
+// network remains usable independently of the attachment. An uninitialized
+// attachment returns nil.
+func (v *VmnetNetworkDeviceAttachment) Network() *VmnetNetwork {
+	if macOSAvailable(26) != nil || v == nil || v.pointer == nil {
+		return nil
+	}
+	ptr := vzbridge.VmnetNetworkDeviceAttachmentNetwork(v)
+	if ptr == nil {
+		return nil
+	}
+	return &VmnetNetwork{pointer: objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject)}
+}

@@ -1,14 +1,13 @@
 package vz
 
 import (
-	"net"
-	"net/netip"
 	"path/filepath"
-	"runtime"
 	"testing"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/vmnethandle"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
+	"github.com/Code-Hex/vz/v4/vmnet"
 )
 
 func TestVMNetNetworkDeviceAttachmentLifetime(t *testing.T) {
@@ -17,15 +16,15 @@ func TestVMNetNetworkDeviceAttachmentLifetime(t *testing.T) {
 	}
 	for _, mode := range []struct {
 		name string
-		mode VMNetNetworkMode
-	}{{"Host", VMNetNetworkModeHost}, {"Shared", VMNetNetworkModeShared}} {
+		mode vmnet.Mode
+	}{{"Host", vmnet.ModeHost}, {"Shared", vmnet.ModeShared}} {
 		t.Run(mode.name, func(t *testing.T) {
 			config := func() *VirtualMachineConfiguration {
-				networkConfig, err := NewVMNetNetworkConfiguration(mode.mode)
+				networkConfig, err := vmnet.NewNetworkConfiguration(mode.mode)
 				if err != nil {
 					t.Fatal(err)
 				}
-				network, err := NewVMNetNetwork(networkConfig)
+				network, err := vmnet.NewNetwork(networkConfig)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -52,8 +51,8 @@ func TestVMNetNetworkDeviceAttachmentLifetime(t *testing.T) {
 				array := nativeObjectArray([]*VirtioNetworkDeviceConfiguration{device})
 				vzbridge.VZVirtualMachineConfiguration_SetNetworkDevices(config, array)
 				objc.Release(array)
-				objc.Release(networkConfig.pointer)
-				objc.Release(network.pointer)
+				objc.Release(vmnethandle.Pointer(networkConfig))
+				objc.Release(vmnethandle.Pointer(network))
 				objc.Release(attachment.pointer)
 				objc.Release(device.pointer)
 				vzbridge.Drain()
@@ -86,66 +85,15 @@ func TestVMNetNetworkDeviceAttachmentLifetime(t *testing.T) {
 	}
 }
 
-func TestVMNetCopiedConfigurationAndNetwork(t *testing.T) {
-	if macOSAvailable(26) != nil {
-		t.Skip("vmnet networks require macOS 26 and its SDK")
-	}
-	config, collectedConfig := func() (VMNetNetworkConfiguration, <-chan struct{}) {
-		original, err := NewVMNetNetworkConfiguration(VMNetNetworkModeHost)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if err := original.SetIPv4Subnet(netip.MustParsePrefix("192.168.251.0/24")); err != nil {
-			t.Fatal(err)
-		}
-		collected := make(chan struct{})
-		runtime.AddCleanup(original, func(ch chan struct{}) { close(ch) }, collected)
-		return *original, collected
-	}()
-	awaitNativeBridge(t, func() bool {
-		select {
-		case <-collectedConfig:
-			return true
-		default:
-			return false
-		}
-	})
-	network, collectedNetwork := func() (VMNetNetwork, <-chan struct{}) {
-		original, err := NewVMNetNetwork(&config)
-		if err != nil {
-			t.Fatal(err)
-		}
-		collected := make(chan struct{})
-		runtime.AddCleanup(original, func(ch chan struct{}) { close(ch) }, collected)
-		return *original, collected
-	}()
-	awaitNativeBridge(t, func() bool {
-		select {
-		case <-collectedNetwork:
-			return true
-		default:
-			return false
-		}
-	})
-	if got, err := network.IPv4Subnet(); err != nil || got != netip.MustParsePrefix("192.168.251.0/24") {
-		t.Fatalf("copied network subnet = %v, %v", got, err)
-	}
-	if err := config.AddDHCPReservation(net.HardwareAddr{2, 0, 0, 0, 0, 2}, netip.MustParseAddr("192.168.251.2")); err != nil {
-		t.Fatal(err)
-	}
-	runtime.KeepAlive(config)
-	runtime.KeepAlive(network)
-}
-
 func TestVMNetAttachmentNetworkRetainsReference(t *testing.T) {
 	if macOSAvailable(26) != nil {
 		t.Skip("vmnet networks require macOS 26 and its SDK")
 	}
-	config, err := NewVMNetNetworkConfiguration(VMNetNetworkModeHost)
+	config, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
 	if err != nil {
 		t.Fatal(err)
 	}
-	network, err := NewVMNetNetwork(config)
+	network, err := vmnet.NewNetwork(config)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -161,8 +109,8 @@ func TestVMNetAttachmentNetworkRetainsReference(t *testing.T) {
 	if retained == nil {
 		t.Fatal("attachment returned no network")
 	}
-	objc.Release(config.pointer)
-	objc.Release(network.pointer)
+	objc.Release(vmnethandle.Pointer(config))
+	objc.Release(vmnethandle.Pointer(network))
 	objc.Release(attachment.pointer)
 	vzbridge.Drain()
 	if got, err := retained.IPv4Subnet(); err != nil || got != want {

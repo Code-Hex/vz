@@ -9,7 +9,9 @@ import (
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/vmnethandle"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
+	"github.com/Code-Hex/vz/v4/vmnet"
 )
 
 // BridgedNetwork defines a network interface that bridges a physical interface with a virtual machine.
@@ -362,14 +364,14 @@ var _ NetworkDeviceAttachment = (*VMNetNetworkDeviceAttachment)(nil)
 
 // NewVMNetNetworkDeviceAttachment creates an attachment sharing network with
 // other attachments. It requires macOS 26 and newer.
-func NewVMNetNetworkDeviceAttachment(network *VMNetNetwork) (*VMNetNetworkDeviceAttachment, error) {
+func NewVMNetNetworkDeviceAttachment(network *vmnet.Network) (*VMNetNetworkDeviceAttachment, error) {
 	if err := macOSAvailable(26); err != nil {
 		return nil, err
 	}
-	if network == nil || network.pointer == nil {
+	if network == nil || vmnethandle.Pointer(network) == nil {
 		return nil, fmt.Errorf("vmnet network is nil or uninitialized")
 	}
-	ptr := vzbridge.NewVmnetNetworkDeviceAttachment(network.pointer)
+	ptr := vzbridge.NewVmnetNetworkDeviceAttachment(vmnethandle.Pointer(network))
 	if ptr == nil {
 		return nil, fmt.Errorf("vmnet returned no network device attachment")
 	}
@@ -379,7 +381,7 @@ func NewVMNetNetworkDeviceAttachment(network *VMNetNetwork) (*VMNetNetworkDevice
 // Network returns the logical network used by this attachment. The returned
 // network remains usable independently of the attachment. An uninitialized
 // attachment returns nil.
-func (v *VMNetNetworkDeviceAttachment) Network() *VMNetNetwork {
+func (v *VMNetNetworkDeviceAttachment) Network() *vmnet.Network {
 	if macOSAvailable(26) != nil || v == nil || v.pointer == nil {
 		return nil
 	}
@@ -387,5 +389,7 @@ func (v *VMNetNetworkDeviceAttachment) Network() *VMNetNetwork {
 	if ptr == nil {
 		return nil
 	}
-	return &VMNetNetwork{pointer: objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject)}
+	network := new(vmnet.Network)
+	vmnethandle.AdoptRetainedNetwork(network, objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject))
+	return network
 }

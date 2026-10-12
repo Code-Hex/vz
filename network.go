@@ -349,20 +349,20 @@ func (m *MACAddress) HardwareAddr() net.HardwareAddr {
 	return hw
 }
 
-// VmnetNetworkDeviceAttachment connects a network device to a logical vmnet network.
+// VMNetNetworkDeviceAttachment connects a network device to a logical vmnet network.
 // It requires macOS 26 and newer.
-type VmnetNetworkDeviceAttachment struct {
+type VMNetNetworkDeviceAttachment struct {
 	*pointer
 	*baseNetworkDeviceAttachment
 }
 
-func (*VmnetNetworkDeviceAttachment) String() string { return "VmnetNetworkDeviceAttachment" }
+func (*VMNetNetworkDeviceAttachment) String() string { return "VMNetNetworkDeviceAttachment" }
 
-var _ NetworkDeviceAttachment = (*VmnetNetworkDeviceAttachment)(nil)
+var _ NetworkDeviceAttachment = (*VMNetNetworkDeviceAttachment)(nil)
 
-// NewVmnetNetworkDeviceAttachment creates an attachment sharing network with
+// NewVMNetNetworkDeviceAttachment creates an attachment sharing network with
 // other attachments. It requires macOS 26 and newer.
-func NewVmnetNetworkDeviceAttachment(network *VmnetNetwork) (*VmnetNetworkDeviceAttachment, error) {
+func NewVMNetNetworkDeviceAttachment(network *VMNetNetwork) (*VMNetNetworkDeviceAttachment, error) {
 	if err := macOSAvailable(26); err != nil {
 		return nil, err
 	}
@@ -373,13 +373,13 @@ func NewVmnetNetworkDeviceAttachment(network *VmnetNetwork) (*VmnetNetworkDevice
 	if ptr == nil {
 		return nil, fmt.Errorf("vmnet returned no network device attachment")
 	}
-	return &VmnetNetworkDeviceAttachment{pointer: ptr}, nil
+	return &VMNetNetworkDeviceAttachment{pointer: ptr}, nil
 }
 
 // Network returns the logical network used by this attachment. The returned
 // network remains usable independently of the attachment. An uninitialized
 // attachment returns nil.
-func (v *VmnetNetworkDeviceAttachment) Network() *VmnetNetwork {
+func (v *VMNetNetworkDeviceAttachment) Network() *VMNetNetwork {
 	if macOSAvailable(26) != nil || v == nil || v.pointer == nil {
 		return nil
 	}
@@ -387,5 +387,5 @@ func (v *VmnetNetworkDeviceAttachment) Network() *VmnetNetwork {
 	if ptr == nil {
 		return nil
 	}
-	return &VmnetNetwork{pointer: objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject)}
+	return &VMNetNetwork{pointer: objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject)}
 }

@@ -11,25 +11,25 @@ import (
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
-func TestVmnetNetworkDeviceAttachmentLifetime(t *testing.T) {
+func TestVMNetNetworkDeviceAttachmentLifetime(t *testing.T) {
 	if macOSAvailable(26) != nil {
 		t.Skip("vmnet networks require macOS 26 and its SDK")
 	}
 	for _, mode := range []struct {
 		name string
-		mode VmnetNetworkMode
-	}{{"Host", VmnetNetworkModeHost}, {"Shared", VmnetNetworkModeShared}} {
+		mode VMNetNetworkMode
+	}{{"Host", VMNetNetworkModeHost}, {"Shared", VMNetNetworkModeShared}} {
 		t.Run(mode.name, func(t *testing.T) {
 			config := func() *VirtualMachineConfiguration {
-				networkConfig, err := NewVmnetNetworkConfiguration(mode.mode)
+				networkConfig, err := NewVMNetNetworkConfiguration(mode.mode)
 				if err != nil {
 					t.Fatal(err)
 				}
-				network, err := NewVmnetNetwork(networkConfig)
+				network, err := NewVMNetNetwork(networkConfig)
 				if err != nil {
 					t.Fatal(err)
 				}
-				attachment, err := NewVmnetNetworkDeviceAttachment(network)
+				attachment, err := NewVMNetNetworkDeviceAttachment(network)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -86,12 +86,12 @@ func TestVmnetNetworkDeviceAttachmentLifetime(t *testing.T) {
 	}
 }
 
-func TestVmnetCopiedConfigurationAndNetwork(t *testing.T) {
+func TestVMNetCopiedConfigurationAndNetwork(t *testing.T) {
 	if macOSAvailable(26) != nil {
 		t.Skip("vmnet networks require macOS 26 and its SDK")
 	}
-	config, collectedConfig := func() (VmnetNetworkConfiguration, <-chan struct{}) {
-		original, err := NewVmnetNetworkConfiguration(VmnetNetworkModeHost)
+	config, collectedConfig := func() (VMNetNetworkConfiguration, <-chan struct{}) {
+		original, err := NewVMNetNetworkConfiguration(VMNetNetworkModeHost)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -110,8 +110,8 @@ func TestVmnetCopiedConfigurationAndNetwork(t *testing.T) {
 			return false
 		}
 	})
-	network, collectedNetwork := func() (VmnetNetwork, <-chan struct{}) {
-		original, err := NewVmnetNetwork(&config)
+	network, collectedNetwork := func() (VMNetNetwork, <-chan struct{}) {
+		original, err := NewVMNetNetwork(&config)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -137,15 +137,15 @@ func TestVmnetCopiedConfigurationAndNetwork(t *testing.T) {
 	runtime.KeepAlive(network)
 }
 
-func TestVmnetAttachmentNetworkRetainsReference(t *testing.T) {
+func TestVMNetAttachmentNetworkRetainsReference(t *testing.T) {
 	if macOSAvailable(26) != nil {
 		t.Skip("vmnet networks require macOS 26 and its SDK")
 	}
-	config, err := NewVmnetNetworkConfiguration(VmnetNetworkModeHost)
+	config, err := NewVMNetNetworkConfiguration(VMNetNetworkModeHost)
 	if err != nil {
 		t.Fatal(err)
 	}
-	network, err := NewVmnetNetwork(config)
+	network, err := NewVMNetNetwork(config)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -153,7 +153,7 @@ func TestVmnetAttachmentNetworkRetainsReference(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	attachment, err := NewVmnetNetworkDeviceAttachment(network)
+	attachment, err := NewVMNetNetworkDeviceAttachment(network)
 	if err != nil {
 		t.Fatal(err)
 	}

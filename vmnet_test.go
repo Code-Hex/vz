@@ -11,18 +11,18 @@ import (
 	"github.com/Code-Hex/vz/v4"
 )
 
-func TestVmnetNetwork(t *testing.T) {
+func TestVMNetNetwork(t *testing.T) {
 	if vz.Available(26) {
 		t.Skip("vmnet networks require macOS 26 and its SDK")
 	}
 	for _, mode := range []struct {
 		name   string
-		mode   vz.VmnetNetworkMode
+		mode   vz.VMNetNetworkMode
 		prefix netip.Prefix
 		want   netip.Prefix
 	}{
-		{"Host", vz.VmnetNetworkModeHost, netip.MustParsePrefix("192.168.243.99/24"), netip.MustParsePrefix("192.168.243.0/24")},
-		{"Shared", vz.VmnetNetworkModeShared, netip.MustParsePrefix("192.168.244.99/24"), netip.MustParsePrefix("192.168.244.0/24")},
+		{"Host", vz.VMNetNetworkModeHost, netip.MustParsePrefix("192.168.243.99/24"), netip.MustParsePrefix("192.168.243.0/24")},
+		{"Shared", vz.VMNetNetworkModeShared, netip.MustParsePrefix("192.168.244.99/24"), netip.MustParsePrefix("192.168.244.0/24")},
 	} {
 		t.Run(mode.name, func(t *testing.T) {
 			for _, subnet := range []struct {
@@ -30,7 +30,7 @@ func TestVmnetNetwork(t *testing.T) {
 				prefix netip.Prefix
 			}{{"default", netip.Prefix{}}, {"explicit", mode.prefix}} {
 				t.Run(subnet.name, func(t *testing.T) {
-					config, err := vz.NewVmnetNetworkConfiguration(mode.mode)
+					config, err := vz.NewVMNetNetworkConfiguration(mode.mode)
 					if err != nil {
 						t.Fatal(err)
 					}
@@ -39,7 +39,7 @@ func TestVmnetNetwork(t *testing.T) {
 							t.Fatal(err)
 						}
 					}
-					network, err := vz.NewVmnetNetwork(config)
+					network, err := vz.NewVMNetNetwork(config)
 					if err != nil {
 						t.Fatal(err)
 					}
@@ -54,11 +54,11 @@ func TestVmnetNetwork(t *testing.T) {
 					} else if !netip.MustParsePrefix("192.168.0.0/16").Contains(got.Addr()) || got.Bits() != 24 {
 						t.Fatalf("default subnet = %v, want a /24 within 192.168.0.0/16", got)
 					}
-					attachment, err := vz.NewVmnetNetworkDeviceAttachment(network)
+					attachment, err := vz.NewVMNetNetworkDeviceAttachment(network)
 					if err != nil {
 						t.Fatal(err)
 					}
-					if got := attachment.String(); got != "VmnetNetworkDeviceAttachment" {
+					if got := attachment.String(); got != "VMNetNetworkDeviceAttachment" {
 						t.Fatalf("String = %q", got)
 					}
 					retained := attachment.Network()
@@ -72,14 +72,14 @@ func TestVmnetNetwork(t *testing.T) {
 	}
 }
 
-func TestVmnetInvalidInputs(t *testing.T) {
+func TestVMNetInvalidInputs(t *testing.T) {
 	if vz.Available(26) {
 		t.Skip("vmnet networks require macOS 26 and its SDK")
 	}
-	if _, err := vz.NewVmnetNetworkConfiguration(vz.VmnetNetworkMode(0)); err == nil {
+	if _, err := vz.NewVMNetNetworkConfiguration(vz.VMNetNetworkMode(0)); err == nil {
 		t.Fatal("invalid mode accepted")
 	}
-	config, err := vz.NewVmnetNetworkConfiguration(vz.VmnetNetworkModeHost)
+	config, err := vz.NewVMNetNetworkConfiguration(vz.VMNetNetworkModeHost)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -104,8 +104,8 @@ func TestVmnetInvalidInputs(t *testing.T) {
 			}
 		})
 	}
-	for _, config := range []*vz.VmnetNetworkConfiguration{nil, {}} {
-		if _, err := vz.NewVmnetNetwork(config); err == nil {
+	for _, config := range []*vz.VMNetNetworkConfiguration{nil, {}} {
+		if _, err := vz.NewVMNetNetwork(config); err == nil {
 			t.Fatal("empty config accepted")
 		}
 		if err := config.SetIPv4Subnet(netip.MustParsePrefix("192.168.1.0/24")); err == nil {
@@ -115,26 +115,26 @@ func TestVmnetInvalidInputs(t *testing.T) {
 			t.Fatal("empty config accepted by reservation setter")
 		}
 	}
-	for _, network := range []*vz.VmnetNetwork{nil, {}} {
-		if _, err := vz.NewVmnetNetworkDeviceAttachment(network); err == nil {
+	for _, network := range []*vz.VMNetNetwork{nil, {}} {
+		if _, err := vz.NewVMNetNetworkDeviceAttachment(network); err == nil {
 			t.Fatal("empty network accepted")
 		}
 		if _, err := network.IPv4Subnet(); err == nil {
 			t.Fatal("empty network queried")
 		}
 	}
-	for _, attachment := range []*vz.VmnetNetworkDeviceAttachment{nil, {}} {
+	for _, attachment := range []*vz.VMNetNetworkDeviceAttachment{nil, {}} {
 		if attachment.Network() != nil {
 			t.Fatal("empty attachment returned a network")
 		}
 	}
 }
 
-func TestVmnetDHCPReservationAndGuestCommunication(t *testing.T) {
+func TestVMNetDHCPReservationAndGuestCommunication(t *testing.T) {
 	if vz.Available(26) {
 		t.Skip("vmnet networks require macOS 26 and its SDK")
 	}
-	config, err := vz.NewVmnetNetworkConfiguration(vz.VmnetNetworkModeHost)
+	config, err := vz.NewVMNetNetworkConfiguration(vz.VMNetNetworkModeHost)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -148,14 +148,14 @@ func TestVmnetDHCPReservationAndGuestCommunication(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	network, err := vz.NewVmnetNetwork(config)
+	network, err := vz.NewVMNetNetwork(config)
 	if err != nil {
 		t.Fatal(err)
 	}
 	guests := make([]*Container, 2)
 	for i := range guests {
 		guests[i] = newVirtualizationMachine(t, func(config *vz.VirtualMachineConfiguration) error {
-			attachment, err := vz.NewVmnetNetworkDeviceAttachment(network)
+			attachment, err := vz.NewVMNetNetworkDeviceAttachment(network)
 			if err != nil {
 				return err
 			}
@@ -200,23 +200,23 @@ func TestVmnetDHCPReservationAndGuestCommunication(t *testing.T) {
 	}
 }
 
-func TestVmnetNetworkCollision(t *testing.T) {
+func TestVMNetNetworkCollision(t *testing.T) {
 	if vz.Available(26) {
 		t.Skip("vmnet networks require macOS 26 and its SDK")
 	}
-	config, err := vz.NewVmnetNetworkConfiguration(vz.VmnetNetworkModeHost)
+	config, err := vz.NewVMNetNetworkConfiguration(vz.VMNetNetworkModeHost)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if err := config.SetIPv4Subnet(netip.MustParsePrefix("192.168.249.0/24")); err != nil {
 		t.Fatal(err)
 	}
-	first, err := vz.NewVmnetNetwork(config)
+	first, err := vz.NewVMNetNetwork(config)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer runtime.KeepAlive(first)
-	second, err := vz.NewVmnetNetwork(config)
+	second, err := vz.NewVMNetNetwork(config)
 	if second != nil {
 		t.Fatal("overlapping network reservation succeeded")
 	}

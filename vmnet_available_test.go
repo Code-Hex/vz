@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestVmnetAvailability(t *testing.T) {
+func TestVMNetAvailability(t *testing.T) {
 	majorMinorVersionOnce.Do(func() {})
 	previous := majorMinorVersion
 	majorMinorVersion = 15
@@ -16,12 +16,12 @@ func TestVmnetAvailability(t *testing.T) {
 		name string
 		call func() error
 	}{
-		{"configuration", func() error { _, err := NewVmnetNetworkConfiguration(VmnetNetworkModeHost); return err }},
-		{"subnet setter", func() error { return (*VmnetNetworkConfiguration)(nil).SetIPv4Subnet(netip.Prefix{}) }},
-		{"reservation", func() error { return (*VmnetNetworkConfiguration)(nil).AddDHCPReservation(nil, netip.Addr{}) }},
-		{"network", func() error { _, err := NewVmnetNetwork(nil); return err }},
-		{"subnet getter", func() error { _, err := (*VmnetNetwork)(nil).IPv4Subnet(); return err }},
-		{"attachment", func() error { _, err := NewVmnetNetworkDeviceAttachment(nil); return err }},
+		{"configuration", func() error { _, err := NewVMNetNetworkConfiguration(VMNetNetworkModeHost); return err }},
+		{"subnet setter", func() error { return (*VMNetNetworkConfiguration)(nil).SetIPv4Subnet(netip.Prefix{}) }},
+		{"reservation", func() error { return (*VMNetNetworkConfiguration)(nil).AddDHCPReservation(nil, netip.Addr{}) }},
+		{"network", func() error { _, err := NewVMNetNetwork(nil); return err }},
+		{"subnet getter", func() error { _, err := (*VMNetNetwork)(nil).IPv4Subnet(); return err }},
+		{"attachment", func() error { _, err := NewVMNetNetworkDeviceAttachment(nil); return err }},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			if err := test.call(); !errors.Is(err, ErrUnsupportedOSVersion) {

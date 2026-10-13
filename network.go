@@ -10,6 +10,7 @@ import (
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
+	"github.com/Code-Hex/vz/v4/vmnet"
 )
 
 // BridgedNetwork defines a network interface that bridges a physical interface with a virtual machine.
@@ -347,4 +348,42 @@ func (m *MACAddress) String() string {
 func (m *MACAddress) HardwareAddr() net.HardwareAddr {
 	hw, _ := net.ParseMAC(m.String())
 	return hw
+}
+
+// VMNetNetworkDeviceAttachment connects a network device to a logical vmnet network.
+// It requires macOS 26 and newer.
+type VMNetNetworkDeviceAttachment struct {
+	*pointer
+	*baseNetworkDeviceAttachment
+}
+
+func (*VMNetNetworkDeviceAttachment) String() string { return "VMNetNetworkDeviceAttachment" }
+
+var _ NetworkDeviceAttachment = (*VMNetNetworkDeviceAttachment)(nil)
+
+// NewVMNetNetworkDeviceAttachment creates an attachment sharing network with
+// other attachments. It requires macOS 26 and newer.
+func NewVMNetNetworkDeviceAttachment(network *vmnet.Network) (*VMNetNetworkDeviceAttachment, error) {
+	if err := macOSAvailable(26); err != nil {
+		return nil, err
+	}
+	if network == nil || objc.Ptr((*objc.Pointer)(network)) == nil {
+		return nil, fmt.Errorf("vmnet network is nil or uninitialized")
+	}
+	ptr := vzbridge.NewVmnetNetworkDeviceAttachment((*objc.Pointer)(network))
+	if ptr == nil {
+		return nil, fmt.Errorf("vmnet returned no network device attachment")
+	}
+	return &VMNetNetworkDeviceAttachment{pointer: ptr}, nil
+}
+
+// Network returns the logical network used by this attachment. The returned
+// network remains usable independently of the attachment. An uninitialized
+// attachment returns nil.
+func (v *VMNetNetworkDeviceAttachment) Network() *vmnet.Network {
+	if macOSAvailable(26) != nil || v == nil || v.pointer == nil {
+		return nil
+	}
+	ptr := vzbridge.VmnetNetworkDeviceAttachmentNetwork(v)
+	return (*vmnet.Network)(objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject))
 }

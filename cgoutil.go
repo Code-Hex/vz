@@ -1,10 +1,10 @@
 package vz
 
 import (
-	"fmt"
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
@@ -13,61 +13,18 @@ import (
 type pointer = objc.Pointer
 
 // NSError indicates NSError.
-type NSError struct {
-	Domain               string
-	Code                 int
-	LocalizedDescription string
-	UserInfo             string
-}
-
-func (n *NSError) Error() string {
-	if n == nil {
-		return "<nil>"
-	}
-	return fmt.Sprintf(
-		"Error Domain=%s Code=%d Description=%q UserInfo=%s",
-		n.Domain,
-		n.Code,
-		n.LocalizedDescription,
-		n.UserInfo,
-	)
-}
+type NSError = objcutil.NSError
 
 func newNSError(p unsafe.Pointer) *NSError {
-	if p == nil {
-		return nil
-	}
-	object := objc.NewManagedPointer(p, vzbridge.ReleaseObject)
-	defer objc.Release(object)
-	info := vzbridge.NSError_UserInfo(object)
-	defer objc.Release(info)
-	return &NSError{
-		Domain:               nativeString(vzbridge.NSError_Domain(object)),
-		Code:                 int(vzbridge.NSError_Code(object)),
-		LocalizedDescription: nativeString(vzbridge.NSError_LocalizedDescription(object)),
-		UserInfo:             nativeString(vzbridge.NSObject_Description(info)),
-	}
+	return objcutil.NewNSError(p)
 }
 
 func nativeString(object *objc.Pointer) string {
-	if object == nil {
-		return ""
-	}
-	defer objc.Release(object)
-	return string(nativeBytes(vzbridge.NSString_DataUsingEncoding(object, vzbridge.NSUTF8StringEncoding)))
+	return objcutil.String(object)
 }
 
 func nativeBytes(object *objc.Pointer) []byte {
-	if object == nil {
-		return nil
-	}
-	defer objc.Release(object)
-	size := vzbridge.NSData_Length(object)
-	if size == 0 {
-		return nil
-	}
-	data := vzbridge.NSData_Bytes(object)
-	return append([]byte(nil), unsafe.Slice((*byte)(data), int(size))...)
+	return objcutil.Bytes(object)
 }
 
 func nativeArray(object *objc.Pointer) []*objc.Pointer {

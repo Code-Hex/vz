@@ -1,25 +1,21 @@
 package vz
 
 import (
-	"errors"
-	"fmt"
-	"strconv"
-	"strings"
 	"sync"
 	"syscall"
 
+	"github.com/Code-Hex/vz/v4/internal/macos"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
-	"golang.org/x/mod/semver"
 )
 
 var (
 	// ErrUnsupportedOSVersion is returned when calling a method which is only
 	// available in newer macOS versions.
-	ErrUnsupportedOSVersion = errors.New("unsupported macOS version")
+	ErrUnsupportedOSVersion = macos.ErrUnsupportedOSVersion
 
 	// ErrBuildTargetOSVersion indicates that the API is available but the
 	// running program has disabled it.
-	ErrBuildTargetOSVersion = errors.New("unsupported build target macOS version")
+	ErrBuildTargetOSVersion = macos.ErrBuildTargetOSVersion
 )
 
 func macOSAvailable(version float64) error {
@@ -43,13 +39,7 @@ func fetchMajorMinorVersion() (float64, error) {
 	if err != nil {
 		return 0, err
 	}
-	prefix := "v"
-	majorMinor := strings.TrimPrefix(semver.MajorMinor(prefix+osver), prefix)
-	version, err := strconv.ParseFloat(majorMinor, 64)
-	if err != nil {
-		return 0, err
-	}
-	return version, nil
+	return macos.ParseVersion(osver)
 }
 
 func macOSMajorMinorVersion() float64 {
@@ -65,30 +55,5 @@ func macOSMajorMinorVersion() float64 {
 
 // macOSBuildTargetAvailable checks whether the API available in a given version has been compiled.
 func macOSBuildTargetAvailable(version float64, allowedVersion int) error {
-	if allowedVersion == 0 {
-		return fmt.Errorf("undefined __MAC_OS_X_VERSION_MAX_ALLOWED: %w", ErrBuildTargetOSVersion)
-	}
-
-	// FIXME(codehex): smart way
-	// This list from AvailabilityVersions.h
-	var target int
-	switch version {
-	case 11:
-		target = 110000 // __MAC_11_0
-	case 12:
-		target = 120000 // __MAC_12_0
-	case 12.3:
-		target = 120300 // __MAC_12_3
-	case 13:
-		target = 130000 // __MAC_13_0
-	case 14:
-		target = 140000 // __MAC_14_0
-	case 15:
-		target = 150000 // __MAC_15_0
-	}
-	if allowedVersion < target {
-		return fmt.Errorf("%w for %.1f (the binary was built with __MAC_OS_X_VERSION_MAX_ALLOWED=%d; needs recompilation)",
-			ErrBuildTargetOSVersion, version, allowedVersion)
-	}
-	return nil
+	return macos.BuildTargetAvailable(version, allowedVersion)
 }

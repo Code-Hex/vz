@@ -109,3 +109,47 @@ func TestVirtioNetworkDeviceConfigurationGetDefaultMACAddress(t *testing.T) {
 		t.Fatalf("want colon-separated MAC address but got %q", got)
 	}
 }
+
+func TestMACAddressConstruction(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		addr net.HardwareAddr
+		want string
+	}{
+		{name: "nil"},
+		{name: "empty", addr: net.HardwareAddr{}},
+		{name: "short", addr: net.HardwareAddr{2}},
+		{name: "valid", addr: net.HardwareAddr{2, 0, 0, 0, 0, 1}, want: "02:00:00:00:00:01"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			mac, err := vz.NewMACAddress(tc.addr)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if mac == nil {
+				t.Fatal("hardware address returned a nil wrapper")
+			}
+			if got := mac.String(); got != tc.want {
+				t.Fatalf("hardware address string = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestMACAddressNilAndZero(t *testing.T) {
+	var zero vz.MACAddress
+	if got := zero.String(); got != "" {
+		t.Fatalf("zero MAC address string = %q, want empty", got)
+	}
+	var nilMAC *vz.MACAddress
+	assertGoPanic(t, func() { _ = nilMAC.String() })
+	attachment, err := vz.NewNATNetworkDeviceAttachment()
+	if err != nil {
+		t.Fatal(err)
+	}
+	config, err := vz.NewVirtioNetworkDeviceConfiguration(attachment)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertGoPanic(t, func() { config.SetMACAddress(nil) })
+}

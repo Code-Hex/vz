@@ -3,6 +3,7 @@
 package vz_test
 
 import (
+	"os"
 	"runtime"
 	"testing"
 
@@ -34,6 +35,48 @@ func nativeProperty[T any](object objc.NSObject, name string) T {
 	return value
 }
 
+func assertGoPanic(t *testing.T, call func()) {
+	t.Helper()
+	defer func() {
+		if recovered := recover(); recovered == nil {
+			t.Fatal("nil wrapper did not panic")
+		} else if _, ok := recovered.(runtime.Error); !ok {
+			t.Fatalf("panic = %v, want a Go runtime error", recovered)
+		}
+	}()
+	call()
+}
+
+func TestNilDeviceConfigurationElements(t *testing.T) {
+	config, err := vz.NewVirtualMachineConfiguration(nil, 1, 512*1024*1024)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name string
+		call func()
+	}{
+		{"entropy", func() {
+			config.SetEntropyDevicesVirtualMachineConfiguration([]*vz.VirtioEntropyDeviceConfiguration{nil})
+		}},
+		{"serial", func() {
+			config.SetSerialPortsVirtualMachineConfiguration([]*vz.VirtioConsoleDeviceSerialPortConfiguration{nil})
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) { assertGoPanic(t, tc.call) })
+	}
+	t.Run("scanout", func(t *testing.T) {
+		if vz.Available(13) {
+			t.Skip("requires macOS 13")
+		}
+		device, err := vz.NewVirtioGraphicsDeviceConfiguration()
+		if err != nil {
+			t.Fatal(err)
+		}
+		assertGoPanic(t, func() { device.SetScanouts(nil) })
+	})
+}
+
 func TestDeviceConfigurations(t *testing.T) {
 	t.Run("entropy", func(t *testing.T) {
 		checkNativeClass(t, 11, vz.NewVirtioEntropyDeviceConfiguration, "VZVirtioEntropyDeviceConfiguration")
@@ -44,6 +87,65 @@ func TestDeviceConfigurations(t *testing.T) {
 	t.Run("pointing", func(t *testing.T) {
 		checkNativeClass(t, 12, vz.NewUSBScreenCoordinatePointingDeviceConfiguration, "VZUSBScreenCoordinatePointingDeviceConfiguration")
 	})
+}
+
+func TestVirtualMachineConfigurationRetainsEntropyAndSerialPorts(t *testing.T) {
+	file, err := os.OpenFile(os.DevNull, os.O_RDWR, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer file.Close()
+	attachment, err := vz.NewFileHandleSerialPortAttachment(file, file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	config, err := vz.NewVirtualMachineConfiguration(nil, 1, 512*1024*1024)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer runtime.KeepAlive(config)
+	entropy, err := vz.NewVirtioEntropyDeviceConfiguration()
+	if err != nil {
+		t.Fatal(err)
+	}
+	serial, err := vz.NewVirtioConsoleDeviceSerialPortConfiguration(attachment)
+	if err != nil {
+		t.Fatal(err)
+	}
+	config.SetEntropyDevicesVirtualMachineConfiguration([]*vz.VirtioEntropyDeviceConfiguration{entropy})
+	config.SetSerialPortsVirtualMachineConfiguration([]*vz.VirtioConsoleDeviceSerialPortConfiguration{serial})
+	entropyPtr, serialPtr := objc.Ptr(entropy), objc.Ptr(serial)
+	objc.Release(entropy)
+	objc.Release(serial)
+	for _, tc := range []struct {
+		property string
+		want     pureobjc.ID
+		class    string
+	}{
+		{"entropyDevices", pureobjc.ID(uintptr(entropyPtr)), "VZVirtioEntropyDeviceConfiguration"},
+		{"serialPorts", pureobjc.ID(uintptr(serialPtr)), "VZVirtioConsoleDeviceSerialPortConfiguration"},
+	} {
+		array := nativeProperty[pureobjc.ID](config, tc.property)
+		if count := array.Send(pureobjc.RegisterName("count")); count != 1 {
+			t.Fatalf("%s count = %d, want 1", tc.property, count)
+		}
+		item := pureobjc.Send[pureobjc.ID](array, pureobjc.RegisterName("objectAtIndex:"), uintptr(0))
+		if item != tc.want || item.Class() != pureobjc.GetClass(tc.class) {
+			t.Fatalf("%s did not retain the supplied configuration", tc.property)
+		}
+		if tc.property == "serialPorts" {
+			if got := pureobjc.Send[pureobjc.ID](item, pureobjc.RegisterName("attachment")); got != pureobjc.ID(uintptr(objc.Ptr(attachment))) {
+				t.Fatal("serial port attachment differs")
+			}
+		}
+	}
+	config.SetEntropyDevicesVirtualMachineConfiguration(nil)
+	config.SetSerialPortsVirtualMachineConfiguration(nil)
+	for _, property := range []string{"entropyDevices", "serialPorts"} {
+		if count := nativeProperty[pureobjc.ID](config, property).Send(pureobjc.RegisterName("count")); count != 0 {
+			t.Fatalf("cleared %s count = %d, want 0", property, count)
+		}
+	}
 }
 
 func TestAudioConfigurationStreams(t *testing.T) {

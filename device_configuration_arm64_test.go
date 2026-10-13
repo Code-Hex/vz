@@ -56,3 +56,14 @@ func TestMacGraphicsConfigurationDisplays(t *testing.T) {
 		t.Fatalf("cleared displays count = %d", count)
 	}
 }
+
+func TestNilMacGraphicsDisplayElement(t *testing.T) {
+	if vz.Available(12) {
+		t.Skip("requires macOS 12")
+	}
+	device, err := vz.NewMacGraphicsDeviceConfiguration()
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertGoPanic(t, func() { device.SetDisplays(nil) })
+}

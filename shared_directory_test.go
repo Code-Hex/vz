@@ -241,3 +241,15 @@ func TestMultipleDirectoryShare(t *testing.T) {
 		t.Fatalf("expected the file to exist in read/write directory: %v", err)
 	}
 }
+
+func TestNilSharedDirectory(t *testing.T) {
+	if vz.Available(12) {
+		t.Skip("requires macOS 12")
+	}
+	t.Run("single", func(t *testing.T) {
+		assertGoPanic(t, func() { _, _ = vz.NewSingleDirectoryShare(nil) })
+	})
+	t.Run("multiple", func(t *testing.T) {
+		assertGoPanic(t, func() { _, _ = vz.NewMultipleDirectoryShare(map[string]*vz.SharedDirectory{"nil": nil}) })
+	})
+}

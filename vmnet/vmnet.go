@@ -42,8 +42,9 @@ type configurationState struct {
 	reservations map[[6]byte]netip.Addr
 }
 
-// NewNetworkConfiguration creates a configuration with DHCP enabled and an
-// automatically selected IPv4 subnet. It requires macOS 26 and newer.
+// NewNetworkConfiguration creates a configuration with DHCP and IPv6 router
+// advertisements enabled, an automatically selected IPv4 subnet, and a random
+// IPv6 ULA prefix. It requires macOS 26 and newer.
 func NewNetworkConfiguration(mode Mode) (*NetworkConfiguration, error) {
 	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
 		return nil, err
@@ -96,6 +97,29 @@ func (c *NetworkConfiguration) SetIPv4Subnet(prefix netip.Prefix) error {
 	}
 	c.state.subnet = prefix
 	return nil
+}
+
+// SetIPv6Prefix sets the network's IPv6 prefix. Host bits in prefix are ignored.
+// IPv4-mapped IPv6 prefixes are rejected. The prefix ::/0 selects an automatic
+// IPv6 prefix. It requires macOS 26 and newer.
+func (c *NetworkConfiguration) SetIPv6Prefix(prefix netip.Prefix) error {
+	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
+		return err
+	}
+	if c == nil || vmnethandle.Pointer(c) == nil || c.state == nil {
+		return fmt.Errorf("vmnet network configuration is nil or uninitialized")
+	}
+	if !prefix.IsValid() || !prefix.Addr().Is6() || prefix.Addr().Is4In6() {
+		return fmt.Errorf("invalid vmnet IPv6 prefix %v", prefix)
+	}
+	prefix = prefix.Masked()
+	c.state.mu.Lock()
+	defer c.state.mu.Unlock()
+	address := prefix.Addr().As16()
+	var errorPtr unsafe.Pointer
+	vzbridge.SetVmnetIPv6Prefix(vmnethandle.Pointer(c), unsafe.Pointer(&address[0]), uint8(prefix.Bits()), &errorPtr)
+	runtime.KeepAlive(address)
+	return vmnetError(errorPtr)
 }
 
 // AddDHCPReservation reserves an IPv4 address for a unicast Ethernet MAC address.
@@ -226,4 +250,22 @@ func (n *Network) IPv4Subnet() (netip.Prefix, error) {
 		return netip.Prefix{}, fmt.Errorf("vmnet returned an invalid IPv4 subnet mask")
 	}
 	return netip.PrefixFrom(netip.AddrFrom4(bytes), prefixBits).Masked(), nil
+}
+
+// IPv6Prefix returns the reserved IPv6 prefix, including an automatically
+// selected prefix when none was configured. It requires macOS 26 and newer.
+func (n *Network) IPv6Prefix() (netip.Prefix, error) {
+	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
+		return netip.Prefix{}, err
+	}
+	if n == nil || vmnethandle.Pointer(n) == nil {
+		return netip.Prefix{}, fmt.Errorf("vmnet network is nil or uninitialized")
+	}
+	var address [16]byte
+	prefixBits := vzbridge.VmnetIPv6Prefix(vmnethandle.Pointer(n), unsafe.Pointer(&address[0]))
+	runtime.KeepAlive(address)
+	if prefixBits > 128 {
+		return netip.Prefix{}, fmt.Errorf("vmnet returned an invalid IPv6 prefix length %d", prefixBits)
+	}
+	return netip.PrefixFrom(netip.AddrFrom16(address), int(prefixBits)).Masked(), nil
 }

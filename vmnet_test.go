@@ -18,11 +18,12 @@ func TestVMNetNetworkDeviceAttachment(t *testing.T) {
 		name   string
 		mode   vmnet.Mode
 		prefix netip.Prefix
+		ipv6   netip.Prefix
 	}{
-		{"Host default", vmnet.ModeHost, netip.Prefix{}},
-		{"Shared default", vmnet.ModeShared, netip.Prefix{}},
-		{"Host explicit", vmnet.ModeHost, netip.MustParsePrefix("192.168.245.0/24")},
-		{"Shared explicit", vmnet.ModeShared, netip.MustParsePrefix("192.168.246.0/24")},
+		{"Host default", vmnet.ModeHost, netip.Prefix{}, netip.Prefix{}},
+		{"Shared default", vmnet.ModeShared, netip.Prefix{}, netip.Prefix{}},
+		{"Host explicit", vmnet.ModeHost, netip.MustParsePrefix("192.168.245.0/24"), netip.MustParsePrefix("fd42:1234:245::99/64")},
+		{"Shared explicit", vmnet.ModeShared, netip.MustParsePrefix("192.168.246.0/24"), netip.MustParsePrefix("fd42:1234:246::99/64")},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			config, err := vmnet.NewNetworkConfiguration(test.mode)
@@ -33,12 +34,19 @@ func TestVMNetNetworkDeviceAttachment(t *testing.T) {
 				if err := config.SetIPv4Subnet(test.prefix); err != nil {
 					t.Fatal(err)
 				}
+				if err := config.SetIPv6Prefix(test.ipv6); err != nil {
+					t.Fatal(err)
+				}
 			}
 			network, err := vmnet.NewNetwork(config)
 			if err != nil {
 				t.Fatal(err)
 			}
 			want, err := network.IPv4Subnet()
+			if err != nil {
+				t.Fatal(err)
+			}
+			wantIPv6, err := network.IPv6Prefix()
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -55,6 +63,9 @@ func TestVMNetNetworkDeviceAttachment(t *testing.T) {
 			}
 			if got, err := retained.IPv4Subnet(); err != nil || got != want {
 				t.Fatalf("attachment network subnet = %v, %v, want %v", got, err, want)
+			}
+			if got, err := retained.IPv6Prefix(); err != nil || got != wantIPv6 {
+				t.Fatalf("attachment network IPv6 prefix = %v, %v, want %v", got, err, wantIPv6)
 			}
 		})
 	}

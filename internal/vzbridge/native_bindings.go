@@ -558,6 +558,22 @@ func SetVmnetIPv4Subnet(configuration objc.NSObject, address uint32, mask uint32
 	runtime.KeepAlive(errorOut)
 }
 
+var callSetVmnetIPv6Prefix lazyBinding[func(unsafe.Pointer, unsafe.Pointer, uint8, *unsafe.Pointer)]
+
+func SetVmnetIPv6Prefix(configuration objc.NSObject, address unsafe.Pointer, prefixLength uint8, errorOut *unsafe.Pointer) {
+	call := callSetVmnetIPv6Prefix.get(func() func(unsafe.Pointer, unsafe.Pointer, uint8, *unsafe.Pointer) {
+		var call func(unsafe.Pointer, unsafe.Pointer, uint8, *unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_setVmnetIPv6Prefix))
+		return call
+	})
+	onQueue(func() {
+		call(objc.Ptr(configuration), address, prefixLength, errorOut)
+	})
+	runtime.KeepAlive(configuration)
+	runtime.KeepAlive(address)
+	runtime.KeepAlive(errorOut)
+}
+
 var callAddVmnetDHCPReservation lazyBinding[func(unsafe.Pointer, unsafe.Pointer, uint32, *unsafe.Pointer)]
 
 func AddVmnetDHCPReservation(configuration objc.NSObject, mac unsafe.Pointer, address uint32, errorOut *unsafe.Pointer) {
@@ -587,6 +603,23 @@ func VmnetIPv4Subnet(network objc.NSObject) uint64 {
 		result = call(objc.Ptr(network))
 	})
 	runtime.KeepAlive(network)
+	return result
+}
+
+var callVmnetIPv6Prefix lazyBinding[func(unsafe.Pointer, unsafe.Pointer) uint8]
+
+func VmnetIPv6Prefix(network objc.NSObject, address unsafe.Pointer) uint8 {
+	call := callVmnetIPv6Prefix.get(func() func(unsafe.Pointer, unsafe.Pointer) uint8 {
+		var call func(unsafe.Pointer, unsafe.Pointer) uint8
+		purego.RegisterFunc(&call, uintptr(C.vz_vmnetIPv6Prefix))
+		return call
+	})
+	var result uint8
+	onQueue(func() {
+		result = call(objc.Ptr(network), address)
+	})
+	runtime.KeepAlive(network)
+	runtime.KeepAlive(address)
 	return result
 }
 

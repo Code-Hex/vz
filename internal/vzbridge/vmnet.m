@@ -2,6 +2,7 @@
 #import <Foundation/Foundation.h>
 #import <Virtualization/Virtualization.h>
 #import <arpa/inet.h>
+#import <string.h>
 #import <vmnet/vmnet.h>
 
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
@@ -51,6 +52,17 @@ void vz_setVmnetIPv4Subnet(void *configuration, uint32_t address, uint32_t mask,
 #endif
 }
 
+void vz_setVmnetIPv6Prefix(void *configuration, const void *address, uint8_t prefixLength, void **errorOut)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *)) {
+        struct in6_addr prefix;
+        memcpy(&prefix, address, sizeof(prefix));
+        vmnetError(vmnet_network_configuration_set_ipv6_prefix(configuration, &prefix, prefixLength), @"vmnet_network_configuration_set_ipv6_prefix", errorOut);
+    }
+#endif
+}
+
 void vz_addVmnetDHCPReservation(void *configuration, const void *mac, uint32_t address, void **errorOut)
 {
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
@@ -71,6 +83,20 @@ uint64_t vz_vmnetIPv4Subnet(void *network)
     }
 #endif
     return 0;
+}
+
+uint8_t vz_vmnetIPv6Prefix(void *network, void *address)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *)) {
+        struct in6_addr prefix = { 0 };
+        uint8_t prefixLength = UINT8_MAX;
+        vmnet_network_get_ipv6_prefix(network, &prefix, &prefixLength);
+        memcpy(address, &prefix, sizeof(prefix));
+        return prefixLength;
+    }
+#endif
+    return UINT8_MAX;
 }
 
 void *vz_newVmnetNetworkDeviceAttachment(void *network)

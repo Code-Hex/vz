@@ -110,6 +110,128 @@ func TestVMNetInvalidInputs(t *testing.T) {
 	}
 }
 
+func TestVMNetIPv6Prefix(t *testing.T) {
+	if vmnet.Available(26) {
+		t.Skip("vmnet networks require macOS 26 and its SDK")
+	}
+	for _, test := range []struct {
+		name   string
+		mode   vmnet.Mode
+		prefix netip.Prefix
+		want   netip.Prefix
+	}{
+		{name: "Host default", mode: vmnet.ModeHost},
+		{name: "Shared default", mode: vmnet.ModeShared},
+		{name: "automatic", mode: vmnet.ModeHost, prefix: netip.MustParsePrefix("::/0")},
+		{name: "Host explicit", mode: vmnet.ModeHost, prefix: netip.MustParsePrefix("fd42:1234:1::99/64"), want: netip.MustParsePrefix("fd42:1234:1::/64")},
+		{name: "Shared explicit", mode: vmnet.ModeShared, prefix: netip.MustParsePrefix("fd42:1234:2::99/64"), want: netip.MustParsePrefix("fd42:1234:2::/64")},
+		{name: "48 bits", mode: vmnet.ModeHost, prefix: netip.MustParsePrefix("fd42:1234:3:abcd::99/48"), want: netip.MustParsePrefix("fd42:1234:3::/48")},
+		{name: "128 bits", mode: vmnet.ModeHost, prefix: netip.MustParsePrefix("fd42:1234:4::99/128"), want: netip.MustParsePrefix("fd42:1234:4::99/128")},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			config, err := vmnet.NewNetworkConfiguration(test.mode)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if test.prefix.IsValid() {
+				copied := *config
+				if err := copied.SetIPv6Prefix(test.prefix); err != nil {
+					t.Fatal(err)
+				}
+			}
+			network, err := vmnet.NewNetwork(config)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got, err := network.IPv6Prefix()
+			if err != nil {
+				t.Fatal(err)
+			}
+			if test.want.IsValid() {
+				if got != test.want {
+					t.Fatalf("IPv6 prefix = %v, want %v", got, test.want)
+				}
+			} else if !got.IsValid() || !got.Addr().Is6() || !netip.MustParsePrefix("fc00::/7").Contains(got.Addr()) || got.Bits() != 64 {
+				t.Fatalf("default IPv6 prefix = %v, want a ULA /64", got)
+			}
+		})
+	}
+}
+
+func TestVMNetDualStack(t *testing.T) {
+	if vmnet.Available(26) {
+		t.Skip("vmnet networks require macOS 26 and its SDK")
+	}
+	config, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := config.SetIPv4Subnet(netip.MustParsePrefix("192.168.225.99/24")); err != nil {
+		t.Fatal(err)
+	}
+	if err := config.AddDHCPReservation(net.HardwareAddr{2, 0, 0, 0, 0, 20}, netip.MustParseAddr("192.168.225.20")); err != nil {
+		t.Fatal(err)
+	}
+	if err := config.SetIPv6Prefix(netip.MustParsePrefix("fd42:1234:5::99/64")); err != nil {
+		t.Fatal(err)
+	}
+	network, err := vmnet.NewNetwork(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, err := network.IPv4Subnet(); err != nil || got != netip.MustParsePrefix("192.168.225.0/24") {
+		t.Fatalf("IPv4 subnet = %v, %v, want 192.168.225.0/24", got, err)
+	}
+	if got, err := network.IPv6Prefix(); err != nil || got != netip.MustParsePrefix("fd42:1234:5::/64") {
+		t.Fatalf("IPv6 prefix = %v, %v, want fd42:1234:5::/64", got, err)
+	}
+}
+
+func TestVMNetIPv6InvalidInputs(t *testing.T) {
+	if vmnet.Available(26) {
+		t.Skip("vmnet networks require macOS 26 and its SDK")
+	}
+	config, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := netip.MustParsePrefix("fd42:1234:6::/64")
+	if err := config.SetIPv6Prefix(want); err != nil {
+		t.Fatal(err)
+	}
+	for _, test := range []struct {
+		name   string
+		prefix netip.Prefix
+	}{
+		{"zero", netip.Prefix{}},
+		{"IPv4", netip.MustParsePrefix("192.168.1.0/24")},
+		{"mapped IPv6", netip.MustParsePrefix("::ffff:192.168.1.0/120")},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			if err := config.SetIPv6Prefix(test.prefix); err == nil {
+				t.Fatal("invalid IPv6 prefix accepted")
+			}
+		})
+	}
+	for _, config := range []*vmnet.NetworkConfiguration{nil, {}} {
+		if err := config.SetIPv6Prefix(netip.MustParsePrefix("fd00::/64")); err == nil {
+			t.Fatal("empty config accepted by IPv6 prefix setter")
+		}
+	}
+	for _, network := range []*vmnet.Network{nil, {}} {
+		if _, err := network.IPv6Prefix(); err == nil {
+			t.Fatal("empty network queried for IPv6 prefix")
+		}
+	}
+	network, err := vmnet.NewNetwork(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, err := network.IPv6Prefix(); err != nil || got != want {
+		t.Fatalf("IPv6 prefix after rejected changes = %v, %v, want %v", got, err, want)
+	}
+}
+
 func TestVMNetNetworkCollision(t *testing.T) {
 	if vmnet.Available(26) {
 		t.Skip("vmnet networks require macOS 26 and its SDK")

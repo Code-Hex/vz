@@ -5,6 +5,7 @@ import (
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
@@ -43,7 +44,7 @@ func NewVirtioFileSystemDeviceConfiguration(tag string) (*VirtioFileSystemDevice
 	fsdConfig := &VirtioFileSystemDeviceConfiguration{
 		pointer: vzbridge.NewVZVirtioFileSystemDeviceConfiguration(tag, &nserrPtr),
 	}
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objcutil.NewNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	return fsdConfig, nil
@@ -148,5 +149,5 @@ func MacOSGuestAutomountTag() (string, error) {
 	if err := macOSAvailable(13); err != nil {
 		return "", err
 	}
-	return nativeString(vzbridge.VZVirtioFileSystemDeviceConfiguration_MacOSGuestAutomountTag()), nil
+	return objcutil.String(vzbridge.VZVirtioFileSystemDeviceConfiguration_MacOSGuestAutomountTag()), nil
 }

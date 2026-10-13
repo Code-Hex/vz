@@ -7,6 +7,7 @@ import (
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
@@ -137,7 +138,7 @@ func NewGenericMachineIdentifier() (*GenericMachineIdentifier, error) {
 func newGenericMachineIdentifier(ptr *objc.Pointer) *GenericMachineIdentifier {
 	return &GenericMachineIdentifier{
 		pointer:            ptr,
-		dataRepresentation: nativeBytes(vzbridge.VZGenericMachineIdentifier_DataRepresentation(ptr)),
+		dataRepresentation: objcutil.Bytes(vzbridge.VZGenericMachineIdentifier_DataRepresentation(ptr)),
 	}
 }
 

@@ -16,6 +16,7 @@ import (
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/progress"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
@@ -85,7 +86,7 @@ func newMacHardwareModel(ptr *objc.Pointer) *MacHardwareModel {
 	return &MacHardwareModel{
 		pointer:            ptr,
 		supported:          vzbridge.VZMacHardwareModel_IsSupported(ptr),
-		dataRepresentation: nativeBytes(vzbridge.VZMacHardwareModel_DataRepresentation(ptr)),
+		dataRepresentation: objcutil.Bytes(vzbridge.VZMacHardwareModel_DataRepresentation(ptr)),
 	}
 }
 
@@ -156,7 +157,7 @@ func NewMacMachineIdentifier() (*MacMachineIdentifier, error) {
 func newMacMachineIdentifier(ptr *objc.Pointer) *MacMachineIdentifier {
 	return &MacMachineIdentifier{
 		pointer:            ptr,
-		dataRepresentation: nativeBytes(vzbridge.VZMacMachineIdentifier_DataRepresentation(ptr)),
+		dataRepresentation: objcutil.Bytes(vzbridge.VZMacMachineIdentifier_DataRepresentation(ptr)),
 	}
 }
 
@@ -186,7 +187,7 @@ func WithCreatingMacAuxiliaryStorage(hardwareModel *MacHardwareModel) NewMacAuxi
 			hardwareModel,
 			&nserrPtr,
 		)
-		if err := newNSError(nserrPtr); err != nil {
+		if err := objcutil.NewNSError(nserrPtr); err != nil {
 			return err
 		}
 		return nil
@@ -314,7 +315,7 @@ func nativeRestoreImageRequest(handler macOSRestoreImageHandler) uint64 {
 			if first != nil {
 				vzbridge.ReleaseObject(first)
 			}
-			handler(nil, newNSError(second))
+			handler(nil, objcutil.NewNSError(second))
 			return 0
 		}
 		if first == nil {
@@ -326,8 +327,8 @@ func nativeRestoreImageRequest(handler macOSRestoreImageHandler) uint64 {
 		url := vzbridge.VZMacOSRestoreImage_URL(image)
 		defer objc.Release(url)
 		result := &MacOSRestoreImage{
-			url:          nativeString(vzbridge.NSURL_AbsoluteString(url)),
-			buildVersion: nativeString(vzbridge.VZMacOSRestoreImage_BuildVersion(image)),
+			url:          objcutil.String(vzbridge.NSURL_AbsoluteString(url)),
+			buildVersion: objcutil.String(vzbridge.VZMacOSRestoreImage_BuildVersion(image)),
 			operatingSystemVersion: OperatingSystemVersion{
 				MajorVersion: vzbridge.MacOSRestoreImageMajorVersion(image),
 				MinorVersion: vzbridge.MacOSRestoreImageMinorVersion(image),
@@ -511,7 +512,7 @@ func (m *MacOSInstaller) Install(ctx context.Context) error {
 	m.once.Do(func() {
 		completionHandler := registerNativeRequest(func(kind uint32, first, second unsafe.Pointer, value uint64) uint64 {
 			if first != nil {
-				m.err = newNSError(first)
+				m.err = objcutil.NewNSError(first)
 			}
 			close(m.doneCh)
 			return 0

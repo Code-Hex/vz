@@ -4,6 +4,7 @@ import (
 	"runtime"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
@@ -149,5 +150,5 @@ var _ USBDevice = (*usbDevice)(nil)
 
 // UUID returns the device UUID.
 func (u *usbDevice) UUID() string {
-	return nativeString(vzbridge.GetUUIDUSBDevice(u))
+	return objcutil.String(vzbridge.GetUUIDUSBDevice(u))
 }

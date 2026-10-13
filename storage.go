@@ -8,6 +8,7 @@ import (
 
 	infinity "github.com/Code-Hex/go-infinity-channel"
 	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
@@ -80,7 +81,7 @@ func NewDiskImageStorageDeviceAttachment(diskPath string, readOnly bool) (*DiskI
 	attachment := &DiskImageStorageDeviceAttachment{
 		pointer: vzbridge.VZDiskImageStorageDeviceAttachment_InitWithURL_ReadOnly_Error(vzbridge.NSURL_FileURLWithPath(vzbridge.NSString_StringWithUTF8String(diskPath)), bool(readOnly), &nserrPtr),
 	}
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objcutil.NewNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	return attachment, nil
@@ -114,7 +115,7 @@ func NewDiskImageStorageDeviceAttachmentWithCacheAndSync(diskPath string, readOn
 			&nserrPtr,
 		),
 	}
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objcutil.NewNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	return attachment, nil
@@ -208,7 +209,7 @@ func (v *VirtioBlockDeviceConfiguration) SetBlockDeviceIdentifier(identifier str
 		identifier,
 		&nserrPtr,
 	)
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objcutil.NewNSError(nserrPtr); err != nil {
 		return err
 	}
 	v.blockDeviceIdentifier = identifier
@@ -349,7 +350,7 @@ func NewDiskBlockDeviceStorageDeviceAttachment(file *os.File, readOnly bool, syn
 			&nserrPtr,
 		),
 	}
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objcutil.NewNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	return attachment, nil
@@ -399,7 +400,7 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 	handle := registerNativeCallback(func(kind uint32, first, second unsafe.Pointer, value uint64) uint64 {
 		switch kind {
 		case 7:
-			didEncounterError.In() <- newNSError(first)
+			didEncounterError.In() <- objcutil.NewNSError(first)
 		case 8:
 			connected.In() <- struct{}{}
 		case 4:
@@ -422,7 +423,7 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 		didEncounterError: didEncounterError,
 		connected:         connected,
 	}
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objcutil.NewNSError(nserrPtr); err != nil {
 		unregisterNativeCallback(handle)
 		didEncounterError.Close()
 		connected.Close()

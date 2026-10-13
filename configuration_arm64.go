@@ -6,6 +6,7 @@ package vz
 import (
 	"unsafe"
 
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
@@ -19,7 +20,7 @@ import (
 func (v *VirtualMachineConfiguration) ValidateSaveRestoreSupport() (bool, error) {
 	var nserrPtr unsafe.Pointer
 	ret := vzbridge.VZVirtualMachineConfiguration_ValidateSaveRestoreSupportWithError(v, &nserrPtr)
-	err := newNSError(nserrPtr)
+	err := objcutil.NewNSError(nserrPtr)
 	if err != nil {
 		return false, err
 	}

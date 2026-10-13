@@ -6,6 +6,7 @@ import (
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
@@ -155,7 +156,7 @@ func WithCreatingEFIVariableStore() NewEFIVariableStoreOption {
 
 		var nserrPtr unsafe.Pointer
 		es.pointer = vzbridge.VZEFIVariableStore_InitCreatingVariableStoreAtURL_Options_Error(vzbridge.NSURL_FileURLWithPath(vzbridge.NSString_StringWithUTF8String(es.path)), vzbridge.VZEFIVariableStoreInitializationOptionAllowOverwrite, &nserrPtr)
-		if err := newNSError(nserrPtr); err != nil {
+		if err := objcutil.NewNSError(nserrPtr); err != nil {
 			return err
 		}
 		return nil

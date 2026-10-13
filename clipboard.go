@@ -1,6 +1,9 @@
 package vz
 
-import "github.com/Code-Hex/vz/v4/internal/vzbridge"
+import (
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
+)
 
 // SpiceAgentPortAttachment is an attachment point that enables
 // the Spice clipboard sharing capability.
@@ -45,5 +48,5 @@ func SpiceAgentPortAttachmentName() (string, error) {
 	if err := macOSAvailable(13); err != nil {
 		return "", err
 	}
-	return nativeString(vzbridge.VZSpiceAgentPortAttachment_SpiceAgentPortName()), nil
+	return objcutil.String(vzbridge.VZSpiceAgentPortAttachment_SpiceAgentPortName()), nil
 }

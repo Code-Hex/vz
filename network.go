@@ -9,6 +9,7 @@ import (
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 	"github.com/Code-Hex/vz/v4/vmnet"
 )
@@ -66,14 +67,14 @@ func (*baseBridgedNetwork) NetworkInterfaces() []BridgedNetwork {
 //
 // The identifier is the BSD name associated with the interface (e.g. "en0").
 func (b *baseBridgedNetwork) Identifier() string {
-	return nativeString(vzbridge.VZBridgedNetworkInterface_Identifier(b))
+	return objcutil.String(vzbridge.VZBridgedNetworkInterface_Identifier(b))
 }
 
 // LocalizedDisplayName returns a display name if available (e.g. "Ethernet").
 //
 // If no display name is available, the identifier is returned.
 func (b *baseBridgedNetwork) LocalizedDisplayName() string {
-	return nativeString(vzbridge.VZBridgedNetworkInterface_localizedDisplayName(b))
+	return objcutil.String(vzbridge.VZBridgedNetworkInterface_localizedDisplayName(b))
 }
 
 // Network device attachment using network address translation (NAT) with outside networks.
@@ -189,7 +190,7 @@ func NewFileHandleNetworkDeviceAttachment(file *os.File) (*FileHandleNetworkDevi
 		),
 		mtu: 1500, // The default MTU is 1500.
 	}
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objcutil.NewNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	return attachment, nil
@@ -342,7 +343,7 @@ func NewRandomLocallyAdministeredMACAddress() (*MACAddress, error) {
 }
 
 func (m *MACAddress) String() string {
-	return nativeString(vzbridge.VZMACAddress_String(m))
+	return objcutil.String(vzbridge.VZMACAddress_String(m))
 }
 
 func (m *MACAddress) HardwareAddr() net.HardwareAddr {

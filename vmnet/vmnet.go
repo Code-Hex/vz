@@ -187,7 +187,7 @@ func vmnetError(ptr unsafe.Pointer) error {
 
 // Network is a logical network shared by one or more vmnet attachments.
 // Create it with NewNetwork. Its zero value is not usable.
-type Network struct{ pointer }
+type Network pointer
 
 // NewNetwork reserves a logical network using config without consuming it.
 // The reservation lasts while the network or its attachments remain in use.
@@ -213,16 +213,16 @@ func NewNetwork(config *NetworkConfiguration) (*Network, error) {
 	if ptr == nil {
 		return nil, fmt.Errorf("vmnet returned no network")
 	}
-	network := &Network{pointer: *objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject)}
+	network := (*Network)(objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject))
 	if len(config.state.reservations) != 0 {
 		prefix, err := network.IPv4Subnet()
 		if err != nil {
-			objc.Release(network)
+			objc.Release((*objc.Pointer)(network))
 			return nil, err
 		}
 		for _, reservation := range config.state.reservations {
 			if err := validateDHCPReservation(reservation, prefix); err != nil {
-				objc.Release(network)
+				objc.Release((*objc.Pointer)(network))
 				return nil, err
 			}
 		}
@@ -236,10 +236,10 @@ func (n *Network) IPv4Subnet() (netip.Prefix, error) {
 	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
 		return netip.Prefix{}, err
 	}
-	if n == nil || objc.Ptr(n) == nil {
+	if n == nil || objc.Ptr((*objc.Pointer)(n)) == nil {
 		return netip.Prefix{}, fmt.Errorf("vmnet network is nil or uninitialized")
 	}
-	packed := vzbridge.VmnetIPv4Subnet(n)
+	packed := vzbridge.VmnetIPv4Subnet((*objc.Pointer)(n))
 	var bytes [4]byte
 	binary.BigEndian.PutUint32(bytes[:], uint32(packed>>32))
 	var mask [4]byte
@@ -257,11 +257,11 @@ func (n *Network) IPv6Prefix() (netip.Prefix, error) {
 	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
 		return netip.Prefix{}, err
 	}
-	if n == nil || objc.Ptr(n) == nil {
+	if n == nil || objc.Ptr((*objc.Pointer)(n)) == nil {
 		return netip.Prefix{}, fmt.Errorf("vmnet network is nil or uninitialized")
 	}
 	var address [16]byte
-	prefixBits := vzbridge.VmnetIPv6Prefix(n, unsafe.Pointer(&address[0]))
+	prefixBits := vzbridge.VmnetIPv6Prefix((*objc.Pointer)(n), unsafe.Pointer(&address[0]))
 	runtime.KeepAlive(address)
 	if prefixBits > 128 {
 		return netip.Prefix{}, fmt.Errorf("vmnet returned an invalid IPv6 prefix length %d", prefixBits)

@@ -367,10 +367,10 @@ func NewVMNetNetworkDeviceAttachment(network *vmnet.Network) (*VMNetNetworkDevic
 	if err := macOSAvailable(26); err != nil {
 		return nil, err
 	}
-	if network == nil || objc.Ptr(network) == nil {
+	if network == nil || objc.Ptr((*objc.Pointer)(network)) == nil {
 		return nil, fmt.Errorf("vmnet network is nil or uninitialized")
 	}
-	ptr := vzbridge.NewVmnetNetworkDeviceAttachment(network)
+	ptr := vzbridge.NewVmnetNetworkDeviceAttachment((*objc.Pointer)(network))
 	if ptr == nil {
 		return nil, fmt.Errorf("vmnet returned no network device attachment")
 	}
@@ -385,10 +385,5 @@ func (v *VMNetNetworkDeviceAttachment) Network() *vmnet.Network {
 		return nil
 	}
 	ptr := vzbridge.VmnetNetworkDeviceAttachmentNetwork(v)
-	if ptr == nil {
-		return nil
-	}
-	network := new(vmnet.Network)
-	objc.InitializeManagedPointer(network, objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject))
-	return network
+	return (*vmnet.Network)(objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject))
 }

@@ -32,22 +32,3 @@ func NewManagedPointer(pointer unsafe.Pointer, release func(unsafe.Pointer)) *Po
 	runtime.AddCleanup(owner, (*managedReference).close, state)
 	return &Pointer{managed: owner}
 }
-
-type managedPointerInitializer interface {
-	initializeManagedPointer(*Pointer)
-}
-
-// InitializeManagedPointer shares source's owner with a fresh, unpublished destination.
-func InitializeManagedPointer(destination managedPointerInitializer, source *Pointer) {
-	destination.initializeManagedPointer(source)
-}
-
-func (p *Pointer) initializeManagedPointer(source *Pointer) {
-	if source == nil || source.managed == nil {
-		panic("objc: managed pointer source is nil or uninitialized")
-	}
-	if p.managed != nil {
-		panic("objc: managed pointer destination is already initialized")
-	}
-	*p = *source
-}

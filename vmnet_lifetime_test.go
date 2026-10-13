@@ -51,7 +51,7 @@ func TestVMNetNetworkDeviceAttachmentLifetime(t *testing.T) {
 				vzbridge.VZVirtualMachineConfiguration_SetNetworkDevices(config, array)
 				objc.Release(array)
 				objc.Release(networkConfig)
-				objc.Release(network)
+				objc.Release((*objc.Pointer)(network))
 				objc.Release(attachment.pointer)
 				objc.Release(device.pointer)
 				vzbridge.Drain()
@@ -109,7 +109,7 @@ func TestVMNetAttachmentNetworkRetainsReference(t *testing.T) {
 		t.Fatal("attachment returned no network")
 	}
 	objc.Release(config)
-	objc.Release(network)
+	objc.Release((*objc.Pointer)(network))
 	objc.Release(attachment.pointer)
 	vzbridge.Drain()
 	if got, err := retained.IPv4Subnet(); err != nil || got != want {

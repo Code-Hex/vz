@@ -9,7 +9,6 @@ import (
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
-	"github.com/Code-Hex/vz/v4/internal/vmnethandle"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 	"github.com/Code-Hex/vz/v4/vmnet"
 )
@@ -368,10 +367,10 @@ func NewVMNetNetworkDeviceAttachment(network *vmnet.Network) (*VMNetNetworkDevic
 	if err := macOSAvailable(26); err != nil {
 		return nil, err
 	}
-	if network == nil || vmnethandle.Pointer(network) == nil {
+	if network == nil || objc.Ptr(network) == nil {
 		return nil, fmt.Errorf("vmnet network is nil or uninitialized")
 	}
-	ptr := vzbridge.NewVmnetNetworkDeviceAttachment(vmnethandle.Pointer(network))
+	ptr := vzbridge.NewVmnetNetworkDeviceAttachment(network)
 	if ptr == nil {
 		return nil, fmt.Errorf("vmnet returned no network device attachment")
 	}
@@ -390,6 +389,6 @@ func (v *VMNetNetworkDeviceAttachment) Network() *vmnet.Network {
 		return nil
 	}
 	network := new(vmnet.Network)
-	vmnethandle.AdoptRetainedNetwork(network, objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject))
+	objc.InitializeManagedPointer(network, objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject))
 	return network
 }

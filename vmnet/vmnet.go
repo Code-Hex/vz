@@ -13,7 +13,6 @@ import (
 	"github.com/Code-Hex/vz/v4/internal/macos"
 	"github.com/Code-Hex/vz/v4/internal/objc"
 	"github.com/Code-Hex/vz/v4/internal/objcutil"
-	"github.com/Code-Hex/vz/v4/internal/vmnethandle"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
@@ -27,12 +26,12 @@ const (
 	ModeShared Mode = 1001
 )
 
-type nativeHandle = vmnethandle.Handle
+type pointer = objc.Pointer
 
 // NetworkConfiguration configures a logical network shared by vmnet attachments.
 // Create it with NewNetworkConfiguration. Its zero value is not usable.
 type NetworkConfiguration struct {
-	nativeHandle
+	pointer
 	state *configurationState
 }
 
@@ -61,8 +60,8 @@ func NewNetworkConfiguration(mode Mode) (*NetworkConfiguration, error) {
 		return nil, fmt.Errorf("vmnet returned no network configuration")
 	}
 	return &NetworkConfiguration{
-		nativeHandle: vmnethandle.New(objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject)),
-		state:        &configurationState{},
+		pointer: *objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject),
+		state:   &configurationState{},
 	}, nil
 }
 
@@ -73,7 +72,7 @@ func (c *NetworkConfiguration) SetIPv4Subnet(prefix netip.Prefix) error {
 	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
 		return err
 	}
-	if c == nil || vmnethandle.Pointer(c) == nil || c.state == nil {
+	if c == nil || objc.Ptr(c) == nil || c.state == nil {
 		return fmt.Errorf("vmnet network configuration is nil or uninitialized")
 	}
 	if !prefix.IsValid() || !prefix.Addr().Is4() || prefix.Bits() > 30 {
@@ -91,7 +90,7 @@ func (c *NetworkConfiguration) SetIPv4Subnet(prefix netip.Prefix) error {
 	address := prefix.Addr().Next().As4()
 	mask := binary.BigEndian.Uint32(net.CIDRMask(prefix.Bits(), 32))
 	var errorPtr unsafe.Pointer
-	vzbridge.SetVmnetIPv4Subnet(vmnethandle.Pointer(c), binary.BigEndian.Uint32(address[:]), mask, &errorPtr)
+	vzbridge.SetVmnetIPv4Subnet(c, binary.BigEndian.Uint32(address[:]), mask, &errorPtr)
 	if err := vmnetError(errorPtr); err != nil {
 		return err
 	}
@@ -106,7 +105,7 @@ func (c *NetworkConfiguration) SetIPv6Prefix(prefix netip.Prefix) error {
 	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
 		return err
 	}
-	if c == nil || vmnethandle.Pointer(c) == nil || c.state == nil {
+	if c == nil || objc.Ptr(c) == nil || c.state == nil {
 		return fmt.Errorf("vmnet network configuration is nil or uninitialized")
 	}
 	if !prefix.IsValid() || !prefix.Addr().Is6() || prefix.Addr().Is4In6() {
@@ -117,7 +116,7 @@ func (c *NetworkConfiguration) SetIPv6Prefix(prefix netip.Prefix) error {
 	defer c.state.mu.Unlock()
 	address := prefix.Addr().As16()
 	var errorPtr unsafe.Pointer
-	vzbridge.SetVmnetIPv6Prefix(vmnethandle.Pointer(c), unsafe.Pointer(&address[0]), uint8(prefix.Bits()), &errorPtr)
+	vzbridge.SetVmnetIPv6Prefix(c, unsafe.Pointer(&address[0]), uint8(prefix.Bits()), &errorPtr)
 	runtime.KeepAlive(address)
 	return vmnetError(errorPtr)
 }
@@ -130,7 +129,7 @@ func (c *NetworkConfiguration) AddDHCPReservation(mac net.HardwareAddr, address 
 	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
 		return err
 	}
-	if c == nil || vmnethandle.Pointer(c) == nil || c.state == nil {
+	if c == nil || objc.Ptr(c) == nil || c.state == nil {
 		return fmt.Errorf("vmnet network configuration is nil or uninitialized")
 	}
 	if len(mac) != 6 || mac[0]&1 != 0 {
@@ -145,7 +144,7 @@ func (c *NetworkConfiguration) AddDHCPReservation(mac net.HardwareAddr, address 
 	copy(key[:], mac)
 	bytes := address.As4()
 	var errorPtr unsafe.Pointer
-	vzbridge.AddVmnetDHCPReservation(vmnethandle.Pointer(c), unsafe.Pointer(&key[0]), binary.BigEndian.Uint32(bytes[:]), &errorPtr)
+	vzbridge.AddVmnetDHCPReservation(c, unsafe.Pointer(&key[0]), binary.BigEndian.Uint32(bytes[:]), &errorPtr)
 	runtime.KeepAlive(key)
 	if err := vmnetError(errorPtr); err != nil {
 		return err
@@ -188,7 +187,7 @@ func vmnetError(ptr unsafe.Pointer) error {
 
 // Network is a logical network shared by one or more vmnet attachments.
 // Create it with NewNetwork. Its zero value is not usable.
-type Network struct{ nativeHandle }
+type Network struct{ pointer }
 
 // NewNetwork reserves a logical network using config without consuming it.
 // The reservation lasts while the network or its attachments remain in use.
@@ -198,13 +197,13 @@ func NewNetwork(config *NetworkConfiguration) (*Network, error) {
 	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
 		return nil, err
 	}
-	if config == nil || vmnethandle.Pointer(config) == nil || config.state == nil {
+	if config == nil || objc.Ptr(config) == nil || config.state == nil {
 		return nil, fmt.Errorf("vmnet network configuration is nil or uninitialized")
 	}
 	config.state.mu.Lock()
 	defer config.state.mu.Unlock()
 	var errorPtr unsafe.Pointer
-	ptr := vzbridge.NewVmnetNetwork(vmnethandle.Pointer(config), &errorPtr)
+	ptr := vzbridge.NewVmnetNetwork(config, &errorPtr)
 	if err := objcutil.NewNSError(errorPtr); err != nil {
 		if ptr != nil {
 			vzbridge.ReleaseCFObject(ptr)
@@ -214,16 +213,16 @@ func NewNetwork(config *NetworkConfiguration) (*Network, error) {
 	if ptr == nil {
 		return nil, fmt.Errorf("vmnet returned no network")
 	}
-	network := &Network{nativeHandle: vmnethandle.New(objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject))}
+	network := &Network{pointer: *objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject)}
 	if len(config.state.reservations) != 0 {
 		prefix, err := network.IPv4Subnet()
 		if err != nil {
-			objc.Release(vmnethandle.Pointer(network))
+			objc.Release(network)
 			return nil, err
 		}
 		for _, reservation := range config.state.reservations {
 			if err := validateDHCPReservation(reservation, prefix); err != nil {
-				objc.Release(vmnethandle.Pointer(network))
+				objc.Release(network)
 				return nil, err
 			}
 		}
@@ -237,10 +236,10 @@ func (n *Network) IPv4Subnet() (netip.Prefix, error) {
 	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
 		return netip.Prefix{}, err
 	}
-	if n == nil || vmnethandle.Pointer(n) == nil {
+	if n == nil || objc.Ptr(n) == nil {
 		return netip.Prefix{}, fmt.Errorf("vmnet network is nil or uninitialized")
 	}
-	packed := vzbridge.VmnetIPv4Subnet(vmnethandle.Pointer(n))
+	packed := vzbridge.VmnetIPv4Subnet(n)
 	var bytes [4]byte
 	binary.BigEndian.PutUint32(bytes[:], uint32(packed>>32))
 	var mask [4]byte
@@ -258,11 +257,11 @@ func (n *Network) IPv6Prefix() (netip.Prefix, error) {
 	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
 		return netip.Prefix{}, err
 	}
-	if n == nil || vmnethandle.Pointer(n) == nil {
+	if n == nil || objc.Ptr(n) == nil {
 		return netip.Prefix{}, fmt.Errorf("vmnet network is nil or uninitialized")
 	}
 	var address [16]byte
-	prefixBits := vzbridge.VmnetIPv6Prefix(vmnethandle.Pointer(n), unsafe.Pointer(&address[0]))
+	prefixBits := vzbridge.VmnetIPv6Prefix(n, unsafe.Pointer(&address[0]))
 	runtime.KeepAlive(address)
 	if prefixBits > 128 {
 		return netip.Prefix{}, fmt.Errorf("vmnet returned an invalid IPv6 prefix length %d", prefixBits)

@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
-	"github.com/Code-Hex/vz/v4/internal/vmnethandle"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 	"github.com/Code-Hex/vz/v4/vmnet"
 )
@@ -51,8 +50,8 @@ func TestVMNetNetworkDeviceAttachmentLifetime(t *testing.T) {
 				array := nativeObjectArray([]*VirtioNetworkDeviceConfiguration{device})
 				vzbridge.VZVirtualMachineConfiguration_SetNetworkDevices(config, array)
 				objc.Release(array)
-				objc.Release(vmnethandle.Pointer(networkConfig))
-				objc.Release(vmnethandle.Pointer(network))
+				objc.Release(networkConfig)
+				objc.Release(network)
 				objc.Release(attachment.pointer)
 				objc.Release(device.pointer)
 				vzbridge.Drain()
@@ -109,8 +108,8 @@ func TestVMNetAttachmentNetworkRetainsReference(t *testing.T) {
 	if retained == nil {
 		t.Fatal("attachment returned no network")
 	}
-	objc.Release(vmnethandle.Pointer(config))
-	objc.Release(vmnethandle.Pointer(network))
+	objc.Release(config)
+	objc.Release(network)
 	objc.Release(attachment.pointer)
 	vzbridge.Drain()
 	if got, err := retained.IPv4Subnet(); err != nil || got != want {

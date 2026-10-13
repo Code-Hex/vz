@@ -104,9 +104,7 @@ func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPor
 // The device creates a console which enables communication between the host and the guest through the Virtio interface.
 // The device sets up a single port on the Virtio console device.
 // see: https://developer.apple.com/documentation/virtualization/vzvirtioconsoledeviceserialportconfiguration?language=objc
-type VirtioConsoleDeviceSerialPortConfiguration struct {
-	*pointer
-}
+type VirtioConsoleDeviceSerialPortConfiguration pointer
 
 // NewVirtioConsoleDeviceSerialPortConfiguration creates a new NewVirtioConsoleDeviceSerialPortConfiguration.
 //
@@ -117,9 +115,7 @@ func NewVirtioConsoleDeviceSerialPortConfiguration(attachment SerialPortAttachme
 		return nil, err
 	}
 
-	config := &VirtioConsoleDeviceSerialPortConfiguration{
-		pointer: vzbridge.VZVirtioConsoleDeviceSerialPortConfiguration_Init(),
-	}
-	vzbridge.VZSerialPortConfiguration_SetAttachment(config, attachment)
-	return config, nil
+	ptr := nonNilPointer(vzbridge.VZVirtioConsoleDeviceSerialPortConfiguration_Init())
+	vzbridge.VZSerialPortConfiguration_SetAttachment(ptr, attachment)
+	return (*VirtioConsoleDeviceSerialPortConfiguration)(ptr), nil
 }

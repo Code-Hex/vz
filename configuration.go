@@ -3,6 +3,7 @@ package vz
 import (
 	"unsafe"
 
+	"github.com/Code-Hex/vz/v4/internal/objc"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
@@ -77,7 +78,10 @@ func (v *VirtualMachineConfiguration) Validate() (bool, error) {
 
 // SetEntropyDevicesVirtualMachineConfiguration sets list of entropy devices. Empty by default.
 func (v *VirtualMachineConfiguration) SetEntropyDevicesVirtualMachineConfiguration(cs []*VirtioEntropyDeviceConfiguration) {
-	array := nativeObjectArray(cs)
+	array := vzbridge.NSMutableArray_New()
+	for _, config := range cs {
+		vzbridge.NSMutableArray_AddObject(array, requirePointer((*objc.Pointer)(config)))
+	}
 	vzbridge.VZVirtualMachineConfiguration_SetEntropyDevices(v, array)
 }
 
@@ -102,7 +106,10 @@ func (v *VirtualMachineConfiguration) NetworkDevices() []*VirtioNetworkDeviceCon
 
 // SetSerialPortsVirtualMachineConfiguration sets list of serial ports. Empty by default.
 func (v *VirtualMachineConfiguration) SetSerialPortsVirtualMachineConfiguration(cs []*VirtioConsoleDeviceSerialPortConfiguration) {
-	array := nativeObjectArray(cs)
+	array := vzbridge.NSMutableArray_New()
+	for _, config := range cs {
+		vzbridge.NSMutableArray_AddObject(array, requirePointer((*objc.Pointer)(config)))
+	}
 	vzbridge.VZVirtualMachineConfiguration_SetSerialPorts(v, array)
 }
 

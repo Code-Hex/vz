@@ -51,16 +51,17 @@ func NewVirtioGraphicsDeviceConfiguration() (*VirtioGraphicsDeviceConfiguration,
 //
 // Maximum of one scanout is supported.
 func (v *VirtioGraphicsDeviceConfiguration) SetScanouts(scanoutConfigs ...*VirtioGraphicsScanoutConfiguration) {
-	array := nativeObjectArray(scanoutConfigs)
+	array := vzbridge.NSMutableArray_New()
+	for _, config := range scanoutConfigs {
+		vzbridge.NSMutableArray_AddObject(array, requirePointer((*objc.Pointer)(config)))
+	}
 	vzbridge.VZVirtioGraphicsDeviceConfiguration_SetScanouts(v, array)
 }
 
 // VirtioGraphicsScanoutConfiguration is the configuration for a Virtio graphics device
 // that configures the dimensions of the graphics device for a Linux VM.
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiographicsscanoutconfiguration?language=objc
-type VirtioGraphicsScanoutConfiguration struct {
-	*pointer
-}
+type VirtioGraphicsScanoutConfiguration pointer
 
 // NewVirtioGraphicsScanoutConfiguration creates a Virtio graphics device with the specified dimensions.
 //
@@ -71,8 +72,6 @@ func NewVirtioGraphicsScanoutConfiguration(widthInPixels int64, heightInPixels i
 		return nil, err
 	}
 
-	graphicsScanoutConfiguration := &VirtioGraphicsScanoutConfiguration{
-		pointer: vzbridge.VZVirtioGraphicsScanoutConfiguration_InitWithWidthInPixels_HeightInPixels(int64(widthInPixels), int64(heightInPixels)),
-	}
-	return graphicsScanoutConfiguration, nil
+	ptr := vzbridge.VZVirtioGraphicsScanoutConfiguration_InitWithWidthInPixels_HeightInPixels(int64(widthInPixels), int64(heightInPixels))
+	return (*VirtioGraphicsScanoutConfiguration)(nonNilPointer(ptr)), nil
 }

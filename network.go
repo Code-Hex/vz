@@ -290,16 +290,12 @@ func NewVirtioNetworkDeviceConfiguration(attachment NetworkDeviceAttachment) (*V
 }
 
 func (v *VirtioNetworkDeviceConfiguration) SetMACAddress(macAddress *MACAddress) {
-	vzbridge.VZNetworkDeviceConfiguration_SetMACAddress(v, macAddress)
+	vzbridge.VZNetworkDeviceConfiguration_SetMACAddress(v, requirePointer((*objc.Pointer)(macAddress)))
 }
 
 // GetMACAddress returns the media access control address of the device.
 func (v *VirtioNetworkDeviceConfiguration) GetMACAddress() *MACAddress {
-	ptr := vzbridge.VZNetworkDeviceConfiguration_MACAddress(v)
-	if ptr == nil {
-		return nil
-	}
-	return &MACAddress{pointer: ptr}
+	return (*MACAddress)(vzbridge.VZNetworkDeviceConfiguration_MACAddress(v))
 }
 
 func (v *VirtioNetworkDeviceConfiguration) Attachment() NetworkDeviceAttachment {
@@ -308,9 +304,7 @@ func (v *VirtioNetworkDeviceConfiguration) Attachment() NetworkDeviceAttachment 
 
 // MACAddress represents a media access control address (MAC address), the 48-bit ethernet address.
 // see: https://developer.apple.com/documentation/virtualization/vzmacaddress?language=objc
-type MACAddress struct {
-	*pointer
-}
+type MACAddress pointer
 
 // NewMACAddress creates a new MACAddress with net.HardwareAddr (MAC address).
 //
@@ -320,10 +314,8 @@ func NewMACAddress(macAddr net.HardwareAddr) (*MACAddress, error) {
 	if err := macOSAvailable(11); err != nil {
 		return nil, err
 	}
-	ma := &MACAddress{
-		pointer: vzbridge.VZMACAddress_InitWithString(vzbridge.NSString_StringWithUTF8String(macAddr.String())),
-	}
-	return ma, nil
+	ptr := vzbridge.VZMACAddress_InitWithString(vzbridge.NSString_StringWithUTF8String(macAddr.String()))
+	return (*MACAddress)(nonNilPointer(ptr)), nil
 }
 
 // NewRandomLocallyAdministeredMACAddress creates a valid, random, unicast, locally administered address.
@@ -335,14 +327,12 @@ func NewRandomLocallyAdministeredMACAddress() (*MACAddress, error) {
 		return nil, err
 	}
 
-	ma := &MACAddress{
-		pointer: vzbridge.VZMACAddress_RandomLocallyAdministeredAddress(),
-	}
-	return ma, nil
+	ptr := vzbridge.VZMACAddress_RandomLocallyAdministeredAddress()
+	return (*MACAddress)(nonNilPointer(ptr)), nil
 }
 
 func (m *MACAddress) String() string {
-	return nativeString(vzbridge.VZMACAddress_String(m))
+	return nativeString(vzbridge.VZMACAddress_String(requirePointer((*objc.Pointer)(m))))
 }
 
 func (m *MACAddress) HardwareAddr() net.HardwareAddr {

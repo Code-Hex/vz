@@ -4,6 +4,7 @@
 package vz
 
 import (
+	"github.com/Code-Hex/vz/v4/internal/objc"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
@@ -33,14 +34,15 @@ func NewMacGraphicsDeviceConfiguration() (*MacGraphicsDeviceConfiguration, error
 
 // SetDisplays sets the displays associated with this graphics device.
 func (m *MacGraphicsDeviceConfiguration) SetDisplays(displayConfigs ...*MacGraphicsDisplayConfiguration) {
-	array := nativeObjectArray(displayConfigs)
+	array := vzbridge.NSMutableArray_New()
+	for _, config := range displayConfigs {
+		vzbridge.NSMutableArray_AddObject(array, requirePointer((*objc.Pointer)(config)))
+	}
 	vzbridge.VZMacGraphicsDeviceConfiguration_SetDisplays(m, array)
 }
 
 // MacGraphicsDisplayConfiguration is the configuration for a Mac graphics device.
-type MacGraphicsDisplayConfiguration struct {
-	*pointer
-}
+type MacGraphicsDisplayConfiguration pointer
 
 // NewMacGraphicsDisplayConfiguration creates a new MacGraphicsDisplayConfiguration.
 //
@@ -53,8 +55,6 @@ func NewMacGraphicsDisplayConfiguration(widthInPixels int64, heightInPixels int6
 		return nil, err
 	}
 
-	graphicsDisplayConfiguration := &MacGraphicsDisplayConfiguration{
-		pointer: vzbridge.VZMacGraphicsDisplayConfiguration_InitWithWidthInPixels_HeightInPixels_PixelsPerInch(int64(widthInPixels), int64(heightInPixels), int64(pixelsPerInch)),
-	}
-	return graphicsDisplayConfiguration, nil
+	ptr := vzbridge.VZMacGraphicsDisplayConfiguration_InitWithWidthInPixels_HeightInPixels_PixelsPerInch(int64(widthInPixels), int64(heightInPixels), int64(pixelsPerInch))
+	return (*MacGraphicsDisplayConfiguration)(nonNilPointer(ptr)), nil
 }

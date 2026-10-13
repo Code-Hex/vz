@@ -35,12 +35,12 @@ func TestMacGraphicsConfigurationDisplays(t *testing.T) {
 		t.Fatal(err)
 	}
 	for name, want := range map[string]int64{"widthInPixels": 1920, "heightInPixels": 1080, "pixelsPerInch": 144} {
-		if got := nativeProperty[int64](display, name); got != want {
+		if got := nativeProperty[int64]((*objc.Pointer)(display), name); got != want {
 			t.Errorf("%s = %d, want %d", name, got, want)
 		}
 	}
 	device.SetDisplays(display)
-	objc.Release(display)
+	objc.Release((*objc.Pointer)(display))
 	array := vzbridge.VZMacGraphicsDeviceConfiguration_Displays(device)
 	if count := vzbridge.NSArray_Count(array); count != 1 {
 		t.Fatalf("display count = %d, want 1", count)

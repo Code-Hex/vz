@@ -11,9 +11,7 @@ import (
 // entropy device. The guest operating system uses this device as a seed to generate random numbers.
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtioentropydeviceconfiguration?language=objc
-type VirtioEntropyDeviceConfiguration struct {
-	*pointer
-}
+type VirtioEntropyDeviceConfiguration pointer
 
 // NewVirtioEntropyDeviceConfiguration creates a new Virtio Entropy Device confiuration.
 //
@@ -24,8 +22,6 @@ func NewVirtioEntropyDeviceConfiguration() (*VirtioEntropyDeviceConfiguration, e
 		return nil, err
 	}
 
-	config := &VirtioEntropyDeviceConfiguration{
-		pointer: vzbridge.VZVirtioEntropyDeviceConfiguration_Init(),
-	}
-	return config, nil
+	ptr := vzbridge.VZVirtioEntropyDeviceConfiguration_Init()
+	return (*VirtioEntropyDeviceConfiguration)(nonNilPointer(ptr)), nil
 }

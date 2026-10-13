@@ -55,9 +55,7 @@ func (c *VirtioFileSystemDeviceConfiguration) SetDirectoryShare(share DirectoryS
 }
 
 // SharedDirectory is a shared directory.
-type SharedDirectory struct {
-	*pointer
-}
+type SharedDirectory pointer
 
 // NewSharedDirectory creates a new shared directory.
 //
@@ -70,10 +68,8 @@ func NewSharedDirectory(dirPath string, readOnly bool) (*SharedDirectory, error)
 	if _, err := os.Stat(dirPath); err != nil {
 		return nil, err
 	}
-	sd := &SharedDirectory{
-		pointer: vzbridge.VZSharedDirectory_InitWithURL_ReadOnly(vzbridge.NSURL_FileURLWithPath(vzbridge.NSString_StringWithUTF8String(dirPath)), bool(readOnly)),
-	}
-	return sd, nil
+	ptr := vzbridge.VZSharedDirectory_InitWithURL_ReadOnly(vzbridge.NSURL_FileURLWithPath(vzbridge.NSString_StringWithUTF8String(dirPath)), bool(readOnly))
+	return (*SharedDirectory)(nonNilPointer(ptr)), nil
 }
 
 // DirectoryShare is the base interface for a directory share.
@@ -105,7 +101,7 @@ func NewSingleDirectoryShare(share *SharedDirectory) (*SingleDirectoryShare, err
 		return nil, err
 	}
 	config := &SingleDirectoryShare{
-		pointer: vzbridge.VZSingleDirectoryShare_InitWithDirectory(share),
+		pointer: vzbridge.VZSingleDirectoryShare_InitWithDirectory(requirePointer((*objc.Pointer)(share))),
 	}
 	return config, nil
 }
@@ -129,7 +125,7 @@ func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) (*MultipleDir
 	}
 	directories := make(map[string]objc.NSObject, len(shares))
 	for k, v := range shares {
-		directories[k] = v
+		directories[k] = requirePointer((*objc.Pointer)(v))
 	}
 
 	dict := nativeObjectDictionary(directories)

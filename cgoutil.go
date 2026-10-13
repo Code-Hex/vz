@@ -19,6 +19,17 @@ func newNSError(p unsafe.Pointer) *NSError {
 	return objcutil.NewNSError(p)
 }
 
+func nonNilPointer(p *objc.Pointer) *objc.Pointer {
+	if p == nil {
+		return &objc.Pointer{}
+	}
+	return p
+}
+
+func requirePointer(p *objc.Pointer) *objc.Pointer {
+	return &*p
+}
+
 func nativeString(object *objc.Pointer) string {
 	return objcutil.String(object)
 }

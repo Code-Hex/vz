@@ -79,7 +79,10 @@ func TestNilDeviceConfigurationElements(t *testing.T) {
 
 func TestDeviceConfigurations(t *testing.T) {
 	t.Run("entropy", func(t *testing.T) {
-		checkNativeClass(t, 11, vz.NewVirtioEntropyDeviceConfiguration, "VZVirtioEntropyDeviceConfiguration")
+		checkNativeClass(t, 11, func() (*objc.Pointer, error) {
+			config, err := vz.NewVirtioEntropyDeviceConfiguration()
+			return (*objc.Pointer)(config), err
+		}, "VZVirtioEntropyDeviceConfiguration")
 	})
 	t.Run("keyboard", func(t *testing.T) {
 		checkNativeClass(t, 12, vz.NewUSBKeyboardConfiguration, "VZUSBKeyboardConfiguration")
@@ -114,9 +117,9 @@ func TestVirtualMachineConfigurationRetainsEntropyAndSerialPorts(t *testing.T) {
 	}
 	config.SetEntropyDevicesVirtualMachineConfiguration([]*vz.VirtioEntropyDeviceConfiguration{entropy})
 	config.SetSerialPortsVirtualMachineConfiguration([]*vz.VirtioConsoleDeviceSerialPortConfiguration{serial})
-	entropyPtr, serialPtr := objc.Ptr(entropy), objc.Ptr(serial)
-	objc.Release(entropy)
-	objc.Release(serial)
+	entropyPtr, serialPtr := objc.Ptr((*objc.Pointer)(entropy)), objc.Ptr((*objc.Pointer)(serial))
+	objc.Release((*objc.Pointer)(entropy))
+	objc.Release((*objc.Pointer)(serial))
 	for _, tc := range []struct {
 		property string
 		want     pureobjc.ID
@@ -208,11 +211,11 @@ func TestGraphicsConfigurationScanouts(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if w, h := nativeProperty[int64](scanout, "widthInPixels"), nativeProperty[int64](scanout, "heightInPixels"); w != 1280 || h != 720 {
+	if w, h := nativeProperty[int64]((*objc.Pointer)(scanout), "widthInPixels"), nativeProperty[int64]((*objc.Pointer)(scanout), "heightInPixels"); w != 1280 || h != 720 {
 		t.Fatalf("scanout dimensions = %dx%d, want 1280x720", w, h)
 	}
 	device.SetScanouts(scanout)
-	objc.Release(scanout)
+	objc.Release((*objc.Pointer)(scanout))
 	array := vzbridge.VZVirtioGraphicsDeviceConfiguration_Scanouts(device)
 	if count := vzbridge.NSArray_Count(array); count != 1 {
 		t.Fatalf("scanout count = %d, want 1", count)

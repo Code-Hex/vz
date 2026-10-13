@@ -6,6 +6,7 @@ import (
 	"unsafe"
 
 	infinity "github.com/Code-Hex/go-infinity-channel"
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/sliceutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
@@ -119,7 +120,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 			disconnectedIn.Close()
 			return 0
 		}
-		disconnectedIn.In() <- &disconnected{err: newNSError(errorPointer), index: int(value)}
+		disconnectedIn.In() <- &disconnected{err: objcutil.NewNSError(errorPointer), index: int(value)}
 		return 0
 	})
 	object := vzbridge.NewVZVirtualMachineWithDispatchQueue(config, stateHandle, disconnectedHandle)
@@ -271,7 +272,7 @@ func (v *VirtualMachine) Resume() error {
 func (v *VirtualMachine) RequestStop() (bool, error) {
 	var nserrPtr unsafe.Pointer
 	ret := (bool)(vzbridge.VZVirtualMachine_RequestStopWithError(v, &nserrPtr))
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objcutil.NewNSError(nserrPtr); err != nil {
 		return ret, err
 	}
 	return ret, nil
@@ -401,7 +402,7 @@ func watchDisconnected(configs []*VirtioNetworkDeviceConfiguration, input *infin
 func nativeCompletion() (uint64, <-chan error) {
 	channel := make(chan error, 1)
 	handle := registerNativeRequest(func(_ uint32, errorPointer, _ unsafe.Pointer, _ uint64) uint64 {
-		if err := newNSError(errorPointer); err != nil {
+		if err := objcutil.NewNSError(errorPointer); err != nil {
 			channel <- err
 		} else {
 			channel <- nil

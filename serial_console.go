@@ -6,6 +6,7 @@ import (
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
@@ -56,7 +57,7 @@ func NewFileHandleSerialPortAttachment(read, write *os.File) (*FileHandleSerialP
 			&nserrPtr,
 		),
 	}
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objcutil.NewNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	return attachment, nil
@@ -93,7 +94,7 @@ func NewFileSerialPortAttachment(path string, shouldAppend bool) (*FileSerialPor
 	attachment := &FileSerialPortAttachment{
 		pointer: vzbridge.VZFileSerialPortAttachment_InitWithURL_Append_Error(vzbridge.NSURL_FileURLWithPath(vzbridge.NSString_StringWithUTF8String(path)), bool(shouldAppend), &nserrPtr),
 	}
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objcutil.NewNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	return attachment, nil

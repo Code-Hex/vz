@@ -14,6 +14,7 @@ import (
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 	pureobjc "github.com/ebitengine/purego/objc"
 )
@@ -35,7 +36,7 @@ func TestNativeBridgeStringOwnership(t *testing.T) {
 			address := pureobjc.Send[unsafe.Pointer](allocated, pureobjc.RegisterName("initWithCharacters:length:"), unsafe.Pointer(&characters[0]), uintptr(length))
 			runtime.KeepAlive(characters)
 			object := objc.NewManagedPointer(address, vzbridge.ReleaseObject)
-			if got := nativeString(object); got != test.value {
+			if got := objcutil.String(object); got != test.value {
 				t.Fatalf("native string = %q, want %q", got, test.value)
 			}
 			vzbridge.Drain()

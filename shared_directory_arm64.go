@@ -8,6 +8,7 @@ import (
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
@@ -50,7 +51,7 @@ func NewLinuxRosettaDirectoryShare() (*LinuxRosettaDirectoryShare, error) {
 	ds := &LinuxRosettaDirectoryShare{
 		pointer: vzbridge.VZLinuxRosettaDirectoryShare_InitWithError(&nserrPtr),
 	}
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objcutil.NewNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	return ds, nil
@@ -80,7 +81,7 @@ func LinuxRosettaDirectoryShareInstallRosetta() error {
 		if first == nil {
 			errCh <- nil
 		} else {
-			errCh <- newNSError(first)
+			errCh <- objcutil.NewNSError(first)
 		}
 		return 0
 	})
@@ -143,7 +144,7 @@ func NewLinuxRosettaUnixSocketCachingOptions(path string) (*LinuxRosettaUnixSock
 	usco := &LinuxRosettaUnixSocketCachingOptions{
 		pointer: vzbridge.VZLinuxRosettaUnixSocketCachingOptions_InitWithPath_Error(vzbridge.NSString_StringWithUTF8String(path), &nserrPtr),
 	}
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objcutil.NewNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	return usco, nil
@@ -179,7 +180,7 @@ func NewLinuxRosettaAbstractSocketCachingOptions(name string) (*LinuxRosettaAbst
 	asco := &LinuxRosettaAbstractSocketCachingOptions{
 		pointer: vzbridge.VZLinuxRosettaAbstractSocketCachingOptions_InitWithName_Error(vzbridge.NSString_StringWithUTF8String(name), &nserrPtr),
 	}
-	if err := newNSError(nserrPtr); err != nil {
+	if err := objcutil.NewNSError(nserrPtr); err != nil {
 		return nil, err
 	}
 	return asco, nil

@@ -10,6 +10,7 @@ import (
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
@@ -111,7 +112,7 @@ func (v *VirtioSocketDevice) Connect(port uint32) (*VirtioSocketConnection, erro
 			if first != nil {
 				vzbridge.ReleaseObject(first)
 			}
-			ch <- connResults{err: newNSError(second)}
+			ch <- connResults{err: objcutil.NewNSError(second)}
 			return 0
 		}
 		connection, err := newVirtioSocketConnection(objc.NewManagedPointer(first, vzbridge.ReleaseObject))
@@ -327,7 +328,7 @@ func newVirtioSocketConnection(ptr *objc.Pointer) (*VirtioSocketConnection, erro
 	var nativeError unsafe.Pointer
 	descriptor := vzbridge.SocketConnectionDuplicatedFileDescriptor(ptr, &nativeError)
 	if nativeError != nil {
-		return nil, newNSError(nativeError)
+		return nil, objcutil.NewNSError(nativeError)
 	}
 	if descriptor < 0 {
 		return nil, fmt.Errorf("socket connection has an invalid descriptor")

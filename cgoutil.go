@@ -1,8 +1,6 @@
 package vz
 
 import (
-	"unsafe"
-
 	"github.com/Code-Hex/vz/v4/internal/objc"
 	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
@@ -14,18 +12,6 @@ type pointer = objc.Pointer
 
 // NSError indicates NSError.
 type NSError = objcutil.NSError
-
-func newNSError(p unsafe.Pointer) *NSError {
-	return objcutil.NewNSError(p)
-}
-
-func nativeString(object *objc.Pointer) string {
-	return objcutil.String(object)
-}
-
-func nativeBytes(object *objc.Pointer) []byte {
-	return objcutil.Bytes(object)
-}
 
 func nativeArray(object *objc.Pointer) []*objc.Pointer {
 	if object == nil {

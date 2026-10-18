@@ -95,7 +95,7 @@ func TestNetworkServiceProcess(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	service, err := vmnet.ListenNetwork(name, network, requirement)
+	service, err := vmnet.ShareNetwork(name, network, requirement)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -319,7 +319,7 @@ func TestNetworkSharingInvalidRequirement(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := vmnet.ListenNetwork("com.codehex.vz.test", network, "not a valid requirement ("); err == nil {
+	if _, err := vmnet.ShareNetwork("com.codehex.vz.test", network, "not a valid requirement ("); err == nil {
 		t.Fatal("invalid requirement accepted")
 	}
 }

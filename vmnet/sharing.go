@@ -23,10 +23,10 @@ type networkServiceState struct {
 	serialization *NetworkSerialization
 }
 
-// ListenNetwork serves network to peers satisfying peerRequirement, an Apple
+// ShareNetwork shares network with peers satisfying peerRequirement, an Apple
 // code signing requirement expression. The service name must be registered in
 // the process's launchd property list. It requires macOS 26 and newer.
-func ListenNetwork(name string, network *Network, peerRequirement string) (*NetworkService, error) {
+func ShareNetwork(name string, network *Network, peerRequirement string) (*NetworkService, error) {
 	if err := validateNetworkService(name, peerRequirement); err != nil {
 		return nil, err
 	}

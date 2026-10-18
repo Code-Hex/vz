@@ -6,11 +6,11 @@ These APIs require macOS 26 or later.
 restores a network from that object. The serialization is not a byte encoding
 and cannot be written to a file.
 
-Use `ListenNetwork` and `ReceiveNetwork` to share a network through a launchd
+Use `ShareNetwork` and `ReceiveNetwork` to share a network through a launchd
 Mach service. The server publishes one network:
 
 ```go
-service, err := vmnet.ListenNetwork("com.example.vmnetwork", network, clientRequirement)
+service, err := vmnet.ShareNetwork("com.example.vmnetwork", network, clientRequirement)
 if err != nil {
 	return err
 }
@@ -47,7 +47,7 @@ Register the service name in the server's launchd property list:
 The property list also needs `Label` and `ProgramArguments`. Load a user agent
 with `launchctl bootstrap gui/$(id -u) /path/to/service.plist` and remove it with
 `launchctl bootout gui/$(id -u)/com.example.vmnetwork`, using its label in the
-second command. `ListenNetwork` does not register the name with launchd.
+second command. `ShareNetwork` does not register the name with launchd.
 Connection and registration failures can be reported asynchronously by XPC.
 Use a deadline when receiving a network.
 

@@ -127,6 +127,23 @@ void vz_addVmnetDHCPReservation(void *configuration, const void *mac, uint32_t a
 #endif
 }
 
+void vz_addVmnetPortForwarding(void *configuration, bool udp, bool ipv6, uint16_t externalPort, uint16_t internalPort, const void *address, void **errorOut)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *)) {
+        union {
+            struct in_addr ipv4;
+            struct in6_addr ipv6;
+        } destination;
+        memcpy(&destination, address, ipv6 ? sizeof(destination.ipv6) : sizeof(destination.ipv4));
+        vmnet_return_t status = vmnet_network_configuration_add_port_forwarding_rule(
+            configuration, udp ? IPPROTO_UDP : IPPROTO_TCP, ipv6 ? AF_INET6 : AF_INET,
+            internalPort, externalPort, &destination);
+        vmnetError(status, @"vmnet_network_configuration_add_port_forwarding_rule", errorOut);
+    }
+#endif
+}
+
 uint64_t vz_vmnetIPv4Subnet(void *network)
 {
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000

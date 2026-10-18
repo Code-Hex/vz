@@ -25,7 +25,7 @@
 
 API_AVAILABLE(macos(12.0))
 @interface VZGraphicWindowController : NSObject <NSWindowDelegate, VZVirtualMachineDelegate, NSToolbarDelegate>
-@property(nonatomic, copy) void (^didClose)(VZGraphicWindowController *window);
+@property (nonatomic, copy) void (^didClose)(VZGraphicWindowController *window);
 - (void)showWindow;
 - (void)close;
 - (void)setupMenuBar;

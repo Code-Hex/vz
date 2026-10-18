@@ -59,13 +59,12 @@ func TestStartGraphicApplicationRejectsInvalidWindows(t *testing.T) {
 		windows []*GraphicWindow
 		message string
 	}{
-		{name: "empty", message: "at least one window"},
 		{name: "nil", windows: []*GraphicWindow{nil}, message: "valid windows"},
 		{name: "zero value", windows: []*GraphicWindow{{}}, message: "valid windows"},
 		{name: "duplicate VM", windows: []*GraphicWindow{first, second}, message: "same virtual machine twice"},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			err := StartGraphicApplication(test.windows...)
+			err := StartGraphicApplication(test.windows[0], test.windows[1:]...)
 			if err == nil || !strings.Contains(err.Error(), test.message) {
 				t.Fatalf("StartGraphicApplication error = %v, want %q", err, test.message)
 			}

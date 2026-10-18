@@ -364,6 +364,10 @@ static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRati
 
 - (void)terminate:(id)sender
 {
+    if ([self.delegate respondsToSelector:@selector(applicationShouldTerminate:)] &&
+        [self.delegate applicationShouldTerminate:self] != NSTerminateNow) {
+        return;
+    }
     for (NSWindow *window in [[self.windows copy] autorelease]) {
         [window close];
     }

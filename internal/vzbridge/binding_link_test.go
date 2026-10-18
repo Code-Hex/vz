@@ -60,9 +60,9 @@ func main() { fmt.Println(vz.VirtualMachineConfigurationMinimumAllowedCPUCount()
 			foundUsed = true
 			continue
 		}
-		// The dispatcher and Objective-C listener/installer methods need these helpers.
+		// Native dispatch and Objective-C cleanup methods need these helpers.
 		switch symbol {
-		case "_vz_dispatchSyncOnObject", "_vz_inheritObjectQueue", "_vz_objectQueue":
+		case "_vz_dispatchSyncOnObject", "_vz_inheritObjectQueue", "_vz_objectQueue", "_vz_releaseObject":
 			continue
 		}
 		if strings.HasPrefix(symbol, bridge+"sdkCall") ||

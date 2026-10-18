@@ -1,5 +1,6 @@
 #import "native.h"
 #import "virtualization_view.h"
+#import <pthread.h>
 
 @interface VZGraphicWindowDescription : NSObject {
 @public
@@ -14,40 +15,102 @@
 @implementation VZGraphicWindowDescription
 - (void)dealloc
 {
+    vz_releaseObject(machine);
     [title release];
     [super dealloc];
 }
 @end
 
 API_AVAILABLE(macos(12.0))
-@interface VZGraphicApplicationController : NSObject <NSApplicationDelegate>
-@property (nonatomic, retain) NSMutableArray<VZGraphicWindowController *> *windows;
+@interface VZGraphicApplicationController : NSObject <NSApplicationDelegate> {
+@public
+    NSUInteger pendingAdditions;
+    BOOL stopping;
+}
+@property (nonatomic, retain) NSMutableDictionary<NSValue *, VZGraphicWindowController *> *windows;
+- (VZGraphicApplicationResult)addWindows:(NSArray *)descriptions;
 - (void)windowClosed:(VZGraphicWindowController *)window;
-- (void)showWindows;
+- (void)stopIfIdle;
 @end
 
+static pthread_mutex_t applicationLock = PTHREAD_MUTEX_INITIALIZER;
+static VZGraphicApplicationController *activeApplication API_AVAILABLE(macos(12.0));
+
 @implementation VZGraphicApplicationController
-- (void)showWindows
+- (VZGraphicApplicationResult)addWindows:(NSArray *)descriptions
 {
-    [self.windows.firstObject setupMenuBar];
-    for (VZGraphicWindowController *window in self.windows) {
+    if (stopping) {
+        return VZGraphicApplicationStopping;
+    }
+    NSMutableSet *machines = [NSMutableSet set];
+    for (VZGraphicWindowDescription *description in descriptions) {
+        NSValue *key = [NSValue valueWithPointer:description->machine];
+        if ([self.windows objectForKey:key] || [machines containsObject:key]) {
+            return VZGraphicApplicationDuplicateMachine;
+        }
+        [machines addObject:key];
+    }
+    for (VZGraphicWindowDescription *description in descriptions) {
+        VZVirtualMachine *machine = description->machine;
+        VZGraphicWindowController *window = [[VZGraphicWindowController alloc]
+            initWithVirtualMachine:machine
+                             queue:(dispatch_queue_t)vz_objectQueue(machine)
+                       windowWidth:description->width
+                      windowHeight:description->height
+                       windowTitle:description->title
+                  enableController:description->enableController];
+        window.didClose = ^(VZGraphicWindowController *closedWindow) {
+            [self windowClosed:closedWindow];
+        };
+        if (self.windows.count == 0) {
+            [window setupMenuBar];
+        }
+        [self.windows setObject:window forKey:[NSValue valueWithPointer:machine]];
         [window showWindow];
+        [window release];
     }
     [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
     [NSApp activateIgnoringOtherApps:YES];
+    return VZGraphicApplicationSuccess;
+}
+- (void)stopIfIdle
+{
+    pthread_mutex_lock(&applicationLock);
+    BOOL done = self.windows.count == 0 && pendingAdditions == 0;
+    if (done) {
+        stopping = YES;
+    }
+    pthread_mutex_unlock(&applicationLock);
+    if (done) {
+        [NSApp stop:nil];
+    }
 }
 - (void)windowClosed:(VZGraphicWindowController *)window
 {
     [[window retain] autorelease];
     window.didClose = nil;
-    [self.windows removeObjectIdenticalTo:window];
-    if (self.windows.count == 0) {
-        [NSApp stop:nil];
+    for (NSValue *machine in self.windows.keyEnumerator) {
+        if ([self.windows objectForKey:machine] == window) {
+            [self.windows removeObjectForKey:machine];
+            break;
+        }
     }
+    [self stopIfIdle];
+}
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
+{
+    pthread_mutex_lock(&applicationLock);
+    stopping = YES;
+    pthread_mutex_unlock(&applicationLock);
+    for (VZGraphicWindowController *window in self.windows.objectEnumerator.allObjects) {
+        [window close];
+    }
+    [self stopIfIdle];
+    return NSTerminateCancel;
 }
 - (void)dealloc
 {
-    for (VZGraphicWindowController *window in _windows) {
+    for (VZGraphicWindowController *window in _windows.objectEnumerator) {
         window.didClose = nil;
         [window close];
     }
@@ -64,7 +127,7 @@ void *vz_newGraphicApplication(void)
 void vz_addGraphicWindow(void *application, void *machine, double width, double height, const char *title, bool enableController)
 {
     VZGraphicWindowDescription *description = [[VZGraphicWindowDescription alloc] init];
-    description->machine = machine;
+    description->machine = [(VZVirtualMachine *)machine retain];
     description->width = width;
     description->height = height;
     description->title = [[NSString alloc] initWithUTF8String:title ? title : ""];
@@ -78,48 +141,63 @@ void vz_addGraphicWindow(void *application, void *machine, double width, double 
 
 VZGraphicApplicationResult vz_runGraphicApplication(void *application)
 {
-    static BOOL running;
-    if (![NSThread isMainThread]) {
-        return VZGraphicApplicationNotMainThread;
-    }
-    if (running) {
-        return VZGraphicApplicationAlreadyRunning;
-    }
-    running = YES;
     if (@available(macOS 12, *)) {
+        pthread_mutex_lock(&applicationLock);
+        VZGraphicApplicationController *controller = activeApplication;
+        if (controller) {
+            if (controller->stopping) {
+                pthread_mutex_unlock(&applicationLock);
+                return VZGraphicApplicationStopping;
+            }
+            [controller retain];
+            controller->pendingAdditions++;
+        }
+        pthread_mutex_unlock(&applicationLock);
+        if (controller) {
+            __block VZGraphicApplicationResult result;
+            void (^addWindows)(void) = ^{
+                @autoreleasepool {
+                    result = [controller addWindows:(NSArray *)application];
+                    pthread_mutex_lock(&applicationLock);
+                    controller->pendingAdditions--;
+                    pthread_mutex_unlock(&applicationLock);
+                    [controller stopIfIdle];
+                    [controller release];
+                }
+            };
+            if ([NSThread isMainThread]) {
+                addWindows();
+            } else {
+                dispatch_sync(dispatch_get_main_queue(), addWindows);
+            }
+            return result;
+        }
+        if (![NSThread isMainThread]) {
+            return VZGraphicApplicationNotMainThread;
+        }
         @autoreleasepool {
             [VZApplication sharedApplication];
-            VZGraphicApplicationController *controller = [[VZGraphicApplicationController alloc] init];
+            controller = [[VZGraphicApplicationController alloc] init];
+            controller.windows = [NSMutableDictionary dictionary];
+            VZGraphicApplicationResult result;
             @autoreleasepool {
-                controller.windows = [NSMutableArray array];
-                for (VZGraphicWindowDescription *description in (NSArray *)application) {
-                    VZVirtualMachine *machine = description->machine;
-                    VZGraphicWindowController *window = [[VZGraphicWindowController alloc]
-                        initWithVirtualMachine:machine
-                                         queue:(dispatch_queue_t)vz_objectQueue(machine)
-                                   windowWidth:description->width
-                                  windowHeight:description->height
-                                   windowTitle:description->title
-                              enableController:description->enableController];
-                    window.didClose = ^(VZGraphicWindowController *closedWindow) {
-                        [controller windowClosed:closedWindow];
-                    };
-                    [controller.windows addObject:window];
-                    [window release];
-                }
                 NSApp.delegate = controller;
-                [controller showWindows];
+                result = [controller addWindows:(NSArray *)application];
             }
-            [NSApp run];
+            if (result == VZGraphicApplicationSuccess) {
+                pthread_mutex_lock(&applicationLock);
+                activeApplication = controller;
+                pthread_mutex_unlock(&applicationLock);
+                [NSApp run];
+            }
+            pthread_mutex_lock(&applicationLock);
+            activeApplication = nil;
+            pthread_mutex_unlock(&applicationLock);
             NSApp.delegate = nil;
-            for (VZGraphicWindowController *window in controller.windows) {
-                window.didClose = nil;
-                [window close];
-            }
             [controller release];
+            return result;
         }
     }
-    running = NO;
     return VZGraphicApplicationSuccess;
 }
 

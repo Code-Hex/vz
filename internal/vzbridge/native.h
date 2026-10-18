@@ -60,7 +60,8 @@ void vz_addGraphicWindow(void *application, VZBridgeObject machine, double width
 typedef enum : int32_t {
     VZGraphicApplicationSuccess = 0,
     VZGraphicApplicationNotMainThread = 1,
-    VZGraphicApplicationAlreadyRunning = 2,
+    VZGraphicApplicationDuplicateMachine = 2,
+    VZGraphicApplicationStopping = 3,
 } VZGraphicApplicationResult;
 VZGraphicApplicationResult vz_runGraphicApplication(void *application) __attribute__((annotate("vzbridge:manual")));
 void vz_freeGraphicApplication(void *application) __attribute__((annotate("vzbridge:noqueue")));

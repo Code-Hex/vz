@@ -1,4 +1,4 @@
-#import "native.h"
+#import "Window.m"
 #import "virtualization_view.h"
 #import <unistd.h>
 
@@ -106,6 +106,8 @@ typedef NS_ENUM(NSUInteger, Scenario) {
     StopFirst,
     Quit,
     SingleWindow,
+    AddLater,
+    AddOnMain,
 };
 
 static void checkWindowMenuState(NSWindow *first, NSWindow *second)
@@ -142,11 +144,11 @@ static void runScenario(Scenario scenario, VZVirtualMachine *first, VZVirtualMac
     @autoreleasepool {
         void *application = vz_newGraphicApplication();
         vz_addGraphicWindow(application, first, 640, 480, "First VM", true);
-        if (scenario != SingleWindow) {
+        if (scenario != SingleWindow && scenario != AddLater && scenario != AddOnMain) {
             vz_addGraphicWindow(application, second, 640, 480, "Second VM", true);
         }
         __block BOOL completed = NO;
-        later(^{
+        void (^checkWindows)(void) = ^{
             NSWindow *firstWindow = windowNamed(@"First VM");
             NSWindow *secondWindow = windowNamed(@"Second VM");
             require(firstWindow.visible, @"First VM window is not visible");
@@ -163,7 +165,7 @@ static void runScenario(Scenario scenario, VZVirtualMachine *first, VZVirtualMac
             }
             if (scenario == CloseFirst) {
                 checkWindowMenuState(firstWindow, secondWindow);
-                require(vz_runGraphicApplication(application) == VZGraphicApplicationAlreadyRunning, @"Nested application run was accepted");
+                require(vz_runGraphicApplication(application) == VZGraphicApplicationDuplicateMachine, @"Duplicate application windows were accepted");
             }
             if (scenario == Quit) {
                 completed = YES;
@@ -201,6 +203,28 @@ static void runScenario(Scenario scenario, VZVirtualMachine *first, VZVirtualMac
                 completed = YES;
                 [windowNamed(remainingTitle) performClose:nil];
             });
+        };
+        later(^{
+            if (scenario == AddOnMain) {
+                void *addition = vz_newGraphicApplication();
+                vz_addGraphicWindow(addition, second, 640, 480, "Second VM", true);
+                require(vz_runGraphicApplication(addition) == VZGraphicApplicationSuccess, @"Adding a window on the main thread failed");
+                vz_freeGraphicApplication(addition);
+            }
+            if (scenario != AddLater) {
+                checkWindows();
+                return;
+            }
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
+                @autoreleasepool {
+                    void *addition = vz_newGraphicApplication();
+                    vz_addGraphicWindow(addition, second, 640, 480, "Second VM", true);
+                    require(vz_runGraphicApplication(addition) == VZGraphicApplicationSuccess, @"Adding a window from a background thread failed");
+                    require(vz_runGraphicApplication(addition) == VZGraphicApplicationDuplicateMachine, @"Duplicate window was accepted");
+                    vz_freeGraphicApplication(addition);
+                    dispatch_async(dispatch_get_main_queue(), checkWindows);
+                }
+            });
         });
         require(vz_runGraphicApplication(application) == VZGraphicApplicationSuccess, @"Application run failed");
         require(completed, @"Event loop returned before the remaining window closed");
@@ -220,6 +244,43 @@ static void runScenario(Scenario scenario, VZVirtualMachine *first, VZVirtualMac
     [controllers release];
     [windows release];
     [views release];
+}
+
+static void quitWithPendingAddition(VZVirtualMachine *first, VZVirtualMachine *second)
+{
+    void *application = vz_newGraphicApplication();
+    vz_addGraphicWindow(application, first, 640, 480, "First VM", true);
+    dispatch_semaphore_t completed = dispatch_semaphore_create(0);
+    later(^{
+        dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
+            @autoreleasepool {
+                void *addition = vz_newGraphicApplication();
+                vz_addGraphicWindow(addition, second, 640, 480, "Second VM", true);
+                require(vz_runGraphicApplication(addition) == VZGraphicApplicationStopping,
+                    @"Quit did not reject the pending window");
+                vz_freeGraphicApplication(addition);
+                dispatch_semaphore_signal(completed);
+            }
+        });
+        NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:2];
+        BOOL pending = NO;
+        while (!pending && deadline.timeIntervalSinceNow > 0) {
+            pthread_mutex_lock(&applicationLock);
+            pending = activeApplication->pendingAdditions != 0;
+            pthread_mutex_unlock(&applicationLock);
+            if (!pending) {
+                usleep(1000);
+            }
+        }
+        require(pending, @"Background window request was not admitted");
+        [NSApp terminate:nil];
+    });
+    require(vz_runGraphicApplication(application) == VZGraphicApplicationSuccess, @"Application run failed");
+    require(dispatch_semaphore_wait(completed, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC)) == 0,
+        @"Quit left the background window request blocked");
+    require(!windowNamed(@"Second VM").visible, @"Quit created the pending window");
+    dispatch_release(completed);
+    vz_freeGraphicApplication(application);
 }
 
 int main(void)
@@ -249,6 +310,9 @@ int main(void)
             vz_freeGraphicApplication(offMainApplication);
             runScenario(CloseFirst, first, second);
             runScenario(CloseSecond, first, second);
+            runScenario(AddLater, first, second);
+            runScenario(AddOnMain, first, second);
+            quitWithPendingAddition(first, second);
             runScenario(Quit, first, second);
             runScenario(SingleWindow, first, second);
             runScenario(StopFirst, first, second);

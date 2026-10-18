@@ -361,19 +361,21 @@ func NewGraphicWindow(machine *VirtualMachine, width, height float64, opts ...St
 	return window, nil
 }
 
-// StartGraphicApplication displays the windows until all of them close.
+// StartGraphicApplication opens one or more VM windows.
 // Closing a window does not stop its VM. A stopped VM closes its own window.
 //
-// Call this function from the main goroutine after calling runtime.LockOSThread
-// in init. Only one graphic application can run at a time.
+// The first call must run on the main goroutine after runtime.LockOSThread in
+// init. It runs the event loop and returns when all windows close. While the
+// event loop is running, calls from any goroutine add windows and return once
+// they are displayed. A VM can have only one open window.
+// Calls made while the application is shutting down return an error.
+// After the event loop exits, a new application must start on the main thread.
 // This is supported on macOS 12 and newer.
-func StartGraphicApplication(windows ...*GraphicWindow) error {
+func StartGraphicApplication(w *GraphicWindow, windows ...*GraphicWindow) error {
 	if err := macOSAvailable(12); err != nil {
 		return err
 	}
-	if len(windows) == 0 {
-		return fmt.Errorf("graphic application requires at least one window")
-	}
+	windows = append([]*GraphicWindow{w}, windows...)
 	seen := make(map[*VirtualMachine]bool, len(windows))
 	for _, window := range windows {
 		if window == nil || window.machine == nil {
@@ -394,16 +396,18 @@ func StartGraphicApplication(windows ...*GraphicWindow) error {
 	switch status {
 	case vzbridge.GraphicApplicationNotMainThread:
 		return fmt.Errorf("graphic application must run on the main thread")
-	case vzbridge.GraphicApplicationAlreadyRunning:
-		return fmt.Errorf("a graphic application is already running")
+	case vzbridge.GraphicApplicationStopping:
+		return fmt.Errorf("graphic application is shutting down")
+	case vzbridge.GraphicApplicationDuplicateMachine:
+		return fmt.Errorf("graphic application cannot display the same virtual machine twice")
 	}
 	return nil
 }
 
-// StartGraphicApplication displays a single VM window until it closes.
+// StartGraphicApplication opens a window for this VM.
 //
-// Call this method from the main goroutine after calling runtime.LockOSThread
-// in init. Use the package-level StartGraphicApplication to display multiple VMs.
+// It follows the same threading and return behavior as the package-level
+// StartGraphicApplication function.
 // This is supported on macOS 12 and newer.
 func (v *VirtualMachine) StartGraphicApplication(width, height float64, opts ...StartGraphicApplicationOption) error {
 	if err := macOSAvailable(12); err != nil {

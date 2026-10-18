@@ -39,9 +39,10 @@ const (
 type GraphicApplicationResult int32
 
 const (
-	GraphicApplicationSuccess        GraphicApplicationResult = C.VZGraphicApplicationSuccess
-	GraphicApplicationNotMainThread  GraphicApplicationResult = C.VZGraphicApplicationNotMainThread
-	GraphicApplicationAlreadyRunning GraphicApplicationResult = C.VZGraphicApplicationAlreadyRunning
+	GraphicApplicationSuccess          GraphicApplicationResult = C.VZGraphicApplicationSuccess
+	GraphicApplicationNotMainThread    GraphicApplicationResult = C.VZGraphicApplicationNotMainThread
+	GraphicApplicationDuplicateMachine GraphicApplicationResult = C.VZGraphicApplicationDuplicateMachine
+	GraphicApplicationStopping         GraphicApplicationResult = C.VZGraphicApplicationStopping
 )
 
 var callRunGraphicApplication lazyBinding[func(unsafe.Pointer) GraphicApplicationResult]

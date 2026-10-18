@@ -37,9 +37,15 @@ func showWindows(first, second *vz.VirtualMachine) error {
 
 Call `showWindows` from `main` after starting both VMs. Closing a window leaves
 its VM running and does not affect other windows. Stopping a VM closes its window.
-`StartGraphicApplication` returns when the last window closes. The caller remains
-responsible for stopping the VMs. For one VM, the existing
-`vm.StartGraphicApplication` method is also available.
+The first `StartGraphicApplication` call runs the event loop and returns when the
+last window closes. While it is running, call `StartGraphicApplication` from
+another goroutine to open more windows. Those calls return when the new windows
+are displayed. Each call requires at least one window, and each VM can have only
+one open window. After all windows close, start the next application on the main
+thread.
+
+The caller remains responsible for stopping the VMs. For one VM, the existing
+`vm.StartGraphicApplication` method follows the same behavior.
 
 ## Requirements
 

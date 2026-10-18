@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestValidateMTU(t *testing.T) {
+func TestWithMTU(t *testing.T) {
 	for _, test := range []struct {
 		mtu   int
 		valid bool
@@ -49,36 +49,37 @@ func TestValidateMTU(t *testing.T) {
 			mtu: math.MaxInt,
 		},
 	} {
-		err := validateMTU(test.mtu)
+		var options networkConfigurationOptions
+		err := WithMTU(test.mtu)(&options)
 		if (err == nil) != test.valid {
-			t.Errorf("validateMTU(%d) = %v, want valid %v", test.mtu, err, test.valid)
+			t.Errorf("WithMTU(%d) = %v, want valid %v", test.mtu, err, test.valid)
+		}
+		if test.valid && options.mtu != test.mtu {
+			t.Errorf("MTU = %d, want %d", options.mtu, test.mtu)
+		}
+		if !test.valid && options.mtu != 0 {
+			t.Errorf("invalid MTU changed options to %d", options.mtu)
 		}
 	}
 }
 
-func TestSetMTUInvalidInputs(t *testing.T) {
-	for _, config := range []*NetworkConfiguration{nil, {}} {
-		for _, mtu := range []int{-1, 0, 1279, 65536, math.MaxInt} {
-			if err := config.SetMTU(mtu); err == nil || !strings.Contains(err.Error(), "invalid vmnet MTU") {
-				t.Errorf("SetMTU(%d) accepted an invalid MTU", mtu)
-			}
-		}
-		if err := config.SetMTU(1500); err == nil {
-			t.Error("SetMTU accepted an uninitialized configuration")
+func TestNetworkConfigurationInvalidMTU(t *testing.T) {
+	for _, mtu := range []int{-1, 0, 1279, 65536, math.MaxInt} {
+		// An invalid mode also prevents native allocation if option validation regresses.
+		config, err := NewNetworkConfiguration(Mode(-1), WithMTU(mtu))
+		if config != nil || err == nil || !strings.Contains(err.Error(), "invalid vmnet MTU") {
+			t.Errorf("WithMTU(%d): configuration = %v, error = %v", mtu, config, err)
 		}
 	}
 }
 
-func TestSetMTUInterface(t *testing.T) {
+func TestWithMTUInterface(t *testing.T) {
 	if Available(26) {
 		t.Skip("vmnet networks require macOS 26 and its SDK")
 	}
 	for _, mode := range []Mode{ModeHost, ModeShared} {
-		config, err := NewNetworkConfiguration(mode)
+		config, err := NewNetworkConfiguration(mode, WithMTU(1500))
 		if err != nil {
-			t.Fatal(err)
-		}
-		if err := config.SetMTU(1500); err != nil {
 			t.Fatal(err)
 		}
 		network, err := NewNetwork(config)
@@ -91,6 +92,29 @@ func TestSetMTUInterface(t *testing.T) {
 		}
 		if err := iface.Stop(); err != nil {
 			t.Fatal(err)
+		}
+	}
+}
+
+func TestNetworkConfigurationNilOption(t *testing.T) {
+	config, err := NewNetworkConfiguration(Mode(-1), nil)
+	if config != nil || err == nil || !strings.Contains(err.Error(), "option is nil") {
+		t.Fatalf("configuration = %v, error = %v", config, err)
+	}
+}
+
+func TestWithMTUReuse(t *testing.T) {
+	option := WithMTU(1500)
+	for range 2 {
+		var options networkConfigurationOptions
+		if err := option(&options); err != nil {
+			t.Fatal(err)
+		}
+		if err := WithMTU(9000)(&options); err != nil {
+			t.Fatal(err)
+		}
+		if options.mtu != 9000 {
+			t.Fatalf("MTU = %d, want 9000", options.mtu)
 		}
 	}
 }

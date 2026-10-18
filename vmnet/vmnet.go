@@ -41,10 +41,45 @@ type configurationState struct {
 	reservations map[[6]byte]netip.Addr
 }
 
+// NetworkConfigurationOption configures a network before native allocation.
+// Use options such as [WithMTU] with [NewNetworkConfiguration].
+type NetworkConfigurationOption func(*networkConfigurationOptions) error
+
+type networkConfigurationOptions struct {
+	mtu int
+}
+
+// WithMTU sets the network's maximum transmission unit in bytes.
+// NewNetworkConfiguration rejects values outside 1280 through 65535 before
+// calling vmnet. The lower bound preserves the IPv6 minimum MTU; the upper
+// bound prevents exceeding the Darwin interface limit. A value within this
+// range may still be rejected by vmnet. If omitted, vmnet chooses the MTU.
+func WithMTU(mtu int) NetworkConfigurationOption {
+	return func(options *networkConfigurationOptions) error {
+		if err := validateMTU(mtu); err != nil {
+			return err
+		}
+		options.mtu = mtu
+		return nil
+	}
+}
+
 // NewNetworkConfiguration creates a configuration with DHCP and IPv6 router
 // advertisements enabled, an automatically selected IPv4 subnet, and a random
-// IPv6 ULA prefix. It requires macOS 26 and newer.
-func NewNetworkConfiguration(mode Mode) (*NetworkConfiguration, error) {
+// IPv6 ULA prefix. Options are applied in order before native allocation.
+// A nil or invalid option returns an error. Repeated options use the last
+// value, but an invalid option always returns an error.
+// It requires macOS 26 and newer.
+func NewNetworkConfiguration(mode Mode, opts ...NetworkConfigurationOption) (*NetworkConfiguration, error) {
+	var options networkConfigurationOptions
+	for _, option := range opts {
+		if option == nil {
+			return nil, fmt.Errorf("vmnet network configuration option is nil")
+		}
+		if err := option(&options); err != nil {
+			return nil, err
+		}
+	}
 	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
 		return nil, err
 	}
@@ -59,33 +94,18 @@ func NewNetworkConfiguration(mode Mode) (*NetworkConfiguration, error) {
 	if ptr == nil {
 		return nil, fmt.Errorf("vmnet returned no network configuration")
 	}
-	return &NetworkConfiguration{
+	configuration := &NetworkConfiguration{
 		pointer: *objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject),
 		state:   &configurationState{},
-	}, nil
-}
-
-// SetMTU sets the network's maximum transmission unit in bytes.
-// The accepted range is 1280 through 65535. The lower bound preserves the
-// IPv6 minimum MTU; the upper bound prevents exceeding the Darwin interface
-// limit. Values outside this range are rejected before calling vmnet.
-// A value within this range may still be rejected by vmnet.
-// It requires macOS 26 and newer.
-func (c *NetworkConfiguration) SetMTU(mtu int) error {
-	if err := validateMTU(mtu); err != nil {
-		return err
 	}
-	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
-		return err
+	if options.mtu != 0 {
+		vzbridge.SetVmnetMTU(configuration, uint32(options.mtu), &errorPtr)
+		if err := vmnetError(errorPtr); err != nil {
+			objc.Release(configuration)
+			return nil, err
+		}
 	}
-	if c == nil || objc.Ptr(c) == nil || c.state == nil {
-		return fmt.Errorf("vmnet network configuration is nil or uninitialized")
-	}
-	c.state.mu.Lock()
-	defer c.state.mu.Unlock()
-	var errorPtr unsafe.Pointer
-	vzbridge.SetVmnetMTU(c, uint32(mtu), &errorPtr)
-	return vmnetError(errorPtr)
+	return configuration, nil
 }
 
 func validateMTU(mtu int) error {

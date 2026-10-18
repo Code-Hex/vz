@@ -31,10 +31,22 @@ func TestNetworkSharingInvalidInputs(t *testing.T) {
 		name        string
 		requirement string
 	}{
-		{name: "", requirement: "true"},
-		{name: "test\x00name", requirement: "true"},
-		{name: "test", requirement: ""},
-		{name: "test", requirement: "true\x00false"},
+		{
+			name:        "",
+			requirement: "true",
+		},
+		{
+			name:        "test\x00name",
+			requirement: "true",
+		},
+		{
+			name:        "test",
+			requirement: "",
+		},
+		{
+			name:        "test",
+			requirement: "true\x00false",
+		},
 	} {
 		if _, err := vmnet.ReceiveNetwork(context.Background(), input.name, input.requirement); err == nil {
 			t.Fatal("invalid service arguments accepted")
@@ -246,7 +258,9 @@ func startNetworkService(t *testing.T, requirement string) *networkServiceProces
 	if output, err := exec.Command("launchctl", "bootstrap", domain, path).CombinedOutput(); err != nil {
 		t.Fatalf("bootstrap: %v: %s", err, output)
 	}
-	process := &networkServiceProcess{name: name}
+	process := &networkServiceProcess{
+		name: name,
+	}
 	t.Cleanup(func() {
 		if output, err := exec.Command("launchctl", "bootout", domain+"/"+name).CombinedOutput(); err != nil {
 			t.Errorf("bootout: %v: %s", err, output)

@@ -42,7 +42,12 @@ func ListenNetwork(name string, network *Network, peerRequirement string) (*Netw
 	if ptr == nil {
 		return nil, fmt.Errorf("vmnet returned no network service")
 	}
-	return &NetworkService{state: &networkServiceState{ptr: ptr, serialization: serialization}}, nil
+	return &NetworkService{
+		state: &networkServiceState{
+			ptr:           ptr,
+			serialization: serialization,
+		},
+	}, nil
 }
 
 // Close stops accepting peers and closes existing XPC connections.

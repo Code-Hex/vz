@@ -11,8 +11,15 @@ import (
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
-// NetworkService shares one network through a launchd Mach service.
-// Call Close when the service is no longer needed.
+// NetworkService publishes one logical network through a launchd Mach service.
+// Clients obtain a reference with [ReceiveNetwork], allowing virtual machines
+// in separate processes to use the same network. XPC transfers the network
+// reference; VM packets flow through vmnet.
+//
+// The service retains the source network until [NetworkService.Close].
+// Keep the service open and its process running while clients use the network.
+// A received reference does not preserve the source network reservation after
+// the server releases it. Call Close when clients no longer need the network.
 type NetworkService struct {
 	state *networkServiceState
 }
@@ -23,9 +30,24 @@ type networkServiceState struct {
 	serialization *NetworkSerialization
 }
 
-// ShareNetwork shares network with peers satisfying peerRequirement, an Apple
-// code signing requirement expression. The service name must be registered in
-// the process's launchd property list. It requires macOS 26 and newer.
+// ShareNetwork publishes network through the launchd Mach service named name.
+// It returns after creating the service and handles client requests internally.
+// Clients use [ReceiveNetwork] to obtain a reference to the same logical network.
+//
+// The caller must register name in the MachServices dictionary of the process's
+// launchd property list and load the job with launchctl. ShareNetwork does not
+// register the name. XPC may report connection or registration failures
+// asynchronously, so successful creation does not confirm that clients can
+// reach the service.
+//
+// peerRequirement is an Apple code signing requirement expression checked
+// against each client executable. It must be nonempty. The expression "true"
+// accepts any executable and should not be used to expose a private network.
+//
+// The returned service retains network. Keep the service open and this process
+// running while clients use the network, then call [NetworkService.Close].
+//
+// ShareNetwork requires macOS 26 and newer.
 func ShareNetwork(name string, network *Network, peerRequirement string) (*NetworkService, error) {
 	if err := validateNetworkService(name, peerRequirement); err != nil {
 		return nil, err
@@ -50,9 +72,12 @@ func ShareNetwork(name string, network *Network, peerRequirement string) (*Netwo
 	}, nil
 }
 
-// Close stops accepting peers and closes existing XPC connections.
-// Keep the service open while clients use the shared network.
-// Repeated calls have no effect.
+// Close stops accepting peers, closes existing XPC connections, and releases
+// the service's reference to the source network. Call it only when clients no
+// longer need the shared network; their references do not retain the source
+// network reservation.
+//
+// Repeated and concurrent calls have no additional effect.
 func (s *NetworkService) Close() error {
 	if s == nil || s.state == nil {
 		return nil
@@ -67,10 +92,23 @@ func (s *NetworkService) Close() error {
 	return nil
 }
 
-// ReceiveNetwork obtains a network from a launchd Mach service whose executable
-// satisfies peerRequirement, an Apple code signing requirement expression.
-// The context bounds the request, including service startup and authentication.
-// It requires macOS 26 and newer.
+// ReceiveNetwork obtains a reference to the logical network published by
+// [ShareNetwork] through the launchd Mach service named name.
+//
+// peerRequirement is a nonempty Apple code signing requirement expression
+// checked against the server executable. The server independently checks the
+// client's signature against the requirement passed to ShareNetwork.
+//
+// ctx must be non-nil. Use a deadline to bound the request, including service
+// startup and authentication. After ReceiveNetwork returns successfully,
+// cancellation of ctx does not affect the returned network.
+//
+// Pass the network to [StartInterfaceWithNetwork] or to
+// vz.NewVMNetNetworkDeviceAttachment to connect a VM. XPC transfers the network
+// reference, not VM packets. The sharing service and its process must remain
+// running while the client uses the network.
+//
+// ReceiveNetwork requires macOS 26 and newer.
 func ReceiveNetwork(ctx context.Context, name, peerRequirement string) (*Network, error) {
 	if err := validateNetworkService(name, peerRequirement); err != nil {
 		return nil, err

@@ -72,6 +72,9 @@ func TestVirtualMachinesUseDifferentNativeQueues(t *testing.T) {
 	if ObjectQueue(firstQueue) != DispatchQueuePointer() || ObjectQueue(secondQueue) != DispatchQueuePointer() {
 		t.Fatal("a native dispatch queue inherited its machine owner")
 	}
+	if ObjectQueue(first) != objc.Ptr(firstQueue) || ObjectQueue(second) != objc.Ptr(secondQueue) {
+		t.Fatal("bridge dispatch does not use the native machine queue")
+	}
 	if objc.Ptr(firstQueue) == objc.Ptr(secondQueue) {
 		t.Fatal("independent virtual machines share a native queue")
 	}

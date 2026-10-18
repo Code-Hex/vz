@@ -48,6 +48,12 @@ static dispatch_queue_t commonQueue(void)
 void *vz_objectQueue(void *object)
 {
     @autoreleasepool {
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+        if (@available(macOS 26.0, *)) {
+            if ([(id)object isKindOfClass:[VZVirtualMachine class]])
+                return [(VZVirtualMachine *)object queue];
+        }
+#endif
         VZBridgeQueue *owner = objc_getAssociatedObject((id)object, &objectQueueKey);
         return owner ? owner->queue : commonQueue();
     }
@@ -72,8 +78,7 @@ static void syncNative(void (^body)(void))
 static void syncObject(id object, void (^body)(void))
 {
     @autoreleasepool {
-        VZBridgeQueue *owner = objc_getAssociatedObject(object, &objectQueueKey);
-        syncOnQueue(owner ? owner->queue : commonQueue(), body);
+        syncOnQueue(vz_objectQueue(object), body);
     }
 }
 
@@ -122,8 +127,7 @@ void vz_releaseObject(void *object)
     if (!object)
         return;
     @autoreleasepool {
-        VZBridgeQueue *owner = objc_getAssociatedObject((id)object, &objectQueueKey);
-        dispatch_queue_t target = owner ? owner->queue : commonQueue();
+        dispatch_queue_t target = vz_objectQueue(object);
         dispatch_retain(target);
         // A void pointer keeps the block from taking an extra Objective-C reference.
         dispatch_group_async(pendingReleases(), target, ^{

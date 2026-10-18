@@ -467,17 +467,43 @@ func SocketConnectionDuplicatedFileDescriptor(p0 objc.NSObject, p1 *unsafe.Point
 	return result
 }
 
-var callStartVirtualMachineWindow lazyBinding[func(unsafe.Pointer, float64, float64, string, bool)]
+var callNewGraphicApplication lazyBinding[func() unsafe.Pointer]
 
-func StartVirtualMachineWindow(p0 objc.NSObject, p1 float64, p2 float64, p3 string, p4 bool) {
-	call := callStartVirtualMachineWindow.get(func() func(unsafe.Pointer, float64, float64, string, bool) {
-		var call func(unsafe.Pointer, float64, float64, string, bool)
-		purego.RegisterFunc(&call, uintptr(C.vz_startVirtualMachineWindow))
+func NewGraphicApplication() unsafe.Pointer {
+	call := callNewGraphicApplication.get(func() func() unsafe.Pointer {
+		var call func() unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_newGraphicApplication))
 		return call
 	})
-	call(objc.Ptr(p0), p1, p2, p3, p4)
-	runtime.KeepAlive(p0)
-	runtime.KeepAlive(p3)
+	var result unsafe.Pointer
+	result = call()
+	return result
+}
+
+var callAddGraphicWindow lazyBinding[func(unsafe.Pointer, unsafe.Pointer, float64, float64, string, bool)]
+
+func AddGraphicWindow(application unsafe.Pointer, machine objc.NSObject, width float64, height float64, title string, enableController bool) {
+	call := callAddGraphicWindow.get(func() func(unsafe.Pointer, unsafe.Pointer, float64, float64, string, bool) {
+		var call func(unsafe.Pointer, unsafe.Pointer, float64, float64, string, bool)
+		purego.RegisterFunc(&call, uintptr(C.vz_addGraphicWindow))
+		return call
+	})
+	call(application, objc.Ptr(machine), width, height, title, enableController)
+	runtime.KeepAlive(application)
+	runtime.KeepAlive(machine)
+	runtime.KeepAlive(title)
+}
+
+var callFreeGraphicApplication lazyBinding[func(unsafe.Pointer)]
+
+func FreeGraphicApplication(application unsafe.Pointer) {
+	call := callFreeGraphicApplication.get(func() func(unsafe.Pointer) {
+		var call func(unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_freeGraphicApplication))
+		return call
+	})
+	call(application)
+	runtime.KeepAlive(application)
 }
 
 var callStartWithCompletionHandler lazyBinding[func(unsafe.Pointer, uint64)]

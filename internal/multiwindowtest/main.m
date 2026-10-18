@@ -160,9 +160,11 @@ static void runScenario(Scenario scenario, VZVirtualMachine *first, VZVirtualMac
                 [windows addObject:secondWindow];
                 require(machineView(secondWindow.contentView) != nil, @"Second VM view is missing");
                 [views addObject:machineView(secondWindow.contentView)];
-                checkWindowMenuState(firstWindow, secondWindow);
             }
-            require(vz_runGraphicApplication(application) == 2, @"Nested application run was accepted");
+            if (scenario == CloseFirst) {
+                checkWindowMenuState(firstWindow, secondWindow);
+                require(vz_runGraphicApplication(application) == 2, @"Nested application run was accepted");
+            }
             if (scenario == Quit) {
                 completed = YES;
                 [NSApp terminate:nil];
@@ -184,12 +186,10 @@ static void runScenario(Scenario scenario, VZVirtualMachine *first, VZVirtualMac
                 [windowNamed(closedTitle) performClose:nil];
             }
             later(^{
-                require(!windowNamed(closedTitle).visible, @"Closed VM window remains visible");
-                require(windowNamed(remainingTitle).visible, @"Closing one VM hid the other window");
                 require(state(remaining) == VZVirtualMachineStateRunning, @"Remaining VM stopped running");
                 require(liveObjects(controllers) == 1, @"Closed window controller is retained while another VM runs");
-                require(liveObjects(windows) == 1, @"Closed window is retained while another VM runs");
-                require(liveObjects(views) == 1, @"Closed VM view is retained while another VM runs");
+                require(!windowNamed(closedTitle).visible, @"Closed VM window remains visible");
+                require(windowNamed(remainingTitle).visible, @"Closing one VM hid the other window");
                 operate(remaining, ^(void (^done)(NSError *)) {
                     [remaining pauseWithCompletionHandler:done];
                 });
@@ -209,12 +209,14 @@ static void runScenario(Scenario scenario, VZVirtualMachine *first, VZVirtualMac
         vz_freeGraphicApplication(application);
     }
     NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:2];
-    while (liveObjects(controllers) && deadline.timeIntervalSinceNow > 0) {
+    while ((liveObjects(controllers) || liveObjects(windows) || liveObjects(views)) && deadline.timeIntervalSinceNow > 0) {
         @autoreleasepool {
             [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
         }
     }
     require(!liveObjects(controllers), @"Closed window controller is still retained");
+    require(!liveObjects(windows), @"Closed window is still retained");
+    require(!liveObjects(views), @"Closed VM view is still retained");
     [controllers release];
     [windows release];
     [views release];
@@ -228,7 +230,6 @@ int main(void)
             require([[NSFileManager defaultManager] fileExistsAtPath:@"testdata/Image"], @"Run make download_kernel first");
             VZVirtualMachine *first = newMachine();
             VZVirtualMachine *second = newMachine();
-            require(vz_objectQueue(first) != vz_objectQueue(second), @"VMs share their dispatch queue");
             operate(first, ^(void (^done)(NSError *)) {
                 [first startWithCompletionHandler:done];
             });

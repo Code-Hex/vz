@@ -2,7 +2,9 @@ package vz
 
 import (
 	"path/filepath"
+	"runtime"
 	"testing"
+	"time"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
@@ -115,4 +117,60 @@ func TestVMNetAttachmentNetworkRetainsReference(t *testing.T) {
 	if got, err := retained.IPv4Subnet(); err != nil || got != want {
 		t.Fatalf("retained network subnet = %v, %v, want %v", got, err, want)
 	}
+}
+
+func TestVMNetSerializedNetworkAttachmentLifetime(t *testing.T) {
+	if macOSAvailable(26) != nil {
+		t.Skip("vmnet networks require macOS 26 and its SDK")
+	}
+	attachment, collected := func() (*VMNetNetworkDeviceAttachment, <-chan struct{}) {
+		config, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
+		if err != nil {
+			t.Fatal(err)
+		}
+		source, err := vmnet.NewNetwork(config)
+		if err != nil {
+			t.Fatal(err)
+		}
+		serialization, err := source.CopySerialization()
+		if err != nil {
+			t.Fatal(err)
+		}
+		restored, err := vmnet.NewNetworkWithSerialization(serialization)
+		if err != nil {
+			t.Fatal(err)
+		}
+		collected := make(chan struct{})
+		runtime.AddCleanup(restored, func(ch chan struct{}) { close(ch) }, collected)
+		attachment, err := NewVMNetNetworkDeviceAttachment(restored)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return attachment, collected
+	}()
+	awaitNativeBridge(t, func() bool {
+		select {
+		case <-collected:
+			return true
+		default:
+			return false
+		}
+	})
+	for range 10 {
+		runtime.GC()
+		vzbridge.Drain()
+		time.Sleep(10 * time.Millisecond)
+	}
+	network := attachment.Network()
+	if network == nil {
+		t.Fatal("attachment returned no network")
+	}
+	iface, err := vmnet.StartInterfaceWithNetwork(network)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := iface.Stop(); err != nil {
+		t.Fatal(err)
+	}
+	runtime.KeepAlive(attachment)
 }

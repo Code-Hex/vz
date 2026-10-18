@@ -50,6 +50,7 @@ type networkConfigurationOptions struct {
 	ipv4Subnet                  netip.Prefix
 	ipv6Prefix                  netip.Prefix
 	reservations                map[[6]byte]netip.Addr
+	portForwarding              []portForwardingRule
 	dhcpDisabled                bool
 	dnsProxyDisabled            bool
 	nat44Disabled               bool
@@ -177,8 +178,9 @@ func WithRouterAdvertisementDisabled() NetworkConfigurationOption {
 // vmnet defaults for the selected mode. Options are applied in order before
 // native allocation.
 // A nil or invalid option returns an error. Repeated options use the last
-// value for each setting or MAC address, but an invalid option always returns
-// an error. DHCP reservations are validated against the final IPv4 subnet.
+// value for each setting, MAC address, or port forwarding rule, but an invalid
+// option always returns an error. DHCP reservations are validated against the
+// final IPv4 subnet.
 // It requires macOS 26 and newer.
 func NewNetworkConfiguration(mode Mode, opts ...NetworkConfigurationOption) (*NetworkConfiguration, error) {
 	var options networkConfigurationOptions
@@ -270,6 +272,11 @@ func (options networkConfigurationOptions) apply(configuration *NetworkConfigura
 		vzbridge.AddVmnetDHCPReservation(configuration, unsafe.Pointer(&mac[0]), binary.BigEndian.Uint32(bytes[:]), &errorPtr)
 		runtime.KeepAlive(mac)
 		if err := vmnetError(errorPtr); err != nil {
+			return err
+		}
+	}
+	for _, rule := range options.portForwarding {
+		if err := rule.apply(configuration); err != nil {
 			return err
 		}
 	}

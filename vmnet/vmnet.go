@@ -65,6 +65,37 @@ func NewNetworkConfiguration(mode Mode) (*NetworkConfiguration, error) {
 	}, nil
 }
 
+// SetMTU sets the network's maximum transmission unit in bytes.
+// The accepted range is 1280 through 65535. The lower bound preserves the
+// IPv6 minimum MTU; the upper bound prevents exceeding the Darwin interface
+// limit. Values outside this range are rejected before calling vmnet.
+// A value within this range may still be rejected by vmnet.
+// It requires macOS 26 and newer.
+func (c *NetworkConfiguration) SetMTU(mtu int) error {
+	if err := validateMTU(mtu); err != nil {
+		return err
+	}
+	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
+		return err
+	}
+	if c == nil || objc.Ptr(c) == nil || c.state == nil {
+		return fmt.Errorf("vmnet network configuration is nil or uninitialized")
+	}
+	c.state.mu.Lock()
+	defer c.state.mu.Unlock()
+	var errorPtr unsafe.Pointer
+	vzbridge.SetVmnetMTU(c, uint32(mtu), &errorPtr)
+	return vmnetError(errorPtr)
+}
+
+func validateMTU(mtu int) error {
+	// Darwin's IF_MAXMTU is 65535. Larger values can trigger a kernel assertion.
+	if mtu < 1280 || mtu > 65535 {
+		return fmt.Errorf("invalid vmnet MTU %d: must be between 1280 and 65535", mtu)
+	}
+	return nil
+}
+
 // SetIPv4Subnet sets the network's IPv4 subnet. Host bits in prefix are ignored.
 // The first, second (host), and last addresses are reserved. Prefixes
 // longer than /30 are rejected. It requires macOS 26 and newer.

@@ -246,41 +246,71 @@ static void runScenario(Scenario scenario, VZVirtualMachine *first, VZVirtualMac
     [views release];
 }
 
-static void quitWithPendingAddition(VZVirtualMachine *first, VZVirtualMachine *second)
+static void closeWithPendingAddition(VZVirtualMachine *first, VZVirtualMachine *second, BOOL quit)
 {
-    void *application = vz_newGraphicApplication();
-    vz_addGraphicWindow(application, first, 640, 480, "First VM", true);
+    NSHashTable *objects = [[NSHashTable weakObjectsHashTable] retain];
     dispatch_semaphore_t completed = dispatch_semaphore_create(0);
-    later(^{
-        dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
-            @autoreleasepool {
-                void *addition = vz_newGraphicApplication();
-                vz_addGraphicWindow(addition, second, 640, 480, "Second VM", true);
-                require(vz_runGraphicApplication(addition) == VZGraphicApplicationStopping,
-                    @"Quit did not reject the pending window");
-                vz_freeGraphicApplication(addition);
-                dispatch_semaphore_signal(completed);
+    @autoreleasepool {
+        void *application = vz_newGraphicApplication();
+        vz_addGraphicWindow(application, first, 640, 480, "First VM", true);
+        later(^{
+            NSWindow *firstWindow = windowNamed(@"First VM");
+            [objects addObject:firstWindow];
+            [objects addObject:firstWindow.delegate];
+            [objects addObject:machineView(firstWindow.contentView)];
+            dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
+                @autoreleasepool {
+                    void *addition = vz_newGraphicApplication();
+                    vz_addGraphicWindow(addition, second, 640, 480, "Second VM", true);
+                    VZGraphicApplicationResult expected = quit ? VZGraphicApplicationStopping : VZGraphicApplicationSuccess;
+                    require(vz_runGraphicApplication(addition) == expected, @"Unexpected result for an admitted window");
+                    vz_freeGraphicApplication(addition);
+                    if (!quit) {
+                        dispatch_sync(dispatch_get_main_queue(), ^{
+                            NSWindow *window = windowNamed(@"Second VM");
+                            require(window.visible, @"Admitted window is not visible");
+                            require(!windowNamed(@"First VM").visible, @"First window did not close");
+                            [objects addObject:window];
+                            [objects addObject:window.delegate];
+                            [objects addObject:machineView(window.contentView)];
+                            [window performClose:nil];
+                        });
+                    }
+                    dispatch_semaphore_signal(completed);
+                }
+            });
+            NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:2];
+            BOOL pending = NO;
+            while (!pending && deadline.timeIntervalSinceNow > 0) {
+                pthread_mutex_lock(&applicationLock);
+                pending = activeApplication->pendingAdditions != 0;
+                pthread_mutex_unlock(&applicationLock);
+                if (!pending) {
+                    usleep(1000);
+                }
+            }
+            require(pending, @"Background window request was not admitted");
+            if (quit) {
+                [NSApp terminate:nil];
+            } else {
+                [firstWindow performClose:nil];
             }
         });
-        NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:2];
-        BOOL pending = NO;
-        while (!pending && deadline.timeIntervalSinceNow > 0) {
-            pthread_mutex_lock(&applicationLock);
-            pending = activeApplication->pendingAdditions != 0;
-            pthread_mutex_unlock(&applicationLock);
-            if (!pending) {
-                usleep(1000);
-            }
+        require(vz_runGraphicApplication(application) == VZGraphicApplicationSuccess, @"Application run failed");
+        require(dispatch_semaphore_wait(completed, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC)) == 0,
+            @"Last close left the background window request blocked");
+        require(!windowNamed(@"Second VM").visible, @"Second window remained visible");
+        vz_freeGraphicApplication(application);
+    }
+    NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:2];
+    while (liveObjects(objects) && deadline.timeIntervalSinceNow > 0) {
+        @autoreleasepool {
+            [[NSRunLoop mainRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
         }
-        require(pending, @"Background window request was not admitted");
-        [NSApp terminate:nil];
-    });
-    require(vz_runGraphicApplication(application) == VZGraphicApplicationSuccess, @"Application run failed");
-    require(dispatch_semaphore_wait(completed, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC)) == 0,
-        @"Quit left the background window request blocked");
-    require(!windowNamed(@"Second VM").visible, @"Quit created the pending window");
+    }
+    require(liveObjects(objects) == 0, @"Last close/addition race retained controller, window, or view");
+    [objects release];
     dispatch_release(completed);
-    vz_freeGraphicApplication(application);
 }
 
 int main(void)
@@ -312,7 +342,8 @@ int main(void)
             runScenario(CloseSecond, first, second);
             runScenario(AddLater, first, second);
             runScenario(AddOnMain, first, second);
-            quitWithPendingAddition(first, second);
+            closeWithPendingAddition(first, second, NO);
+            closeWithPendingAddition(first, second, YES);
             runScenario(Quit, first, second);
             runScenario(SingleWindow, first, second);
             runScenario(StopFirst, first, second);

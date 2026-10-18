@@ -613,6 +613,22 @@ func DisableVmnetRouterAdvertisement(configuration objc.NSObject) {
 	runtime.KeepAlive(configuration)
 }
 
+var callSetVmnetExternalInterface lazyBinding[func(unsafe.Pointer, string, *unsafe.Pointer)]
+
+func SetVmnetExternalInterface(configuration objc.NSObject, name string, errorOut *unsafe.Pointer) {
+	call := callSetVmnetExternalInterface.get(func() func(unsafe.Pointer, string, *unsafe.Pointer) {
+		var call func(unsafe.Pointer, string, *unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_setVmnetExternalInterface))
+		return call
+	})
+	onQueue(func() {
+		call(objc.Ptr(configuration), name, errorOut)
+	})
+	runtime.KeepAlive(configuration)
+	runtime.KeepAlive(name)
+	runtime.KeepAlive(errorOut)
+}
+
 var callSetVmnetMTU lazyBinding[func(unsafe.Pointer, uint32, *unsafe.Pointer)]
 
 func SetVmnetMTU(configuration objc.NSObject, mtu uint32, errorOut *unsafe.Pointer) {

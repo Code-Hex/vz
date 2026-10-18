@@ -669,21 +669,36 @@ func ReleaseCFObject(object unsafe.Pointer) {
 	runtime.KeepAlive(object)
 }
 
-var callStartVmnetInterface lazyBinding[func(unsafe.Pointer, uint32, uint64, uint64, unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer]
+var callStartVmnetInterface lazyBinding[func(unsafe.Pointer, string, uint32, uint64, uint64, unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer]
 
-func StartVmnetInterface(network objc.NSObject, options uint32, callback uint64, context uint64, maxPacketSize unsafe.Pointer, mac unsafe.Pointer, errorOut *unsafe.Pointer) unsafe.Pointer {
-	call := callStartVmnetInterface.get(func() func(unsafe.Pointer, uint32, uint64, uint64, unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer {
-		var call func(unsafe.Pointer, uint32, uint64, uint64, unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer
+func StartVmnetInterface(network objc.NSObject, name string, options uint32, callback uint64, context uint64, maxPacketSize unsafe.Pointer, mac unsafe.Pointer, errorOut *unsafe.Pointer) unsafe.Pointer {
+	call := callStartVmnetInterface.get(func() func(unsafe.Pointer, string, uint32, uint64, uint64, unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer {
+		var call func(unsafe.Pointer, string, uint32, uint64, uint64, unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer
 		purego.RegisterFunc(&call, uintptr(C.vz_startVmnetInterface))
 		return call
 	})
 	var result unsafe.Pointer
-	result = call(objc.Ptr(network), options, callback, context, maxPacketSize, mac, errorOut)
+	result = call(objc.Ptr(network), name, options, callback, context, maxPacketSize, mac, errorOut)
 	runtime.KeepAlive(network)
+	runtime.KeepAlive(name)
 	runtime.KeepAlive(maxPacketSize)
 	runtime.KeepAlive(mac)
 	runtime.KeepAlive(errorOut)
 	return result
+}
+
+var callCopyVmnetBridgedInterfaces lazyBinding[func(*unsafe.Pointer) unsafe.Pointer]
+
+func CopyVmnetBridgedInterfaces(errorOut *unsafe.Pointer) *objc.Pointer {
+	call := callCopyVmnetBridgedInterfaces.get(func() func(*unsafe.Pointer) unsafe.Pointer {
+		var call func(*unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_copyVmnetBridgedInterfaces))
+		return call
+	})
+	var result unsafe.Pointer
+	result = call(errorOut)
+	runtime.KeepAlive(errorOut)
+	return objc.NewManagedPointer(result, ReleaseObject)
 }
 
 var callStopVmnetInterface lazyBinding[func(unsafe.Pointer, *unsafe.Pointer)]

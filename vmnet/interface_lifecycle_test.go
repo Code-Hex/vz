@@ -3,6 +3,7 @@ package vmnet
 import (
 	"errors"
 	"net"
+	"runtime/cgo"
 	"testing"
 )
 
@@ -45,6 +46,36 @@ func TestInterfaceOptionNativeFlags(t *testing.T) {
 			if got := c.nativeFlags(); got != tt.want {
 				t.Fatalf("native flags = %d, want %d", got, tt.want)
 			}
+		})
+	}
+}
+
+func TestInterfaceStartupWithoutSession(t *testing.T) {
+	nativeErr := errors.New("native start failed")
+	for _, tt := range []struct {
+		name string
+		err  error
+		want string
+	}{
+		{name: "native error", err: nativeErr, want: "native start failed"},
+		{name: "missing error", want: "vmnet returned no interface"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			r := &interfaceResource{handle: cgo.NewHandle(make(chan struct{}, 1))}
+			iface, err := completeInterfaceStart(r, 0, tt.err)
+			if iface != nil || err == nil || err.Error() != tt.want {
+				t.Fatalf("startup without session = %v, %v, want nil, %q", iface, err, tt.want)
+			}
+			if tt.err != nil && !errors.Is(err, tt.err) {
+				t.Fatalf("startup error = %v, want original error %v", err, tt.err)
+			}
+			defer func() {
+				if recover() == nil {
+					r.handle.Delete()
+					t.Error("startup without session retained callback handle")
+				}
+			}()
+			r.handle.Value()
 		})
 	}
 }

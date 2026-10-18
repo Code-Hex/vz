@@ -8,11 +8,13 @@ import (
 	"net"
 	"runtime"
 	"runtime/cgo"
+	"strings"
 	"sync"
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/macos"
 	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 	"github.com/ebitengine/purego"
 )
@@ -52,7 +54,9 @@ func WithInterfaceTSO(enabled bool) InterfaceOption {
 	}
 }
 
-// WithInterfaceIsolation controls isolation from other interfaces that also enable isolation.
+// WithInterfaceIsolation controls communication with other vmnet interfaces.
+// On a Network, isolation applies to peers that also enable isolation.
+// A bridged interface with isolation enabled cannot communicate with other vmnet interfaces.
 // Isolation is disabled by default.
 func WithInterfaceIsolation(enabled bool) InterfaceOption {
 	return func(c *interfaceConfiguration) {
@@ -60,7 +64,8 @@ func WithInterfaceIsolation(enabled bool) InterfaceOption {
 	}
 }
 
-// Interface exchanges Ethernet frames on a Network. Copies share one lifetime.
+// Interface exchanges Ethernet frames on a Network or a bridged physical interface.
+// Copies share one lifetime.
 // Call Stop when finished. Its zero value is not usable.
 type Interface struct{ owner *interfaceOwner }
 type interfaceOwner struct{ resource *interfaceResource }
@@ -94,6 +99,43 @@ func StartInterfaceWithNetwork(n *Network, opts ...InterfaceOption) (*Interface,
 	if n == nil || objc.Ptr((*objc.Pointer)(n)) == nil {
 		return nil, fmt.Errorf("vmnet network is nil or uninitialized")
 	}
+	return startInterface(n, "", opts...)
+}
+
+// StartBridgedInterface starts an interface bridged to the named physical interface.
+// BridgedInterfaces lists eligible names. It requires macOS 26 and newer.
+// The returned interface must be stopped. On error it returns nil after attempting
+// cleanup and includes any cleanup failure.
+func StartBridgedInterface(name string, opts ...InterfaceOption) (*Interface, error) {
+	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
+		return nil, err
+	}
+	if name == "" || strings.ContainsRune(name, 0) {
+		return nil, fmt.Errorf("vmnet interface name must be nonempty and contain no NUL bytes")
+	}
+	return startInterface(nil, name, opts...)
+}
+
+// BridgedInterfaces returns the physical interface names eligible for bridged mode.
+// It requires macOS 26 and newer. An empty slice means no eligible interfaces.
+func BridgedInterfaces() ([]string, error) {
+	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
+		return nil, err
+	}
+	var errorPtr unsafe.Pointer
+	names := vzbridge.CopyVmnetBridgedInterfaces(&errorPtr)
+	if err := vmnetError(errorPtr); err != nil {
+		return nil, err
+	}
+	defer objc.Release(names)
+	result := make([]string, int(vzbridge.NSArray_Count(names)))
+	for i := range result {
+		result[i] = objcutil.String(vzbridge.NSArray_ObjectAtIndex(names, uint64(i)))
+	}
+	return result, nil
+}
+
+func startInterface(n *Network, name string, opts ...InterfaceOption) (*Interface, error) {
 	var c interfaceConfiguration
 	for _, opt := range opts {
 		opt(&c)
@@ -106,17 +148,13 @@ func StartInterfaceWithNetwork(n *Network, opts ...InterfaceOption) (*Interface,
 	pinned.Pin(&size)
 	pinned.Pin(&r.mac[0])
 	defer pinned.Unpin()
-	r.session = vzbridge.StartVmnetInterface((*objc.Pointer)(n), c.nativeFlags(), uint64(interfaceWake), uint64(r.handle), unsafe.Pointer(&size), unsafe.Pointer(&r.mac[0]), &errorPtr)
+	r.session = vzbridge.StartVmnetInterface(
+		(*objc.Pointer)(n), name, c.nativeFlags(),
+		uint64(interfaceWake), uint64(r.handle),
+		unsafe.Pointer(&size), unsafe.Pointer(&r.mac[0]), &errorPtr,
+	)
 	runtime.KeepAlive(n)
-	startErr := vmnetError(errorPtr)
-	if r.session == nil {
-		r.handle.Delete()
-		if startErr != nil {
-			return nil, startErr
-		}
-		return nil, fmt.Errorf("vmnet returned no interface")
-	}
-	return completeInterfaceStart(r, size, startErr)
+	return completeInterfaceStart(r, size, vmnetError(errorPtr))
 }
 
 func (c interfaceConfiguration) nativeFlags() uint32 {
@@ -137,6 +175,13 @@ func (c interfaceConfiguration) nativeFlags() uint32 {
 }
 
 func completeInterfaceStart(r *interfaceResource, size uint64, startErr error) (*Interface, error) {
+	if r.session == nil {
+		r.handle.Delete()
+		if startErr == nil {
+			startErr = fmt.Errorf("vmnet returned no interface")
+		}
+		return nil, startErr
+	}
 	if startErr == nil && (size == 0 || size > uint64(^uint32(0)>>1)) {
 		startErr = fmt.Errorf("vmnet returned invalid maximum packet size %d", size)
 	}

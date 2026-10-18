@@ -29,7 +29,8 @@ const (
 type pointer = objc.Pointer
 
 // NetworkConfiguration configures a logical network shared by vmnet attachments.
-// Create it with NewNetworkConfiguration. Its zero value is not usable.
+// Create it with NewNetworkConfiguration. Its settings are immutable after
+// construction, and its zero value is not usable.
 type NetworkConfiguration struct {
 	pointer
 	state *configurationState
@@ -37,7 +38,6 @@ type NetworkConfiguration struct {
 
 type configurationState struct {
 	mu           sync.Mutex
-	subnet       netip.Prefix
 	reservations map[[6]byte]netip.Addr
 }
 
@@ -46,7 +46,63 @@ type configurationState struct {
 type NetworkConfigurationOption func(*networkConfigurationOptions) error
 
 type networkConfigurationOptions struct {
-	mtu int
+	mtu          int
+	ipv4Subnet   netip.Prefix
+	ipv6Prefix   netip.Prefix
+	reservations map[[6]byte]netip.Addr
+}
+
+// WithIPv4Subnet sets the network's IPv4 subnet. Host bits are ignored.
+// Prefixes longer than /30 are rejected. The network, host (second), and
+// broadcast addresses are reserved. DHCP reservations are checked against the
+// final subnet after all options have been applied.
+func WithIPv4Subnet(prefix netip.Prefix) NetworkConfigurationOption {
+	return func(options *networkConfigurationOptions) error {
+		if !prefix.IsValid() || !prefix.Addr().Is4() || prefix.Bits() > 30 {
+			return fmt.Errorf("invalid vmnet IPv4 subnet %v", prefix)
+		}
+		options.ipv4Subnet = prefix.Masked()
+		return nil
+	}
+}
+
+// WithIPv6Prefix sets the network's IPv6 prefix. Host bits are ignored.
+// IPv4-mapped IPv6 prefixes are rejected. The prefix ::/0 selects an automatic
+// IPv6 prefix.
+func WithIPv6Prefix(prefix netip.Prefix) NetworkConfigurationOption {
+	return func(options *networkConfigurationOptions) error {
+		if !prefix.IsValid() || !prefix.Addr().Is6() || prefix.Addr().Is4In6() {
+			return fmt.Errorf("invalid vmnet IPv6 prefix %v", prefix)
+		}
+		options.ipv6Prefix = prefix.Masked()
+		return nil
+	}
+}
+
+// WithDHCPReservation reserves an IPv4 address for a unicast Ethernet MAC
+// address. It copies mac when the option is created. Repeated reservations for
+// the same MAC use the last address.
+//
+// The address must belong to the final IPv4 subnet and cannot be its network,
+// host, or broadcast address, regardless of option order. With an automatically
+// selected subnet, subnet validation occurs in [NewNetwork].
+func WithDHCPReservation(mac net.HardwareAddr, address netip.Addr) NetworkConfigurationOption {
+	var key [6]byte
+	copy(key[:], mac)
+	validMAC := len(mac) == len(key) && key[0]&1 == 0
+	return func(options *networkConfigurationOptions) error {
+		if !validMAC {
+			return fmt.Errorf("invalid vmnet unicast Ethernet address")
+		}
+		if err := validateDHCPReservation(address, netip.Prefix{}); err != nil {
+			return err
+		}
+		if options.reservations == nil {
+			options.reservations = make(map[[6]byte]netip.Addr)
+		}
+		options.reservations[key] = address
+		return nil
+	}
 }
 
 // WithMTU sets the network's maximum transmission unit in bytes.
@@ -68,7 +124,8 @@ func WithMTU(mtu int) NetworkConfigurationOption {
 // advertisements enabled, an automatically selected IPv4 subnet, and a random
 // IPv6 ULA prefix. Options are applied in order before native allocation.
 // A nil or invalid option returns an error. Repeated options use the last
-// value, but an invalid option always returns an error.
+// value for each setting or MAC address, but an invalid option always returns
+// an error. DHCP reservations are validated against the final IPv4 subnet.
 // It requires macOS 26 and newer.
 func NewNetworkConfiguration(mode Mode, opts ...NetworkConfigurationOption) (*NetworkConfiguration, error) {
 	var options networkConfigurationOptions
@@ -77,6 +134,11 @@ func NewNetworkConfiguration(mode Mode, opts ...NetworkConfigurationOption) (*Ne
 			return nil, fmt.Errorf("vmnet network configuration option is nil")
 		}
 		if err := option(&options); err != nil {
+			return nil, err
+		}
+	}
+	for _, reservation := range options.reservations {
+		if err := validateDHCPReservation(reservation, options.ipv4Subnet); err != nil {
 			return nil, err
 		}
 	}
@@ -89,6 +151,9 @@ func NewNetworkConfiguration(mode Mode, opts ...NetworkConfigurationOption) (*Ne
 	var errorPtr unsafe.Pointer
 	ptr := vzbridge.NewVmnetNetworkConfiguration(int32(mode), &errorPtr)
 	if err := objcutil.NewNSError(errorPtr); err != nil {
+		if ptr != nil {
+			vzbridge.ReleaseCFObject(ptr)
+		}
 		return nil, err
 	}
 	if ptr == nil {
@@ -96,16 +161,51 @@ func NewNetworkConfiguration(mode Mode, opts ...NetworkConfigurationOption) (*Ne
 	}
 	configuration := &NetworkConfiguration{
 		pointer: *objc.NewManagedPointer(ptr, vzbridge.ReleaseCFObject),
-		state:   &configurationState{},
+		state: &configurationState{
+			reservations: options.reservations,
+		},
 	}
+	if err := options.apply(configuration); err != nil {
+		objc.Release(configuration)
+		return nil, err
+	}
+	return configuration, nil
+}
+
+func (options networkConfigurationOptions) apply(configuration *NetworkConfiguration) error {
+	var errorPtr unsafe.Pointer
 	if options.mtu != 0 {
 		vzbridge.SetVmnetMTU(configuration, uint32(options.mtu), &errorPtr)
 		if err := vmnetError(errorPtr); err != nil {
-			objc.Release(configuration)
-			return nil, err
+			return err
 		}
 	}
-	return configuration, nil
+	if options.ipv4Subnet.IsValid() {
+		// vmnet needs the host address to start DHCP-backed attachments.
+		address := options.ipv4Subnet.Addr().Next().As4()
+		mask := binary.BigEndian.Uint32(net.CIDRMask(options.ipv4Subnet.Bits(), 32))
+		vzbridge.SetVmnetIPv4Subnet(configuration, binary.BigEndian.Uint32(address[:]), mask, &errorPtr)
+		if err := vmnetError(errorPtr); err != nil {
+			return err
+		}
+	}
+	if options.ipv6Prefix.IsValid() {
+		address := options.ipv6Prefix.Addr().As16()
+		vzbridge.SetVmnetIPv6Prefix(configuration, unsafe.Pointer(&address[0]), uint8(options.ipv6Prefix.Bits()), &errorPtr)
+		runtime.KeepAlive(address)
+		if err := vmnetError(errorPtr); err != nil {
+			return err
+		}
+	}
+	for mac, address := range options.reservations {
+		bytes := address.As4()
+		vzbridge.AddVmnetDHCPReservation(configuration, unsafe.Pointer(&mac[0]), binary.BigEndian.Uint32(bytes[:]), &errorPtr)
+		runtime.KeepAlive(mac)
+		if err := vmnetError(errorPtr); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func validateMTU(mtu int) error {
@@ -113,97 +213,6 @@ func validateMTU(mtu int) error {
 	if mtu < 1280 || mtu > 65535 {
 		return fmt.Errorf("invalid vmnet MTU %d: must be between 1280 and 65535", mtu)
 	}
-	return nil
-}
-
-// SetIPv4Subnet sets the network's IPv4 subnet. Host bits in prefix are ignored.
-// The first, second (host), and last addresses are reserved. Prefixes
-// longer than /30 are rejected. It requires macOS 26 and newer.
-func (c *NetworkConfiguration) SetIPv4Subnet(prefix netip.Prefix) error {
-	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
-		return err
-	}
-	if c == nil || objc.Ptr(c) == nil || c.state == nil {
-		return fmt.Errorf("vmnet network configuration is nil or uninitialized")
-	}
-	if !prefix.IsValid() || !prefix.Addr().Is4() || prefix.Bits() > 30 {
-		return fmt.Errorf("invalid vmnet IPv4 subnet %v", prefix)
-	}
-	prefix = prefix.Masked()
-	c.state.mu.Lock()
-	defer c.state.mu.Unlock()
-	for _, reservation := range c.state.reservations {
-		if err := validateDHCPReservation(reservation, prefix); err != nil {
-			return err
-		}
-	}
-	// vmnet needs the host address to start DHCP-backed attachments.
-	address := prefix.Addr().Next().As4()
-	mask := binary.BigEndian.Uint32(net.CIDRMask(prefix.Bits(), 32))
-	var errorPtr unsafe.Pointer
-	vzbridge.SetVmnetIPv4Subnet(c, binary.BigEndian.Uint32(address[:]), mask, &errorPtr)
-	if err := vmnetError(errorPtr); err != nil {
-		return err
-	}
-	c.state.subnet = prefix
-	return nil
-}
-
-// SetIPv6Prefix sets the network's IPv6 prefix. Host bits in prefix are ignored.
-// IPv4-mapped IPv6 prefixes are rejected. The prefix ::/0 selects an automatic
-// IPv6 prefix. It requires macOS 26 and newer.
-func (c *NetworkConfiguration) SetIPv6Prefix(prefix netip.Prefix) error {
-	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
-		return err
-	}
-	if c == nil || objc.Ptr(c) == nil || c.state == nil {
-		return fmt.Errorf("vmnet network configuration is nil or uninitialized")
-	}
-	if !prefix.IsValid() || !prefix.Addr().Is6() || prefix.Addr().Is4In6() {
-		return fmt.Errorf("invalid vmnet IPv6 prefix %v", prefix)
-	}
-	prefix = prefix.Masked()
-	c.state.mu.Lock()
-	defer c.state.mu.Unlock()
-	address := prefix.Addr().As16()
-	var errorPtr unsafe.Pointer
-	vzbridge.SetVmnetIPv6Prefix(c, unsafe.Pointer(&address[0]), uint8(prefix.Bits()), &errorPtr)
-	runtime.KeepAlive(address)
-	return vmnetError(errorPtr)
-}
-
-// AddDHCPReservation reserves an IPv4 address for a unicast Ethernet MAC address.
-// The address must belong to the subnet and cannot be its network, host, or broadcast address.
-// Configure reservations before creating the network. With an automatically selected subnet,
-// subnet validation occurs in NewNetwork. It requires macOS 26 and newer.
-func (c *NetworkConfiguration) AddDHCPReservation(mac net.HardwareAddr, address netip.Addr) error {
-	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
-		return err
-	}
-	if c == nil || objc.Ptr(c) == nil || c.state == nil {
-		return fmt.Errorf("vmnet network configuration is nil or uninitialized")
-	}
-	if len(mac) != 6 || mac[0]&1 != 0 {
-		return fmt.Errorf("invalid vmnet unicast Ethernet address %v", mac)
-	}
-	c.state.mu.Lock()
-	defer c.state.mu.Unlock()
-	if err := validateDHCPReservation(address, c.state.subnet); err != nil {
-		return err
-	}
-	var key [6]byte
-	copy(key[:], mac)
-	bytes := address.As4()
-	var errorPtr unsafe.Pointer
-	vzbridge.AddVmnetDHCPReservation(c, unsafe.Pointer(&key[0]), binary.BigEndian.Uint32(bytes[:]), &errorPtr)
-	runtime.KeepAlive(key)
-	if err := vmnetError(errorPtr); err != nil {
-		return err
-	}
-	if c.state.reservations == nil {
-		c.state.reservations = make(map[[6]byte]netip.Addr)
-	}
-	c.state.reservations[key] = address
 	return nil
 }
 

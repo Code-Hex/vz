@@ -84,11 +84,8 @@ func TestNetworkServiceProcess(t *testing.T) {
 		wait()
 		return
 	}
-	config, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
+	config, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost, vmnet.WithIPv4Subnet(netip.MustParsePrefix("192.168.248.0/24")))
 	if err != nil {
-		t.Fatal(err)
-	}
-	if err := config.SetIPv4Subnet(netip.MustParsePrefix("192.168.248.0/24")); err != nil {
 		t.Fatal(err)
 	}
 	network, err := vmnet.NewNetwork(config)

@@ -1,7 +1,6 @@
 package vmnet_test
 
 import (
-	"net"
 	"net/netip"
 	"runtime"
 	"testing"
@@ -16,11 +15,8 @@ func TestVMNetCopiedConfigurationAndNetwork(t *testing.T) {
 		t.Skip("vmnet networks require macOS 26 and its SDK")
 	}
 	config, collectedConfig := func() (vmnet.NetworkConfiguration, <-chan struct{}) {
-		original, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
+		original, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost, vmnet.WithIPv4Subnet(netip.MustParsePrefix("192.168.251.0/24")))
 		if err != nil {
-			t.Fatal(err)
-		}
-		if err := original.SetIPv4Subnet(netip.MustParsePrefix("192.168.251.0/24")); err != nil {
 			t.Fatal(err)
 		}
 		collected := make(chan struct{})
@@ -54,9 +50,6 @@ func TestVMNetCopiedConfigurationAndNetwork(t *testing.T) {
 	})
 	if got, err := network.IPv4Subnet(); err != nil || got != netip.MustParsePrefix("192.168.251.0/24") {
 		t.Fatalf("copied network subnet = %v, %v", got, err)
-	}
-	if err := config.AddDHCPReservation(net.HardwareAddr{2, 0, 0, 0, 0, 2}, netip.MustParseAddr("192.168.251.2")); err != nil {
-		t.Fatal(err)
 	}
 	runtime.KeepAlive(config)
 	runtime.KeepAlive(network)

@@ -13,7 +13,7 @@ func TestVMNetPublicMethods(t *testing.T) {
 		typeOf reflect.Type
 		want   []string
 	}{
-		{reflect.TypeFor[*vmnet.Network](), []string{"IPv4Subnet", "IPv6Prefix"}},
+		{reflect.TypeFor[*vmnet.Network](), []string{"CopySerialization", "IPv4Subnet", "IPv6Prefix"}},
 		{reflect.TypeFor[*vmnet.NetworkConfiguration](), []string{"AddDHCPReservation", "SetIPv4Subnet", "SetIPv6Prefix"}},
 	} {
 		t.Run(tt.typeOf.Elem().Name(), func(t *testing.T) {

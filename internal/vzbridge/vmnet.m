@@ -42,6 +42,15 @@ void *vz_newVmnetNetwork(void *configuration, void **errorOut)
     return NULL;
 }
 
+void vz_setVmnetMTU(void *configuration, uint32_t mtu, void **errorOut)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *)) {
+        vmnetError(vmnet_network_configuration_set_mtu(configuration, mtu), @"vmnet_network_configuration_set_mtu", errorOut);
+    }
+#endif
+}
+
 void vz_setVmnetIPv4Subnet(void *configuration, uint32_t address, uint32_t mask, void **errorOut)
 {
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000

@@ -45,6 +45,7 @@ void vz_stopWithCompletionHandler(VZBridgeObject p0, uint64_t p1);
 void vz_VZVirtioSocketDevice_connectToPort(VZBridgeObject p0, uint32_t p1, uint64_t p2);
 void *vz_newVmnetNetworkConfiguration(int32_t mode, VZBridgeErrorOut errorOut);
 void *vz_newVmnetNetwork(VZBridgeObject configuration, VZBridgeErrorOut errorOut);
+void vz_setVmnetMTU(VZBridgeObject configuration, uint32_t mtu, VZBridgeErrorOut errorOut);
 void vz_setVmnetIPv4Subnet(VZBridgeObject configuration, uint32_t address, uint32_t mask, VZBridgeErrorOut errorOut);
 void vz_setVmnetIPv6Prefix(VZBridgeObject configuration, const void *address, uint8_t prefixLength, VZBridgeErrorOut errorOut);
 void vz_addVmnetDHCPReservation(VZBridgeObject configuration, const void *mac, uint32_t address, VZBridgeErrorOut errorOut);

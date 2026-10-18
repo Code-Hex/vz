@@ -543,6 +543,21 @@ func NewVmnetNetwork(configuration objc.NSObject, errorOut *unsafe.Pointer) unsa
 	return result
 }
 
+var callSetVmnetMTU lazyBinding[func(unsafe.Pointer, uint32, *unsafe.Pointer)]
+
+func SetVmnetMTU(configuration objc.NSObject, mtu uint32, errorOut *unsafe.Pointer) {
+	call := callSetVmnetMTU.get(func() func(unsafe.Pointer, uint32, *unsafe.Pointer) {
+		var call func(unsafe.Pointer, uint32, *unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_setVmnetMTU))
+		return call
+	})
+	onQueue(func() {
+		call(objc.Ptr(configuration), mtu, errorOut)
+	})
+	runtime.KeepAlive(configuration)
+	runtime.KeepAlive(errorOut)
+}
+
 var callSetVmnetIPv4Subnet lazyBinding[func(unsafe.Pointer, uint32, uint32, *unsafe.Pointer)]
 
 func SetVmnetIPv4Subnet(configuration objc.NSObject, address uint32, mask uint32, errorOut *unsafe.Pointer) {

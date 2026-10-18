@@ -1,7 +1,7 @@
 #import "native.h"
 #import "virtualization_view.h"
 
-void vz_startVirtualMachineWindow(void *machine, void *queue, double width, double height, const char *title, bool enableController)
+void vz_startVirtualMachineWindow(void *machine, double width, double height, const char *title, bool enableController)
 {
     [VZApplication sharedApplication];
     if (@available(macOS 12, *)) {
@@ -9,7 +9,7 @@ void vz_startVirtualMachineWindow(void *machine, void *queue, double width, doub
             NSString *windowTitle = [NSString stringWithUTF8String:title];
             AppDelegate *appDelegate = [[[AppDelegate alloc]
                 initWithVirtualMachine:(VZVirtualMachine *)machine
-                                 queue:(dispatch_queue_t)queue
+                                 queue:(dispatch_queue_t)vz_objectQueue(machine)
                            windowWidth:(CGFloat)width
                           windowHeight:(CGFloat)height
                            windowTitle:windowTitle

@@ -58,3 +58,18 @@ func TestPrivateRuntimeDiscovery(t *testing.T) {
 	}
 	t.Fatal("runtime discovery omitted GDB initializer")
 }
+
+func TestPrivateInstallerUsesMachineQueue(t *testing.T) {
+	metadata := privateMetadata{Methods: []privateMethod{
+		{Class: "VZMacOSInstaller", Selector: "initWithVirtualMachine:restoreImageURL:", Result: "@", Arguments: []string{"@", ":", "@", "@"}},
+	}}
+	code, _, err := generatePrivate(metadata, "arm64")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{"onObjectQueue(p0, func() {", "InheritObjectQueue(result, p0)"} {
+		if !strings.Contains(string(code), want) {
+			t.Errorf("installer code is missing %q", want)
+		}
+	}
+}

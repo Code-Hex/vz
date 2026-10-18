@@ -155,3 +155,12 @@ func TestGeneratorDoesNotOverwriteHeader(t *testing.T) {
 		t.Fatal("generation overwrote the source header")
 	}
 }
+
+func TestHeaderObjectQueueRejectsNonObjectParameters(t *testing.T) {
+	for _, parameters := range []string{"void", "void *object", "unsigned int object"} {
+		_, err := fixtureBindings(t, "void vz_bad("+parameters+") __attribute__((annotate(\"vzbridge:objectqueue\")));")
+		if err == nil || !strings.Contains(err.Error(), "objectqueue requires an object") {
+			t.Fatalf("parameters %q: error = %v", parameters, err)
+		}
+	}
+}

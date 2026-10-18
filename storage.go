@@ -399,11 +399,11 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 
 	handle := registerNativeCallback(func(kind uint32, first, second unsafe.Pointer, value uint64) uint64 {
 		switch kind {
-		case 7:
+		case vzbridge.CallbackNetworkBlockDeviceError:
 			didEncounterError.In() <- objcutil.NewNSError(first)
-		case 8:
+		case vzbridge.CallbackNetworkBlockDeviceConnected:
 			connected.In() <- struct{}{}
-		case 4:
+		case vzbridge.CallbackContextReleased:
 			didEncounterError.Close()
 			connected.Close()
 		}

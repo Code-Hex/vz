@@ -111,7 +111,7 @@ func TestNativeListenerInvalidationAndRelease(t *testing.T) {
 	var events []uint64
 	var unexpected uint32
 	callback := purego.NewCallback(func(kind uint32, context uint64, first, second unsafe.Pointer, value uint64) uint64 {
-		if kind != 4 {
+		if kind != CallbackContextReleased {
 			unexpected = kind
 		}
 		events = append(events, context)
@@ -120,7 +120,7 @@ func TestNativeListenerInvalidationAndRelease(t *testing.T) {
 	})
 	SetCallback(uint64(callback))
 	defer SetCallback(0)
-	listener := NewVZVirtioSocketListener(101)
+	listener := NewVZVirtioSocketListener(nil, 101)
 	if listener == nil {
 		t.Fatal("listener construction failed")
 	}
@@ -128,7 +128,7 @@ func TestNativeListenerInvalidationAndRelease(t *testing.T) {
 	InvalidateVZVirtioSocketListener(listener)
 	objc.Release(listener)
 	Drain()
-	listener = NewVZVirtioSocketListener(102)
+	listener = NewVZVirtioSocketListener(nil, 102)
 	objc.Release(listener)
 	Drain()
 	if unexpected != 0 {
@@ -159,7 +159,7 @@ func TestNativeDiskModeFailureReturnsOwnedError(t *testing.T) {
 func TestNativeMachinePreservesNetworkDelegate(t *testing.T) {
 	var disconnected int
 	callback := purego.NewCallback(func(kind uint32, context uint64, first, second unsafe.Pointer, value uint64) uint64 {
-		if kind == 3 && context == 702 && value == 0 {
+		if kind == CallbackNetworkDisconnected && context == 702 && value == 0 {
 			disconnected++
 		}
 		if first != nil {
@@ -195,7 +195,7 @@ func TestNativeMachinePreservesNetworkDelegate(t *testing.T) {
 		Drain()
 	}()
 	var handlesDisconnection bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(machine), func() {
 		receiver := pureobjc.ID(uintptr(objc.Ptr(machine)))
 		receiver.Send(pureobjc.RegisterName("setDelegate:"), objc.Ptr(external))
 		delegate := receiver.Send(pureobjc.RegisterName("delegate"))

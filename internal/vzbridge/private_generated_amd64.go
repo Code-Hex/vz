@@ -17,7 +17,7 @@ import (
 var privateCallUnsafePrivate_PluginInstanceDelegate_Instance_handleConnectionError__06abb632 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_PluginInstanceDelegate_Instance_handleConnectionError__06abb632(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_PluginInstanceDelegate_Instance_handleConnectionError__06abb632.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("handleConnectionError:")
 		})
@@ -31,7 +31,7 @@ func UnsafePrivate_PluginInstanceDelegate_Instance_handleConnectionError__06abb6
 var privateCallUnsafePrivate_PluginInstanceDelegate_Instance_invalidateConnection_b486e504 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_PluginInstanceDelegate_Instance_invalidateConnection_b486e504(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_PluginInstanceDelegate_Instance_invalidateConnection_b486e504.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("invalidateConnection")
 		})
@@ -46,7 +46,7 @@ var privateCallUnsafePrivate_VZAudioDeviceConfiguration_Instance__init_199fefec 
 
 func UnsafePrivate_VZAudioDeviceConfiguration_Instance__init_199fefec(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -74,7 +74,7 @@ var privateCallUnsafePrivate_VZAudioDeviceConfiguration_Instance__makeAudioDevic
 
 func UnsafePrivate_VZAudioDeviceConfiguration_Instance__makeAudioDeviceForVirtualMachine_audioDeviceIndex__60b65151(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -102,7 +102,7 @@ var privateCallUnsafePrivate_VZAudioDeviceConfiguration_Instance__role_314e49e3 
 
 func UnsafePrivate_VZAudioDeviceConfiguration_Instance__role_314e49e3(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZAudioDeviceConfiguration_Instance__role_314e49e3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("_role")
 		})
@@ -117,7 +117,7 @@ func UnsafePrivate_VZAudioDeviceConfiguration_Instance__role_314e49e3(receiver u
 var privateCallUnsafePrivate_VZAudioDeviceConfiguration_Instance__setRole__a5219948 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate_VZAudioDeviceConfiguration_Instance__setRole__a5219948(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZAudioDeviceConfiguration_Instance__setRole__a5219948.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("_setRole:")
 		})
@@ -132,7 +132,7 @@ var privateCallUnsafePrivate_VZAudioDeviceConfiguration_Instance_copyWithZone__5
 
 func UnsafePrivate_VZAudioDeviceConfiguration_Instance_copyWithZone__5bc4b43e(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -160,7 +160,7 @@ var privateCallUnsafePrivate_VZAudioInputStreamSource_Instance__init_3bf9eb53 la
 
 func UnsafePrivate_VZAudioInputStreamSource_Instance__init_3bf9eb53(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -188,7 +188,7 @@ var privateCallUnsafePrivate_VZAudioOutputStreamSink_Instance__init_b9643156 laz
 
 func UnsafePrivate_VZAudioOutputStreamSink_Instance__init_b9643156(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -216,7 +216,7 @@ var privateCallUnsafePrivate_VZBootLoader_Instance__init_17212355 lazyBinding[di
 
 func UnsafePrivate_VZBootLoader_Instance__init_17212355(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -244,7 +244,7 @@ var privateCallUnsafePrivate_VZBootLoader_Instance_copyWithZone__9e62dded lazyBi
 
 func UnsafePrivate_VZBootLoader_Instance_copyWithZone__9e62dded(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -271,7 +271,7 @@ func UnsafePrivate_VZBootLoader_Instance_copyWithZone__9e62dded(receiver unsafe.
 var privateCallUnsafePrivate_VZBridgedNetworkDeviceAttachment_Instance__cxx_destruct_2c338c61 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZBridgedNetworkDeviceAttachment_Instance__cxx_destruct_2c338c61(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZBridgedNetworkDeviceAttachment_Instance__cxx_destruct_2c338c61.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -286,7 +286,7 @@ var privateCallUnsafePrivate_VZBridgedNetworkDeviceAttachment_Instance__macNatEn
 
 func UnsafePrivate_VZBridgedNetworkDeviceAttachment_Instance__macNatEnabled_b0d43436(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZBridgedNetworkDeviceAttachment_Instance__macNatEnabled_b0d43436.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_macNatEnabled")
 		})
@@ -301,7 +301,7 @@ func UnsafePrivate_VZBridgedNetworkDeviceAttachment_Instance__macNatEnabled_b0d4
 var privateCallUnsafePrivate_VZBridgedNetworkDeviceAttachment_Instance__setMacNatEnabled__e6dd6b4b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZBridgedNetworkDeviceAttachment_Instance__setMacNatEnabled__e6dd6b4b(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZBridgedNetworkDeviceAttachment_Instance__setMacNatEnabled__e6dd6b4b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setMacNatEnabled:")
 		})
@@ -316,7 +316,7 @@ var privateCallUnsafePrivate_VZBridgedNetworkDeviceAttachment_Instance_initWithI
 
 func UnsafePrivate_VZBridgedNetworkDeviceAttachment_Instance_initWithInterface__c1b9f8d1(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -344,7 +344,7 @@ var privateCallUnsafePrivate_VZBridgedNetworkDeviceAttachment_Instance_interface
 
 func UnsafePrivate_VZBridgedNetworkDeviceAttachment_Instance_interface_7c673d53(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -429,7 +429,7 @@ func UnsafePrivate_VZBridgedNetworkInterface_Class_networkInterfaces_a2589026(re
 var privateCallUnsafePrivate_VZBridgedNetworkInterface_Instance__cxx_destruct_c0e991fe lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZBridgedNetworkInterface_Instance__cxx_destruct_c0e991fe(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZBridgedNetworkInterface_Instance__cxx_destruct_c0e991fe.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -444,7 +444,7 @@ var privateCallUnsafePrivate_VZBridgedNetworkInterface_Instance_debugDescription
 
 func UnsafePrivate_VZBridgedNetworkInterface_Instance_debugDescription_f10ee04e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -472,7 +472,7 @@ var privateCallUnsafePrivate_VZBridgedNetworkInterface_Instance_description_5e1b
 
 func UnsafePrivate_VZBridgedNetworkInterface_Instance_description_5e1b98fb(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -500,7 +500,7 @@ var privateCallUnsafePrivate_VZBridgedNetworkInterface_Instance_identifier_444d4
 
 func UnsafePrivate_VZBridgedNetworkInterface_Instance_identifier_444d4ef5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -528,7 +528,7 @@ var privateCallUnsafePrivate_VZBridgedNetworkInterface_Instance_localizedDisplay
 
 func UnsafePrivate_VZBridgedNetworkInterface_Instance_localizedDisplayName_ee6beb2e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -556,7 +556,7 @@ var privateCallUnsafePrivate_VZCapsLockIndicatorController_Instance__cxx_constru
 
 func UnsafePrivate_VZCapsLockIndicatorController_Instance__cxx_construct_1206b584(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -583,7 +583,7 @@ func UnsafePrivate_VZCapsLockIndicatorController_Instance__cxx_construct_1206b58
 var privateCallUnsafePrivate_VZCapsLockIndicatorController_Instance__cxx_destruct_d017231f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZCapsLockIndicatorController_Instance__cxx_destruct_d017231f(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCapsLockIndicatorController_Instance__cxx_destruct_d017231f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -598,7 +598,7 @@ var privateCallUnsafePrivate_VZCapsLockIndicatorController_Instance_init_7f87491
 
 func UnsafePrivate_VZCapsLockIndicatorController_Instance_init_7f87491e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -625,7 +625,7 @@ func UnsafePrivate_VZCapsLockIndicatorController_Instance_init_7f87491e(receiver
 var privateCallUnsafePrivate_VZCapsLockIndicatorController_Instance_observeValueForKeyPath_ofObject_change_context__8dc8bc71 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]]
 
 func UnsafePrivate_VZCapsLockIndicatorController_Instance_observeValueForKeyPath_ofObject_change_context__8dc8bc71(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer, p3 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCapsLockIndicatorController_Instance_observeValueForKeyPath_ofObject_change_context__8dc8bc71.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]("observeValueForKeyPath:ofObject:change:context:")
 		})
@@ -640,7 +640,7 @@ var privateCallUnsafePrivate_VZConsoleDeviceConfiguration_Instance__init_972f9a1
 
 func UnsafePrivate_VZConsoleDeviceConfiguration_Instance__init_972f9a10(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -668,7 +668,7 @@ var privateCallUnsafePrivate_VZConsoleDeviceConfiguration_Instance_copyWithZone_
 
 func UnsafePrivate_VZConsoleDeviceConfiguration_Instance_copyWithZone__c23ab209(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -696,7 +696,7 @@ var privateCallUnsafePrivate_VZConsoleDeviceConfiguration_Instance_makeConsoleDe
 
 func UnsafePrivate_VZConsoleDeviceConfiguration_Instance_makeConsoleDeviceForVirtualMachine_consoleDeviceIndex__5e54448e(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -724,7 +724,7 @@ var privateCallUnsafePrivate_VZConsoleDeviceConfiguration_Instance_validateWithE
 
 func UnsafePrivate_VZConsoleDeviceConfiguration_Instance_validateWithError__4a988e04(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZConsoleDeviceConfiguration_Instance_validateWithError__4a988e04.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateWithError:")
 		})
@@ -739,7 +739,7 @@ func UnsafePrivate_VZConsoleDeviceConfiguration_Instance_validateWithError__4a98
 var privateCallUnsafePrivate_VZConsoleDevice_Instance__cxx_destruct_d812dba4 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZConsoleDevice_Instance__cxx_destruct_d812dba4(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZConsoleDevice_Instance__cxx_destruct_d812dba4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -754,7 +754,7 @@ var privateCallUnsafePrivate_VZConsoleDevice_Instance_initWithVirtualMachine_con
 
 func UnsafePrivate_VZConsoleDevice_Instance_initWithVirtualMachine_consoleDeviceIndex_configuration__023d9e00(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -781,7 +781,7 @@ func UnsafePrivate_VZConsoleDevice_Instance_initWithVirtualMachine_consoleDevice
 var privateCallUnsafePrivate_VZConsolePortConfiguration_Instance__cxx_destruct_49f35f84 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZConsolePortConfiguration_Instance__cxx_destruct_49f35f84(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZConsolePortConfiguration_Instance__cxx_destruct_49f35f84.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -796,7 +796,7 @@ var privateCallUnsafePrivate_VZConsolePortConfiguration_Instance__init_8e342b5d 
 
 func UnsafePrivate_VZConsolePortConfiguration_Instance__init_8e342b5d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -824,7 +824,7 @@ var privateCallUnsafePrivate_VZConsolePortConfiguration_Instance_attachment_1cda
 
 func UnsafePrivate_VZConsolePortConfiguration_Instance_attachment_1cda81e8(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -852,7 +852,7 @@ var privateCallUnsafePrivate_VZConsolePortConfiguration_Instance_copyWithZone__4
 
 func UnsafePrivate_VZConsolePortConfiguration_Instance_copyWithZone__4277aed5(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -879,7 +879,7 @@ func UnsafePrivate_VZConsolePortConfiguration_Instance_copyWithZone__4277aed5(re
 var privateCallUnsafePrivate_VZConsolePortConfiguration_Instance_setAttachment__9f1c97e9 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZConsolePortConfiguration_Instance_setAttachment__9f1c97e9(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZConsolePortConfiguration_Instance_setAttachment__9f1c97e9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAttachment:")
 		})
@@ -911,7 +911,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_PCIClass
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_PCIClassID_6eafbda8(receiver unsafe.Pointer) uint8 {
 	var result uint8
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_PCIClassID_6eafbda8.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint8] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint8]("PCIClassID")
 		})
@@ -927,7 +927,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_PCISubcl
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_PCISubclassID_36cca0ce(receiver unsafe.Pointer) uint8 {
 	var result uint8
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_PCISubclassID_36cca0ce.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint8] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint8]("PCISubclassID")
 		})
@@ -943,7 +943,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__PCIDevi
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__PCIDeviceID_a1fb0c00(receiver unsafe.Pointer) uint16 {
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__PCIDeviceID_a1fb0c00.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint16] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("_PCIDeviceID")
 		})
@@ -959,7 +959,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__PCISubs
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__PCISubsystemID_2bfee803(receiver unsafe.Pointer) uint16 {
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__PCISubsystemID_2bfee803.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint16] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("_PCISubsystemID")
 		})
@@ -975,7 +975,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__PCISubs
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__PCISubsystemVendorID_a2df965b(receiver unsafe.Pointer) uint16 {
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__PCISubsystemVendorID_a2df965b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint16] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("_PCISubsystemVendorID")
 		})
@@ -991,7 +991,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__PCIVend
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__PCIVendorID_cc1e1326(receiver unsafe.Pointer) uint16 {
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__PCIVendorID_cc1e1326.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint16] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("_PCIVendorID")
 		})
@@ -1007,7 +1007,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__cxx_con
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__cxx_construct_f5c118e0(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1034,7 +1034,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__cxx_construct_f5c
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__cxx_destruct_03950a65 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__cxx_destruct_03950a65(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__cxx_destruct_03950a65.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -1049,7 +1049,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__pluginN
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__pluginName_734041f3(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1077,7 +1077,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__pluginP
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__pluginPersonality_1b1650b8(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1104,7 +1104,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__pluginPersonality
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCIDeviceID__055105af lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCIDeviceID__055105af(receiver unsafe.Pointer, p0 uint16) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCIDeviceID__055105af.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]("_setPCIDeviceID:")
 		})
@@ -1118,7 +1118,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCIDeviceID__0
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCISubsystemID__d2e64056 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCISubsystemID__d2e64056(receiver unsafe.Pointer, p0 uint16) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCISubsystemID__d2e64056.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]("_setPCISubsystemID:")
 		})
@@ -1132,7 +1132,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCISubsystemID
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCISubsystemVendorID__54790e7d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCISubsystemVendorID__54790e7d(receiver unsafe.Pointer, p0 uint16) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCISubsystemVendorID__54790e7d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]("_setPCISubsystemVendorID:")
 		})
@@ -1146,7 +1146,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCISubsystemVe
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCIVendorID__f10da095 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCIVendorID__f10da095(receiver unsafe.Pointer, p0 uint16) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCIVendorID__f10da095.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]("_setPCIVendorID:")
 		})
@@ -1160,7 +1160,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPCIVendorID__f
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPluginName__dd82da33 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPluginName__dd82da33(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPluginName__dd82da33.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setPluginName:")
 		})
@@ -1174,7 +1174,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPluginName__dd
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPluginPersonality__3db277e7 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPluginPersonality__3db277e7(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPluginPersonality__3db277e7.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setPluginPersonality:")
 		})
@@ -1188,7 +1188,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setPluginPersonal
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setSupportsSaveRestore__6487d3f4 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setSupportsSaveRestore__6487d3f4(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__setSupportsSaveRestore__6487d3f4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setSupportsSaveRestore:")
 		})
@@ -1203,7 +1203,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__support
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__supportsSaveRestore_d2717e11(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance__supportsSaveRestore_d2717e11.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_supportsSaveRestore")
 		})
@@ -1219,7 +1219,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_copyWith
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_copyWithZone__1161cd95(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1247,7 +1247,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_deviceID
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_deviceID_608d1859(receiver unsafe.Pointer) uint16 {
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_deviceID_608d1859.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint16] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("deviceID")
 		})
@@ -1263,7 +1263,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_deviceSp
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_deviceSpecificConfiguration_957a7c43(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1291,7 +1291,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_init_1dd
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_init_1dd0513d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1319,7 +1319,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_mandator
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_mandatoryFeaturesAtIndex__7d3bb9d3(receiver unsafe.Pointer, p0 uint64) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_mandatoryFeaturesAtIndex__7d3bb9d3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) uint32]("mandatoryFeaturesAtIndex:")
 		})
@@ -1335,7 +1335,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_mandator
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_mandatoryFeatures_74d800ce(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1363,7 +1363,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_optional
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_optionalFeaturesAtIndex__4d8eb59c(receiver unsafe.Pointer, p0 uint64) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_optionalFeaturesAtIndex__4d8eb59c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) uint32]("optionalFeaturesAtIndex:")
 		})
@@ -1379,7 +1379,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_optional
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_optionalFeatures_4c62f8c8(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1407,7 +1407,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_provider
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_provider_3b0bfd2d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1434,7 +1434,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_provider_3b0bfd2d(
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setDeviceID__068cd821 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setDeviceID__068cd821(receiver unsafe.Pointer, p0 uint16) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setDeviceID__068cd821.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]("setDeviceID:")
 		})
@@ -1448,7 +1448,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setDeviceID__068cd
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setDeviceSpecificConfiguration__71fa0578 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setDeviceSpecificConfiguration__71fa0578(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setDeviceSpecificConfiguration__71fa0578.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDeviceSpecificConfiguration:")
 		})
@@ -1462,7 +1462,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setDeviceSpecificC
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setMandatoryFeatures_atIndex__71b4134d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32, uint64)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setMandatoryFeatures_atIndex__71b4134d(receiver unsafe.Pointer, p0 uint32, p1 uint64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setMandatoryFeatures_atIndex__71b4134d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32, uint64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32, uint64)]("setMandatoryFeatures:atIndex:")
 		})
@@ -1476,7 +1476,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setMandatoryFeatur
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setOptionalFeatures_atIndex__2a33fa94 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32, uint64)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setOptionalFeatures_atIndex__2a33fa94(receiver unsafe.Pointer, p0 uint32, p1 uint64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setOptionalFeatures_atIndex__2a33fa94.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32, uint64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32, uint64)]("setOptionalFeatures:atIndex:")
 		})
@@ -1490,7 +1490,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setOptionalFeature
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setPCIClassID__e2de5740 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint8)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setPCIClassID__e2de5740(receiver unsafe.Pointer, p0 uint8) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setPCIClassID__e2de5740.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint8)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint8)]("setPCIClassID:")
 		})
@@ -1504,7 +1504,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setPCIClassID__e2d
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setPCISubclassID__2bdd17a7 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint8)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setPCISubclassID__2bdd17a7(receiver unsafe.Pointer, p0 uint8) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setPCISubclassID__2bdd17a7.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint8)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint8)]("setPCISubclassID:")
 		})
@@ -1518,7 +1518,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setPCISubclassID__
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setProvider__82eb8307 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setProvider__82eb8307(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setProvider__82eb8307.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setProvider:")
 		})
@@ -1532,7 +1532,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setProvider__82eb8
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setSharedMemoryRegions__6c27eab0 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setSharedMemoryRegions__6c27eab0(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setSharedMemoryRegions__6c27eab0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setSharedMemoryRegions:")
 		})
@@ -1546,7 +1546,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setSharedMemoryReg
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setSupportsSaveRestore__74a1f1fe lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setSupportsSaveRestore__74a1f1fe(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setSupportsSaveRestore__74a1f1fe.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setSupportsSaveRestore:")
 		})
@@ -1560,7 +1560,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setSupportsSaveRes
 var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setVirtioQueueCount__3dc3d3cd lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setVirtioQueueCount__3dc3d3cd(receiver unsafe.Pointer, p0 uint16) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_setVirtioQueueCount__3dc3d3cd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]("setVirtioQueueCount:")
 		})
@@ -1575,7 +1575,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_sharedMe
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_sharedMemoryRegions_ec4efe09(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1603,7 +1603,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_supports
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_supportsSaveRestore_3c96a37a(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_supportsSaveRestore_3c96a37a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("supportsSaveRestore")
 		})
@@ -1619,7 +1619,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_virtioQu
 
 func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_virtioQueueCount_84fb9870(receiver unsafe.Pointer) uint16 {
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_virtioQueueCount_84fb9870.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint16] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("virtioQueueCount")
 		})
@@ -1634,7 +1634,7 @@ func UnsafePrivate_VZCustomVirtioDeviceConfiguration_Instance_virtioQueueCount_8
 var privateCallUnsafePrivate_VZCustomVirtioDeviceDelegateProvider_Instance__cxx_destruct_dcfa3ef0 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZCustomVirtioDeviceDelegateProvider_Instance__cxx_destruct_dcfa3ef0(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDeviceDelegateProvider_Instance__cxx_destruct_dcfa3ef0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -1649,7 +1649,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceDelegateProvider_Instance_deleg
 
 func UnsafePrivate_VZCustomVirtioDeviceDelegateProvider_Instance_delegate_71e52e34(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1677,7 +1677,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceDelegateProvider_Instance_devic
 
 func UnsafePrivate_VZCustomVirtioDeviceDelegateProvider_Instance_deviceQueue_018fca94(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1705,7 +1705,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceDelegateProvider_Instance_initW
 
 func UnsafePrivate_VZCustomVirtioDeviceDelegateProvider_Instance_initWithDeviceQueue_delegate__d58a96a1(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1733,7 +1733,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDeviceProvider_Instance__init_6a3449c
 
 func UnsafePrivate_VZCustomVirtioDeviceProvider_Instance__init_6a3449c5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1761,7 +1761,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDevice_Instance__cxx_construct_23d4c3
 
 func UnsafePrivate_VZCustomVirtioDevice_Instance__cxx_construct_23d4c3d2(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1788,7 +1788,7 @@ func UnsafePrivate_VZCustomVirtioDevice_Instance__cxx_construct_23d4c3d2(receive
 var privateCallUnsafePrivate_VZCustomVirtioDevice_Instance__cxx_destruct_300aef4a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZCustomVirtioDevice_Instance__cxx_destruct_300aef4a(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDevice_Instance__cxx_destruct_300aef4a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -1802,7 +1802,7 @@ func UnsafePrivate_VZCustomVirtioDevice_Instance__cxx_destruct_300aef4a(receiver
 var privateCallUnsafePrivate_VZCustomVirtioDevice_Instance_dealloc_c15961b6 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZCustomVirtioDevice_Instance_dealloc_c15961b6(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDevice_Instance_dealloc_c15961b6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -1817,7 +1817,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDevice_Instance_delegate_2aefc2fc laz
 
 func UnsafePrivate_VZCustomVirtioDevice_Instance_delegate_2aefc2fc(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1845,7 +1845,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDevice_Instance_deviceQueue_51ae5442 
 
 func UnsafePrivate_VZCustomVirtioDevice_Instance_deviceQueue_51ae5442(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1873,7 +1873,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDevice_Instance_driverFeaturesAt_erro
 
 func UnsafePrivate_VZCustomVirtioDevice_Instance_driverFeaturesAt_error__c98012a3(receiver unsafe.Pointer, p0 uint32, p1 unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDevice_Instance_driverFeaturesAt_error__c98012a3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32, unsafe.Pointer) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32, unsafe.Pointer) uint32]("driverFeaturesAt:error:")
 		})
@@ -1889,7 +1889,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDevice_Instance_guestMemoryAtPhysical
 
 func UnsafePrivate_VZCustomVirtioDevice_Instance_guestMemoryAtPhysicalAddress_length__0a7e1838(receiver unsafe.Pointer, p0 uint64, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1917,7 +1917,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDevice_Instance_guestMemoryMappingAtP
 
 func UnsafePrivate_VZCustomVirtioDevice_Instance_guestMemoryMappingAtPhysicalAddress_length__1cda9f97(receiver unsafe.Pointer, p0 uint64, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1934,6 +1934,7 @@ func UnsafePrivate_VZCustomVirtioDevice_Instance_guestMemoryMappingAtPhysicalAdd
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector, p0, p1)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -1945,7 +1946,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDevice_Instance_negotiatedFeatures_8a
 
 func UnsafePrivate_VZCustomVirtioDevice_Instance_negotiatedFeatures_8aca0d8d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1973,7 +1974,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDevice_Instance_queueAtIndex__7102acf
 
 func UnsafePrivate_VZCustomVirtioDevice_Instance_queueAtIndex__7102acfe(receiver unsafe.Pointer, p0 uint16, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -1990,6 +1991,7 @@ func UnsafePrivate_VZCustomVirtioDevice_Instance_queueAtIndex__7102acfe(receiver
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector, p0)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -2000,7 +2002,7 @@ func UnsafePrivate_VZCustomVirtioDevice_Instance_queueAtIndex__7102acfe(receiver
 var privateCallUnsafePrivate_VZCustomVirtioDevice_Instance_requestDeviceReset_2e81c604 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZCustomVirtioDevice_Instance_requestDeviceReset_2e81c604(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDevice_Instance_requestDeviceReset_2e81c604.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("requestDeviceReset")
 		})
@@ -2014,7 +2016,7 @@ func UnsafePrivate_VZCustomVirtioDevice_Instance_requestDeviceReset_2e81c604(rec
 var privateCallUnsafePrivate_VZCustomVirtioDevice_Instance_setDelegate__1c282d9f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZCustomVirtioDevice_Instance_setDelegate__1c282d9f(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZCustomVirtioDevice_Instance_setDelegate__1c282d9f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 		})
@@ -2029,7 +2031,7 @@ var privateCallUnsafePrivate_VZCustomVirtioDevice_Instance_sharedMemoryRegions_e
 
 func UnsafePrivate_VZCustomVirtioDevice_Instance_sharedMemoryRegions_e02876cc(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2046,6 +2048,7 @@ func UnsafePrivate_VZCustomVirtioDevice_Instance_sharedMemoryRegions_e02876cc(re
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -2057,7 +2060,7 @@ var privateCallUnsafePrivate_VZDirectoryShare_Instance__init_dcb1a0ed lazyBindin
 
 func UnsafePrivate_VZDirectoryShare_Instance__init_dcb1a0ed(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2085,7 +2088,7 @@ var privateCallUnsafePrivate_VZDirectorySharingDeviceConfiguration_Instance__ini
 
 func UnsafePrivate_VZDirectorySharingDeviceConfiguration_Instance__init_f3f1898c(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2113,7 +2116,7 @@ var privateCallUnsafePrivate_VZDirectorySharingDeviceConfiguration_Instance__mak
 
 func UnsafePrivate_VZDirectorySharingDeviceConfiguration_Instance__makeDirectorySharingDeviceForVirtualMachine_directorySharingDeviceIndex__65d7927a(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2141,7 +2144,7 @@ var privateCallUnsafePrivate_VZDirectorySharingDeviceConfiguration_Instance_copy
 
 func UnsafePrivate_VZDirectorySharingDeviceConfiguration_Instance_copyWithZone__cd2614e2(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2168,7 +2171,7 @@ func UnsafePrivate_VZDirectorySharingDeviceConfiguration_Instance_copyWithZone__
 var privateCallUnsafePrivate_VZDirectorySharingDevice_Instance__cxx_destruct_39cc884f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZDirectorySharingDevice_Instance__cxx_destruct_39cc884f(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZDirectorySharingDevice_Instance__cxx_destruct_39cc884f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -2183,7 +2186,7 @@ var privateCallUnsafePrivate_VZDirectorySharingDevice_Instance__initWithVirtualM
 
 func UnsafePrivate_VZDirectorySharingDevice_Instance__initWithVirtualMachine_directorySharingDeviceIndex__65d247cd(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2210,7 +2213,7 @@ func UnsafePrivate_VZDirectorySharingDevice_Instance__initWithVirtualMachine_dir
 var privateCallUnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance__cxx_destruct_4b8fd1db lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance__cxx_destruct_4b8fd1db(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance__cxx_destruct_4b8fd1db.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -2225,7 +2228,7 @@ var privateCallUnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance__
 
 func UnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance__initWithURL_readOnly_synchronizationMode_error__bf60c4ab(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 bool, p2 int64, p3 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2253,7 +2256,7 @@ var privateCallUnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance__
 
 func UnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance__url_b642582f(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2281,7 +2284,7 @@ var privateCallUnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance_f
 
 func UnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance_fileHandle_7d78441c(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2309,7 +2312,7 @@ var privateCallUnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance_i
 
 func UnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance_initWithFileHandle_readOnly_synchronizationMode_error__134e2092(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 bool, p2 int64, p3 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2337,7 +2340,7 @@ var privateCallUnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance_i
 
 func UnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance_isReadOnly_ac81349e(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance_isReadOnly_ac81349e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isReadOnly")
 		})
@@ -2353,7 +2356,7 @@ var privateCallUnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance_s
 
 func UnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance_synchronizationMode_b9ac97d1(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZDiskBlockDeviceStorageDeviceAttachment_Instance_synchronizationMode_b9ac97d1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("synchronizationMode")
 		})
@@ -2398,7 +2401,7 @@ var privateCallUnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_URL_83a
 
 func UnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_URL_83a83f9d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2425,7 +2428,7 @@ func UnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_URL_83a83f9d(rece
 var privateCallUnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance__cxx_destruct_57e43838 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance__cxx_destruct_57e43838(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance__cxx_destruct_57e43838.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -2439,7 +2442,7 @@ func UnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance__cxx_destruct_57e
 var privateCallUnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance__updateDiskSize__ae95d323 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]]
 
 func UnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance__updateDiskSize__ae95d323(receiver unsafe.Pointer, p0 uint64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance__updateDiskSize__ae95d323.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]("_updateDiskSize:")
 		})
@@ -2454,7 +2457,7 @@ var privateCallUnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_caching
 
 func UnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_cachingMode_eb828c79(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_cachingMode_eb828c79.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("cachingMode")
 		})
@@ -2470,7 +2473,7 @@ var privateCallUnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_initWit
 
 func UnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_initWithDiskImage_cachingMode_synchronizationMode_error__3e4c2b94(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 int64, p2 int64, p3 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2498,7 +2501,7 @@ var privateCallUnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_initWit
 
 func UnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_initWithURL_readOnly_cachingMode_synchronizationMode_error__a529787e(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 bool, p2 int64, p3 int64, p4 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2526,7 +2529,7 @@ var privateCallUnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_initWit
 
 func UnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_initWithURL_readOnly_error__eae3932b(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 bool, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2554,7 +2557,7 @@ var privateCallUnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_isReadO
 
 func UnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_isReadOnly_2aa226a3(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_isReadOnly_2aa226a3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isReadOnly")
 		})
@@ -2570,7 +2573,7 @@ var privateCallUnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_synchro
 
 func UnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_synchronizationMode_152db326(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZDiskImageStorageDeviceAttachment_Instance_synchronizationMode_152db326.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("synchronizationMode")
 		})
@@ -2586,7 +2589,7 @@ var privateCallUnsafePrivate_VZEFIBootLoader_Instance__ROMImageURL_899f8727 lazy
 
 func UnsafePrivate_VZEFIBootLoader_Instance__ROMImageURL_899f8727(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2613,7 +2616,7 @@ func UnsafePrivate_VZEFIBootLoader_Instance__ROMImageURL_899f8727(receiver unsaf
 var privateCallUnsafePrivate_VZEFIBootLoader_Instance__cxx_destruct_a836bbf5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZEFIBootLoader_Instance__cxx_destruct_a836bbf5(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFIBootLoader_Instance__cxx_destruct_a836bbf5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -2627,7 +2630,7 @@ func UnsafePrivate_VZEFIBootLoader_Instance__cxx_destruct_a836bbf5(receiver unsa
 var privateCallUnsafePrivate_VZEFIBootLoader_Instance__setROMImageURL__a8934dfd lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZEFIBootLoader_Instance__setROMImageURL__a8934dfd(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFIBootLoader_Instance__setROMImageURL__a8934dfd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setROMImageURL:")
 		})
@@ -2642,7 +2645,7 @@ var privateCallUnsafePrivate_VZEFIBootLoader_Instance_copyWithZone__4ca4d2d4 laz
 
 func UnsafePrivate_VZEFIBootLoader_Instance_copyWithZone__4ca4d2d4(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2670,7 +2673,7 @@ var privateCallUnsafePrivate_VZEFIBootLoader_Instance_init_0b0831e2 lazyBinding[
 
 func UnsafePrivate_VZEFIBootLoader_Instance_init_0b0831e2(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2697,7 +2700,7 @@ func UnsafePrivate_VZEFIBootLoader_Instance_init_0b0831e2(receiver unsafe.Pointe
 var privateCallUnsafePrivate_VZEFIBootLoader_Instance_setVariableStore__ededc6e9 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZEFIBootLoader_Instance_setVariableStore__ededc6e9(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFIBootLoader_Instance_setVariableStore__ededc6e9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setVariableStore:")
 		})
@@ -2712,7 +2715,7 @@ var privateCallUnsafePrivate_VZEFIBootLoader_Instance_variableStore_625c142e laz
 
 func UnsafePrivate_VZEFIBootLoader_Instance_variableStore_625c142e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2739,7 +2742,7 @@ func UnsafePrivate_VZEFIBootLoader_Instance_variableStore_625c142e(receiver unsa
 var privateCallUnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance__cxx_destruct_7126d238 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance__cxx_destruct_7126d238(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance__cxx_destruct_7126d238.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -2754,7 +2757,7 @@ var privateCallUnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_copyWi
 
 func UnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_copyWithZone__79698bac(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2782,7 +2785,7 @@ var privateCallUnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_dbSign
 
 func UnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_dbSignatures_7a30a232(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2810,7 +2813,7 @@ var privateCallUnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_dbxSig
 
 func UnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_dbxSignatures_198c41a6(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2838,7 +2841,7 @@ var privateCallUnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_hash_e
 
 func UnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_hash_e6de966b(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_hash_e6de966b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 		})
@@ -2854,7 +2857,7 @@ var privateCallUnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_initWi
 
 func UnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_initWithKeyExchangeKeys_dbSignatures_dbxSignatures__ea916074(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2882,7 +2885,7 @@ var privateCallUnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_isEqua
 
 func UnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_isEqual__2a0dd22e(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_isEqual__2a0dd22e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 		})
@@ -2898,7 +2901,7 @@ var privateCallUnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_keyExc
 
 func UnsafePrivate_VZEFISignatureDatabaseConfiguration_Instance_keyExchangeKeys_2a8f9cac(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2954,7 +2957,7 @@ func UnsafePrivate_VZEFISignatureList_Class_signatureListFromSignatures__eb0983f
 var privateCallUnsafePrivate_VZEFISignatureList_Instance__cxx_destruct_6484f0e6 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZEFISignatureList_Instance__cxx_destruct_6484f0e6(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFISignatureList_Instance__cxx_destruct_6484f0e6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -2969,7 +2972,7 @@ var privateCallUnsafePrivate_VZEFISignatureList_Instance_copyWithZone__45b46707 
 
 func UnsafePrivate_VZEFISignatureList_Instance_copyWithZone__45b46707(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -2997,7 +3000,7 @@ var privateCallUnsafePrivate_VZEFISignatureList_Instance_hash_a5c112a6 lazyBindi
 
 func UnsafePrivate_VZEFISignatureList_Instance_hash_a5c112a6(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFISignatureList_Instance_hash_a5c112a6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 		})
@@ -3013,7 +3016,7 @@ var privateCallUnsafePrivate_VZEFISignatureList_Instance_initWithContentsOfURL_e
 
 func UnsafePrivate_VZEFISignatureList_Instance_initWithContentsOfURL_error__e4071349(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3041,7 +3044,7 @@ var privateCallUnsafePrivate_VZEFISignatureList_Instance_initWithSignatures__a40
 
 func UnsafePrivate_VZEFISignatureList_Instance_initWithSignatures__a4038a97(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3069,7 +3072,7 @@ var privateCallUnsafePrivate_VZEFISignatureList_Instance_isEqual__541691d4 lazyB
 
 func UnsafePrivate_VZEFISignatureList_Instance_isEqual__541691d4(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFISignatureList_Instance_isEqual__541691d4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 		})
@@ -3085,7 +3088,7 @@ var privateCallUnsafePrivate_VZEFISignatureList_Instance_signatures_2489747f laz
 
 func UnsafePrivate_VZEFISignatureList_Instance_signatures_2489747f(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3112,7 +3115,7 @@ func UnsafePrivate_VZEFISignatureList_Instance_signatures_2489747f(receiver unsa
 var privateCallUnsafePrivate_VZEFISignatureSHA256Hash_Instance__cxx_destruct_a539a6ef lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZEFISignatureSHA256Hash_Instance__cxx_destruct_a539a6ef(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFISignatureSHA256Hash_Instance__cxx_destruct_a539a6ef.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -3127,7 +3130,7 @@ var privateCallUnsafePrivate_VZEFISignatureSHA256Hash_Instance_copyWithZone__2a0
 
 func UnsafePrivate_VZEFISignatureSHA256Hash_Instance_copyWithZone__2a034b7b(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3155,7 +3158,7 @@ var privateCallUnsafePrivate_VZEFISignatureSHA256Hash_Instance_data_f33324d2 laz
 
 func UnsafePrivate_VZEFISignatureSHA256Hash_Instance_data_f33324d2(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3183,7 +3186,7 @@ var privateCallUnsafePrivate_VZEFISignatureSHA256Hash_Instance_hash_b7876051 laz
 
 func UnsafePrivate_VZEFISignatureSHA256Hash_Instance_hash_b7876051(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFISignatureSHA256Hash_Instance_hash_b7876051.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 		})
@@ -3199,7 +3202,7 @@ var privateCallUnsafePrivate_VZEFISignatureSHA256Hash_Instance_initWithData__5fb
 
 func UnsafePrivate_VZEFISignatureSHA256Hash_Instance_initWithData__5fb618b2(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3227,7 +3230,7 @@ var privateCallUnsafePrivate_VZEFISignatureSHA256Hash_Instance_isEqual__deddc568
 
 func UnsafePrivate_VZEFISignatureSHA256Hash_Instance_isEqual__deddc568(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFISignatureSHA256Hash_Instance_isEqual__deddc568.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 		})
@@ -3243,7 +3246,7 @@ var privateCallUnsafePrivate_VZEFISignatureX509Certificate_Instance__cxx_constru
 
 func UnsafePrivate_VZEFISignatureX509Certificate_Instance__cxx_construct_cefbe094(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3270,7 +3273,7 @@ func UnsafePrivate_VZEFISignatureX509Certificate_Instance__cxx_construct_cefbe09
 var privateCallUnsafePrivate_VZEFISignatureX509Certificate_Instance__cxx_destruct_b491d9ab lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZEFISignatureX509Certificate_Instance__cxx_destruct_b491d9ab(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFISignatureX509Certificate_Instance__cxx_destruct_b491d9ab.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -3285,7 +3288,7 @@ var privateCallUnsafePrivate_VZEFISignatureX509Certificate_Instance_certificate_
 
 func UnsafePrivate_VZEFISignatureX509Certificate_Instance_certificate_19eabddc(receiver unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFISignatureX509Certificate_Instance_certificate_19eabddc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("certificate")
 		})
@@ -3301,7 +3304,7 @@ var privateCallUnsafePrivate_VZEFISignatureX509Certificate_Instance_copyWithZone
 
 func UnsafePrivate_VZEFISignatureX509Certificate_Instance_copyWithZone__a5d3a2c3(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3329,7 +3332,7 @@ var privateCallUnsafePrivate_VZEFISignatureX509Certificate_Instance_hash_0c67879
 
 func UnsafePrivate_VZEFISignatureX509Certificate_Instance_hash_0c678791(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFISignatureX509Certificate_Instance_hash_0c678791.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 		})
@@ -3345,7 +3348,7 @@ var privateCallUnsafePrivate_VZEFISignatureX509Certificate_Instance_initWithCert
 
 func UnsafePrivate_VZEFISignatureX509Certificate_Instance_initWithCertificate__77414d36(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3373,7 +3376,7 @@ var privateCallUnsafePrivate_VZEFISignatureX509Certificate_Instance_isEqual__818
 
 func UnsafePrivate_VZEFISignatureX509Certificate_Instance_isEqual__818debb2(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFISignatureX509Certificate_Instance_isEqual__818debb2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 		})
@@ -3389,7 +3392,7 @@ var privateCallUnsafePrivate_VZEFISignature_Instance__init_de3999a9 lazyBinding[
 
 func UnsafePrivate_VZEFISignature_Instance__init_de3999a9(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3417,7 +3420,7 @@ var privateCallUnsafePrivate_VZEFISignature_Instance_copyWithZone__11cf9cd7 lazy
 
 func UnsafePrivate_VZEFISignature_Instance_copyWithZone__11cf9cd7(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3445,7 +3448,7 @@ var privateCallUnsafePrivate_VZEFIVariableStore_Instance_URL_85365d88 lazyBindin
 
 func UnsafePrivate_VZEFIVariableStore_Instance_URL_85365d88(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3472,7 +3475,7 @@ func UnsafePrivate_VZEFIVariableStore_Instance_URL_85365d88(receiver unsafe.Poin
 var privateCallUnsafePrivate_VZEFIVariableStore_Instance__cxx_destruct_f200b243 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZEFIVariableStore_Instance__cxx_destruct_f200b243(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFIVariableStore_Instance__cxx_destruct_f200b243.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -3487,7 +3490,7 @@ var privateCallUnsafePrivate_VZEFIVariableStore_Instance_disableSecureBootWithEr
 
 func UnsafePrivate_VZEFIVariableStore_Instance_disableSecureBootWithError__f52a7b6d(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFIVariableStore_Instance_disableSecureBootWithError__f52a7b6d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("disableSecureBootWithError:")
 		})
@@ -3503,7 +3506,7 @@ var privateCallUnsafePrivate_VZEFIVariableStore_Instance_enableSecureBootUsingDe
 
 func UnsafePrivate_VZEFIVariableStore_Instance_enableSecureBootUsingDefaultPlatformKeyWithError__687ae4e9(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFIVariableStore_Instance_enableSecureBootUsingDefaultPlatformKeyWithError__687ae4e9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("enableSecureBootUsingDefaultPlatformKeyWithError:")
 		})
@@ -3519,7 +3522,7 @@ var privateCallUnsafePrivate_VZEFIVariableStore_Instance_enableSecureBootWithPla
 
 func UnsafePrivate_VZEFIVariableStore_Instance_enableSecureBootWithPlatformKey_error__698dcc73(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFIVariableStore_Instance_enableSecureBootWithPlatformKey_error__698dcc73.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("enableSecureBootWithPlatformKey:error:")
 		})
@@ -3535,7 +3538,7 @@ var privateCallUnsafePrivate_VZEFIVariableStore_Instance_enrollDefaultSecureBoot
 
 func UnsafePrivate_VZEFIVariableStore_Instance_enrollDefaultSecureBootSignaturesWithError__3512d2f7(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFIVariableStore_Instance_enrollDefaultSecureBootSignaturesWithError__3512d2f7.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("enrollDefaultSecureBootSignaturesWithError:")
 		})
@@ -3551,7 +3554,7 @@ var privateCallUnsafePrivate_VZEFIVariableStore_Instance_enrollSecureBootSignatu
 
 func UnsafePrivate_VZEFIVariableStore_Instance_enrollSecureBootSignatures_error__06bc8d11(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFIVariableStore_Instance_enrollSecureBootSignatures_error__06bc8d11.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("enrollSecureBootSignatures:error:")
 		})
@@ -3567,7 +3570,7 @@ var privateCallUnsafePrivate_VZEFIVariableStore_Instance_getEnrolledSecureBootSi
 
 func UnsafePrivate_VZEFIVariableStore_Instance_getEnrolledSecureBootSignaturesWithError__70d5b63c(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3595,7 +3598,7 @@ var privateCallUnsafePrivate_VZEFIVariableStore_Instance_getSecureBootEnabled_er
 
 func UnsafePrivate_VZEFIVariableStore_Instance_getSecureBootEnabled_error__19283b4d(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFIVariableStore_Instance_getSecureBootEnabled_error__19283b4d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("getSecureBootEnabled:error:")
 		})
@@ -3611,7 +3614,7 @@ var privateCallUnsafePrivate_VZEFIVariableStore_Instance_initCreatingVariableSto
 
 func UnsafePrivate_VZEFIVariableStore_Instance_initCreatingVariableStoreAtURL_options_error__999278ff(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3639,7 +3642,7 @@ var privateCallUnsafePrivate_VZEFIVariableStore_Instance_initWithURL__424fe0c6 l
 
 func UnsafePrivate_VZEFIVariableStore_Instance_initWithURL__424fe0c6(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3667,7 +3670,7 @@ var privateCallUnsafePrivate_VZEFIVariableStore_Instance_resetSecureBootWithErro
 
 func UnsafePrivate_VZEFIVariableStore_Instance_resetSecureBootWithError__f4857693(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEFIVariableStore_Instance_resetSecureBootWithError__f4857693.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("resetSecureBootWithError:")
 		})
@@ -3683,7 +3686,7 @@ var privateCallUnsafePrivate_VZEntropyDeviceConfiguration_Instance__entropyDevic
 
 func UnsafePrivate_VZEntropyDeviceConfiguration_Instance__entropyDevice_25b5b8dd(receiver unsafe.Pointer) int32 {
 	var result int32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZEntropyDeviceConfiguration_Instance__entropyDevice_25b5b8dd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int32]("_entropyDevice")
 		})
@@ -3699,7 +3702,7 @@ var privateCallUnsafePrivate_VZEntropyDeviceConfiguration_Instance__init_a5a15e8
 
 func UnsafePrivate_VZEntropyDeviceConfiguration_Instance__init_a5a15e8e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3727,7 +3730,7 @@ var privateCallUnsafePrivate_VZEntropyDeviceConfiguration_Instance_copyWithZone_
 
 func UnsafePrivate_VZEntropyDeviceConfiguration_Instance_copyWithZone__cbf48f83(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3754,7 +3757,7 @@ func UnsafePrivate_VZEntropyDeviceConfiguration_Instance_copyWithZone__cbf48f83(
 var privateCallUnsafePrivate_VZFileHandleNetworkDeviceAttachment_Instance__cxx_destruct_f94f531d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZFileHandleNetworkDeviceAttachment_Instance__cxx_destruct_f94f531d(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZFileHandleNetworkDeviceAttachment_Instance__cxx_destruct_f94f531d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -3769,7 +3772,7 @@ var privateCallUnsafePrivate_VZFileHandleNetworkDeviceAttachment_Instance_fileHa
 
 func UnsafePrivate_VZFileHandleNetworkDeviceAttachment_Instance_fileHandle_083ea522(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3797,7 +3800,7 @@ var privateCallUnsafePrivate_VZFileHandleNetworkDeviceAttachment_Instance_initWi
 
 func UnsafePrivate_VZFileHandleNetworkDeviceAttachment_Instance_initWithFileHandle__971f6d45(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3825,7 +3828,7 @@ var privateCallUnsafePrivate_VZFileHandleNetworkDeviceAttachment_Instance_maximu
 
 func UnsafePrivate_VZFileHandleNetworkDeviceAttachment_Instance_maximumTransmissionUnit_91cb2f54(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZFileHandleNetworkDeviceAttachment_Instance_maximumTransmissionUnit_91cb2f54.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("maximumTransmissionUnit")
 		})
@@ -3840,7 +3843,7 @@ func UnsafePrivate_VZFileHandleNetworkDeviceAttachment_Instance_maximumTransmiss
 var privateCallUnsafePrivate_VZFileHandleNetworkDeviceAttachment_Instance_setMaximumTransmissionUnit__8363a657 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate_VZFileHandleNetworkDeviceAttachment_Instance_setMaximumTransmissionUnit__8363a657(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZFileHandleNetworkDeviceAttachment_Instance_setMaximumTransmissionUnit__8363a657.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setMaximumTransmissionUnit:")
 		})
@@ -3854,7 +3857,7 @@ func UnsafePrivate_VZFileHandleNetworkDeviceAttachment_Instance_setMaximumTransm
 var privateCallUnsafePrivate_VZFileHandleSerialPortAttachment_Instance__cxx_destruct_26211860 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZFileHandleSerialPortAttachment_Instance__cxx_destruct_26211860(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZFileHandleSerialPortAttachment_Instance__cxx_destruct_26211860.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -3869,7 +3872,7 @@ var privateCallUnsafePrivate_VZFileHandleSerialPortAttachment_Instance_fileHandl
 
 func UnsafePrivate_VZFileHandleSerialPortAttachment_Instance_fileHandleForReading_6e163dd7(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3897,7 +3900,7 @@ var privateCallUnsafePrivate_VZFileHandleSerialPortAttachment_Instance_fileHandl
 
 func UnsafePrivate_VZFileHandleSerialPortAttachment_Instance_fileHandleForWriting_049e4d4d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3925,7 +3928,7 @@ var privateCallUnsafePrivate_VZFileHandleSerialPortAttachment_Instance_initWithF
 
 func UnsafePrivate_VZFileHandleSerialPortAttachment_Instance_initWithFileHandleForReading_fileHandleForWriting__eab47b25(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3953,7 +3956,7 @@ var privateCallUnsafePrivate_VZFileSerialPortAttachment_Instance_URL_6ce0a3bd la
 
 func UnsafePrivate_VZFileSerialPortAttachment_Instance_URL_6ce0a3bd(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -3981,7 +3984,7 @@ var privateCallUnsafePrivate_VZFileSerialPortAttachment_Instance__cxx_construct_
 
 func UnsafePrivate_VZFileSerialPortAttachment_Instance__cxx_construct_b690d171(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4008,7 +4011,7 @@ func UnsafePrivate_VZFileSerialPortAttachment_Instance__cxx_construct_b690d171(r
 var privateCallUnsafePrivate_VZFileSerialPortAttachment_Instance__cxx_destruct_39a19afa lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZFileSerialPortAttachment_Instance__cxx_destruct_39a19afa(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZFileSerialPortAttachment_Instance__cxx_destruct_39a19afa.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -4023,7 +4026,7 @@ var privateCallUnsafePrivate_VZFileSerialPortAttachment_Instance_append_74c18a28
 
 func UnsafePrivate_VZFileSerialPortAttachment_Instance_append_74c18a28(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZFileSerialPortAttachment_Instance_append_74c18a28.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("append")
 		})
@@ -4039,7 +4042,7 @@ var privateCallUnsafePrivate_VZFileSerialPortAttachment_Instance_initWithURL_app
 
 func UnsafePrivate_VZFileSerialPortAttachment_Instance_initWithURL_append_error__11301335(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 bool, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4067,7 +4070,7 @@ var privateCallUnsafePrivate_VZGenericMachineIdentifier_Instance__cxx_construct_
 
 func UnsafePrivate_VZGenericMachineIdentifier_Instance__cxx_construct_ad71b00e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4095,7 +4098,7 @@ var privateCallUnsafePrivate_VZGenericMachineIdentifier_Instance_copyWithZone__4
 
 func UnsafePrivate_VZGenericMachineIdentifier_Instance_copyWithZone__451f49e8(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4123,7 +4126,7 @@ var privateCallUnsafePrivate_VZGenericMachineIdentifier_Instance_dataRepresentat
 
 func UnsafePrivate_VZGenericMachineIdentifier_Instance_dataRepresentation_6eceb763(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4151,7 +4154,7 @@ var privateCallUnsafePrivate_VZGenericMachineIdentifier_Instance_hash_d73a4866 l
 
 func UnsafePrivate_VZGenericMachineIdentifier_Instance_hash_d73a4866(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGenericMachineIdentifier_Instance_hash_d73a4866.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 		})
@@ -4167,7 +4170,7 @@ var privateCallUnsafePrivate_VZGenericMachineIdentifier_Instance_initWithDataRep
 
 func UnsafePrivate_VZGenericMachineIdentifier_Instance_initWithDataRepresentation__f0e2dee5(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4195,7 +4198,7 @@ var privateCallUnsafePrivate_VZGenericMachineIdentifier_Instance_init_4fd53841 l
 
 func UnsafePrivate_VZGenericMachineIdentifier_Instance_init_4fd53841(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4223,7 +4226,7 @@ var privateCallUnsafePrivate_VZGenericMachineIdentifier_Instance_isEqual__1e822b
 
 func UnsafePrivate_VZGenericMachineIdentifier_Instance_isEqual__1e822bae(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGenericMachineIdentifier_Instance_isEqual__1e822bae.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 		})
@@ -4256,7 +4259,7 @@ var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__cxx_constr
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance__cxx_construct_f8aab7b8(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4283,7 +4286,7 @@ func UnsafePrivate_VZGenericPlatformConfiguration_Instance__cxx_construct_f8aab7
 var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__cxx_destruct_86e9def3 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance__cxx_destruct_86e9def3(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__cxx_destruct_86e9def3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -4298,7 +4301,7 @@ var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__fineGrainT
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance__fineGrainTrapsEmulationEnabled_1a1709f8(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__fineGrainTrapsEmulationEnabled_1a1709f8.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_fineGrainTrapsEmulationEnabled")
 		})
@@ -4314,7 +4317,7 @@ var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__guestType_
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance__guestType_d187b9a1(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4342,7 +4345,7 @@ var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__performanc
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance__performanceMonitoringUnitEmulationEnabled_83a48bfa(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__performanceMonitoringUnitEmulationEnabled_83a48bfa.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_performanceMonitoringUnitEmulationEnabled")
 		})
@@ -4357,7 +4360,7 @@ func UnsafePrivate_VZGenericPlatformConfiguration_Instance__performanceMonitorin
 var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__setFineGrainedTrapsEmulationEnabled__204858c4 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance__setFineGrainedTrapsEmulationEnabled__204858c4(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__setFineGrainedTrapsEmulationEnabled__204858c4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setFineGrainedTrapsEmulationEnabled:")
 		})
@@ -4371,7 +4374,7 @@ func UnsafePrivate_VZGenericPlatformConfiguration_Instance__setFineGrainedTrapsE
 var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__setGuestType__f92a638e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance__setGuestType__f92a638e(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__setGuestType__f92a638e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setGuestType:")
 		})
@@ -4385,7 +4388,7 @@ func UnsafePrivate_VZGenericPlatformConfiguration_Instance__setGuestType__f92a63
 var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__setPerformanceMonitoringUnitEmulationEnabled__9b9867c0 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance__setPerformanceMonitoringUnitEmulationEnabled__9b9867c0(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__setPerformanceMonitoringUnitEmulationEnabled__9b9867c0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setPerformanceMonitoringUnitEmulationEnabled:")
 		})
@@ -4399,7 +4402,7 @@ func UnsafePrivate_VZGenericPlatformConfiguration_Instance__setPerformanceMonito
 var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__setVirtualizationHostExtensionEnabled__cdb62e5f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance__setVirtualizationHostExtensionEnabled__cdb62e5f(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__setVirtualizationHostExtensionEnabled__cdb62e5f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setVirtualizationHostExtensionEnabled:")
 		})
@@ -4414,7 +4417,7 @@ var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__virtualiza
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance__virtualizationHostExtensionEnabled_21707906(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance__virtualizationHostExtensionEnabled_21707906.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_virtualizationHostExtensionEnabled")
 		})
@@ -4430,7 +4433,7 @@ var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance_copyWithZon
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance_copyWithZone__a9723fee(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4458,7 +4461,7 @@ var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance_init_bd82c9
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance_init_bd82c9ee(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4486,7 +4489,7 @@ var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance_isNestedVir
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance_isNestedVirtualizationEnabled_9997544f(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance_isNestedVirtualizationEnabled_9997544f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isNestedVirtualizationEnabled")
 		})
@@ -4502,7 +4505,7 @@ var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance_machineIden
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance_machineIdentifier_f9b341d6(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4529,7 +4532,7 @@ func UnsafePrivate_VZGenericPlatformConfiguration_Instance_machineIdentifier_f9b
 var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance_setMachineIdentifier__90c1e5fa lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance_setMachineIdentifier__90c1e5fa(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance_setMachineIdentifier__90c1e5fa.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setMachineIdentifier:")
 		})
@@ -4543,7 +4546,7 @@ func UnsafePrivate_VZGenericPlatformConfiguration_Instance_setMachineIdentifier_
 var privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance_setNestedVirtualizationEnabled__366308c1 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZGenericPlatformConfiguration_Instance_setNestedVirtualizationEnabled__366308c1(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGenericPlatformConfiguration_Instance_setNestedVirtualizationEnabled__366308c1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setNestedVirtualizationEnabled:")
 		})
@@ -4558,7 +4561,7 @@ var privateCallUnsafePrivate_VZGraphicsDeviceConfiguration_Instance__initWithCon
 
 func UnsafePrivate_VZGraphicsDeviceConfiguration_Instance__initWithConfiguration__953472e4(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4586,7 +4589,7 @@ var privateCallUnsafePrivate_VZGraphicsDeviceConfiguration_Instance__init_693b3e
 
 func UnsafePrivate_VZGraphicsDeviceConfiguration_Instance__init_693b3ede(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4614,7 +4617,7 @@ var privateCallUnsafePrivate_VZGraphicsDeviceConfiguration_Instance_copyWithZone
 
 func UnsafePrivate_VZGraphicsDeviceConfiguration_Instance_copyWithZone__f180d79c(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4642,7 +4645,7 @@ var privateCallUnsafePrivate_VZGraphicsDeviceConfiguration_Instance_makeGraphics
 
 func UnsafePrivate_VZGraphicsDeviceConfiguration_Instance_makeGraphicsDeviceForVirtualMachineAccessor_graphicsDeviceIndex__eed6dcfb(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4670,7 +4673,7 @@ var privateCallUnsafePrivate_VZGraphicsDeviceConfiguration_Instance_makeGraphics
 
 func UnsafePrivate_VZGraphicsDeviceConfiguration_Instance_makeGraphicsDeviceForVirtualMachine_graphicsDeviceIndex__325a8ba9(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4698,7 +4701,7 @@ var privateCallUnsafePrivate_VZGraphicsDeviceConfiguration_Instance_validateWith
 
 func UnsafePrivate_VZGraphicsDeviceConfiguration_Instance_validateWithError__a370d231(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDeviceConfiguration_Instance_validateWithError__a370d231.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateWithError:")
 		})
@@ -4714,7 +4717,7 @@ var privateCallUnsafePrivate_VZGraphicsDevice_Instance__cxx_construct_840f78d7 l
 
 func UnsafePrivate_VZGraphicsDevice_Instance__cxx_construct_840f78d7(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4741,7 +4744,7 @@ func UnsafePrivate_VZGraphicsDevice_Instance__cxx_construct_840f78d7(receiver un
 var privateCallUnsafePrivate_VZGraphicsDevice_Instance__cxx_destruct_b8198c16 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZGraphicsDevice_Instance__cxx_destruct_b8198c16(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDevice_Instance__cxx_destruct_b8198c16.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -4756,7 +4759,7 @@ var privateCallUnsafePrivate_VZGraphicsDevice_Instance__displayPortCount_c2bf942
 
 func UnsafePrivate_VZGraphicsDevice_Instance__displayPortCount_c2bf942b(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDevice_Instance__displayPortCount_c2bf942b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("_displayPortCount")
 		})
@@ -4772,7 +4775,7 @@ var privateCallUnsafePrivate_VZGraphicsDevice_Instance__initWithVirtualMachineAc
 
 func UnsafePrivate_VZGraphicsDevice_Instance__initWithVirtualMachineAccessor_graphicsDeviceIndex_displayPortCount_displays__8a0b6177(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 uint64, p3 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4800,7 +4803,7 @@ var privateCallUnsafePrivate_VZGraphicsDevice_Instance__initWithVirtualMachine_g
 
 func UnsafePrivate_VZGraphicsDevice_Instance__initWithVirtualMachine_graphicsDeviceIndex_displayPortCount_displays__4188bc60(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 uint64, p3 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4828,7 +4831,7 @@ var privateCallUnsafePrivate_VZGraphicsDevice_Instance__validateDisplayForHotPlu
 
 func UnsafePrivate_VZGraphicsDevice_Instance__validateDisplayForHotPlug_error__311eef0e(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDevice_Instance__validateDisplayForHotPlug_error__311eef0e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("_validateDisplayForHotPlug:error:")
 		})
@@ -4844,7 +4847,7 @@ var privateCallUnsafePrivate_VZGraphicsDevice_Instance_displays_8576624b lazyBin
 
 func UnsafePrivate_VZGraphicsDevice_Instance_displays_8576624b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4861,6 +4864,7 @@ func UnsafePrivate_VZGraphicsDevice_Instance_displays_8576624b(receiver unsafe.P
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -4871,7 +4875,7 @@ func UnsafePrivate_VZGraphicsDevice_Instance_displays_8576624b(receiver unsafe.P
 var privateCallUnsafePrivate_VZGraphicsDisplayConfiguration_Instance__cxx_destruct_e7808045 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZGraphicsDisplayConfiguration_Instance__cxx_destruct_e7808045(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDisplayConfiguration_Instance__cxx_destruct_e7808045.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -4886,7 +4890,7 @@ var privateCallUnsafePrivate_VZGraphicsDisplayConfiguration_Instance__initWithCo
 
 func UnsafePrivate_VZGraphicsDisplayConfiguration_Instance__initWithConfiguration__6c6a4a1d(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4914,7 +4918,7 @@ var privateCallUnsafePrivate_VZGraphicsDisplayConfiguration_Instance__init_413e6
 
 func UnsafePrivate_VZGraphicsDisplayConfiguration_Instance__init_413e6054(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4941,7 +4945,7 @@ func UnsafePrivate_VZGraphicsDisplayConfiguration_Instance__init_413e6054(receiv
 var privateCallUnsafePrivate_VZGraphicsDisplayConfiguration_Instance__setUUID__03f38808 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZGraphicsDisplayConfiguration_Instance__setUUID__03f38808(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDisplayConfiguration_Instance__setUUID__03f38808.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setUUID:")
 		})
@@ -4956,7 +4960,7 @@ var privateCallUnsafePrivate_VZGraphicsDisplayConfiguration_Instance__uuid_d58a5
 
 func UnsafePrivate_VZGraphicsDisplayConfiguration_Instance__uuid_d58a5568(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -4984,7 +4988,7 @@ var privateCallUnsafePrivate_VZGraphicsDisplayConfiguration_Instance_copyWithZon
 
 func UnsafePrivate_VZGraphicsDisplayConfiguration_Instance_copyWithZone__e5e0e795(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5012,7 +5016,7 @@ var privateCallUnsafePrivate_VZGraphicsDisplay_Instance__configuration_3e1c642a 
 
 func UnsafePrivate_VZGraphicsDisplay_Instance__configuration_3e1c642a(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5040,7 +5044,7 @@ var privateCallUnsafePrivate_VZGraphicsDisplay_Instance__cxx_construct_ca985830 
 
 func UnsafePrivate_VZGraphicsDisplay_Instance__cxx_construct_ca985830(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5067,7 +5071,7 @@ func UnsafePrivate_VZGraphicsDisplay_Instance__cxx_construct_ca985830(receiver u
 var privateCallUnsafePrivate_VZGraphicsDisplay_Instance__cxx_destruct_a0cf273a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZGraphicsDisplay_Instance__cxx_destruct_a0cf273a(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDisplay_Instance__cxx_destruct_a0cf273a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -5082,7 +5086,7 @@ var privateCallUnsafePrivate_VZGraphicsDisplay_Instance__graphicsDevice_b5d9a50e
 
 func UnsafePrivate_VZGraphicsDisplay_Instance__graphicsDevice_b5d9a50e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5110,7 +5114,7 @@ var privateCallUnsafePrivate_VZGraphicsDisplay_Instance__graphicsOrientation_6f2
 
 func UnsafePrivate_VZGraphicsDisplay_Instance__graphicsOrientation_6f2ee6f4(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDisplay_Instance__graphicsOrientation_6f2ee6f4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("_graphicsOrientation")
 		})
@@ -5126,7 +5130,7 @@ var privateCallUnsafePrivate_VZGraphicsDisplay_Instance__initDetached_b6ac191b l
 
 func UnsafePrivate_VZGraphicsDisplay_Instance__initDetached_b6ac191b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5154,7 +5158,7 @@ var privateCallUnsafePrivate_VZGraphicsDisplay_Instance__matchesConfiguration__d
 
 func UnsafePrivate_VZGraphicsDisplay_Instance__matchesConfiguration__d478537c(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDisplay_Instance__matchesConfiguration__d478537c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("_matchesConfiguration:")
 		})
@@ -5169,7 +5173,7 @@ func UnsafePrivate_VZGraphicsDisplay_Instance__matchesConfiguration__d478537c(re
 var privateCallUnsafePrivate_VZGraphicsDisplay_Instance__processReconfigurationWithConfiguration__04243d07 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZGraphicsDisplay_Instance__processReconfigurationWithConfiguration__04243d07(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDisplay_Instance__processReconfigurationWithConfiguration__04243d07.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_processReconfigurationWithConfiguration:")
 		})
@@ -5183,7 +5187,7 @@ func UnsafePrivate_VZGraphicsDisplay_Instance__processReconfigurationWithConfigu
 var privateCallUnsafePrivate_VZGraphicsDisplay_Instance__setGraphicsDevice__c211bd42 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZGraphicsDisplay_Instance__setGraphicsDevice__c211bd42(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDisplay_Instance__setGraphicsDevice__c211bd42.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setGraphicsDevice:")
 		})
@@ -5198,7 +5202,7 @@ var privateCallUnsafePrivate_VZGraphicsDisplay_Instance__supportsSinglePassHDR_4
 
 func UnsafePrivate_VZGraphicsDisplay_Instance__supportsSinglePassHDR_4e09d891(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDisplay_Instance__supportsSinglePassHDR_4e09d891.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_supportsSinglePassHDR")
 		})
@@ -5214,7 +5218,7 @@ var privateCallUnsafePrivate_VZGraphicsDisplay_Instance__uuid_1d38da3c lazyBindi
 
 func UnsafePrivate_VZGraphicsDisplay_Instance__uuid_1d38da3c(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5241,7 +5245,7 @@ func UnsafePrivate_VZGraphicsDisplay_Instance__uuid_1d38da3c(receiver unsafe.Poi
 var privateCallUnsafePrivate_VZGraphicsDisplay_Instance_addObserver__1a872eee lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZGraphicsDisplay_Instance_addObserver__1a872eee(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDisplay_Instance_addObserver__1a872eee.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("addObserver:")
 		})
@@ -5255,7 +5259,7 @@ func UnsafePrivate_VZGraphicsDisplay_Instance_addObserver__1a872eee(receiver uns
 var privateCallUnsafePrivate_VZGraphicsDisplay_Instance_dealloc_d9873f03 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZGraphicsDisplay_Instance_dealloc_d9873f03(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDisplay_Instance_dealloc_d9873f03.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -5270,7 +5274,7 @@ var privateCallUnsafePrivate_VZGraphicsDisplay_Instance_initWithVirtualMachineAc
 
 func UnsafePrivate_VZGraphicsDisplay_Instance_initWithVirtualMachineAccessor_graphicsDeviceIndex_framebufferIndex_uuid__b48719f1(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 uint64, p3 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5298,7 +5302,7 @@ var privateCallUnsafePrivate_VZGraphicsDisplay_Instance_initWithVirtualMachine_g
 
 func UnsafePrivate_VZGraphicsDisplay_Instance_initWithVirtualMachine_graphicsDeviceIndex_framebufferIndex_uuid__0d204e48(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 uint64, p3 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5325,7 +5329,7 @@ func UnsafePrivate_VZGraphicsDisplay_Instance_initWithVirtualMachine_graphicsDev
 var privateCallUnsafePrivate_VZGraphicsDisplay_Instance_observeValueForKeyPath_ofObject_change_context__586719df lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]]
 
 func UnsafePrivate_VZGraphicsDisplay_Instance_observeValueForKeyPath_ofObject_change_context__586719df(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer, p3 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDisplay_Instance_observeValueForKeyPath_ofObject_change_context__586719df.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]("observeValueForKeyPath:ofObject:change:context:")
 		})
@@ -5340,7 +5344,7 @@ var privateCallUnsafePrivate_VZGraphicsDisplay_Instance_reconfigureWithConfigura
 
 func UnsafePrivate_VZGraphicsDisplay_Instance_reconfigureWithConfiguration_error__6a347dfd(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDisplay_Instance_reconfigureWithConfiguration_error__6a347dfd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("reconfigureWithConfiguration:error:")
 		})
@@ -5355,7 +5359,7 @@ func UnsafePrivate_VZGraphicsDisplay_Instance_reconfigureWithConfiguration_error
 var privateCallUnsafePrivate_VZGraphicsDisplay_Instance_removeObserver__ad385db9 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZGraphicsDisplay_Instance_removeObserver__ad385db9(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGraphicsDisplay_Instance_removeObserver__ad385db9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("removeObserver:")
 		})
@@ -5370,7 +5374,7 @@ var privateCallUnsafePrivate_VZGuestMemoryMapping_Instance__cxx_construct_67f2df
 
 func UnsafePrivate_VZGuestMemoryMapping_Instance__cxx_construct_67f2df3a(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5397,7 +5401,7 @@ func UnsafePrivate_VZGuestMemoryMapping_Instance__cxx_construct_67f2df3a(receive
 var privateCallUnsafePrivate_VZGuestMemoryMapping_Instance__cxx_destruct_c7fae5fa lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZGuestMemoryMapping_Instance__cxx_destruct_c7fae5fa(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGuestMemoryMapping_Instance__cxx_destruct_c7fae5fa.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -5412,7 +5416,7 @@ var privateCallUnsafePrivate_VZGuestMemoryMapping_Instance_length_0205f851 lazyB
 
 func UnsafePrivate_VZGuestMemoryMapping_Instance_length_0205f851(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGuestMemoryMapping_Instance_length_0205f851.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("length")
 		})
@@ -5428,7 +5432,7 @@ var privateCallUnsafePrivate_VZGuestMemoryMapping_Instance_mutableBytes_2fbcbd13
 
 func UnsafePrivate_VZGuestMemoryMapping_Instance_mutableBytes_2fbcbd13(receiver unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGuestMemoryMapping_Instance_mutableBytes_2fbcbd13.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("mutableBytes")
 		})
@@ -5444,7 +5448,7 @@ var privateCallUnsafePrivate_VZGuestMemoryMapping_Instance_physicalAddress_e4651
 
 func UnsafePrivate_VZGuestMemoryMapping_Instance_physicalAddress_e4651e17(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGuestMemoryMapping_Instance_physicalAddress_e4651e17.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("physicalAddress")
 		})
@@ -5460,7 +5464,7 @@ var privateCallUnsafePrivate_VZGuestProvisioningOptions_Instance__createDataIfNe
 
 func UnsafePrivate_VZGuestProvisioningOptions_Instance__createDataIfNeededWithError__9913004f(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGuestProvisioningOptions_Instance__createDataIfNeededWithError__9913004f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("_createDataIfNeededWithError:")
 		})
@@ -5475,7 +5479,7 @@ func UnsafePrivate_VZGuestProvisioningOptions_Instance__createDataIfNeededWithEr
 var privateCallUnsafePrivate_VZGuestProvisioningOptions_Instance__cxx_destruct_7c0b3d56 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZGuestProvisioningOptions_Instance__cxx_destruct_7c0b3d56(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGuestProvisioningOptions_Instance__cxx_destruct_7c0b3d56.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -5490,7 +5494,7 @@ var privateCallUnsafePrivate_VZGuestProvisioningOptions_Instance__init_313d5078 
 
 func UnsafePrivate_VZGuestProvisioningOptions_Instance__init_313d5078(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5518,7 +5522,7 @@ var privateCallUnsafePrivate_VZGuestProvisioningOptions_Instance_copyWithZone__c
 
 func UnsafePrivate_VZGuestProvisioningOptions_Instance_copyWithZone__cc8b3cee(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5546,7 +5550,7 @@ var privateCallUnsafePrivate_VZGuestProvisioningOptions_Instance_validateWithErr
 
 func UnsafePrivate_VZGuestProvisioningOptions_Instance_validateWithError__38b1c37e(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZGuestProvisioningOptions_Instance_validateWithError__38b1c37e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateWithError:")
 		})
@@ -5562,7 +5566,7 @@ var privateCallUnsafePrivate_VZHostAudioInputStreamSource_Instance_init_622366be
 
 func UnsafePrivate_VZHostAudioInputStreamSource_Instance_init_622366be(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5590,7 +5594,7 @@ var privateCallUnsafePrivate_VZHostAudioOutputStreamSink_Instance_init_977c3a10 
 
 func UnsafePrivate_VZHostAudioOutputStreamSink_Instance_init_977c3a10(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5618,7 +5622,7 @@ var privateCallUnsafePrivate_VZKeyboardConfiguration_Instance__init_ca3e98be laz
 
 func UnsafePrivate_VZKeyboardConfiguration_Instance__init_ca3e98be(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5646,7 +5650,7 @@ var privateCallUnsafePrivate_VZKeyboardConfiguration_Instance_copyWithZone__5153
 
 func UnsafePrivate_VZKeyboardConfiguration_Instance_copyWithZone__515384fa(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5674,7 +5678,7 @@ var privateCallUnsafePrivate_VZKeyboardConfiguration_Instance_makeKeyboardForVir
 
 func UnsafePrivate_VZKeyboardConfiguration_Instance_makeKeyboardForVirtualMachine_deviceIdentifier__99ed798a(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5702,7 +5706,7 @@ var privateCallUnsafePrivate_VZKeyboardEventTap_Instance__cxx_construct_456dfa35
 
 func UnsafePrivate_VZKeyboardEventTap_Instance__cxx_construct_456dfa35(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5729,7 +5733,7 @@ func UnsafePrivate_VZKeyboardEventTap_Instance__cxx_construct_456dfa35(receiver 
 var privateCallUnsafePrivate_VZKeyboardEventTap_Instance__cxx_destruct_4732ca50 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZKeyboardEventTap_Instance__cxx_destruct_4732ca50(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZKeyboardEventTap_Instance__cxx_destruct_4732ca50.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -5743,7 +5747,7 @@ func UnsafePrivate_VZKeyboardEventTap_Instance__cxx_destruct_4732ca50(receiver u
 var privateCallUnsafePrivate_VZKeyboardEventTap_Instance_dealloc_def3b3c5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZKeyboardEventTap_Instance_dealloc_def3b3c5(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZKeyboardEventTap_Instance_dealloc_def3b3c5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -5757,7 +5761,7 @@ func UnsafePrivate_VZKeyboardEventTap_Instance_dealloc_def3b3c5(receiver unsafe.
 var privateCallUnsafePrivate_VZLinuxBootLoader_Instance__cxx_destruct_b1ac7524 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZLinuxBootLoader_Instance__cxx_destruct_b1ac7524(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZLinuxBootLoader_Instance__cxx_destruct_b1ac7524.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -5772,7 +5776,7 @@ var privateCallUnsafePrivate_VZLinuxBootLoader_Instance_commandLine_9c589056 laz
 
 func UnsafePrivate_VZLinuxBootLoader_Instance_commandLine_9c589056(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5800,7 +5804,7 @@ var privateCallUnsafePrivate_VZLinuxBootLoader_Instance_copyWithZone__bd9039f0 l
 
 func UnsafePrivate_VZLinuxBootLoader_Instance_copyWithZone__bd9039f0(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5828,7 +5832,7 @@ var privateCallUnsafePrivate_VZLinuxBootLoader_Instance_initWithKernelURL__142fe
 
 func UnsafePrivate_VZLinuxBootLoader_Instance_initWithKernelURL__142fefb7(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5856,7 +5860,7 @@ var privateCallUnsafePrivate_VZLinuxBootLoader_Instance_initialRamdiskURL_828e98
 
 func UnsafePrivate_VZLinuxBootLoader_Instance_initialRamdiskURL_828e9833(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5884,7 +5888,7 @@ var privateCallUnsafePrivate_VZLinuxBootLoader_Instance_kernelURL_8424070d lazyB
 
 func UnsafePrivate_VZLinuxBootLoader_Instance_kernelURL_8424070d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -5911,7 +5915,7 @@ func UnsafePrivate_VZLinuxBootLoader_Instance_kernelURL_8424070d(receiver unsafe
 var privateCallUnsafePrivate_VZLinuxBootLoader_Instance_setCommandLine__7681ff3b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZLinuxBootLoader_Instance_setCommandLine__7681ff3b(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZLinuxBootLoader_Instance_setCommandLine__7681ff3b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setCommandLine:")
 		})
@@ -5925,7 +5929,7 @@ func UnsafePrivate_VZLinuxBootLoader_Instance_setCommandLine__7681ff3b(receiver 
 var privateCallUnsafePrivate_VZLinuxBootLoader_Instance_setInitialRamdiskURL__4bdca3bd lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZLinuxBootLoader_Instance_setInitialRamdiskURL__4bdca3bd(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZLinuxBootLoader_Instance_setInitialRamdiskURL__4bdca3bd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setInitialRamdiskURL:")
 		})
@@ -5939,7 +5943,7 @@ func UnsafePrivate_VZLinuxBootLoader_Instance_setInitialRamdiskURL__4bdca3bd(rec
 var privateCallUnsafePrivate_VZLinuxBootLoader_Instance_setKernelURL__0e88ce19 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZLinuxBootLoader_Instance_setKernelURL__0e88ce19(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZLinuxBootLoader_Instance_setKernelURL__0e88ce19.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setKernelURL:")
 		})
@@ -5970,7 +5974,7 @@ func UnsafePrivate_VZLinuxRosettaAbstractSocketCachingOptions_Class_maximumNameL
 var privateCallUnsafePrivate_VZLinuxRosettaAbstractSocketCachingOptions_Instance__cxx_destruct_d42b6330 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZLinuxRosettaAbstractSocketCachingOptions_Instance__cxx_destruct_d42b6330(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZLinuxRosettaAbstractSocketCachingOptions_Instance__cxx_destruct_d42b6330.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -5985,7 +5989,7 @@ var privateCallUnsafePrivate_VZLinuxRosettaAbstractSocketCachingOptions_Instance
 
 func UnsafePrivate_VZLinuxRosettaAbstractSocketCachingOptions_Instance_initWithName_error__80ed0847(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6013,7 +6017,7 @@ var privateCallUnsafePrivate_VZLinuxRosettaAbstractSocketCachingOptions_Instance
 
 func UnsafePrivate_VZLinuxRosettaAbstractSocketCachingOptions_Instance_name_09fd55d5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6041,7 +6045,7 @@ var privateCallUnsafePrivate_VZLinuxRosettaCachingOptions_Instance__init_e4dc78a
 
 func UnsafePrivate_VZLinuxRosettaCachingOptions_Instance__init_e4dc78af(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6085,7 +6089,7 @@ func UnsafePrivate_VZLinuxRosettaDirectoryShare_Class_availability_5b3928fe() in
 var privateCallUnsafePrivate_VZLinuxRosettaDirectoryShare_Instance__cxx_destruct_38a01dca lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZLinuxRosettaDirectoryShare_Instance__cxx_destruct_38a01dca(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZLinuxRosettaDirectoryShare_Instance__cxx_destruct_38a01dca.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -6100,7 +6104,7 @@ var privateCallUnsafePrivate_VZLinuxRosettaDirectoryShare_Instance_initWithError
 
 func UnsafePrivate_VZLinuxRosettaDirectoryShare_Instance_initWithError__94a8248e(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6128,7 +6132,7 @@ var privateCallUnsafePrivate_VZLinuxRosettaDirectoryShare_Instance_options_3051b
 
 func UnsafePrivate_VZLinuxRosettaDirectoryShare_Instance_options_3051b58a(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6155,7 +6159,7 @@ func UnsafePrivate_VZLinuxRosettaDirectoryShare_Instance_options_3051b58a(receiv
 var privateCallUnsafePrivate_VZLinuxRosettaDirectoryShare_Instance_setOptions__4fd9b7af lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZLinuxRosettaDirectoryShare_Instance_setOptions__4fd9b7af(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZLinuxRosettaDirectoryShare_Instance_setOptions__4fd9b7af.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setOptions:")
 		})
@@ -6186,7 +6190,7 @@ func UnsafePrivate_VZLinuxRosettaUnixSocketCachingOptions_Class_maximumPathLengt
 var privateCallUnsafePrivate_VZLinuxRosettaUnixSocketCachingOptions_Instance__cxx_destruct_e90aac98 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZLinuxRosettaUnixSocketCachingOptions_Instance__cxx_destruct_e90aac98(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZLinuxRosettaUnixSocketCachingOptions_Instance__cxx_destruct_e90aac98.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -6201,7 +6205,7 @@ var privateCallUnsafePrivate_VZLinuxRosettaUnixSocketCachingOptions_Instance_ini
 
 func UnsafePrivate_VZLinuxRosettaUnixSocketCachingOptions_Instance_initWithPath_error__c3b301de(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6229,7 +6233,7 @@ var privateCallUnsafePrivate_VZLinuxRosettaUnixSocketCachingOptions_Instance_ini
 
 func UnsafePrivate_VZLinuxRosettaUnixSocketCachingOptions_Instance_init_91a23f9e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6257,7 +6261,7 @@ var privateCallUnsafePrivate_VZLinuxRosettaUnixSocketCachingOptions_Instance_pat
 
 func UnsafePrivate_VZLinuxRosettaUnixSocketCachingOptions_Instance_path_e578e28e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6314,7 +6318,7 @@ var privateCallUnsafePrivate_VZMACAddress_Instance_copyWithZone__2f60a05d lazyBi
 
 func UnsafePrivate_VZMACAddress_Instance_copyWithZone__2f60a05d(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6342,7 +6346,7 @@ var privateCallUnsafePrivate_VZMACAddress_Instance_debugDescription_b8bc9306 laz
 
 func UnsafePrivate_VZMACAddress_Instance_debugDescription_b8bc9306(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6370,7 +6374,7 @@ var privateCallUnsafePrivate_VZMACAddress_Instance_description_355122d3 lazyBind
 
 func UnsafePrivate_VZMACAddress_Instance_description_355122d3(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6398,7 +6402,7 @@ var privateCallUnsafePrivate_VZMACAddress_Instance_hash_b29730c4 lazyBinding[dir
 
 func UnsafePrivate_VZMACAddress_Instance_hash_b29730c4(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMACAddress_Instance_hash_b29730c4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 		})
@@ -6414,7 +6418,7 @@ var privateCallUnsafePrivate_VZMACAddress_Instance_initWithString__7f5ada3b lazy
 
 func UnsafePrivate_VZMACAddress_Instance_initWithString__7f5ada3b(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6442,7 +6446,7 @@ var privateCallUnsafePrivate_VZMACAddress_Instance_isBroadcastAddress_17b6863b l
 
 func UnsafePrivate_VZMACAddress_Instance_isBroadcastAddress_17b6863b(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMACAddress_Instance_isBroadcastAddress_17b6863b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isBroadcastAddress")
 		})
@@ -6458,7 +6462,7 @@ var privateCallUnsafePrivate_VZMACAddress_Instance_isEqual__f0dd7858 lazyBinding
 
 func UnsafePrivate_VZMACAddress_Instance_isEqual__f0dd7858(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMACAddress_Instance_isEqual__f0dd7858.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 		})
@@ -6474,7 +6478,7 @@ var privateCallUnsafePrivate_VZMACAddress_Instance_isLocallyAdministeredAddress_
 
 func UnsafePrivate_VZMACAddress_Instance_isLocallyAdministeredAddress_079e6cd5(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMACAddress_Instance_isLocallyAdministeredAddress_079e6cd5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isLocallyAdministeredAddress")
 		})
@@ -6490,7 +6494,7 @@ var privateCallUnsafePrivate_VZMACAddress_Instance_isMulticastAddress_29cdd833 l
 
 func UnsafePrivate_VZMACAddress_Instance_isMulticastAddress_29cdd833(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMACAddress_Instance_isMulticastAddress_29cdd833.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isMulticastAddress")
 		})
@@ -6506,7 +6510,7 @@ var privateCallUnsafePrivate_VZMACAddress_Instance_isUnicastAddress_f47dbc1c laz
 
 func UnsafePrivate_VZMACAddress_Instance_isUnicastAddress_f47dbc1c(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMACAddress_Instance_isUnicastAddress_f47dbc1c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isUnicastAddress")
 		})
@@ -6522,7 +6526,7 @@ var privateCallUnsafePrivate_VZMACAddress_Instance_isUniversallyAdministeredAddr
 
 func UnsafePrivate_VZMACAddress_Instance_isUniversallyAdministeredAddress_b042e4ee(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMACAddress_Instance_isUniversallyAdministeredAddress_b042e4ee.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isUniversallyAdministeredAddress")
 		})
@@ -6538,7 +6542,7 @@ var privateCallUnsafePrivate_VZMACAddress_Instance_string_396cd3fe lazyBinding[d
 
 func UnsafePrivate_VZMACAddress_Instance_string_396cd3fe(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6566,7 +6570,7 @@ var privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance_URL_b779d829 lazyBin
 
 func UnsafePrivate_VZMacAuxiliaryStorage_Instance_URL_b779d829(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6594,7 +6598,7 @@ var privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__allNVRAMDataVariabl
 
 func UnsafePrivate_VZMacAuxiliaryStorage_Instance__allNVRAMDataVariablesInPartition_error__ae3e77ba(receiver unsafe.Pointer, p0 uint64, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6622,7 +6626,7 @@ var privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__allNVRAMDataVariabl
 
 func UnsafePrivate_VZMacAuxiliaryStorage_Instance__allNVRAMDataVariablesWithError__141fb518(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6650,7 +6654,7 @@ var privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__allNVRAMVariablesIn
 
 func UnsafePrivate_VZMacAuxiliaryStorage_Instance__allNVRAMVariablesInPartition_error__ac116d83(receiver unsafe.Pointer, p0 uint64, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6678,7 +6682,7 @@ var privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__allNVRAMVariablesWi
 
 func UnsafePrivate_VZMacAuxiliaryStorage_Instance__allNVRAMVariablesWithError__65ab6d93(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6705,7 +6709,7 @@ func UnsafePrivate_VZMacAuxiliaryStorage_Instance__allNVRAMVariablesWithError__6
 var privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__cxx_destruct_e4bf09a2 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMacAuxiliaryStorage_Instance__cxx_destruct_e4bf09a2(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__cxx_destruct_e4bf09a2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -6720,7 +6724,7 @@ var privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__dataValueForNVRAMVa
 
 func UnsafePrivate_VZMacAuxiliaryStorage_Instance__dataValueForNVRAMVariableNamed_error__052962a5(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6748,7 +6752,7 @@ var privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__initializeUIDKeyWit
 
 func UnsafePrivate_VZMacAuxiliaryStorage_Instance__initializeUIDKeyWithWrappingKey_error__5c6884a3(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__initializeUIDKeyWithWrappingKey_error__5c6884a3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("_initializeUIDKeyWithWrappingKey:error:")
 		})
@@ -6764,7 +6768,7 @@ var privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__removeNVRAMVariable
 
 func UnsafePrivate_VZMacAuxiliaryStorage_Instance__removeNVRAMVariableNamed_error__816196da(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__removeNVRAMVariableNamed_error__816196da.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("_removeNVRAMVariableNamed:error:")
 		})
@@ -6780,7 +6784,7 @@ var privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__setDataValue_forNVR
 
 func UnsafePrivate_VZMacAuxiliaryStorage_Instance__setDataValue_forNVRAMVariableNamed_error__93c7c5f9(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__setDataValue_forNVRAMVariableNamed_error__93c7c5f9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) bool]("_setDataValue:forNVRAMVariableNamed:error:")
 		})
@@ -6796,7 +6800,7 @@ var privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__setValue_forNVRAMVa
 
 func UnsafePrivate_VZMacAuxiliaryStorage_Instance__setValue_forNVRAMVariableNamed_error__e0bbf266(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__setValue_forNVRAMVariableNamed_error__e0bbf266.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) bool]("_setValue:forNVRAMVariableNamed:error:")
 		})
@@ -6812,7 +6816,7 @@ var privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance__valueForNVRAMVariab
 
 func UnsafePrivate_VZMacAuxiliaryStorage_Instance__valueForNVRAMVariableNamed_error__4ddd33b1(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6840,7 +6844,7 @@ var privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance_initCreatingStorageA
 
 func UnsafePrivate_VZMacAuxiliaryStorage_Instance_initCreatingStorageAtURL_hardwareModel_options_error__0b75cf8f(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 uint64, p3 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6868,7 +6872,7 @@ var privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance_initWithContentsOfUR
 
 func UnsafePrivate_VZMacAuxiliaryStorage_Instance_initWithContentsOfURL__07585b5f(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6896,7 +6900,7 @@ var privateCallUnsafePrivate_VZMacAuxiliaryStorage_Instance_initWithURL__7b51a4c
 
 func UnsafePrivate_VZMacAuxiliaryStorage_Instance_initWithURL__7b51a4c0(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -6940,7 +6944,7 @@ func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Class__maximumAllowedDisplay
 var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__cxx_destruct_55773d7c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__cxx_destruct_55773d7c(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__cxx_destruct_55773d7c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -6955,7 +6959,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__deviceFe
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__deviceFeatureLevel_c3a23373(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__deviceFeatureLevel_c3a23373.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("_deviceFeatureLevel")
 		})
@@ -6971,7 +6975,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__displayP
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__displayPortCount_81e3517b(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__displayPortCount_81e3517b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("_displayPortCount")
 		})
@@ -6987,7 +6991,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__enablePr
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__enableProcessIsolation_b356bc72(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__enableProcessIsolation_b356bc72.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_enableProcessIsolation")
 		})
@@ -7003,7 +7007,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__implicit
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__implicitlyAddsVideoToolboxDevice_e48eb90c(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__implicitlyAddsVideoToolboxDevice_e48eb90c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_implicitlyAddsVideoToolboxDevice")
 		})
@@ -7019,7 +7023,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__initWith
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__initWithConfiguration__7e9556fa(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -7047,7 +7051,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__prefersL
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__prefersLowPower_2efbb5ef(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__prefersLowPower_2efbb5ef.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_prefersLowPower")
 		})
@@ -7062,7 +7066,7 @@ func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__prefersLowPower_2e
 var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setDeviceFeatureLevel__d27c81a6 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setDeviceFeatureLevel__d27c81a6(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setDeviceFeatureLevel__d27c81a6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("_setDeviceFeatureLevel:")
 		})
@@ -7076,7 +7080,7 @@ func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setDeviceFeatureLe
 var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setDisplayPortCount__6e4d488c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]]
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setDisplayPortCount__6e4d488c(receiver unsafe.Pointer, p0 uint64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setDisplayPortCount__6e4d488c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]("_setDisplayPortCount:")
 		})
@@ -7090,7 +7094,7 @@ func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setDisplayPortCoun
 var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setEnableProcessIsolation__752b1c87 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setEnableProcessIsolation__752b1c87(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setEnableProcessIsolation__752b1c87.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setEnableProcessIsolation:")
 		})
@@ -7104,7 +7108,7 @@ func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setEnableProcessIs
 var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setImplicitlyAddsVideoToolboxDevice__52483d4c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setImplicitlyAddsVideoToolboxDevice__52483d4c(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setImplicitlyAddsVideoToolboxDevice__52483d4c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setImplicitlyAddsVideoToolboxDevice:")
 		})
@@ -7118,7 +7122,7 @@ func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setImplicitlyAddsV
 var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setPrefersLowPower__bdafd281 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setPrefersLowPower__bdafd281(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance__setPrefersLowPower__bdafd281.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setPrefersLowPower:")
 		})
@@ -7133,7 +7137,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_copyWithZ
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_copyWithZone__24f0aa29(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -7161,7 +7165,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_displays_
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_displays_324dec58(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -7189,7 +7193,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_init_afd8
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_init_afd85c70(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -7217,7 +7221,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_makeGraph
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_makeGraphicsDeviceForVirtualMachineAccessor_graphicsDeviceIndex__4b1508f6(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -7245,7 +7249,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_makeGraph
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_makeGraphicsDeviceForVirtualMachine_graphicsDeviceIndex__ccb29a89(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -7272,7 +7276,7 @@ func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_makeGraphicsDeviceF
 var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_setDisplays__68be52a3 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_setDisplays__68be52a3(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_setDisplays__68be52a3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDisplays:")
 		})
@@ -7287,7 +7291,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_validateW
 
 func UnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_validateWithError__217502ce(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDeviceConfiguration_Instance_validateWithError__217502ce.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateWithError:")
 		})
@@ -7303,7 +7307,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDevice_Instance__deviceFeatureLevel_82
 
 func UnsafePrivate_VZMacGraphicsDevice_Instance__deviceFeatureLevel_82707576(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDevice_Instance__deviceFeatureLevel_82707576.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("_deviceFeatureLevel")
 		})
@@ -7319,7 +7323,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDevice_Instance__prefersLowPower_11fb8
 
 func UnsafePrivate_VZMacGraphicsDevice_Instance__prefersLowPower_11fb8896(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDevice_Instance__prefersLowPower_11fb8896.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_prefersLowPower")
 		})
@@ -7335,7 +7339,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDevice_Instance__validateDisplayForHot
 
 func UnsafePrivate_VZMacGraphicsDevice_Instance__validateDisplayForHotPlug_error__887b338a(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDevice_Instance__validateDisplayForHotPlug_error__887b338a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("_validateDisplayForHotPlug:error:")
 		})
@@ -7351,7 +7355,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__connect
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__connectionType_c0f8324f(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__connectionType_c0f8324f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("_connectionType")
 		})
@@ -7366,7 +7370,7 @@ func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__connectionType_c0
 var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__cxx_destruct_a3075a1c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__cxx_destruct_a3075a1c(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__cxx_destruct_a3075a1c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -7381,7 +7385,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__display
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__displayIdentifier_d00d55a7(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -7409,7 +7413,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__display
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__displayMode_3b2d339d(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__displayMode_3b2d339d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("_displayMode")
 		})
@@ -7425,7 +7429,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__enableH
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__enableHDR_40ea5cea(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__enableHDR_40ea5cea.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_enableHDR")
 		})
@@ -7441,7 +7445,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__initWit
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__initWithConfiguration__0c807ed7(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -7468,7 +7472,7 @@ func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__initWithConfigura
 var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__setConnectionType__3175874e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__setConnectionType__3175874e(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__setConnectionType__3175874e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("_setConnectionType:")
 		})
@@ -7482,7 +7486,7 @@ func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__setConnectionType
 var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__setDisplayIdentifier__c9625701 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__setDisplayIdentifier__c9625701(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__setDisplayIdentifier__c9625701.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setDisplayIdentifier:")
 		})
@@ -7496,7 +7500,7 @@ func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__setDisplayIdentif
 var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__setDisplayMode__f4db1ab8 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__setDisplayMode__f4db1ab8(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__setDisplayMode__f4db1ab8.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("_setDisplayMode:")
 		})
@@ -7510,7 +7514,7 @@ func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__setDisplayMode__f
 var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__setEnableHDR__2ecceded lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__setEnableHDR__2ecceded(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance__setEnableHDR__2ecceded.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setEnableHDR:")
 		})
@@ -7525,7 +7529,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_copyWith
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_copyWithZone__7b6faff3(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -7553,7 +7557,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_heightIn
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_heightInPixels_975195dd(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_heightInPixels_975195dd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("heightInPixels")
 		})
@@ -7569,7 +7573,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_initWith
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_initWithWidthInPixels_heightInPixels_pixelsPerInch__4aca7414(receiver unsafe.Pointer, p0 int64, p1 int64, p2 int64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -7597,7 +7601,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_pixelsPe
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_pixelsPerInch_609d037e(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_pixelsPerInch_609d037e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("pixelsPerInch")
 		})
@@ -7612,7 +7616,7 @@ func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_pixelsPerInch_609d
 var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_setHeightInPixels__0e67104c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_setHeightInPixels__0e67104c(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_setHeightInPixels__0e67104c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setHeightInPixels:")
 		})
@@ -7626,7 +7630,7 @@ func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_setHeightInPixels_
 var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_setPixelsPerInch__f5e9f024 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_setPixelsPerInch__f5e9f024(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_setPixelsPerInch__f5e9f024.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setPixelsPerInch:")
 		})
@@ -7640,7 +7644,7 @@ func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_setPixelsPerInch__
 var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_setWidthInPixels__5d2a2c3f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_setWidthInPixels__5d2a2c3f(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_setWidthInPixels__5d2a2c3f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setWidthInPixels:")
 		})
@@ -7655,7 +7659,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_widthInP
 
 func UnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_widthInPixels_14ce5af5(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplayConfiguration_Instance_widthInPixels_14ce5af5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("widthInPixels")
 		})
@@ -7671,7 +7675,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__configuration_db1984
 
 func UnsafePrivate_VZMacGraphicsDisplay_Instance__configuration_db19849e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -7699,7 +7703,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__connectionType_5073f
 
 func UnsafePrivate_VZMacGraphicsDisplay_Instance__connectionType_5073fef4(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__connectionType_5073fef4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("_connectionType")
 		})
@@ -7714,7 +7718,7 @@ func UnsafePrivate_VZMacGraphicsDisplay_Instance__connectionType_5073fef4(receiv
 var privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__cxx_destruct_63d5fc44 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMacGraphicsDisplay_Instance__cxx_destruct_63d5fc44(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__cxx_destruct_63d5fc44.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -7729,7 +7733,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__displayIdentifier_25
 
 func UnsafePrivate_VZMacGraphicsDisplay_Instance__displayIdentifier_254ecef4(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -7757,7 +7761,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__displayMode_6da7f508
 
 func UnsafePrivate_VZMacGraphicsDisplay_Instance__displayMode_6da7f508(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__displayMode_6da7f508.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("_displayMode")
 		})
@@ -7773,7 +7777,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__graphicsDevice_9198d
 
 func UnsafePrivate_VZMacGraphicsDisplay_Instance__graphicsDevice_9198d274(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -7801,7 +7805,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__isHDREnabled_ffe8095
 
 func UnsafePrivate_VZMacGraphicsDisplay_Instance__isHDREnabled_ffe80954(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__isHDREnabled_ffe80954.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_isHDREnabled")
 		})
@@ -7817,7 +7821,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__matchesConfiguration
 
 func UnsafePrivate_VZMacGraphicsDisplay_Instance__matchesConfiguration__9f89c650(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__matchesConfiguration__9f89c650.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("_matchesConfiguration:")
 		})
@@ -7832,7 +7836,7 @@ func UnsafePrivate_VZMacGraphicsDisplay_Instance__matchesConfiguration__9f89c650
 var privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__processReconfigurationWithConfiguration__0c317f29 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZMacGraphicsDisplay_Instance__processReconfigurationWithConfiguration__0c317f29(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__processReconfigurationWithConfiguration__0c317f29.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_processReconfigurationWithConfiguration:")
 		})
@@ -7846,7 +7850,7 @@ func UnsafePrivate_VZMacGraphicsDisplay_Instance__processReconfigurationWithConf
 var privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__setGraphicsDevice__fc236e3b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZMacGraphicsDisplay_Instance__setGraphicsDevice__fc236e3b(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__setGraphicsDevice__fc236e3b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setGraphicsDevice:")
 		})
@@ -7861,7 +7865,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__supportsSinglePassHD
 
 func UnsafePrivate_VZMacGraphicsDisplay_Instance__supportsSinglePassHDR_d8f77930(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance__supportsSinglePassHDR_d8f77930.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_supportsSinglePassHDR")
 		})
@@ -7877,7 +7881,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance_initWithConfiguration
 
 func UnsafePrivate_VZMacGraphicsDisplay_Instance_initWithConfiguration_error__f5df6a4f(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -7905,7 +7909,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance_pixelsPerInch_050dbf9
 
 func UnsafePrivate_VZMacGraphicsDisplay_Instance_pixelsPerInch_050dbf99(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance_pixelsPerInch_050dbf99.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("pixelsPerInch")
 		})
@@ -7921,7 +7925,7 @@ var privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance_reconfigureWithConfig
 
 func UnsafePrivate_VZMacGraphicsDisplay_Instance_reconfigureWithConfiguration_error__02f4833c(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGraphicsDisplay_Instance_reconfigureWithConfiguration_error__02f4833c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("reconfigureWithConfiguration:error:")
 		})
@@ -7937,7 +7941,7 @@ var privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance__createDataI
 
 func UnsafePrivate_VZMacGuestProvisioningOptions_Instance__createDataIfNeededWithError__c31fdcbf(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance__createDataIfNeededWithError__c31fdcbf.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("_createDataIfNeededWithError:")
 		})
@@ -7952,7 +7956,7 @@ func UnsafePrivate_VZMacGuestProvisioningOptions_Instance__createDataIfNeededWit
 var privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance__cxx_destruct_b7ed837d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMacGuestProvisioningOptions_Instance__cxx_destruct_b7ed837d(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance__cxx_destruct_b7ed837d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -7967,7 +7971,7 @@ var privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_copyWithZone
 
 func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_copyWithZone__d0abbbbd(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -7995,7 +7999,7 @@ var privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_enablesRemot
 
 func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_enablesRemoteLogin_61d34ab3(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_enablesRemoteLogin_61d34ab3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("enablesRemoteLogin")
 		})
@@ -8011,7 +8015,7 @@ var privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_fullName_793
 
 func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_fullName_793708de(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -8039,7 +8043,7 @@ var privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_init_58beffc
 
 func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_init_58beffc1(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -8067,7 +8071,7 @@ var privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_logsInAutoma
 
 func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_logsInAutomatically_d93310f0(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_logsInAutomatically_d93310f0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("logsInAutomatically")
 		})
@@ -8083,7 +8087,7 @@ var privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_password_6b1
 
 func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_password_6b194c7b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -8110,7 +8114,7 @@ func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_password_6b194c7b(rece
 var privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_setEnablesRemoteLogin__a2f30079 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_setEnablesRemoteLogin__a2f30079(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_setEnablesRemoteLogin__a2f30079.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setEnablesRemoteLogin:")
 		})
@@ -8124,7 +8128,7 @@ func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_setEnablesRemoteLogin_
 var privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_setFullName__78c31346 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_setFullName__78c31346(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_setFullName__78c31346.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setFullName:")
 		})
@@ -8138,7 +8142,7 @@ func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_setFullName__78c31346(
 var privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_setLogsInAutomatically__f9a641fa lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_setLogsInAutomatically__f9a641fa(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_setLogsInAutomatically__f9a641fa.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setLogsInAutomatically:")
 		})
@@ -8152,7 +8156,7 @@ func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_setLogsInAutomatically
 var privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_setPassword__07ee4a8a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_setPassword__07ee4a8a(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_setPassword__07ee4a8a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setPassword:")
 		})
@@ -8166,7 +8170,7 @@ func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_setPassword__07ee4a8a(
 var privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_setUsername__7295261c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_setUsername__7295261c(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_setUsername__7295261c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUsername:")
 		})
@@ -8181,7 +8185,7 @@ var privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_username_e33
 
 func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_username_e33ee89e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -8209,7 +8213,7 @@ var privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_validateWith
 
 func UnsafePrivate_VZMacGuestProvisioningOptions_Instance_validateWithError__a7fd46b3(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacGuestProvisioningOptions_Instance_validateWithError__a7fd46b3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateWithError:")
 		})
@@ -8300,7 +8304,7 @@ var privateCallUnsafePrivate_VZMacHardwareModel_Instance__boardID_54023402 lazyB
 
 func UnsafePrivate_VZMacHardwareModel_Instance__boardID_54023402(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacHardwareModel_Instance__boardID_54023402.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("_boardID")
 		})
@@ -8315,7 +8319,7 @@ func UnsafePrivate_VZMacHardwareModel_Instance__boardID_54023402(receiver unsafe
 var privateCallUnsafePrivate_VZMacHardwareModel_Instance__cxx_destruct_b7f12b3e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMacHardwareModel_Instance__cxx_destruct_b7f12b3e(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacHardwareModel_Instance__cxx_destruct_b7f12b3e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -8330,7 +8334,7 @@ var privateCallUnsafePrivate_VZMacHardwareModel_Instance__isa_74db491f lazyBindi
 
 func UnsafePrivate_VZMacHardwareModel_Instance__isa_74db491f(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacHardwareModel_Instance__isa_74db491f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("_isa")
 		})
@@ -8346,7 +8350,7 @@ var privateCallUnsafePrivate_VZMacHardwareModel_Instance__variantID_78326e0a laz
 
 func UnsafePrivate_VZMacHardwareModel_Instance__variantID_78326e0a(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacHardwareModel_Instance__variantID_78326e0a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("_variantID")
 		})
@@ -8362,7 +8366,7 @@ var privateCallUnsafePrivate_VZMacHardwareModel_Instance__variantName_6e7e36a3 l
 
 func UnsafePrivate_VZMacHardwareModel_Instance__variantName_6e7e36a3(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -8390,7 +8394,7 @@ var privateCallUnsafePrivate_VZMacHardwareModel_Instance_copyWithZone__084e8ae3 
 
 func UnsafePrivate_VZMacHardwareModel_Instance_copyWithZone__084e8ae3(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -8418,7 +8422,7 @@ var privateCallUnsafePrivate_VZMacHardwareModel_Instance_dataRepresentation_ef43
 
 func UnsafePrivate_VZMacHardwareModel_Instance_dataRepresentation_ef43b41b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -8446,7 +8450,7 @@ var privateCallUnsafePrivate_VZMacHardwareModel_Instance_hash_84f67a45 lazyBindi
 
 func UnsafePrivate_VZMacHardwareModel_Instance_hash_84f67a45(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacHardwareModel_Instance_hash_84f67a45.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 		})
@@ -8462,7 +8466,7 @@ var privateCallUnsafePrivate_VZMacHardwareModel_Instance_initWithDataRepresentat
 
 func UnsafePrivate_VZMacHardwareModel_Instance_initWithDataRepresentation__f4cd680c(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -8490,7 +8494,7 @@ var privateCallUnsafePrivate_VZMacHardwareModel_Instance_isEqual__be1f0fd7 lazyB
 
 func UnsafePrivate_VZMacHardwareModel_Instance_isEqual__be1f0fd7(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacHardwareModel_Instance_isEqual__be1f0fd7.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 		})
@@ -8506,7 +8510,7 @@ var privateCallUnsafePrivate_VZMacHardwareModel_Instance_isSupported_7b95acc1 la
 
 func UnsafePrivate_VZMacHardwareModel_Instance_isSupported_7b95acc1(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacHardwareModel_Instance_isSupported_7b95acc1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isSupported")
 		})
@@ -8521,7 +8525,7 @@ func UnsafePrivate_VZMacHardwareModel_Instance_isSupported_7b95acc1(receiver uns
 var privateCallUnsafePrivate_VZMacKeyboardConfiguration_Instance__setSoftwareKeyboard__88476458 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacKeyboardConfiguration_Instance__setSoftwareKeyboard__88476458(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacKeyboardConfiguration_Instance__setSoftwareKeyboard__88476458.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setSoftwareKeyboard:")
 		})
@@ -8535,7 +8539,7 @@ func UnsafePrivate_VZMacKeyboardConfiguration_Instance__setSoftwareKeyboard__884
 var privateCallUnsafePrivate_VZMacKeyboardConfiguration_Instance__setSupportsGlobeKey__a4c5e900 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacKeyboardConfiguration_Instance__setSupportsGlobeKey__a4c5e900(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacKeyboardConfiguration_Instance__setSupportsGlobeKey__a4c5e900.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setSupportsGlobeKey:")
 		})
@@ -8550,7 +8554,7 @@ var privateCallUnsafePrivate_VZMacKeyboardConfiguration_Instance__softwareKeyboa
 
 func UnsafePrivate_VZMacKeyboardConfiguration_Instance__softwareKeyboard_6dbcd397(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacKeyboardConfiguration_Instance__softwareKeyboard_6dbcd397.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_softwareKeyboard")
 		})
@@ -8566,7 +8570,7 @@ var privateCallUnsafePrivate_VZMacKeyboardConfiguration_Instance__supportsGlobeK
 
 func UnsafePrivate_VZMacKeyboardConfiguration_Instance__supportsGlobeKey_b47f4e34(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacKeyboardConfiguration_Instance__supportsGlobeKey_b47f4e34.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_supportsGlobeKey")
 		})
@@ -8582,7 +8586,7 @@ var privateCallUnsafePrivate_VZMacKeyboardConfiguration_Instance_copyWithZone__e
 
 func UnsafePrivate_VZMacKeyboardConfiguration_Instance_copyWithZone__e0e7ef03(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -8610,7 +8614,7 @@ var privateCallUnsafePrivate_VZMacKeyboardConfiguration_Instance_init_0278066e l
 
 func UnsafePrivate_VZMacKeyboardConfiguration_Instance_init_0278066e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -8638,7 +8642,7 @@ var privateCallUnsafePrivate_VZMacKeyboardConfiguration_Instance_makeKeyboardFor
 
 func UnsafePrivate_VZMacKeyboardConfiguration_Instance_makeKeyboardForVirtualMachine_deviceIdentifier__1adf7514(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -8811,7 +8815,7 @@ var privateCallUnsafePrivate_VZMacMachineIdentifier_Instance__ECIDChecksDisabled
 
 func UnsafePrivate_VZMacMachineIdentifier_Instance__ECIDChecksDisabled_42342e96(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacMachineIdentifier_Instance__ECIDChecksDisabled_42342e96.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_ECIDChecksDisabled")
 		})
@@ -8827,7 +8831,7 @@ var privateCallUnsafePrivate_VZMacMachineIdentifier_Instance__ECID_1df6dc4a lazy
 
 func UnsafePrivate_VZMacMachineIdentifier_Instance__ECID_1df6dc4a(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacMachineIdentifier_Instance__ECID_1df6dc4a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("_ECID")
 		})
@@ -8842,7 +8846,7 @@ func UnsafePrivate_VZMacMachineIdentifier_Instance__ECID_1df6dc4a(receiver unsaf
 var privateCallUnsafePrivate_VZMacMachineIdentifier_Instance__cxx_destruct_57b0612b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMacMachineIdentifier_Instance__cxx_destruct_57b0612b(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacMachineIdentifier_Instance__cxx_destruct_57b0612b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -8857,7 +8861,7 @@ var privateCallUnsafePrivate_VZMacMachineIdentifier_Instance__serialNumber_31917
 
 func UnsafePrivate_VZMacMachineIdentifier_Instance__serialNumber_31917d0b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -8885,7 +8889,7 @@ var privateCallUnsafePrivate_VZMacMachineIdentifier_Instance_copyWithZone__69d0a
 
 func UnsafePrivate_VZMacMachineIdentifier_Instance_copyWithZone__69d0adef(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -8913,7 +8917,7 @@ var privateCallUnsafePrivate_VZMacMachineIdentifier_Instance_dataRepresentation_
 
 func UnsafePrivate_VZMacMachineIdentifier_Instance_dataRepresentation_4205d8d5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -8941,7 +8945,7 @@ var privateCallUnsafePrivate_VZMacMachineIdentifier_Instance_hash_18a002fa lazyB
 
 func UnsafePrivate_VZMacMachineIdentifier_Instance_hash_18a002fa(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacMachineIdentifier_Instance_hash_18a002fa.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 		})
@@ -8957,7 +8961,7 @@ var privateCallUnsafePrivate_VZMacMachineIdentifier_Instance_initWithDataReprese
 
 func UnsafePrivate_VZMacMachineIdentifier_Instance_initWithDataRepresentation__6c4aa997(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -8985,7 +8989,7 @@ var privateCallUnsafePrivate_VZMacMachineIdentifier_Instance_init_2f12bd1d lazyB
 
 func UnsafePrivate_VZMacMachineIdentifier_Instance_init_2f12bd1d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9013,7 +9017,7 @@ var privateCallUnsafePrivate_VZMacMachineIdentifier_Instance_isEqual__bdfd13bb l
 
 func UnsafePrivate_VZMacMachineIdentifier_Instance_isEqual__bdfd13bb(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacMachineIdentifier_Instance_isEqual__bdfd13bb.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 		})
@@ -9028,7 +9032,7 @@ func UnsafePrivate_VZMacMachineIdentifier_Instance_isEqual__bdfd13bb(receiver un
 var privateCallUnsafePrivate_VZMacOSBootLoader_Instance__cxx_destruct_e1d0a3ed lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMacOSBootLoader_Instance__cxx_destruct_e1d0a3ed(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSBootLoader_Instance__cxx_destruct_e1d0a3ed.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -9043,7 +9047,7 @@ var privateCallUnsafePrivate_VZMacOSBootLoader_Instance__romURL_0453924a lazyBin
 
 func UnsafePrivate_VZMacOSBootLoader_Instance__romURL_0453924a(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9070,7 +9074,7 @@ func UnsafePrivate_VZMacOSBootLoader_Instance__romURL_0453924a(receiver unsafe.P
 var privateCallUnsafePrivate_VZMacOSBootLoader_Instance__setROMURL__b5585445 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZMacOSBootLoader_Instance__setROMURL__b5585445(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSBootLoader_Instance__setROMURL__b5585445.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setROMURL:")
 		})
@@ -9085,7 +9089,7 @@ var privateCallUnsafePrivate_VZMacOSBootLoader_Instance_copyWithZone__bc11948d l
 
 func UnsafePrivate_VZMacOSBootLoader_Instance_copyWithZone__bc11948d(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9113,7 +9117,7 @@ var privateCallUnsafePrivate_VZMacOSBootLoader_Instance_init_7ec943f3 lazyBindin
 
 func UnsafePrivate_VZMacOSBootLoader_Instance_init_7ec943f3(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9141,7 +9145,7 @@ var privateCallUnsafePrivate_VZMacOSConfigurationRequirements_Instance__cxx_cons
 
 func UnsafePrivate_VZMacOSConfigurationRequirements_Instance__cxx_construct_91062f3b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9168,7 +9172,7 @@ func UnsafePrivate_VZMacOSConfigurationRequirements_Instance__cxx_construct_9106
 var privateCallUnsafePrivate_VZMacOSConfigurationRequirements_Instance__cxx_destruct_f1725b4b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMacOSConfigurationRequirements_Instance__cxx_destruct_f1725b4b(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSConfigurationRequirements_Instance__cxx_destruct_f1725b4b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -9183,7 +9187,7 @@ var privateCallUnsafePrivate_VZMacOSConfigurationRequirements_Instance__variants
 
 func UnsafePrivate_VZMacOSConfigurationRequirements_Instance__variants_ad4422ae(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9211,7 +9215,7 @@ var privateCallUnsafePrivate_VZMacOSConfigurationRequirements_Instance_hardwareM
 
 func UnsafePrivate_VZMacOSConfigurationRequirements_Instance_hardwareModel_905b3695(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9239,7 +9243,7 @@ var privateCallUnsafePrivate_VZMacOSConfigurationRequirements_Instance_minimumSu
 
 func UnsafePrivate_VZMacOSConfigurationRequirements_Instance_minimumSupportedCPUCount_6abc643e(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSConfigurationRequirements_Instance_minimumSupportedCPUCount_6abc643e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("minimumSupportedCPUCount")
 		})
@@ -9255,7 +9259,7 @@ var privateCallUnsafePrivate_VZMacOSConfigurationRequirements_Instance_minimumSu
 
 func UnsafePrivate_VZMacOSConfigurationRequirements_Instance_minimumSupportedMemorySize_f410a6bb(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSConfigurationRequirements_Instance_minimumSupportedMemorySize_f410a6bb.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("minimumSupportedMemorySize")
 		})
@@ -9271,7 +9275,7 @@ var privateCallUnsafePrivate_VZMacOSInstaller_Instance__cxx_construct_fab6230b l
 
 func UnsafePrivate_VZMacOSInstaller_Instance__cxx_construct_fab6230b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9298,7 +9302,7 @@ func UnsafePrivate_VZMacOSInstaller_Instance__cxx_construct_fab6230b(receiver un
 var privateCallUnsafePrivate_VZMacOSInstaller_Instance__cxx_destruct_4f44f361 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMacOSInstaller_Instance__cxx_destruct_4f44f361(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSInstaller_Instance__cxx_destruct_4f44f361.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -9312,7 +9316,7 @@ func UnsafePrivate_VZMacOSInstaller_Instance__cxx_destruct_4f44f361(receiver uns
 var privateCallUnsafePrivate_VZMacOSInstaller_Instance__disableMobileDeviceUpdate_b9f69e1e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMacOSInstaller_Instance__disableMobileDeviceUpdate_b9f69e1e(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSInstaller_Instance__disableMobileDeviceUpdate_b9f69e1e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("_disableMobileDeviceUpdate")
 		})
@@ -9327,7 +9331,7 @@ var privateCallUnsafePrivate_VZMacOSInstaller_Instance_initWithVirtualMachine_re
 
 func UnsafePrivate_VZMacOSInstaller_Instance_initWithVirtualMachine_restoreImageURL__66644a46(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(p0, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9344,6 +9348,7 @@ func UnsafePrivate_VZMacOSInstaller_Instance_initWithVirtualMachine_restoreImage
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector, p0, p1)
+		InheritObjectQueue(result, p0)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -9355,7 +9360,7 @@ var privateCallUnsafePrivate_VZMacOSInstaller_Instance_progress_3a8af431 lazyBin
 
 func UnsafePrivate_VZMacOSInstaller_Instance_progress_3a8af431(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9383,7 +9388,7 @@ var privateCallUnsafePrivate_VZMacOSInstaller_Instance_restoreImageURL_930dd26e 
 
 func UnsafePrivate_VZMacOSInstaller_Instance_restoreImageURL_930dd26e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9411,7 +9416,7 @@ var privateCallUnsafePrivate_VZMacOSInstaller_Instance_virtualMachine_526ab012 l
 
 func UnsafePrivate_VZMacOSInstaller_Instance_virtualMachine_526ab012(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9439,7 +9444,7 @@ var privateCallUnsafePrivate_VZMacOSRestoreImage_Instance_URL_21c0d755 lazyBindi
 
 func UnsafePrivate_VZMacOSRestoreImage_Instance_URL_21c0d755(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9467,7 +9472,7 @@ var privateCallUnsafePrivate_VZMacOSRestoreImage_Instance__configurations_6aebfe
 
 func UnsafePrivate_VZMacOSRestoreImage_Instance__configurations_6aebfe46(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9495,7 +9500,7 @@ var privateCallUnsafePrivate_VZMacOSRestoreImage_Instance__cxx_construct_b6fa93e
 
 func UnsafePrivate_VZMacOSRestoreImage_Instance__cxx_construct_b6fa93ec(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9522,7 +9527,7 @@ func UnsafePrivate_VZMacOSRestoreImage_Instance__cxx_construct_b6fa93ec(receiver
 var privateCallUnsafePrivate_VZMacOSRestoreImage_Instance__cxx_destruct_38a8ea09 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMacOSRestoreImage_Instance__cxx_destruct_38a8ea09(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSRestoreImage_Instance__cxx_destruct_38a8ea09.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -9537,7 +9542,7 @@ var privateCallUnsafePrivate_VZMacOSRestoreImage_Instance_buildVersion_3980603c 
 
 func UnsafePrivate_VZMacOSRestoreImage_Instance_buildVersion_3980603c(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9564,7 +9569,7 @@ func UnsafePrivate_VZMacOSRestoreImage_Instance_buildVersion_3980603c(receiver u
 var privateCallUnsafePrivate_VZMacOSRestoreImage_Instance_dealloc_156af0ad lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMacOSRestoreImage_Instance_dealloc_156af0ad(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSRestoreImage_Instance_dealloc_156af0ad.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -9579,7 +9584,7 @@ var privateCallUnsafePrivate_VZMacOSRestoreImage_Instance_isSupported_5066023d l
 
 func UnsafePrivate_VZMacOSRestoreImage_Instance_isSupported_5066023d(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSRestoreImage_Instance_isSupported_5066023d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isSupported")
 		})
@@ -9595,7 +9600,7 @@ var privateCallUnsafePrivate_VZMacOSRestoreImage_Instance_mostFeaturefulSupporte
 
 func UnsafePrivate_VZMacOSRestoreImage_Instance_mostFeaturefulSupportedConfiguration_da165947(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9622,7 +9627,7 @@ func UnsafePrivate_VZMacOSRestoreImage_Instance_mostFeaturefulSupportedConfigura
 var privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__cxx_destruct_35b28ed7 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__cxx_destruct_35b28ed7(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__cxx_destruct_35b28ed7.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -9637,7 +9642,7 @@ var privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__forceDF
 
 func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__forceDFU_75cf4205(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__forceDFU_75cf4205.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_forceDFU")
 		})
@@ -9653,7 +9658,7 @@ var privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__guestPr
 
 func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__guestProvisioningOptionsForApplicationIdentifier__d06b3228(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9680,7 +9685,7 @@ func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__guestProvisioning
 var privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__setForceDFU__9120719a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__setForceDFU__9120719a(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__setForceDFU__9120719a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setForceDFU:")
 		})
@@ -9695,7 +9700,7 @@ var privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__setGues
 
 func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__setGuestProvisioningOptions_forApplicationIdentifier_error__f7e57913(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__setGuestProvisioningOptions_forApplicationIdentifier_error__f7e57913.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) bool]("_setGuestProvisioningOptions:forApplicationIdentifier:error:")
 		})
@@ -9710,7 +9715,7 @@ func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__setGuestProvision
 var privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__setStopInIBootStage1__9dceba54 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__setStopInIBootStage1__9dceba54(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__setStopInIBootStage1__9dceba54.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setStopInIBootStage1:")
 		})
@@ -9724,7 +9729,7 @@ func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__setStopInIBootSta
 var privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__setStopInIBootStage2__0d6b5725 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__setStopInIBootStage2__0d6b5725(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__setStopInIBootStage2__0d6b5725.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setStopInIBootStage2:")
 		})
@@ -9739,7 +9744,7 @@ var privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__stopInI
 
 func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__stopInIBootStage1_bcb080da(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__stopInIBootStage1_bcb080da.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_stopInIBootStage1")
 		})
@@ -9755,7 +9760,7 @@ var privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__stopInI
 
 func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__stopInIBootStage2_85ebf115(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance__stopInIBootStage2_85ebf115.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_stopInIBootStage2")
 		})
@@ -9771,7 +9776,7 @@ var privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance_guestPro
 
 func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance_guestProvisioningOptions_689ec308(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9799,7 +9804,7 @@ var privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance_init_036
 
 func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance_init_0362f894(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9827,7 +9832,7 @@ var privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance_setGuest
 
 func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance_setGuestProvisioningOptions_error__f5feb2e8(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance_setGuestProvisioningOptions_error__f5feb2e8.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("setGuestProvisioningOptions:error:")
 		})
@@ -9842,7 +9847,7 @@ func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance_setGuestProvisioni
 var privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance_setStartUpFromMacOSRecovery__6dda42a5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance_setStartUpFromMacOSRecovery__6dda42a5(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance_setStartUpFromMacOSRecovery__6dda42a5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setStartUpFromMacOSRecovery:")
 		})
@@ -9857,7 +9862,7 @@ var privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance_startUpF
 
 func UnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance_startUpFromMacOSRecovery_010503f4(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacOSVirtualMachineStartOptions_Instance_startUpFromMacOSRecovery_010503f4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("startUpFromMacOSRecovery")
 		})
@@ -9873,7 +9878,7 @@ var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__cxx_construct_
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__cxx_construct_4afe6d61(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9900,7 +9905,7 @@ func UnsafePrivate_VZMacPlatformConfiguration_Instance__cxx_construct_4afe6d61(r
 var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__cxx_destruct_5e32d72a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__cxx_destruct_5e32d72a(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__cxx_destruct_5e32d72a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -9915,7 +9920,7 @@ var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__guestEncryptio
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__guestEncryptionWrappingKey_8784f841(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -9943,7 +9948,7 @@ var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__hostAttributeS
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__hostAttributeShareOptions_358b8fa5(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__hostAttributeShareOptions_358b8fa5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("_hostAttributeShareOptions")
 		})
@@ -9959,7 +9964,7 @@ var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__isFairPlayEnab
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__isFairPlayEnabled_98b15c53(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__isFairPlayEnabled_98b15c53.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_isFairPlayEnabled")
 		})
@@ -9975,7 +9980,7 @@ var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__isFakeEncrypti
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__isFakeEncryptionEnabled_47af494b(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__isFakeEncryptionEnabled_47af494b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_isFakeEncryptionEnabled")
 		})
@@ -9991,7 +9996,7 @@ var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__isProductionMo
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__isProductionModeEnabled_6d47692e(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__isProductionModeEnabled_6d47692e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_isProductionModeEnabled")
 		})
@@ -10007,7 +10012,7 @@ var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__isSIODescrambl
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__isSIODescramblerEnabled_f184747c(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__isSIODescramblerEnabled_f184747c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_isSIODescramblerEnabled")
 		})
@@ -10023,7 +10028,7 @@ var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__isStrongIdenti
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__isStrongIdentityEnabled_b0e17ac5(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__isStrongIdentityEnabled_b0e17ac5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_isStrongIdentityEnabled")
 		})
@@ -10039,7 +10044,7 @@ var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__remoteServiceD
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__remoteServiceDiscoveryConfiguration_68ff9ab8(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10066,7 +10071,7 @@ func UnsafePrivate_VZMacPlatformConfiguration_Instance__remoteServiceDiscoveryCo
 var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setFairPlayEnabled__0a9ada24 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__setFairPlayEnabled__0a9ada24(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setFairPlayEnabled__0a9ada24.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setFairPlayEnabled:")
 		})
@@ -10080,7 +10085,7 @@ func UnsafePrivate_VZMacPlatformConfiguration_Instance__setFairPlayEnabled__0a9a
 var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setFakeEncryptionEnabled__ff6a6e9b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__setFakeEncryptionEnabled__ff6a6e9b(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setFakeEncryptionEnabled__ff6a6e9b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setFakeEncryptionEnabled:")
 		})
@@ -10094,7 +10099,7 @@ func UnsafePrivate_VZMacPlatformConfiguration_Instance__setFakeEncryptionEnabled
 var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setGuestEncryptionWrappingKey__ed8a41db lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__setGuestEncryptionWrappingKey__ed8a41db(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setGuestEncryptionWrappingKey__ed8a41db.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setGuestEncryptionWrappingKey:")
 		})
@@ -10108,7 +10113,7 @@ func UnsafePrivate_VZMacPlatformConfiguration_Instance__setGuestEncryptionWrappi
 var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setHostAttributeShareOptions__94820b56 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]]
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__setHostAttributeShareOptions__94820b56(receiver unsafe.Pointer, p0 uint64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setHostAttributeShareOptions__94820b56.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]("_setHostAttributeShareOptions:")
 		})
@@ -10122,7 +10127,7 @@ func UnsafePrivate_VZMacPlatformConfiguration_Instance__setHostAttributeShareOpt
 var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setProductionModeEnabled__1df5903d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__setProductionModeEnabled__1df5903d(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setProductionModeEnabled__1df5903d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setProductionModeEnabled:")
 		})
@@ -10136,7 +10141,7 @@ func UnsafePrivate_VZMacPlatformConfiguration_Instance__setProductionModeEnabled
 var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setRemoteServiceDiscoveryConfiguration__c678ef3d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__setRemoteServiceDiscoveryConfiguration__c678ef3d(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setRemoteServiceDiscoveryConfiguration__c678ef3d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setRemoteServiceDiscoveryConfiguration:")
 		})
@@ -10150,7 +10155,7 @@ func UnsafePrivate_VZMacPlatformConfiguration_Instance__setRemoteServiceDiscover
 var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setSIODescramblerEnabled__d17d38e5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__setSIODescramblerEnabled__d17d38e5(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setSIODescramblerEnabled__d17d38e5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setSIODescramblerEnabled:")
 		})
@@ -10164,7 +10169,7 @@ func UnsafePrivate_VZMacPlatformConfiguration_Instance__setSIODescramblerEnabled
 var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setStrongIdentityEnabled__a4587e50 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance__setStrongIdentityEnabled__a4587e50(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance__setStrongIdentityEnabled__a4587e50.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setStrongIdentityEnabled:")
 		})
@@ -10179,7 +10184,7 @@ var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance_auxiliaryStorag
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance_auxiliaryStorage_8f45b15c(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10207,7 +10212,7 @@ var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance_copyWithZone__7
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance_copyWithZone__714ad979(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10235,7 +10240,7 @@ var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance_hardwareModel_a
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance_hardwareModel_a63d4a4e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10263,7 +10268,7 @@ var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance_init_8d98dd80 l
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance_init_8d98dd80(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10291,7 +10296,7 @@ var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance_machineIdentifi
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance_machineIdentifier_d78605fd(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10318,7 +10323,7 @@ func UnsafePrivate_VZMacPlatformConfiguration_Instance_machineIdentifier_d78605f
 var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance_setAuxiliaryStorage__29fd67dd lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance_setAuxiliaryStorage__29fd67dd(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance_setAuxiliaryStorage__29fd67dd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAuxiliaryStorage:")
 		})
@@ -10332,7 +10337,7 @@ func UnsafePrivate_VZMacPlatformConfiguration_Instance_setAuxiliaryStorage__29fd
 var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance_setHardwareModel__fe0e3674 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance_setHardwareModel__fe0e3674(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance_setHardwareModel__fe0e3674.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setHardwareModel:")
 		})
@@ -10346,7 +10351,7 @@ func UnsafePrivate_VZMacPlatformConfiguration_Instance_setHardwareModel__fe0e367
 var privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance_setMachineIdentifier__bf9b1ac8 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZMacPlatformConfiguration_Instance_setMachineIdentifier__bf9b1ac8(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacPlatformConfiguration_Instance_setMachineIdentifier__bf9b1ac8.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setMachineIdentifier:")
 		})
@@ -10361,7 +10366,7 @@ var privateCallUnsafePrivate_VZMacTrackpadConfiguration_Instance__pointingDevice
 
 func UnsafePrivate_VZMacTrackpadConfiguration_Instance__pointingDevice_b0ff83b3(receiver unsafe.Pointer) int32 {
 	var result int32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMacTrackpadConfiguration_Instance__pointingDevice_b0ff83b3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int32]("_pointingDevice")
 		})
@@ -10377,7 +10382,7 @@ var privateCallUnsafePrivate_VZMacTrackpadConfiguration_Instance_copyWithZone__8
 
 func UnsafePrivate_VZMacTrackpadConfiguration_Instance_copyWithZone__8c914bad(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10405,7 +10410,7 @@ var privateCallUnsafePrivate_VZMacTrackpadConfiguration_Instance_init_a4e1dad0 l
 
 func UnsafePrivate_VZMacTrackpadConfiguration_Instance_init_a4e1dad0(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10433,7 +10438,7 @@ var privateCallUnsafePrivate_VZMacTrackpadConfiguration_Instance_makePointingDev
 
 func UnsafePrivate_VZMacTrackpadConfiguration_Instance_makePointingDeviceForVirtualMachine_pointingDeviceIndex__5488bc23(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10461,7 +10466,7 @@ var privateCallUnsafePrivate_VZMemoryBalloonDeviceConfiguration_Instance__init_e
 
 func UnsafePrivate_VZMemoryBalloonDeviceConfiguration_Instance__init_e6bfbe74(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10489,7 +10494,7 @@ var privateCallUnsafePrivate_VZMemoryBalloonDeviceConfiguration_Instance_copyWit
 
 func UnsafePrivate_VZMemoryBalloonDeviceConfiguration_Instance_copyWithZone__873563a0(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10517,7 +10522,7 @@ var privateCallUnsafePrivate_VZMemoryBalloonDeviceConfiguration_Instance_makeMem
 
 func UnsafePrivate_VZMemoryBalloonDeviceConfiguration_Instance_makeMemoryBalloonDeviceForVirtualMachine_memoryBalloonDeviceIndex_maxTargetMemorySize__41499634(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10545,7 +10550,7 @@ var privateCallUnsafePrivate_VZMemoryBalloonDevice_Instance__init_e82b74d0 lazyB
 
 func UnsafePrivate_VZMemoryBalloonDevice_Instance__init_e82b74d0(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10618,7 +10623,7 @@ func UnsafePrivate_VZMultipleDirectoryShare_Class_validateName_error__256c390d(p
 var privateCallUnsafePrivate_VZMultipleDirectoryShare_Instance__cxx_destruct_5fda81f6 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZMultipleDirectoryShare_Instance__cxx_destruct_5fda81f6(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZMultipleDirectoryShare_Instance__cxx_destruct_5fda81f6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -10633,7 +10638,7 @@ var privateCallUnsafePrivate_VZMultipleDirectoryShare_Instance_directories_4c044
 
 func UnsafePrivate_VZMultipleDirectoryShare_Instance_directories_4c0440cb(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10661,7 +10666,7 @@ var privateCallUnsafePrivate_VZMultipleDirectoryShare_Instance_initWithDirectori
 
 func UnsafePrivate_VZMultipleDirectoryShare_Instance_initWithDirectories__2755a749(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10689,7 +10694,7 @@ var privateCallUnsafePrivate_VZMultipleDirectoryShare_Instance_init_da35a527 laz
 
 func UnsafePrivate_VZMultipleDirectoryShare_Instance_init_da35a527(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10717,7 +10722,7 @@ var privateCallUnsafePrivate_VZNATNetworkDeviceAttachment_Instance__interfaceIso
 
 func UnsafePrivate_VZNATNetworkDeviceAttachment_Instance__interfaceIsolationEnabled_47f4833b(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZNATNetworkDeviceAttachment_Instance__interfaceIsolationEnabled_47f4833b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_interfaceIsolationEnabled")
 		})
@@ -10732,7 +10737,7 @@ func UnsafePrivate_VZNATNetworkDeviceAttachment_Instance__interfaceIsolationEnab
 var privateCallUnsafePrivate_VZNATNetworkDeviceAttachment_Instance__setInterfaceIsolationEnabled__7f5319ac lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZNATNetworkDeviceAttachment_Instance__setInterfaceIsolationEnabled__7f5319ac(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZNATNetworkDeviceAttachment_Instance__setInterfaceIsolationEnabled__7f5319ac.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setInterfaceIsolationEnabled:")
 		})
@@ -10747,7 +10752,7 @@ var privateCallUnsafePrivate_VZNATNetworkDeviceAttachment_Instance_init_3d534652
 
 func UnsafePrivate_VZNATNetworkDeviceAttachment_Instance_init_3d534652(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10775,7 +10780,7 @@ var privateCallUnsafePrivate_VZNVMExpressControllerDeviceConfiguration_Instance_
 
 func UnsafePrivate_VZNVMExpressControllerDeviceConfiguration_Instance_copyWithZone__6620e0f1(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10803,7 +10808,7 @@ var privateCallUnsafePrivate_VZNVMExpressControllerDeviceConfiguration_Instance_
 
 func UnsafePrivate_VZNVMExpressControllerDeviceConfiguration_Instance_initWithAttachment__c1dda5bf(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10831,7 +10836,7 @@ var privateCallUnsafePrivate_VZNegotiatedVirtioFeatureSet_Instance__cxx_construc
 
 func UnsafePrivate_VZNegotiatedVirtioFeatureSet_Instance__cxx_construct_6a618c37(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10859,7 +10864,7 @@ var privateCallUnsafePrivate_VZNegotiatedVirtioFeatureSet_Instance_subset0_51fdd
 
 func UnsafePrivate_VZNegotiatedVirtioFeatureSet_Instance_subset0_51fdd626(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZNegotiatedVirtioFeatureSet_Instance_subset0_51fdd626.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("subset0")
 		})
@@ -10875,7 +10880,7 @@ var privateCallUnsafePrivate_VZNegotiatedVirtioFeatureSet_Instance_subset1_d19ef
 
 func UnsafePrivate_VZNegotiatedVirtioFeatureSet_Instance_subset1_d19efb95(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZNegotiatedVirtioFeatureSet_Instance_subset1_d19efb95.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("subset1")
 		})
@@ -10959,7 +10964,7 @@ var privateCallUnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instanc
 
 func UnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance_URL_a2fb20d5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -10986,7 +10991,7 @@ func UnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance_URL_a2fb
 var privateCallUnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance__cxx_destruct_973a71f0 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance__cxx_destruct_973a71f0(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance__cxx_destruct_973a71f0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -11001,7 +11006,7 @@ var privateCallUnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instanc
 
 func UnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance_delegate_5f2aba77(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11029,7 +11034,7 @@ var privateCallUnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instanc
 
 func UnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance_initWithURL_error__f06bd581(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11057,7 +11062,7 @@ var privateCallUnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instanc
 
 func UnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance_initWithURL_timeout_forcedReadOnly_synchronizationMode_error__16388891(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 float64, p2 bool, p3 int64, p4 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11085,7 +11090,7 @@ var privateCallUnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instanc
 
 func UnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance_isForcedReadOnly_f33063ee(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance_isForcedReadOnly_f33063ee.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isForcedReadOnly")
 		})
@@ -11100,7 +11105,7 @@ func UnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance_isForced
 var privateCallUnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance_setDelegate__5c96dffe lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance_setDelegate__5c96dffe(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance_setDelegate__5c96dffe.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 		})
@@ -11115,7 +11120,7 @@ var privateCallUnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instanc
 
 func UnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance_synchronizationMode_06e7decd(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance_synchronizationMode_06e7decd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("synchronizationMode")
 		})
@@ -11131,7 +11136,7 @@ var privateCallUnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instanc
 
 func UnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance_timeout_48ec8b90(receiver unsafe.Pointer) float64 {
 	var result float64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZNetworkBlockDeviceStorageDeviceAttachment_Instance_timeout_48ec8b90.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) float64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) float64]("timeout")
 		})
@@ -11147,7 +11152,7 @@ var privateCallUnsafePrivate_VZNetworkDeviceAttachment_Instance__init_d167fde6 l
 
 func UnsafePrivate_VZNetworkDeviceAttachment_Instance__init_d167fde6(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11175,7 +11180,7 @@ var privateCallUnsafePrivate_VZNetworkDeviceConfiguration_Instance_MACAddress_1a
 
 func UnsafePrivate_VZNetworkDeviceConfiguration_Instance_MACAddress_1a2970de(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11202,7 +11207,7 @@ func UnsafePrivate_VZNetworkDeviceConfiguration_Instance_MACAddress_1a2970de(rec
 var privateCallUnsafePrivate_VZNetworkDeviceConfiguration_Instance__cxx_destruct_498add81 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZNetworkDeviceConfiguration_Instance__cxx_destruct_498add81(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZNetworkDeviceConfiguration_Instance__cxx_destruct_498add81.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -11217,7 +11222,7 @@ var privateCallUnsafePrivate_VZNetworkDeviceConfiguration_Instance__init_95b9a2e
 
 func UnsafePrivate_VZNetworkDeviceConfiguration_Instance__init_95b9a2e5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11245,7 +11250,7 @@ var privateCallUnsafePrivate_VZNetworkDeviceConfiguration_Instance_attachment_e4
 
 func UnsafePrivate_VZNetworkDeviceConfiguration_Instance_attachment_e4659006(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11273,7 +11278,7 @@ var privateCallUnsafePrivate_VZNetworkDeviceConfiguration_Instance_copyWithZone_
 
 func UnsafePrivate_VZNetworkDeviceConfiguration_Instance_copyWithZone__0dc90e73(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11301,7 +11306,7 @@ var privateCallUnsafePrivate_VZNetworkDeviceConfiguration_Instance_makeNetworkDe
 
 func UnsafePrivate_VZNetworkDeviceConfiguration_Instance_makeNetworkDeviceForVirtualMachine_networkDeviceIndex__4f90742f(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11328,7 +11333,7 @@ func UnsafePrivate_VZNetworkDeviceConfiguration_Instance_makeNetworkDeviceForVir
 var privateCallUnsafePrivate_VZNetworkDeviceConfiguration_Instance_setAttachment__17ede4c9 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZNetworkDeviceConfiguration_Instance_setAttachment__17ede4c9(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZNetworkDeviceConfiguration_Instance_setAttachment__17ede4c9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAttachment:")
 		})
@@ -11342,7 +11347,7 @@ func UnsafePrivate_VZNetworkDeviceConfiguration_Instance_setAttachment__17ede4c9
 var privateCallUnsafePrivate_VZNetworkDeviceConfiguration_Instance_setMACAddress__4f4da23b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZNetworkDeviceConfiguration_Instance_setMACAddress__4f4da23b(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZNetworkDeviceConfiguration_Instance_setMACAddress__4f4da23b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setMACAddress:")
 		})
@@ -11356,7 +11361,7 @@ func UnsafePrivate_VZNetworkDeviceConfiguration_Instance_setMACAddress__4f4da23b
 var privateCallUnsafePrivate_VZNetworkDevice_Instance__cxx_destruct_8d7a3f87 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZNetworkDevice_Instance__cxx_destruct_8d7a3f87(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZNetworkDevice_Instance__cxx_destruct_8d7a3f87.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -11371,7 +11376,7 @@ var privateCallUnsafePrivate_VZNetworkDevice_Instance__type_f5c4e7be lazyBinding
 
 func UnsafePrivate_VZNetworkDevice_Instance__type_f5c4e7be(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZNetworkDevice_Instance__type_f5c4e7be.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("_type")
 		})
@@ -11387,7 +11392,7 @@ var privateCallUnsafePrivate_VZNetworkDevice_Instance_attachment_8dc0544e lazyBi
 
 func UnsafePrivate_VZNetworkDevice_Instance_attachment_8dc0544e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11414,7 +11419,7 @@ func UnsafePrivate_VZNetworkDevice_Instance_attachment_8dc0544e(receiver unsafe.
 var privateCallUnsafePrivate_VZNetworkDevice_Instance_setAttachment__8d714046 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZNetworkDevice_Instance_setAttachment__8d714046(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZNetworkDevice_Instance_setAttachment__8d714046.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAttachment:")
 		})
@@ -11428,7 +11433,7 @@ func UnsafePrivate_VZNetworkDevice_Instance_setAttachment__8d714046(receiver uns
 var privateCallUnsafePrivate_VZObserverProxy_Instance__cxx_destruct_c4e68128 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZObserverProxy_Instance__cxx_destruct_c4e68128(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZObserverProxy_Instance__cxx_destruct_c4e68128.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -11442,7 +11447,7 @@ func UnsafePrivate_VZObserverProxy_Instance__cxx_destruct_c4e68128(receiver unsa
 var privateCallUnsafePrivate_VZObserverProxy_Instance_observeValueForKeyPath_ofObject_change_context__3839a42e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]]
 
 func UnsafePrivate_VZObserverProxy_Instance_observeValueForKeyPath_ofObject_change_context__3839a42e(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer, p3 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZObserverProxy_Instance_observeValueForKeyPath_ofObject_change_context__3839a42e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]("observeValueForKeyPath:ofObject:change:context:")
 		})
@@ -11457,7 +11462,7 @@ var privateCallUnsafePrivate_VZPlatformConfiguration_Instance__init_984c5e24 laz
 
 func UnsafePrivate_VZPlatformConfiguration_Instance__init_984c5e24(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11485,7 +11490,7 @@ var privateCallUnsafePrivate_VZPlatformConfiguration_Instance_copyWithZone__7cdb
 
 func UnsafePrivate_VZPlatformConfiguration_Instance_copyWithZone__7cdb9bf9(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11513,7 +11518,7 @@ var privateCallUnsafePrivate_VZPointingDeviceConfiguration_Instance__init_8147d5
 
 func UnsafePrivate_VZPointingDeviceConfiguration_Instance__init_8147d531(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11541,7 +11546,7 @@ var privateCallUnsafePrivate_VZPointingDeviceConfiguration_Instance__pointingDev
 
 func UnsafePrivate_VZPointingDeviceConfiguration_Instance__pointingDevice_d2e19a01(receiver unsafe.Pointer) int32 {
 	var result int32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZPointingDeviceConfiguration_Instance__pointingDevice_d2e19a01.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int32]("_pointingDevice")
 		})
@@ -11557,7 +11562,7 @@ var privateCallUnsafePrivate_VZPointingDeviceConfiguration_Instance_copyWithZone
 
 func UnsafePrivate_VZPointingDeviceConfiguration_Instance_copyWithZone__77012722(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11585,7 +11590,7 @@ var privateCallUnsafePrivate_VZPointingDeviceConfiguration_Instance_makePointing
 
 func UnsafePrivate_VZPointingDeviceConfiguration_Instance_makePointingDeviceForVirtualMachine_pointingDeviceIndex__72df0c43(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11613,7 +11618,7 @@ var privateCallUnsafePrivate_VZSerialPortAttachment_Instance__init_e1dc0174 lazy
 
 func UnsafePrivate_VZSerialPortAttachment_Instance__init_e1dc0174(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11657,7 +11662,7 @@ func UnsafePrivate_VZSerialPortConfiguration_Class_serialPortType_4bc41d3c() int
 var privateCallUnsafePrivate_VZSerialPortConfiguration_Instance__cxx_destruct_1044d481 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZSerialPortConfiguration_Instance__cxx_destruct_1044d481(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZSerialPortConfiguration_Instance__cxx_destruct_1044d481.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -11672,7 +11677,7 @@ var privateCallUnsafePrivate_VZSerialPortConfiguration_Instance__init_4ca9f610 l
 
 func UnsafePrivate_VZSerialPortConfiguration_Instance__init_4ca9f610(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11700,7 +11705,7 @@ var privateCallUnsafePrivate_VZSerialPortConfiguration_Instance_attachment_7beb8
 
 func UnsafePrivate_VZSerialPortConfiguration_Instance_attachment_7beb8710(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11728,7 +11733,7 @@ var privateCallUnsafePrivate_VZSerialPortConfiguration_Instance_copyWithZone__ca
 
 func UnsafePrivate_VZSerialPortConfiguration_Instance_copyWithZone__ca79a988(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11756,7 +11761,7 @@ var privateCallUnsafePrivate_VZSerialPortConfiguration_Instance_makeSerialPortFo
 
 func UnsafePrivate_VZSerialPortConfiguration_Instance_makeSerialPortForVirtualMachine_serialPortIndex__7d8ed905(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11783,7 +11788,7 @@ func UnsafePrivate_VZSerialPortConfiguration_Instance_makeSerialPortForVirtualMa
 var privateCallUnsafePrivate_VZSerialPortConfiguration_Instance_setAttachment__a8e665e1 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZSerialPortConfiguration_Instance_setAttachment__a8e665e1(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZSerialPortConfiguration_Instance_setAttachment__a8e665e1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAttachment:")
 		})
@@ -11798,7 +11803,7 @@ var privateCallUnsafePrivate_VZSharedDirectory_Instance_URL_a7a5e283 lazyBinding
 
 func UnsafePrivate_VZSharedDirectory_Instance_URL_a7a5e283(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11825,7 +11830,7 @@ func UnsafePrivate_VZSharedDirectory_Instance_URL_a7a5e283(receiver unsafe.Point
 var privateCallUnsafePrivate_VZSharedDirectory_Instance__cxx_destruct_00a96de0 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZSharedDirectory_Instance__cxx_destruct_00a96de0(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZSharedDirectory_Instance__cxx_destruct_00a96de0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -11840,7 +11845,7 @@ var privateCallUnsafePrivate_VZSharedDirectory_Instance_initWithURL_readOnly__a2
 
 func UnsafePrivate_VZSharedDirectory_Instance_initWithURL_readOnly__a23b6b2f(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 bool, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11868,7 +11873,7 @@ var privateCallUnsafePrivate_VZSharedDirectory_Instance_isReadOnly_fce25d0d lazy
 
 func UnsafePrivate_VZSharedDirectory_Instance_isReadOnly_fce25d0d(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZSharedDirectory_Instance_isReadOnly_fce25d0d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isReadOnly")
 		})
@@ -11883,7 +11888,7 @@ func UnsafePrivate_VZSharedDirectory_Instance_isReadOnly_fce25d0d(receiver unsaf
 var privateCallUnsafePrivate_VZSingleDirectoryShare_Instance__cxx_destruct_014e88b1 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZSingleDirectoryShare_Instance__cxx_destruct_014e88b1(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZSingleDirectoryShare_Instance__cxx_destruct_014e88b1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -11898,7 +11903,7 @@ var privateCallUnsafePrivate_VZSingleDirectoryShare_Instance_directory_09a79c6e 
 
 func UnsafePrivate_VZSingleDirectoryShare_Instance_directory_09a79c6e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11926,7 +11931,7 @@ var privateCallUnsafePrivate_VZSingleDirectoryShare_Instance_initWithDirectory__
 
 func UnsafePrivate_VZSingleDirectoryShare_Instance_initWithDirectory__fcf4cff0(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11954,7 +11959,7 @@ var privateCallUnsafePrivate_VZSocketDeviceConfiguration_Instance__init_2f83584e
 
 func UnsafePrivate_VZSocketDeviceConfiguration_Instance__init_2f83584e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -11982,7 +11987,7 @@ var privateCallUnsafePrivate_VZSocketDeviceConfiguration_Instance_copyWithZone__
 
 func UnsafePrivate_VZSocketDeviceConfiguration_Instance_copyWithZone__2e92096c(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12010,7 +12015,7 @@ var privateCallUnsafePrivate_VZSocketDeviceConfiguration_Instance_makeSocketDevi
 
 func UnsafePrivate_VZSocketDeviceConfiguration_Instance_makeSocketDeviceForVirtualMachine_identifier__0e25bd33(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12038,7 +12043,7 @@ var privateCallUnsafePrivate_VZSocketDevice_Instance__init_88f01978 lazyBinding[
 
 func UnsafePrivate_VZSocketDevice_Instance__init_88f01978(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12094,7 +12099,7 @@ func UnsafePrivate_VZSpiceAgentPortAttachment_Class_spiceAgentPortName_3a0630a5(
 var privateCallUnsafePrivate_VZSpiceAgentPortAttachment_Instance__cxx_destruct_0cfc3ba2 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZSpiceAgentPortAttachment_Instance__cxx_destruct_0cfc3ba2(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZSpiceAgentPortAttachment_Instance__cxx_destruct_0cfc3ba2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -12109,7 +12114,7 @@ var privateCallUnsafePrivate_VZSpiceAgentPortAttachment_Instance_init_80f15081 l
 
 func UnsafePrivate_VZSpiceAgentPortAttachment_Instance_init_80f15081(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12136,7 +12141,7 @@ func UnsafePrivate_VZSpiceAgentPortAttachment_Instance_init_80f15081(receiver un
 var privateCallUnsafePrivate_VZSpiceAgentPortAttachment_Instance_setSharesClipboard__73d1e48a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZSpiceAgentPortAttachment_Instance_setSharesClipboard__73d1e48a(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZSpiceAgentPortAttachment_Instance_setSharesClipboard__73d1e48a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setSharesClipboard:")
 		})
@@ -12151,7 +12156,7 @@ var privateCallUnsafePrivate_VZSpiceAgentPortAttachment_Instance_sharesClipboard
 
 func UnsafePrivate_VZSpiceAgentPortAttachment_Instance_sharesClipboard_dbc4cf45(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZSpiceAgentPortAttachment_Instance_sharesClipboard_dbc4cf45.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("sharesClipboard")
 		})
@@ -12167,7 +12172,7 @@ var privateCallUnsafePrivate_VZSpiceAgent_Instance__cxx_construct_9841fdb5 lazyB
 
 func UnsafePrivate_VZSpiceAgent_Instance__cxx_construct_9841fdb5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12194,7 +12199,7 @@ func UnsafePrivate_VZSpiceAgent_Instance__cxx_construct_9841fdb5(receiver unsafe
 var privateCallUnsafePrivate_VZSpiceAgent_Instance__cxx_destruct_2091e8eb lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZSpiceAgent_Instance__cxx_destruct_2091e8eb(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZSpiceAgent_Instance__cxx_destruct_2091e8eb.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -12208,7 +12213,7 @@ func UnsafePrivate_VZSpiceAgent_Instance__cxx_destruct_2091e8eb(receiver unsafe.
 var privateCallUnsafePrivate_VZSpiceAgent_Instance_consoleDevice_didClosePort__78bdb5f9 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]]
 
 func UnsafePrivate_VZSpiceAgent_Instance_consoleDevice_didClosePort__78bdb5f9(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZSpiceAgent_Instance_consoleDevice_didClosePort__78bdb5f9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("consoleDevice:didClosePort:")
 		})
@@ -12222,7 +12227,7 @@ func UnsafePrivate_VZSpiceAgent_Instance_consoleDevice_didClosePort__78bdb5f9(re
 var privateCallUnsafePrivate_VZSpiceAgent_Instance_consoleDevice_didOpenPort__edd9b4ab lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]]
 
 func UnsafePrivate_VZSpiceAgent_Instance_consoleDevice_didOpenPort__edd9b4ab(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZSpiceAgent_Instance_consoleDevice_didOpenPort__edd9b4ab.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("consoleDevice:didOpenPort:")
 		})
@@ -12236,7 +12241,7 @@ func UnsafePrivate_VZSpiceAgent_Instance_consoleDevice_didOpenPort__edd9b4ab(rec
 var privateCallUnsafePrivate_VZSpiceAgent_Instance_dealloc_5321e8d6 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZSpiceAgent_Instance_dealloc_5321e8d6(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZSpiceAgent_Instance_dealloc_5321e8d6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -12250,7 +12255,7 @@ func UnsafePrivate_VZSpiceAgent_Instance_dealloc_5321e8d6(receiver unsafe.Pointe
 var privateCallUnsafePrivate_VZSpiceAgent_Instance_observeValueForKeyPath_ofObject_change_context__f95aece4 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]]
 
 func UnsafePrivate_VZSpiceAgent_Instance_observeValueForKeyPath_ofObject_change_context__f95aece4(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer, p3 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZSpiceAgent_Instance_observeValueForKeyPath_ofObject_change_context__f95aece4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]("observeValueForKeyPath:ofObject:change:context:")
 		})
@@ -12265,7 +12270,7 @@ var privateCallUnsafePrivate_VZStorageDeviceAttachment_Instance__init_43bc8978 l
 
 func UnsafePrivate_VZStorageDeviceAttachment_Instance__init_43bc8978(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12292,7 +12297,7 @@ func UnsafePrivate_VZStorageDeviceAttachment_Instance__init_43bc8978(receiver un
 var privateCallUnsafePrivate_VZStorageDeviceConfiguration_Instance__cxx_destruct_7582379a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZStorageDeviceConfiguration_Instance__cxx_destruct_7582379a(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZStorageDeviceConfiguration_Instance__cxx_destruct_7582379a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -12307,7 +12312,7 @@ var privateCallUnsafePrivate_VZStorageDeviceConfiguration_Instance__initWithAtta
 
 func UnsafePrivate_VZStorageDeviceConfiguration_Instance__initWithAttachment__124352af(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12334,7 +12339,7 @@ func UnsafePrivate_VZStorageDeviceConfiguration_Instance__initWithAttachment__12
 var privateCallUnsafePrivate_VZStorageDeviceConfiguration_Instance__setAttachment__f81f76dc lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZStorageDeviceConfiguration_Instance__setAttachment__f81f76dc(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZStorageDeviceConfiguration_Instance__setAttachment__f81f76dc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setAttachment:")
 		})
@@ -12349,7 +12354,7 @@ var privateCallUnsafePrivate_VZStorageDeviceConfiguration_Instance_attachment_01
 
 func UnsafePrivate_VZStorageDeviceConfiguration_Instance_attachment_01daef97(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12377,7 +12382,7 @@ var privateCallUnsafePrivate_VZStorageDeviceConfiguration_Instance_copyWithZone_
 
 func UnsafePrivate_VZStorageDeviceConfiguration_Instance_copyWithZone__34ba41a1(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12405,7 +12410,7 @@ var privateCallUnsafePrivate_VZStorageDeviceConfiguration_Instance_makeStorageDe
 
 func UnsafePrivate_VZStorageDeviceConfiguration_Instance_makeStorageDeviceForVirtualMachine_storageDeviceIndex__1f842051(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12433,7 +12438,7 @@ var privateCallUnsafePrivate_VZStorageDevice_Instance__attachment_4651d763 lazyB
 
 func UnsafePrivate_VZStorageDevice_Instance__attachment_4651d763(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12461,7 +12466,7 @@ var privateCallUnsafePrivate_VZStorageDevice_Instance__cxx_construct_f0633506 la
 
 func UnsafePrivate_VZStorageDevice_Instance__cxx_construct_f0633506(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12488,7 +12493,7 @@ func UnsafePrivate_VZStorageDevice_Instance__cxx_construct_f0633506(receiver uns
 var privateCallUnsafePrivate_VZStorageDevice_Instance__cxx_destruct_209571e5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZStorageDevice_Instance__cxx_destruct_209571e5(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZStorageDevice_Instance__cxx_destruct_209571e5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -12503,7 +12508,7 @@ var privateCallUnsafePrivate_VZStorageDevice_Instance__initWithAttachment__5e411
 
 func UnsafePrivate_VZStorageDevice_Instance__initWithAttachment__5e411fd9(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12531,7 +12536,7 @@ var privateCallUnsafePrivate_VZStorageDevice_Instance__initWithVirtualMachine_at
 
 func UnsafePrivate_VZStorageDevice_Instance__initWithVirtualMachine_attachment__c1698c3f(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12559,7 +12564,7 @@ var privateCallUnsafePrivate_VZStorageDevice_Instance__initWithVirtualMachine_st
 
 func UnsafePrivate_VZStorageDevice_Instance__initWithVirtualMachine_storageDeviceIndex_attachment__7b449eba(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12586,7 +12591,7 @@ func UnsafePrivate_VZStorageDevice_Instance__initWithVirtualMachine_storageDevic
 var privateCallUnsafePrivate_VZStorageDevice_Instance__setVirtualMachine__b2e73532 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZStorageDevice_Instance__setVirtualMachine__b2e73532(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZStorageDevice_Instance__setVirtualMachine__b2e73532.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setVirtualMachine:")
 		})
@@ -12600,7 +12605,7 @@ func UnsafePrivate_VZStorageDevice_Instance__setVirtualMachine__b2e73532(receive
 var privateCallUnsafePrivate_VZUSBControllerConfiguration_Instance__cxx_destruct_2cae6422 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZUSBControllerConfiguration_Instance__cxx_destruct_2cae6422(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBControllerConfiguration_Instance__cxx_destruct_2cae6422.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -12615,7 +12620,7 @@ var privateCallUnsafePrivate_VZUSBControllerConfiguration_Instance__init_0506a74
 
 func UnsafePrivate_VZUSBControllerConfiguration_Instance__init_0506a74f(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12643,7 +12648,7 @@ var privateCallUnsafePrivate_VZUSBControllerConfiguration_Instance__usbDevices_f
 
 func UnsafePrivate_VZUSBControllerConfiguration_Instance__usbDevices_fe206253(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12671,7 +12676,7 @@ var privateCallUnsafePrivate_VZUSBControllerConfiguration_Instance_copyWithZone_
 
 func UnsafePrivate_VZUSBControllerConfiguration_Instance_copyWithZone__e7d3f78a(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12699,7 +12704,7 @@ var privateCallUnsafePrivate_VZUSBControllerConfiguration_Instance_makeUSBContro
 
 func UnsafePrivate_VZUSBControllerConfiguration_Instance_makeUSBControllerForVirtualMachine_usbControllerIndex_usbDevices__c1af504c(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12726,7 +12731,7 @@ func UnsafePrivate_VZUSBControllerConfiguration_Instance_makeUSBControllerForVir
 var privateCallUnsafePrivate_VZUSBControllerConfiguration_Instance_setUsbDevices__e50f71ee lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZUSBControllerConfiguration_Instance_setUsbDevices__e50f71ee(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBControllerConfiguration_Instance_setUsbDevices__e50f71ee.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUsbDevices:")
 		})
@@ -12741,7 +12746,7 @@ var privateCallUnsafePrivate_VZUSBControllerConfiguration_Instance_usbDevices_c5
 
 func UnsafePrivate_VZUSBControllerConfiguration_Instance_usbDevices_c5f4cff6(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12785,7 +12790,7 @@ func UnsafePrivate_VZUSBController_Class_automaticallyNotifiesObserversOfUsbDevi
 var privateCallUnsafePrivate_VZUSBController_Instance__capturePassthroughDevicesWithCompletionHandler__506b6c6b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZUSBController_Instance__capturePassthroughDevicesWithCompletionHandler__506b6c6b(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBController_Instance__capturePassthroughDevicesWithCompletionHandler__506b6c6b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_capturePassthroughDevicesWithCompletionHandler:")
 		})
@@ -12799,7 +12804,7 @@ func UnsafePrivate_VZUSBController_Instance__capturePassthroughDevicesWithComple
 var privateCallUnsafePrivate_VZUSBController_Instance__cleanupVZUSBPassthroughDevices_3879a9c1 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZUSBController_Instance__cleanupVZUSBPassthroughDevices_3879a9c1(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBController_Instance__cleanupVZUSBPassthroughDevices_3879a9c1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("_cleanupVZUSBPassthroughDevices")
 		})
@@ -12814,7 +12819,7 @@ var privateCallUnsafePrivate_VZUSBController_Instance__cxx_construct_7d91e1eb la
 
 func UnsafePrivate_VZUSBController_Instance__cxx_construct_7d91e1eb(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12841,7 +12846,7 @@ func UnsafePrivate_VZUSBController_Instance__cxx_construct_7d91e1eb(receiver uns
 var privateCallUnsafePrivate_VZUSBController_Instance__cxx_destruct_b15ad097 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZUSBController_Instance__cxx_destruct_b15ad097(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBController_Instance__cxx_destruct_b15ad097.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -12856,7 +12861,7 @@ var privateCallUnsafePrivate_VZUSBController_Instance__initWithVirtualMachine_us
 
 func UnsafePrivate_VZUSBController_Instance__initWithVirtualMachine_usbControllerIndex_usbDevices__a42ade92(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12883,7 +12888,7 @@ func UnsafePrivate_VZUSBController_Instance__initWithVirtualMachine_usbControlle
 var privateCallUnsafePrivate_VZUSBController_Instance__releasePassthroughDevices_da50ff18 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZUSBController_Instance__releasePassthroughDevices_da50ff18(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBController_Instance__releasePassthroughDevices_da50ff18.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("_releasePassthroughDevices")
 		})
@@ -12898,7 +12903,7 @@ var privateCallUnsafePrivate_VZUSBController_Instance_delegate_5d2fa71f lazyBind
 
 func UnsafePrivate_VZUSBController_Instance_delegate_5d2fa71f(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12925,7 +12930,7 @@ func UnsafePrivate_VZUSBController_Instance_delegate_5d2fa71f(receiver unsafe.Po
 var privateCallUnsafePrivate_VZUSBController_Instance_setDelegate__a1ead3f0 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZUSBController_Instance_setDelegate__a1ead3f0(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBController_Instance_setDelegate__a1ead3f0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 		})
@@ -12940,7 +12945,7 @@ var privateCallUnsafePrivate_VZUSBController_Instance_usbDevices_28dc2f45 lazyBi
 
 func UnsafePrivate_VZUSBController_Instance_usbDevices_28dc2f45(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12957,6 +12962,7 @@ func UnsafePrivate_VZUSBController_Instance_usbDevices_28dc2f45(receiver unsafe.
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -12968,7 +12974,7 @@ var privateCallUnsafePrivate_VZUSBKeyboardConfiguration_Instance_copyWithZone__d
 
 func UnsafePrivate_VZUSBKeyboardConfiguration_Instance_copyWithZone__d8a5cc27(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -12996,7 +13002,7 @@ var privateCallUnsafePrivate_VZUSBKeyboardConfiguration_Instance_init_961f80d0 l
 
 func UnsafePrivate_VZUSBKeyboardConfiguration_Instance_init_961f80d0(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13024,7 +13030,7 @@ var privateCallUnsafePrivate_VZUSBKeyboardConfiguration_Instance_makeKeyboardFor
 
 func UnsafePrivate_VZUSBKeyboardConfiguration_Instance_makeKeyboardForVirtualMachine_deviceIdentifier__bb6c0954(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13051,7 +13057,7 @@ func UnsafePrivate_VZUSBKeyboardConfiguration_Instance_makeKeyboardForVirtualMac
 var privateCallUnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance__cxx_destruct_347c7794 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance__cxx_destruct_347c7794(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance__cxx_destruct_347c7794.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -13066,7 +13072,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_copyWi
 
 func UnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_copyWithZone__fca59d80(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13094,7 +13100,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_initWi
 
 func UnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_initWithAttachment__ef098c85(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13122,7 +13128,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_isDupl
 
 func UnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_isDuplicateConfiguration__ba75eb60(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_isDuplicateConfiguration__ba75eb60.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isDuplicateConfiguration:")
 		})
@@ -13138,7 +13144,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_makeSt
 
 func UnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_makeStorageDeviceForVirtualMachine_storageDeviceIndex__63ba8477(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13166,7 +13172,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_makeUS
 
 func UnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_makeUSBDeviceWithVirtualMachine__f7be5be5(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13193,7 +13199,7 @@ func UnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_makeUSBDeviceWit
 var privateCallUnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_setUuid__0f0f05a7 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_setUuid__0f0f05a7(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_setUuid__0f0f05a7.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUuid:")
 		})
@@ -13208,7 +13214,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_uuid_d
 
 func UnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_uuid_d39200e6(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13236,7 +13242,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_valida
 
 func UnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_validateWithError__827fab08(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_validateWithError__827fab08.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateWithError:")
 		})
@@ -13251,7 +13257,7 @@ func UnsafePrivate_VZUSBMassStorageDeviceConfiguration_Instance_validateWithErro
 var privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance__cxx_destruct_bfd63254 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZUSBMassStorageDevice_Instance__cxx_destruct_bfd63254(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance__cxx_destruct_bfd63254.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -13266,7 +13272,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance__initWithAttachment
 
 func UnsafePrivate_VZUSBMassStorageDevice_Instance__initWithAttachment__2366af79(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13294,7 +13300,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance__initWithVirtualMac
 
 func UnsafePrivate_VZUSBMassStorageDevice_Instance__initWithVirtualMachine_storageDeviceIndex_attachment__dee7f99c(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13322,7 +13328,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance_configuration_d1fde
 
 func UnsafePrivate_VZUSBMassStorageDevice_Instance_configuration_d1fde3af(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13350,7 +13356,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance_initWithConfigurati
 
 func UnsafePrivate_VZUSBMassStorageDevice_Instance_initWithConfiguration__824f0fdd(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13378,7 +13384,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance_isPointingDevice_e0
 
 func UnsafePrivate_VZUSBMassStorageDevice_Instance_isPointingDevice_e0e757d1(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance_isPointingDevice_e0e757d1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isPointingDevice")
 		})
@@ -13393,7 +13399,7 @@ func UnsafePrivate_VZUSBMassStorageDevice_Instance_isPointingDevice_e0e757d1(rec
 var privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance_setConfiguration__89cf1088 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZUSBMassStorageDevice_Instance_setConfiguration__89cf1088(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance_setConfiguration__89cf1088.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setConfiguration:")
 		})
@@ -13407,7 +13413,7 @@ func UnsafePrivate_VZUSBMassStorageDevice_Instance_setConfiguration__89cf1088(re
 var privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance_setUsbController__fa864b7f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZUSBMassStorageDevice_Instance_setUsbController__fa864b7f(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance_setUsbController__fa864b7f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUsbController:")
 		})
@@ -13421,7 +13427,7 @@ func UnsafePrivate_VZUSBMassStorageDevice_Instance_setUsbController__fa864b7f(re
 var privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance_setVirtualMachine__dee83dc5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZUSBMassStorageDevice_Instance_setVirtualMachine__dee83dc5(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance_setVirtualMachine__dee83dc5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setVirtualMachine:")
 		})
@@ -13436,7 +13442,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance_usbController_02372
 
 func UnsafePrivate_VZUSBMassStorageDevice_Instance_usbController_02372e78(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13464,7 +13470,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance_usbMassStorageConfi
 
 func UnsafePrivate_VZUSBMassStorageDevice_Instance_usbMassStorageConfiguration_365936ea(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13492,7 +13498,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance_uuid_f0186934 lazyB
 
 func UnsafePrivate_VZUSBMassStorageDevice_Instance_uuid_f0186934(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13520,7 +13526,7 @@ var privateCallUnsafePrivate_VZUSBMassStorageDevice_Instance_virtualMachine_68a9
 
 func UnsafePrivate_VZUSBMassStorageDevice_Instance_virtualMachine_68a968c3(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13547,7 +13553,7 @@ func UnsafePrivate_VZUSBMassStorageDevice_Instance_virtualMachine_68a968c3(recei
 var privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance__cxx_destruct_e638de98 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance__cxx_destruct_e638de98(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance__cxx_destruct_e638de98.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -13562,7 +13568,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_copyWi
 
 func UnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_copyWithZone__0b81abfe(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13590,7 +13596,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_hash_0
 
 func UnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_hash_0992f1a4(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_hash_0992f1a4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 		})
@@ -13606,7 +13612,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_initWi
 
 func UnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_initWithDevice__118c80fa(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13634,7 +13640,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_isDupl
 
 func UnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_isDuplicateConfiguration__defb20db(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_isDuplicateConfiguration__defb20db.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isDuplicateConfiguration:")
 		})
@@ -13650,7 +13656,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_isEqua
 
 func UnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_isEqual__36cc5220(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_isEqual__36cc5220.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 		})
@@ -13666,7 +13672,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_makeUS
 
 func UnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_makeUSBDeviceWithVirtualMachine__977a8bb7(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13693,7 +13699,7 @@ func UnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_makeUSBDeviceWit
 var privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_setUuid__127f612c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_setUuid__127f612c(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_setUuid__127f612c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUuid:")
 		})
@@ -13708,7 +13714,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_signat
 
 func UnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_signature_d45aa1c8(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13736,7 +13742,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_uuid_b
 
 func UnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_uuid_b59c0de0(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13764,7 +13770,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_valida
 
 func UnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_validateWithError__68bd0ffe(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_validateWithError__68bd0ffe.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateWithError:")
 		})
@@ -13779,7 +13785,7 @@ func UnsafePrivate_VZUSBPassthroughDeviceConfiguration_Instance_validateWithErro
 var privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance__cxx_destruct_c415f7da lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZUSBPassthroughDevice_Instance__cxx_destruct_c415f7da(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance__cxx_destruct_c415f7da.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -13794,7 +13800,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_configuration_4b1c7
 
 func UnsafePrivate_VZUSBPassthroughDevice_Instance_configuration_4b1c72f4(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13822,7 +13828,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_hash_94a34db3 lazyB
 
 func UnsafePrivate_VZUSBPassthroughDevice_Instance_hash_94a34db3(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_hash_94a34db3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 		})
@@ -13838,7 +13844,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_initWithConfigurati
 
 func UnsafePrivate_VZUSBPassthroughDevice_Instance_initWithConfiguration_error__b644afb0(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13866,7 +13872,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_isEqual__4ef81459 l
 
 func UnsafePrivate_VZUSBPassthroughDevice_Instance_isEqual__4ef81459(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_isEqual__4ef81459.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 		})
@@ -13882,7 +13888,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_isPointingDevice_f5
 
 func UnsafePrivate_VZUSBPassthroughDevice_Instance_isPointingDevice_f590c4db(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_isPointingDevice_f590c4db.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isPointingDevice")
 		})
@@ -13897,7 +13903,7 @@ func UnsafePrivate_VZUSBPassthroughDevice_Instance_isPointingDevice_f590c4db(rec
 var privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_setConfiguration__ecb502c2 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZUSBPassthroughDevice_Instance_setConfiguration__ecb502c2(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_setConfiguration__ecb502c2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setConfiguration:")
 		})
@@ -13911,7 +13917,7 @@ func UnsafePrivate_VZUSBPassthroughDevice_Instance_setConfiguration__ecb502c2(re
 var privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_setUsbController__50c959d5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZUSBPassthroughDevice_Instance_setUsbController__50c959d5(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_setUsbController__50c959d5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUsbController:")
 		})
@@ -13925,7 +13931,7 @@ func UnsafePrivate_VZUSBPassthroughDevice_Instance_setUsbController__50c959d5(re
 var privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_setVirtualMachine__8f5eba5c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZUSBPassthroughDevice_Instance_setVirtualMachine__8f5eba5c(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_setVirtualMachine__8f5eba5c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setVirtualMachine:")
 		})
@@ -13940,7 +13946,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_usbController_c44cc
 
 func UnsafePrivate_VZUSBPassthroughDevice_Instance_usbController_c44ccf64(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13968,7 +13974,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_uuid_5b27744d lazyB
 
 func UnsafePrivate_VZUSBPassthroughDevice_Instance_uuid_5b27744d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -13996,7 +14002,7 @@ var privateCallUnsafePrivate_VZUSBPassthroughDevice_Instance_virtualMachine_0186
 
 func UnsafePrivate_VZUSBPassthroughDevice_Instance_virtualMachine_018608f6(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14024,7 +14030,7 @@ var privateCallUnsafePrivate_VZUSBScreenCoordinatePointingDeviceConfiguration_In
 
 func UnsafePrivate_VZUSBScreenCoordinatePointingDeviceConfiguration_Instance__pointingDevice_7a989396(receiver unsafe.Pointer) int32 {
 	var result int32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZUSBScreenCoordinatePointingDeviceConfiguration_Instance__pointingDevice_7a989396.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int32]("_pointingDevice")
 		})
@@ -14040,7 +14046,7 @@ var privateCallUnsafePrivate_VZUSBScreenCoordinatePointingDeviceConfiguration_In
 
 func UnsafePrivate_VZUSBScreenCoordinatePointingDeviceConfiguration_Instance_copyWithZone__30043ce5(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14068,7 +14074,7 @@ var privateCallUnsafePrivate_VZUSBScreenCoordinatePointingDeviceConfiguration_In
 
 func UnsafePrivate_VZUSBScreenCoordinatePointingDeviceConfiguration_Instance_init_fdf9159b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14096,7 +14102,7 @@ var privateCallUnsafePrivate_VZUSBScreenCoordinatePointingDeviceConfiguration_In
 
 func UnsafePrivate_VZUSBScreenCoordinatePointingDeviceConfiguration_Instance_makePointingDeviceForVirtualMachine_pointingDeviceIndex__e4762717(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14140,7 +14146,7 @@ func UnsafePrivate_VZVirtioBlockDeviceConfiguration_Class_validateBlockDeviceIde
 var privateCallUnsafePrivate_VZVirtioBlockDeviceConfiguration_Instance__cxx_destruct_c55890e1 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioBlockDeviceConfiguration_Instance__cxx_destruct_c55890e1(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioBlockDeviceConfiguration_Instance__cxx_destruct_c55890e1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -14155,7 +14161,7 @@ var privateCallUnsafePrivate_VZVirtioBlockDeviceConfiguration_Instance_blockDevi
 
 func UnsafePrivate_VZVirtioBlockDeviceConfiguration_Instance_blockDeviceIdentifier_4e13f433(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14183,7 +14189,7 @@ var privateCallUnsafePrivate_VZVirtioBlockDeviceConfiguration_Instance_copyWithZ
 
 func UnsafePrivate_VZVirtioBlockDeviceConfiguration_Instance_copyWithZone__6ec67bdb(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14211,7 +14217,7 @@ var privateCallUnsafePrivate_VZVirtioBlockDeviceConfiguration_Instance_initWithA
 
 func UnsafePrivate_VZVirtioBlockDeviceConfiguration_Instance_initWithAttachment__9315436e(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14238,7 +14244,7 @@ func UnsafePrivate_VZVirtioBlockDeviceConfiguration_Instance_initWithAttachment_
 var privateCallUnsafePrivate_VZVirtioBlockDeviceConfiguration_Instance_setBlockDeviceIdentifier__955b3057 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtioBlockDeviceConfiguration_Instance_setBlockDeviceIdentifier__955b3057(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioBlockDeviceConfiguration_Instance_setBlockDeviceIdentifier__955b3057.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setBlockDeviceIdentifier:")
 		})
@@ -14252,7 +14258,7 @@ func UnsafePrivate_VZVirtioBlockDeviceConfiguration_Instance_setBlockDeviceIdent
 var privateCallUnsafePrivate_VZVirtioConsoleDeviceConfiguration_Instance__cxx_destruct_8a20aef5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioConsoleDeviceConfiguration_Instance__cxx_destruct_8a20aef5(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsoleDeviceConfiguration_Instance__cxx_destruct_8a20aef5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -14267,7 +14273,7 @@ var privateCallUnsafePrivate_VZVirtioConsoleDeviceConfiguration_Instance_copyWit
 
 func UnsafePrivate_VZVirtioConsoleDeviceConfiguration_Instance_copyWithZone__bc399ac2(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14295,7 +14301,7 @@ var privateCallUnsafePrivate_VZVirtioConsoleDeviceConfiguration_Instance_init_48
 
 func UnsafePrivate_VZVirtioConsoleDeviceConfiguration_Instance_init_48088110(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14323,7 +14329,7 @@ var privateCallUnsafePrivate_VZVirtioConsoleDeviceConfiguration_Instance_makeCon
 
 func UnsafePrivate_VZVirtioConsoleDeviceConfiguration_Instance_makeConsoleDeviceForVirtualMachine_consoleDeviceIndex__13e6439c(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14351,7 +14357,7 @@ var privateCallUnsafePrivate_VZVirtioConsoleDeviceConfiguration_Instance_ports_a
 
 func UnsafePrivate_VZVirtioConsoleDeviceConfiguration_Instance_ports_ae429f8c(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14379,7 +14385,7 @@ var privateCallUnsafePrivate_VZVirtioConsoleDeviceConfiguration_Instance_validat
 
 func UnsafePrivate_VZVirtioConsoleDeviceConfiguration_Instance_validateWithError__04580b28(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsoleDeviceConfiguration_Instance_validateWithError__04580b28.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateWithError:")
 		})
@@ -14412,7 +14418,7 @@ var privateCallUnsafePrivate_VZVirtioConsoleDeviceSerialPortConfiguration_Instan
 
 func UnsafePrivate_VZVirtioConsoleDeviceSerialPortConfiguration_Instance_init_b55f9500(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14440,7 +14446,7 @@ var privateCallUnsafePrivate_VZVirtioConsoleDevice_Instance__cxx_construct_fa904
 
 func UnsafePrivate_VZVirtioConsoleDevice_Instance__cxx_construct_fa904fd2(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14467,7 +14473,7 @@ func UnsafePrivate_VZVirtioConsoleDevice_Instance__cxx_construct_fa904fd2(receiv
 var privateCallUnsafePrivate_VZVirtioConsoleDevice_Instance__cxx_destruct_63207991 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioConsoleDevice_Instance__cxx_destruct_63207991(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsoleDevice_Instance__cxx_destruct_63207991.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -14482,7 +14488,7 @@ var privateCallUnsafePrivate_VZVirtioConsoleDevice_Instance_delegate_9580a1c8 la
 
 func UnsafePrivate_VZVirtioConsoleDevice_Instance_delegate_9580a1c8(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14510,7 +14516,7 @@ var privateCallUnsafePrivate_VZVirtioConsoleDevice_Instance_initWithVirtualMachi
 
 func UnsafePrivate_VZVirtioConsoleDevice_Instance_initWithVirtualMachine_consoleDeviceIndex_configuration__fa857ced(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14538,7 +14544,7 @@ var privateCallUnsafePrivate_VZVirtioConsoleDevice_Instance_ports_45cfd6c7 lazyB
 
 func UnsafePrivate_VZVirtioConsoleDevice_Instance_ports_45cfd6c7(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14555,6 +14561,7 @@ func UnsafePrivate_VZVirtioConsoleDevice_Instance_ports_45cfd6c7(receiver unsafe
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -14565,7 +14572,7 @@ func UnsafePrivate_VZVirtioConsoleDevice_Instance_ports_45cfd6c7(receiver unsafe
 var privateCallUnsafePrivate_VZVirtioConsoleDevice_Instance_setDelegate__129a7ab7 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtioConsoleDevice_Instance_setDelegate__129a7ab7(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsoleDevice_Instance_setDelegate__129a7ab7.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 		})
@@ -14580,7 +14587,7 @@ var privateCallUnsafePrivate_VZVirtioConsolePortArray_Instance__cxx_construct_48
 
 func UnsafePrivate_VZVirtioConsolePortArray_Instance__cxx_construct_488f0a5c(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14607,7 +14614,7 @@ func UnsafePrivate_VZVirtioConsolePortArray_Instance__cxx_construct_488f0a5c(rec
 var privateCallUnsafePrivate_VZVirtioConsolePortArray_Instance__cxx_destruct_9bde0fa3 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioConsolePortArray_Instance__cxx_destruct_9bde0fa3(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsolePortArray_Instance__cxx_destruct_9bde0fa3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -14622,7 +14629,7 @@ var privateCallUnsafePrivate_VZVirtioConsolePortArray_Instance_maximumPortCount_
 
 func UnsafePrivate_VZVirtioConsolePortArray_Instance_maximumPortCount_bf05f74a(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsolePortArray_Instance_maximumPortCount_bf05f74a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("maximumPortCount")
 		})
@@ -14638,7 +14645,7 @@ var privateCallUnsafePrivate_VZVirtioConsolePortArray_Instance_objectAtIndexedSu
 
 func UnsafePrivate_VZVirtioConsolePortArray_Instance_objectAtIndexedSubscript__bfc7028d(receiver unsafe.Pointer, p0 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14655,6 +14662,7 @@ func UnsafePrivate_VZVirtioConsolePortArray_Instance_objectAtIndexedSubscript__b
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector, p0)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -14666,7 +14674,7 @@ var privateCallUnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance__cxx
 
 func UnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance__cxx_construct_72a766a2(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14693,7 +14701,7 @@ func UnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance__cxx_construct
 var privateCallUnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance__cxx_destruct_fa2bc30d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance__cxx_destruct_fa2bc30d(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance__cxx_destruct_fa2bc30d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -14708,7 +14716,7 @@ var privateCallUnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_copy
 
 func UnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_copyWithZone__c2ce7be4(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14736,7 +14744,7 @@ var privateCallUnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_maxi
 
 func UnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_maximumPortCount_3b0bfc3c(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_maximumPortCount_3b0bfc3c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("maximumPortCount")
 		})
@@ -14752,7 +14760,7 @@ var privateCallUnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_obje
 
 func UnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_objectAtIndexedSubscript__bb8c8871(receiver unsafe.Pointer, p0 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14779,7 +14787,7 @@ func UnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_objectAtIndexe
 var privateCallUnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_setMaximumPortCount__d9dcae47 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]]
 
 func UnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_setMaximumPortCount__d9dcae47(receiver unsafe.Pointer, p0 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_setMaximumPortCount__d9dcae47.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]("setMaximumPortCount:")
 		})
@@ -14793,7 +14801,7 @@ func UnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_setMaximumPort
 var privateCallUnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_setObject_atIndexedSubscript__06c326a0 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64)]]
 
 func UnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_setObject_atIndexedSubscript__06c326a0(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_setObject_atIndexedSubscript__06c326a0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64)]("setObject:atIndexedSubscript:")
 		})
@@ -14807,7 +14815,7 @@ func UnsafePrivate_VZVirtioConsolePortConfigurationArray_Instance_setObject_atIn
 var privateCallUnsafePrivate_VZVirtioConsolePortConfiguration_Instance__cxx_destruct_af4fa4de lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioConsolePortConfiguration_Instance__cxx_destruct_af4fa4de(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsolePortConfiguration_Instance__cxx_destruct_af4fa4de.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -14822,7 +14830,7 @@ var privateCallUnsafePrivate_VZVirtioConsolePortConfiguration_Instance_copyWithZ
 
 func UnsafePrivate_VZVirtioConsolePortConfiguration_Instance_copyWithZone__62f29bd2(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14850,7 +14858,7 @@ var privateCallUnsafePrivate_VZVirtioConsolePortConfiguration_Instance_init_adf7
 
 func UnsafePrivate_VZVirtioConsolePortConfiguration_Instance_init_adf74d24(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14878,7 +14886,7 @@ var privateCallUnsafePrivate_VZVirtioConsolePortConfiguration_Instance_isConsole
 
 func UnsafePrivate_VZVirtioConsolePortConfiguration_Instance_isConsole_ed474a82(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsolePortConfiguration_Instance_isConsole_ed474a82.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isConsole")
 		})
@@ -14894,7 +14902,7 @@ var privateCallUnsafePrivate_VZVirtioConsolePortConfiguration_Instance_name_e7b3
 
 func UnsafePrivate_VZVirtioConsolePortConfiguration_Instance_name_e7b31fed(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14921,7 +14929,7 @@ func UnsafePrivate_VZVirtioConsolePortConfiguration_Instance_name_e7b31fed(recei
 var privateCallUnsafePrivate_VZVirtioConsolePortConfiguration_Instance_setIsConsole__333766be lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZVirtioConsolePortConfiguration_Instance_setIsConsole__333766be(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsolePortConfiguration_Instance_setIsConsole__333766be.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setIsConsole:")
 		})
@@ -14935,7 +14943,7 @@ func UnsafePrivate_VZVirtioConsolePortConfiguration_Instance_setIsConsole__33376
 var privateCallUnsafePrivate_VZVirtioConsolePortConfiguration_Instance_setName__0433b156 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtioConsolePortConfiguration_Instance_setName__0433b156(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsolePortConfiguration_Instance_setName__0433b156.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setName:")
 		})
@@ -14949,7 +14957,7 @@ func UnsafePrivate_VZVirtioConsolePortConfiguration_Instance_setName__0433b156(r
 var privateCallUnsafePrivate_VZVirtioConsolePort_Instance__cxx_destruct_0a517df2 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioConsolePort_Instance__cxx_destruct_0a517df2(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsolePort_Instance__cxx_destruct_0a517df2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -14964,7 +14972,7 @@ var privateCallUnsafePrivate_VZVirtioConsolePort_Instance_attachment_5d413537 la
 
 func UnsafePrivate_VZVirtioConsolePort_Instance_attachment_5d413537(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -14992,7 +15000,7 @@ var privateCallUnsafePrivate_VZVirtioConsolePort_Instance_name_8f786288 lazyBind
 
 func UnsafePrivate_VZVirtioConsolePort_Instance_name_8f786288(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15019,7 +15027,7 @@ func UnsafePrivate_VZVirtioConsolePort_Instance_name_8f786288(receiver unsafe.Po
 var privateCallUnsafePrivate_VZVirtioConsolePort_Instance_setAttachment__c1a2daaa lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtioConsolePort_Instance_setAttachment__c1a2daaa(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioConsolePort_Instance_setAttachment__c1a2daaa.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAttachment:")
 		})
@@ -15033,7 +15041,7 @@ func UnsafePrivate_VZVirtioConsolePort_Instance_setAttachment__c1a2daaa(receiver
 var privateCallUnsafePrivate_VZVirtioDeviceSpecificConfiguration_Instance__cxx_destruct_ce286e07 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioDeviceSpecificConfiguration_Instance__cxx_destruct_ce286e07(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioDeviceSpecificConfiguration_Instance__cxx_destruct_ce286e07.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -15048,7 +15056,7 @@ var privateCallUnsafePrivate_VZVirtioDeviceSpecificConfiguration_Instance_config
 
 func UnsafePrivate_VZVirtioDeviceSpecificConfiguration_Instance_configurationData_cd426700(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15076,7 +15084,7 @@ var privateCallUnsafePrivate_VZVirtioDeviceSpecificConfiguration_Instance_copyWi
 
 func UnsafePrivate_VZVirtioDeviceSpecificConfiguration_Instance_copyWithZone__8ff4c7f5(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15104,7 +15112,7 @@ var privateCallUnsafePrivate_VZVirtioDeviceSpecificConfiguration_Instance_initWi
 
 func UnsafePrivate_VZVirtioDeviceSpecificConfiguration_Instance_initWithConfigurationData__27fe7169(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15132,7 +15140,7 @@ var privateCallUnsafePrivate_VZVirtioEntropyDeviceConfiguration_Instance__entrop
 
 func UnsafePrivate_VZVirtioEntropyDeviceConfiguration_Instance__entropyDevice_e5099186(receiver unsafe.Pointer) int32 {
 	var result int32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioEntropyDeviceConfiguration_Instance__entropyDevice_e5099186.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int32]("_entropyDevice")
 		})
@@ -15148,7 +15156,7 @@ var privateCallUnsafePrivate_VZVirtioEntropyDeviceConfiguration_Instance_copyWit
 
 func UnsafePrivate_VZVirtioEntropyDeviceConfiguration_Instance_copyWithZone__71fafdad(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15176,7 +15184,7 @@ var privateCallUnsafePrivate_VZVirtioEntropyDeviceConfiguration_Instance_init_3b
 
 func UnsafePrivate_VZVirtioEntropyDeviceConfiguration_Instance_init_3bd541df(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15204,7 +15212,7 @@ var privateCallUnsafePrivate_VZVirtioFeatureSet_Instance__cxx_construct_058cb99c
 
 func UnsafePrivate_VZVirtioFeatureSet_Instance__cxx_construct_058cb99c(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15232,7 +15240,7 @@ var privateCallUnsafePrivate_VZVirtioFeatureSet_Instance_copyWithZone__8a96fca9 
 
 func UnsafePrivate_VZVirtioFeatureSet_Instance_copyWithZone__8a96fca9(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15259,7 +15267,7 @@ func UnsafePrivate_VZVirtioFeatureSet_Instance_copyWithZone__8a96fca9(receiver u
 var privateCallUnsafePrivate_VZVirtioFeatureSet_Instance_setSubset0__52497181 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]]
 
 func UnsafePrivate_VZVirtioFeatureSet_Instance_setSubset0__52497181(receiver unsafe.Pointer, p0 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioFeatureSet_Instance_setSubset0__52497181.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]("setSubset0:")
 		})
@@ -15273,7 +15281,7 @@ func UnsafePrivate_VZVirtioFeatureSet_Instance_setSubset0__52497181(receiver uns
 var privateCallUnsafePrivate_VZVirtioFeatureSet_Instance_setSubset1__9c23625e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]]
 
 func UnsafePrivate_VZVirtioFeatureSet_Instance_setSubset1__9c23625e(receiver unsafe.Pointer, p0 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioFeatureSet_Instance_setSubset1__9c23625e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]("setSubset1:")
 		})
@@ -15288,7 +15296,7 @@ var privateCallUnsafePrivate_VZVirtioFeatureSet_Instance_subset0_9a85d918 lazyBi
 
 func UnsafePrivate_VZVirtioFeatureSet_Instance_subset0_9a85d918(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioFeatureSet_Instance_subset0_9a85d918.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("subset0")
 		})
@@ -15304,7 +15312,7 @@ var privateCallUnsafePrivate_VZVirtioFeatureSet_Instance_subset1_35c6979a lazyBi
 
 func UnsafePrivate_VZVirtioFeatureSet_Instance_subset1_35c6979a(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioFeatureSet_Instance_subset1_35c6979a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("subset1")
 		})
@@ -15365,7 +15373,7 @@ func UnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Class_validateTag_error
 var privateCallUnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance__cxx_destruct_9340bd5b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance__cxx_destruct_9340bd5b(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance__cxx_destruct_9340bd5b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -15380,7 +15388,7 @@ var privateCallUnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance__mak
 
 func UnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance__makeDirectorySharingDeviceForVirtualMachine_directorySharingDeviceIndex__0051a83b(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15408,7 +15416,7 @@ var privateCallUnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_copy
 
 func UnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_copyWithZone__d36bd322(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15436,7 +15444,7 @@ var privateCallUnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_init
 
 func UnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_initWithTag__06ff1efe(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15463,7 +15471,7 @@ func UnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_initWithTag__0
 var privateCallUnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_setShare__5d5b8e9b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_setShare__5d5b8e9b(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_setShare__5d5b8e9b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setShare:")
 		})
@@ -15477,7 +15485,7 @@ func UnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_setShare__5d5b
 var privateCallUnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_setTag__19992e45 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_setTag__19992e45(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_setTag__19992e45.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setTag:")
 		})
@@ -15492,7 +15500,7 @@ var privateCallUnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_shar
 
 func UnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_share_6e2f3852(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15520,7 +15528,7 @@ var privateCallUnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_tag_
 
 func UnsafePrivate_VZVirtioFileSystemDeviceConfiguration_Instance_tag_fef945f4(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15548,7 +15556,7 @@ var privateCallUnsafePrivate_VZVirtioFileSystemDevice_Instance__cxx_construct_25
 
 func UnsafePrivate_VZVirtioFileSystemDevice_Instance__cxx_construct_25473f2c(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15575,7 +15583,7 @@ func UnsafePrivate_VZVirtioFileSystemDevice_Instance__cxx_construct_25473f2c(rec
 var privateCallUnsafePrivate_VZVirtioFileSystemDevice_Instance__cxx_destruct_dc36ffd9 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioFileSystemDevice_Instance__cxx_destruct_dc36ffd9(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioFileSystemDevice_Instance__cxx_destruct_dc36ffd9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -15589,7 +15597,7 @@ func UnsafePrivate_VZVirtioFileSystemDevice_Instance__cxx_destruct_dc36ffd9(rece
 var privateCallUnsafePrivate_VZVirtioFileSystemDevice_Instance_setShare__3af05bb2 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtioFileSystemDevice_Instance_setShare__3af05bb2(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioFileSystemDevice_Instance_setShare__3af05bb2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setShare:")
 		})
@@ -15604,7 +15612,7 @@ var privateCallUnsafePrivate_VZVirtioFileSystemDevice_Instance_share_426b33aa la
 
 func UnsafePrivate_VZVirtioFileSystemDevice_Instance_share_426b33aa(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15632,7 +15640,7 @@ var privateCallUnsafePrivate_VZVirtioFileSystemDevice_Instance_tag_a6c2a1ed lazy
 
 func UnsafePrivate_VZVirtioFileSystemDevice_Instance_tag_a6c2a1ed(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15676,7 +15684,7 @@ func UnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Class__maximumAllowedDisp
 var privateCallUnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance__cxx_destruct_55d62c96 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance__cxx_destruct_55d62c96(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance__cxx_destruct_55d62c96.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -15691,7 +15699,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance__initW
 
 func UnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance__initWithConfiguration__2187a527(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15719,7 +15727,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_copyWi
 
 func UnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_copyWithZone__5fc3491d(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15747,7 +15755,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_init_f
 
 func UnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_init_f873aa98(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15775,7 +15783,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_makeGr
 
 func UnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_makeGraphicsDeviceForVirtualMachineAccessor_graphicsDeviceIndex__cd83bcd6(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15803,7 +15811,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_makeGr
 
 func UnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_makeGraphicsDeviceForVirtualMachine_graphicsDeviceIndex__828d4862(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15831,7 +15839,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_scanou
 
 func UnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_scanouts_69ea9db9(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15858,7 +15866,7 @@ func UnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_scanouts_69ea9db
 var privateCallUnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_setScanouts__de27e093 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_setScanouts__de27e093(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_setScanouts__de27e093.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setScanouts:")
 		})
@@ -15873,7 +15881,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_valida
 
 func UnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_validateWithError__3b526a2a(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioGraphicsDeviceConfiguration_Instance_validateWithError__3b526a2a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateWithError:")
 		})
@@ -15889,7 +15897,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsDevice_Instance__initWithVirtualMac
 
 func UnsafePrivate_VZVirtioGraphicsDevice_Instance__initWithVirtualMachineAccessor_graphicsDeviceIndex_displayPortCount_displays__828a4705(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 uint64, p3 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15917,7 +15925,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsDevice_Instance__initWithVirtualMac
 
 func UnsafePrivate_VZVirtioGraphicsDevice_Instance__initWithVirtualMachine_graphicsDeviceIndex_displayPortCount_displays__f69cc1e2(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 uint64, p3 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15945,7 +15953,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance__init
 
 func UnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance__initWithConfiguration__9cfd3176(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -15973,7 +15981,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_copyW
 
 func UnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_copyWithZone__75ba1da7(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16001,7 +16009,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_heigh
 
 func UnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_heightInPixels_a08beb16(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_heightInPixels_a08beb16.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("heightInPixels")
 		})
@@ -16017,7 +16025,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_initW
 
 func UnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_initWithWidthInPixels_heightInPixels__8793cc47(receiver unsafe.Pointer, p0 int64, p1 int64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16044,7 +16052,7 @@ func UnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_initWithWidthIn
 var privateCallUnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_setHeightInPixels__31305044 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_setHeightInPixels__31305044(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_setHeightInPixels__31305044.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setHeightInPixels:")
 		})
@@ -16058,7 +16066,7 @@ func UnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_setHeightInPixe
 var privateCallUnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_setWidthInPixels__3869fdb4 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_setWidthInPixels__3869fdb4(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_setWidthInPixels__3869fdb4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setWidthInPixels:")
 		})
@@ -16073,7 +16081,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_width
 
 func UnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_widthInPixels_c0684b3d(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioGraphicsScanoutConfiguration_Instance_widthInPixels_c0684b3d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("widthInPixels")
 		})
@@ -16089,7 +16097,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsScanout_Instance__configuration_d6c
 
 func UnsafePrivate_VZVirtioGraphicsScanout_Instance__configuration_d6cb5220(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16116,7 +16124,7 @@ func UnsafePrivate_VZVirtioGraphicsScanout_Instance__configuration_d6cb5220(rece
 var privateCallUnsafePrivate_VZVirtioGraphicsScanout_Instance__cxx_destruct_1f639186 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioGraphicsScanout_Instance__cxx_destruct_1f639186(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioGraphicsScanout_Instance__cxx_destruct_1f639186.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -16131,7 +16139,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsScanout_Instance__graphicsDevice_9a
 
 func UnsafePrivate_VZVirtioGraphicsScanout_Instance__graphicsDevice_9a0c5a29(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16159,7 +16167,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsScanout_Instance__matchesConfigurat
 
 func UnsafePrivate_VZVirtioGraphicsScanout_Instance__matchesConfiguration__d4dff216(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioGraphicsScanout_Instance__matchesConfiguration__d4dff216.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("_matchesConfiguration:")
 		})
@@ -16174,7 +16182,7 @@ func UnsafePrivate_VZVirtioGraphicsScanout_Instance__matchesConfiguration__d4dff
 var privateCallUnsafePrivate_VZVirtioGraphicsScanout_Instance__processReconfigurationWithConfiguration__936f5bf6 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtioGraphicsScanout_Instance__processReconfigurationWithConfiguration__936f5bf6(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioGraphicsScanout_Instance__processReconfigurationWithConfiguration__936f5bf6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_processReconfigurationWithConfiguration:")
 		})
@@ -16188,7 +16196,7 @@ func UnsafePrivate_VZVirtioGraphicsScanout_Instance__processReconfigurationWithC
 var privateCallUnsafePrivate_VZVirtioGraphicsScanout_Instance__setGraphicsDevice__7060ec56 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtioGraphicsScanout_Instance__setGraphicsDevice__7060ec56(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioGraphicsScanout_Instance__setGraphicsDevice__7060ec56.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setGraphicsDevice:")
 		})
@@ -16203,7 +16211,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsScanout_Instance__supportsSinglePas
 
 func UnsafePrivate_VZVirtioGraphicsScanout_Instance__supportsSinglePassHDR_7acb91a1(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioGraphicsScanout_Instance__supportsSinglePassHDR_7acb91a1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_supportsSinglePassHDR")
 		})
@@ -16219,7 +16227,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsScanout_Instance_initWithConfigurat
 
 func UnsafePrivate_VZVirtioGraphicsScanout_Instance_initWithConfiguration_error__d2794a8a(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16247,7 +16255,7 @@ var privateCallUnsafePrivate_VZVirtioGraphicsScanout_Instance_reconfigureWithCon
 
 func UnsafePrivate_VZVirtioGraphicsScanout_Instance_reconfigureWithConfiguration_error__3f65aad0(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioGraphicsScanout_Instance_reconfigureWithConfiguration_error__3f65aad0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("reconfigureWithConfiguration:error:")
 		})
@@ -16263,7 +16271,7 @@ var privateCallUnsafePrivate_VZVirtioNetworkDeviceConfiguration_Instance_init_7d
 
 func UnsafePrivate_VZVirtioNetworkDeviceConfiguration_Instance_init_7d940f63(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16291,7 +16299,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance__cxx_construct_fd9ae4
 
 func UnsafePrivate_VZVirtioQueueElement_Instance__cxx_construct_fd9ae4a9(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16318,7 +16326,7 @@ func UnsafePrivate_VZVirtioQueueElement_Instance__cxx_construct_fd9ae4a9(receive
 var privateCallUnsafePrivate_VZVirtioQueueElement_Instance__cxx_destruct_284daf5d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioQueueElement_Instance__cxx_destruct_284daf5d(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueueElement_Instance__cxx_destruct_284daf5d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -16332,7 +16340,7 @@ func UnsafePrivate_VZVirtioQueueElement_Instance__cxx_destruct_284daf5d(receiver
 var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_dealloc_2b32554f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_dealloc_2b32554f(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueueElement_Instance_dealloc_2b32554f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -16347,7 +16355,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_peekIntoReadBuffersWi
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_peekIntoReadBuffersWithExactLength_error__9587c4b5(receiver unsafe.Pointer, p0 uint64, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16375,7 +16383,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_peekIntoReadBuffers_e
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_peekIntoReadBuffers_error__a37ab721(receiver unsafe.Pointer, p0 uint64, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16403,7 +16411,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_readBuffersAvailableB
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_readBuffersAvailableByteCount_defb21d4(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueueElement_Instance_readBuffersAvailableByteCount_defb21d4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("readBuffersAvailableByteCount")
 		})
@@ -16419,7 +16427,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_readBuffersByteCount_
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_readBuffersByteCount_ce1bf344(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueueElement_Instance_readBuffersByteCount_ce1bf344.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("readBuffersByteCount")
 		})
@@ -16435,7 +16443,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_readBuffers_a7c18c9f 
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_readBuffers_a7c18c9f(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16463,7 +16471,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_readBytesIntoBuffer_e
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_readBytesIntoBuffer_exactLength_error__ddf6341a(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueueElement_Instance_readBytesIntoBuffer_exactLength_error__ddf6341a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer) bool]("readBytesIntoBuffer:exactLength:error:")
 		})
@@ -16479,7 +16487,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_readBytesInto_length_
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_readBytesInto_length_error__85381190(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueueElement_Instance_readBytesInto_length_error__85381190.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer) bool]("readBytesInto:length:error:")
 		})
@@ -16495,7 +16503,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_readBytesWithExactLen
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_readBytesWithExactLength_error__5334c28c(receiver unsafe.Pointer, p0 uint64, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16523,7 +16531,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_readBytes_error__8b43
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_readBytes_error__8b431b04(receiver unsafe.Pointer, p0 uint64, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16550,7 +16558,7 @@ func UnsafePrivate_VZVirtioQueueElement_Instance_readBytes_error__8b431b04(recei
 var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_returnToQueue_5f497691 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_returnToQueue_5f497691(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueueElement_Instance_returnToQueue_5f497691.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("returnToQueue")
 		})
@@ -16565,7 +16573,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_writeBuffer_exactLeng
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_writeBuffer_exactLength_error__a5f360f4(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueueElement_Instance_writeBuffer_exactLength_error__a5f360f4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer) bool]("writeBuffer:exactLength:error:")
 		})
@@ -16581,7 +16589,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_writeBuffersAvailable
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_writeBuffersAvailableByteCount_b2ee1755(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueueElement_Instance_writeBuffersAvailableByteCount_b2ee1755.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("writeBuffersAvailableByteCount")
 		})
@@ -16597,7 +16605,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_writeBuffersByteCount
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_writeBuffersByteCount_e2988854(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueueElement_Instance_writeBuffersByteCount_e2988854.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("writeBuffersByteCount")
 		})
@@ -16613,7 +16621,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_writeData_error__4c9a
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_writeData_error__4c9ab818(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueueElement_Instance_writeData_error__4c9ab818.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("writeData:error:")
 		})
@@ -16629,7 +16637,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_writeData_length_erro
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_writeData_length_error__def1f9ad(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueueElement_Instance_writeData_length_error__def1f9ad.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer) bool]("writeData:length:error:")
 		})
@@ -16645,7 +16653,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_write_error__5de8db0e
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_write_error__5de8db0e(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueueElement_Instance_write_error__5de8db0e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("write:error:")
 		})
@@ -16661,7 +16669,7 @@ var privateCallUnsafePrivate_VZVirtioQueueElement_Instance_writtenByteCount_65da
 
 func UnsafePrivate_VZVirtioQueueElement_Instance_writtenByteCount_65da9d55(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueueElement_Instance_writtenByteCount_65da9d55.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("writtenByteCount")
 		})
@@ -16677,7 +16685,7 @@ var privateCallUnsafePrivate_VZVirtioQueue_Instance__cxx_construct_45e12ac4 lazy
 
 func UnsafePrivate_VZVirtioQueue_Instance__cxx_construct_45e12ac4(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16704,7 +16712,7 @@ func UnsafePrivate_VZVirtioQueue_Instance__cxx_construct_45e12ac4(receiver unsaf
 var privateCallUnsafePrivate_VZVirtioQueue_Instance__cxx_destruct_168cfb15 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioQueue_Instance__cxx_destruct_168cfb15(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueue_Instance__cxx_destruct_168cfb15.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -16719,7 +16727,7 @@ var privateCallUnsafePrivate_VZVirtioQueue_Instance_nextElement_47fe7e95 lazyBin
 
 func UnsafePrivate_VZVirtioQueue_Instance_nextElement_47fe7e95(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16736,6 +16744,7 @@ func UnsafePrivate_VZVirtioQueue_Instance_nextElement_47fe7e95(receiver unsafe.P
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -16747,7 +16756,7 @@ var privateCallUnsafePrivate_VZVirtioQueue_Instance_queueIndex_3c769905 lazyBind
 
 func UnsafePrivate_VZVirtioQueue_Instance_queueIndex_3c769905(receiver unsafe.Pointer) uint16 {
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueue_Instance_queueIndex_3c769905.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint16] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("queueIndex")
 		})
@@ -16763,7 +16772,7 @@ var privateCallUnsafePrivate_VZVirtioQueue_Instance_queueSize_64fb9bfd lazyBindi
 
 func UnsafePrivate_VZVirtioQueue_Instance_queueSize_64fb9bfd(receiver unsafe.Pointer) uint16 {
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioQueue_Instance_queueSize_64fb9bfd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint16] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("queueSize")
 		})
@@ -16779,7 +16788,7 @@ var privateCallUnsafePrivate_VZVirtioSharedMemoryRegionConfiguration_Instance_co
 
 func UnsafePrivate_VZVirtioSharedMemoryRegionConfiguration_Instance_copyWithZone__be0cb3a1(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16807,7 +16816,7 @@ var privateCallUnsafePrivate_VZVirtioSharedMemoryRegionConfiguration_Instance_in
 
 func UnsafePrivate_VZVirtioSharedMemoryRegionConfiguration_Instance_initWithRegionID_size__767829e4(receiver unsafe.Pointer, p0 uint8, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16835,7 +16844,7 @@ var privateCallUnsafePrivate_VZVirtioSharedMemoryRegionConfiguration_Instance_re
 
 func UnsafePrivate_VZVirtioSharedMemoryRegionConfiguration_Instance_regionID_1e836f07(receiver unsafe.Pointer) uint8 {
 	var result uint8
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSharedMemoryRegionConfiguration_Instance_regionID_1e836f07.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint8] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint8]("regionID")
 		})
@@ -16851,7 +16860,7 @@ var privateCallUnsafePrivate_VZVirtioSharedMemoryRegionConfiguration_Instance_si
 
 func UnsafePrivate_VZVirtioSharedMemoryRegionConfiguration_Instance_size_6cb10f01(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSharedMemoryRegionConfiguration_Instance_size_6cb10f01.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("size")
 		})
@@ -16867,7 +16876,7 @@ var privateCallUnsafePrivate_VZVirtioSharedMemoryRegion_Instance__cxx_construct_
 
 func UnsafePrivate_VZVirtioSharedMemoryRegion_Instance__cxx_construct_e14e888a(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16894,7 +16903,7 @@ func UnsafePrivate_VZVirtioSharedMemoryRegion_Instance__cxx_construct_e14e888a(r
 var privateCallUnsafePrivate_VZVirtioSharedMemoryRegion_Instance__cxx_destruct_8a2f1d6a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioSharedMemoryRegion_Instance__cxx_destruct_8a2f1d6a(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSharedMemoryRegion_Instance__cxx_destruct_8a2f1d6a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -16909,7 +16918,7 @@ var privateCallUnsafePrivate_VZVirtioSharedMemoryRegion_Instance_regionID_114d8d
 
 func UnsafePrivate_VZVirtioSharedMemoryRegion_Instance_regionID_114d8ddc(receiver unsafe.Pointer) uint8 {
 	var result uint8
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSharedMemoryRegion_Instance_regionID_114d8ddc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint8] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint8]("regionID")
 		})
@@ -16925,7 +16934,7 @@ var privateCallUnsafePrivate_VZVirtioSharedMemoryRegion_Instance_size_dacb37ca l
 
 func UnsafePrivate_VZVirtioSharedMemoryRegion_Instance_size_dacb37ca(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSharedMemoryRegion_Instance_size_dacb37ca.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("size")
 		})
@@ -16941,7 +16950,7 @@ var privateCallUnsafePrivate_VZVirtioSocketConnection_Instance__cxx_construct_8f
 
 func UnsafePrivate_VZVirtioSocketConnection_Instance__cxx_construct_8fc3b80e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -16968,7 +16977,7 @@ func UnsafePrivate_VZVirtioSocketConnection_Instance__cxx_construct_8fc3b80e(rec
 var privateCallUnsafePrivate_VZVirtioSocketConnection_Instance__cxx_destruct_468d0e93 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioSocketConnection_Instance__cxx_destruct_468d0e93(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSocketConnection_Instance__cxx_destruct_468d0e93.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -16982,7 +16991,7 @@ func UnsafePrivate_VZVirtioSocketConnection_Instance__cxx_destruct_468d0e93(rece
 var privateCallUnsafePrivate_VZVirtioSocketConnection_Instance_close_a40b1aa7 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioSocketConnection_Instance_close_a40b1aa7(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSocketConnection_Instance_close_a40b1aa7.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("close")
 		})
@@ -16996,7 +17005,7 @@ func UnsafePrivate_VZVirtioSocketConnection_Instance_close_a40b1aa7(receiver uns
 var privateCallUnsafePrivate_VZVirtioSocketConnection_Instance_dealloc_d2d0c577 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioSocketConnection_Instance_dealloc_d2d0c577(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSocketConnection_Instance_dealloc_d2d0c577.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -17011,7 +17020,7 @@ var privateCallUnsafePrivate_VZVirtioSocketConnection_Instance_destinationPort_f
 
 func UnsafePrivate_VZVirtioSocketConnection_Instance_destinationPort_f323384d(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSocketConnection_Instance_destinationPort_f323384d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("destinationPort")
 		})
@@ -17027,7 +17036,7 @@ var privateCallUnsafePrivate_VZVirtioSocketConnection_Instance_fileDescriptor_91
 
 func UnsafePrivate_VZVirtioSocketConnection_Instance_fileDescriptor_9105a5ad(receiver unsafe.Pointer) int32 {
 	var result int32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSocketConnection_Instance_fileDescriptor_9105a5ad.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int32]("fileDescriptor")
 		})
@@ -17043,7 +17052,7 @@ var privateCallUnsafePrivate_VZVirtioSocketConnection_Instance_sourcePort_9b3465
 
 func UnsafePrivate_VZVirtioSocketConnection_Instance_sourcePort_9b346503(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSocketConnection_Instance_sourcePort_9b346503.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("sourcePort")
 		})
@@ -17059,7 +17068,7 @@ var privateCallUnsafePrivate_VZVirtioSocketDeviceConfiguration_Instance_init_360
 
 func UnsafePrivate_VZVirtioSocketDeviceConfiguration_Instance_init_36036db2(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17087,7 +17096,7 @@ var privateCallUnsafePrivate_VZVirtioSocketDeviceConfiguration_Instance_makeSock
 
 func UnsafePrivate_VZVirtioSocketDeviceConfiguration_Instance_makeSocketDeviceForVirtualMachine_identifier__b1233dcd(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17115,7 +17124,7 @@ var privateCallUnsafePrivate_VZVirtioSocketDevice_Instance__configurationOptions
 
 func UnsafePrivate_VZVirtioSocketDevice_Instance__configurationOptions_673bb5ca(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17143,7 +17152,7 @@ var privateCallUnsafePrivate_VZVirtioSocketDevice_Instance__cxx_construct_583e79
 
 func UnsafePrivate_VZVirtioSocketDevice_Instance__cxx_construct_583e7981(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17170,7 +17179,7 @@ func UnsafePrivate_VZVirtioSocketDevice_Instance__cxx_construct_583e7981(receive
 var privateCallUnsafePrivate_VZVirtioSocketDevice_Instance__cxx_destruct_f0ff09da lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioSocketDevice_Instance__cxx_destruct_f0ff09da(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSocketDevice_Instance__cxx_destruct_f0ff09da.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -17184,7 +17193,7 @@ func UnsafePrivate_VZVirtioSocketDevice_Instance__cxx_destruct_f0ff09da(receiver
 var privateCallUnsafePrivate_VZVirtioSocketDevice_Instance__setDelegate__930b1fb4 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtioSocketDevice_Instance__setDelegate__930b1fb4(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSocketDevice_Instance__setDelegate__930b1fb4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setDelegate:")
 		})
@@ -17198,7 +17207,7 @@ func UnsafePrivate_VZVirtioSocketDevice_Instance__setDelegate__930b1fb4(receiver
 var privateCallUnsafePrivate_VZVirtioSocketDevice_Instance_removeSocketListenerForPort__17364ca8 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]]
 
 func UnsafePrivate_VZVirtioSocketDevice_Instance_removeSocketListenerForPort__17364ca8(receiver unsafe.Pointer, p0 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSocketDevice_Instance_removeSocketListenerForPort__17364ca8.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]("removeSocketListenerForPort:")
 		})
@@ -17212,7 +17221,7 @@ func UnsafePrivate_VZVirtioSocketDevice_Instance_removeSocketListenerForPort__17
 var privateCallUnsafePrivate_VZVirtioSocketDevice_Instance_setSocketListener_forPort__ae559ac6 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate_VZVirtioSocketDevice_Instance_setSocketListener_forPort__ae559ac6(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSocketDevice_Instance_setSocketListener_forPort__ae559ac6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("setSocketListener:forPort:")
 		})
@@ -17226,7 +17235,7 @@ func UnsafePrivate_VZVirtioSocketDevice_Instance_setSocketListener_forPort__ae55
 var privateCallUnsafePrivate_VZVirtioSocketListener_Instance__cxx_destruct_6f000136 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioSocketListener_Instance__cxx_destruct_6f000136(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSocketListener_Instance__cxx_destruct_6f000136.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -17241,7 +17250,7 @@ var privateCallUnsafePrivate_VZVirtioSocketListener_Instance_delegate_028283c2 l
 
 func UnsafePrivate_VZVirtioSocketListener_Instance_delegate_028283c2(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17268,7 +17277,7 @@ func UnsafePrivate_VZVirtioSocketListener_Instance_delegate_028283c2(receiver un
 var privateCallUnsafePrivate_VZVirtioSocketListener_Instance_setDelegate__fa71e31c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtioSocketListener_Instance_setDelegate__fa71e31c(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSocketListener_Instance_setDelegate__fa71e31c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 		})
@@ -17282,7 +17291,7 @@ func UnsafePrivate_VZVirtioSocketListener_Instance_setDelegate__fa71e31c(receive
 var privateCallUnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance__cxx_destruct_a4d0fd0b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance__cxx_destruct_a4d0fd0b(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance__cxx_destruct_a4d0fd0b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -17297,7 +17306,7 @@ var privateCallUnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance__makeAudi
 
 func UnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance__makeAudioDeviceForVirtualMachine_audioDeviceIndex__41187a92(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17325,7 +17334,7 @@ var privateCallUnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance_copyWithZ
 
 func UnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance_copyWithZone__60b5091a(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17353,7 +17362,7 @@ var privateCallUnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance_init_5889
 
 func UnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance_init_58893803(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17380,7 +17389,7 @@ func UnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance_init_58893803(recei
 var privateCallUnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance_setStreams__529fbee2 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance_setStreams__529fbee2(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance_setStreams__529fbee2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setStreams:")
 		})
@@ -17395,7 +17404,7 @@ var privateCallUnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance_streams_1
 
 func UnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance_streams_11c6d095(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17422,7 +17431,7 @@ func UnsafePrivate_VZVirtioSoundDeviceConfiguration_Instance_streams_11c6d095(re
 var privateCallUnsafePrivate_VZVirtioSoundDeviceInputStreamConfiguration_Instance__cxx_destruct_bb89fdae lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioSoundDeviceInputStreamConfiguration_Instance__cxx_destruct_bb89fdae(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSoundDeviceInputStreamConfiguration_Instance__cxx_destruct_bb89fdae.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -17437,7 +17446,7 @@ var privateCallUnsafePrivate_VZVirtioSoundDeviceInputStreamConfiguration_Instanc
 
 func UnsafePrivate_VZVirtioSoundDeviceInputStreamConfiguration_Instance_copyWithZone__1bb0a462(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17465,7 +17474,7 @@ var privateCallUnsafePrivate_VZVirtioSoundDeviceInputStreamConfiguration_Instanc
 
 func UnsafePrivate_VZVirtioSoundDeviceInputStreamConfiguration_Instance_init_f3baf573(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17492,7 +17501,7 @@ func UnsafePrivate_VZVirtioSoundDeviceInputStreamConfiguration_Instance_init_f3b
 var privateCallUnsafePrivate_VZVirtioSoundDeviceInputStreamConfiguration_Instance_setSource__92d838bc lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtioSoundDeviceInputStreamConfiguration_Instance_setSource__92d838bc(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSoundDeviceInputStreamConfiguration_Instance_setSource__92d838bc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setSource:")
 		})
@@ -17507,7 +17516,7 @@ var privateCallUnsafePrivate_VZVirtioSoundDeviceInputStreamConfiguration_Instanc
 
 func UnsafePrivate_VZVirtioSoundDeviceInputStreamConfiguration_Instance_source_4b0ddbd8(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17534,7 +17543,7 @@ func UnsafePrivate_VZVirtioSoundDeviceInputStreamConfiguration_Instance_source_4
 var privateCallUnsafePrivate_VZVirtioSoundDeviceOutputStreamConfiguration_Instance__cxx_destruct_73505424 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioSoundDeviceOutputStreamConfiguration_Instance__cxx_destruct_73505424(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSoundDeviceOutputStreamConfiguration_Instance__cxx_destruct_73505424.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -17549,7 +17558,7 @@ var privateCallUnsafePrivate_VZVirtioSoundDeviceOutputStreamConfiguration_Instan
 
 func UnsafePrivate_VZVirtioSoundDeviceOutputStreamConfiguration_Instance_copyWithZone__69b3745c(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17577,7 +17586,7 @@ var privateCallUnsafePrivate_VZVirtioSoundDeviceOutputStreamConfiguration_Instan
 
 func UnsafePrivate_VZVirtioSoundDeviceOutputStreamConfiguration_Instance_init_41ab0932(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17604,7 +17613,7 @@ func UnsafePrivate_VZVirtioSoundDeviceOutputStreamConfiguration_Instance_init_41
 var privateCallUnsafePrivate_VZVirtioSoundDeviceOutputStreamConfiguration_Instance_setSink__37c16f4a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtioSoundDeviceOutputStreamConfiguration_Instance_setSink__37c16f4a(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioSoundDeviceOutputStreamConfiguration_Instance_setSink__37c16f4a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setSink:")
 		})
@@ -17619,7 +17628,7 @@ var privateCallUnsafePrivate_VZVirtioSoundDeviceOutputStreamConfiguration_Instan
 
 func UnsafePrivate_VZVirtioSoundDeviceOutputStreamConfiguration_Instance_sink_a0fa8c65(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17647,7 +17656,7 @@ var privateCallUnsafePrivate_VZVirtioSoundDeviceStreamConfiguration_Instance__in
 
 func UnsafePrivate_VZVirtioSoundDeviceStreamConfiguration_Instance__init_82265bd0(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17675,7 +17684,7 @@ var privateCallUnsafePrivate_VZVirtioSoundDeviceStreamConfiguration_Instance_cop
 
 func UnsafePrivate_VZVirtioSoundDeviceStreamConfiguration_Instance_copyWithZone__85f555d8(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17703,7 +17712,7 @@ var privateCallUnsafePrivate_VZVirtioTraditionalMemoryBalloonDeviceConfiguration
 
 func UnsafePrivate_VZVirtioTraditionalMemoryBalloonDeviceConfiguration_Instance_init_803cc554(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17731,7 +17740,7 @@ var privateCallUnsafePrivate_VZVirtioTraditionalMemoryBalloonDeviceConfiguration
 
 func UnsafePrivate_VZVirtioTraditionalMemoryBalloonDeviceConfiguration_Instance_makeMemoryBalloonDeviceForVirtualMachine_memoryBalloonDeviceIndex_maxTargetMemorySize__0c7320c7(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17759,7 +17768,7 @@ var privateCallUnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance__cx
 
 func UnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance__cxx_construct_2dd017bc(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17786,7 +17795,7 @@ func UnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance__cxx_construc
 var privateCallUnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance__cxx_destruct_b554aa69 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance__cxx_destruct_b554aa69(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance__cxx_destruct_b554aa69.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -17801,7 +17810,7 @@ var privateCallUnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance__ma
 
 func UnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance__maxTargetVirtualMachineMemorySize_5797225b(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance__maxTargetVirtualMachineMemorySize_5797225b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("_maxTargetVirtualMachineMemorySize")
 		})
@@ -17816,7 +17825,7 @@ func UnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance__maxTargetVir
 var privateCallUnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance_setTargetVirtualMachineMemorySize__6477c685 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]]
 
 func UnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance_setTargetVirtualMachineMemorySize__6477c685(receiver unsafe.Pointer, p0 uint64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance_setTargetVirtualMachineMemorySize__6477c685.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]("setTargetVirtualMachineMemorySize:")
 		})
@@ -17831,7 +17840,7 @@ var privateCallUnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance_tar
 
 func UnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance_targetVirtualMachineMemorySize_84079381(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtioTraditionalMemoryBalloonDevice_Instance_targetVirtualMachineMemorySize_84079381.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("targetVirtualMachineMemorySize")
 		})
@@ -17932,7 +17941,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_CPUCount_a92
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_CPUCount_a924b771(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_CPUCount_a924b771.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("CPUCount")
 		})
@@ -17948,7 +17957,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__accelerator
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__acceleratorDevices_523a7c12(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -17976,7 +17985,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__bifrostDevi
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__bifrostDevices_1dc46404(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18004,7 +18013,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__biometricDe
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__biometricDevices_72a3f1b5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18032,7 +18041,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__coprocessor
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__coprocessors_11d0576e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18060,7 +18069,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__cpuEmulator
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__cpuEmulator_c38a85a2(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18088,7 +18097,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__customMMIOD
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__customMMIODevices_eda6c790(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18116,7 +18125,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__customVirti
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__customVirtioDevices_41902f56(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18144,7 +18153,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__cxx_constru
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__cxx_construct_46cbb2d9(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18171,7 +18180,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__cxx_construct_46cbb2d
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__cxx_destruct_51b962b4 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__cxx_destruct_51b962b4(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__cxx_destruct_51b962b4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -18186,7 +18195,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__debugStub_1
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__debugStub_1d6e8719(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18214,7 +18223,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__fatalErrorA
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__fatalErrorAction_00becc44(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__fatalErrorAction_00becc44.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("_fatalErrorAction")
 		})
@@ -18230,7 +18239,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__hidDevices_
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__hidDevices_0f97c220(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18258,7 +18267,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__mailboxDevi
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__mailboxDevices_158389ab(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18286,7 +18295,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__memoryOverc
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__memoryOvercommitmentAllowed_1c504c39(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__memoryOvercommitmentAllowed_1c504c39.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_memoryOvercommitmentAllowed")
 		})
@@ -18302,7 +18311,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__mockVirtual
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__mockVirtualMachineServiceFactory_9d19930a(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18330,7 +18339,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__multiTouchD
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__multiTouchDevices_b7792242(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18358,7 +18367,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__panicAction
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__panicAction_199b3fc7(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__panicAction_199b3fc7.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("_panicAction")
 		})
@@ -18374,7 +18383,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__panicDevice
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__panicDevice_76d3277e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18402,7 +18411,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__pciPassthro
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__pciPassthroughDevices_a1b9e3e2(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18430,7 +18439,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__powerSource
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__powerSourceDevices_9f834135(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18458,7 +18467,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__restartActi
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__restartAction_0f2c1bb2(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__restartAction_0f2c1bb2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("_restartAction")
 		})
@@ -18473,7 +18482,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__restartAction_0f2c1bb
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setAcceleratorDevices__9bf5e475 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setAcceleratorDevices__9bf5e475(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setAcceleratorDevices__9bf5e475.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setAcceleratorDevices:")
 		})
@@ -18487,7 +18496,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setAcceleratorDevices
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setBifrostDevices__e044c817 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setBifrostDevices__e044c817(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setBifrostDevices__e044c817.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setBifrostDevices:")
 		})
@@ -18501,7 +18510,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setBifrostDevices__e0
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setBiometricDevices__78422526 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setBiometricDevices__78422526(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setBiometricDevices__78422526.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setBiometricDevices:")
 		})
@@ -18515,7 +18524,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setBiometricDevices__
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setCPUEmulator__f0cb1919 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setCPUEmulator__f0cb1919(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setCPUEmulator__f0cb1919.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setCPUEmulator:")
 		})
@@ -18529,7 +18538,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setCPUEmulator__f0cb1
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setCoprocessors__22b3d3a5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setCoprocessors__22b3d3a5(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setCoprocessors__22b3d3a5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setCoprocessors:")
 		})
@@ -18543,7 +18552,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setCoprocessors__22b3
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setCustomMMIODevices__14e14d99 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setCustomMMIODevices__14e14d99(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setCustomMMIODevices__14e14d99.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setCustomMMIODevices:")
 		})
@@ -18557,7 +18566,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setCustomMMIODevices_
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setCustomVirtioDevices__8b4c2cfd lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setCustomVirtioDevices__8b4c2cfd(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setCustomVirtioDevices__8b4c2cfd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setCustomVirtioDevices:")
 		})
@@ -18571,7 +18580,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setCustomVirtioDevice
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setDebugStub__cc718b50 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setDebugStub__cc718b50(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setDebugStub__cc718b50.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setDebugStub:")
 		})
@@ -18585,7 +18594,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setDebugStub__cc718b5
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setFatalErrorAction__0da77a30 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setFatalErrorAction__0da77a30(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setFatalErrorAction__0da77a30.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("_setFatalErrorAction:")
 		})
@@ -18599,7 +18608,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setFatalErrorAction__
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setHIDDevices__783622bd lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setHIDDevices__783622bd(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setHIDDevices__783622bd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setHIDDevices:")
 		})
@@ -18613,7 +18622,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setHIDDevices__783622
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setMailboxDevices__0372c9d7 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setMailboxDevices__0372c9d7(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setMailboxDevices__0372c9d7.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setMailboxDevices:")
 		})
@@ -18627,7 +18636,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setMailboxDevices__03
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setMemoryOvercommitmentAllowed__24fd1852 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setMemoryOvercommitmentAllowed__24fd1852(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setMemoryOvercommitmentAllowed__24fd1852.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setMemoryOvercommitmentAllowed:")
 		})
@@ -18641,7 +18650,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setMemoryOvercommitme
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setMockMockVirtualMachineServiceFactory__b311c460 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setMockMockVirtualMachineServiceFactory__b311c460(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setMockMockVirtualMachineServiceFactory__b311c460.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setMockMockVirtualMachineServiceFactory:")
 		})
@@ -18655,7 +18664,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setMockMockVirtualMac
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setMultiTouchDevices__c401b242 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setMultiTouchDevices__c401b242(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setMultiTouchDevices__c401b242.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setMultiTouchDevices:")
 		})
@@ -18669,7 +18678,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setMultiTouchDevices_
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setPCIPassthroughDevices__b3319fed lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setPCIPassthroughDevices__b3319fed(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setPCIPassthroughDevices__b3319fed.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setPCIPassthroughDevices:")
 		})
@@ -18683,7 +18692,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setPCIPassthroughDevi
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setPanicAction__fbdb0694 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setPanicAction__fbdb0694(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setPanicAction__fbdb0694.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("_setPanicAction:")
 		})
@@ -18697,7 +18706,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setPanicAction__fbdb0
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setPanicDevice__51e1e468 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setPanicDevice__51e1e468(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setPanicDevice__51e1e468.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setPanicDevice:")
 		})
@@ -18711,7 +18720,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setPanicDevice__51e1e
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setPowerSourceDevices__b713a9fa lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setPowerSourceDevices__b713a9fa(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setPowerSourceDevices__b713a9fa.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setPowerSourceDevices:")
 		})
@@ -18725,7 +18734,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setPowerSourceDevices
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setRestartAction__77d1631b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setRestartAction__77d1631b(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setRestartAction__77d1631b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("_setRestartAction:")
 		})
@@ -18739,7 +18748,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setRestartAction__77d
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setTerminationUnderMemoryPressureEnabled__178b4965 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setTerminationUnderMemoryPressureEnabled__178b4965(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setTerminationUnderMemoryPressureEnabled__178b4965.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setTerminationUnderMemoryPressureEnabled:")
 		})
@@ -18753,7 +18762,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setTerminationUnderMe
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setTestIgnoreEntitlementChecks__fc6de6df lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__setTestIgnoreEntitlementChecks__fc6de6df(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__setTestIgnoreEntitlementChecks__fc6de6df.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setTestIgnoreEntitlementChecks:")
 		})
@@ -18768,7 +18777,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__termination
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__terminationUnderMemoryPressureEnabled_851c8b49(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__terminationUnderMemoryPressureEnabled_851c8b49.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_terminationUnderMemoryPressureEnabled")
 		})
@@ -18784,7 +18793,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__testIgnoreE
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance__testIgnoreEntitlementChecks_10d93bad(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance__testIgnoreEntitlementChecks_10d93bad.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_testIgnoreEntitlementChecks")
 		})
@@ -18800,7 +18809,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_audioDevices
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_audioDevices_ad210cd4(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18828,7 +18837,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_bootLoader_e
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_bootLoader_e13132a2(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18856,7 +18865,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_consoleDevic
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_consoleDevices_95a1cfaf(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18884,7 +18893,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_copyWithZone
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_copyWithZone__9387dc14(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18912,7 +18921,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_customVirtio
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_customVirtioDevices_a92fd2a3(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18940,7 +18949,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_directorySha
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_directorySharingDevices_2168bac0(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18968,7 +18977,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_entropyDevic
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_entropyDevices_65ff62ea(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -18996,7 +19005,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_graphicsDevi
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_graphicsDevices_8bb53e8a(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19024,7 +19033,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_init_98c92da
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_init_98c92daf(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19052,7 +19061,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_keyboards_a8
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_keyboards_a8759aa8(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19080,7 +19089,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_label_8094bc
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_label_8094bc23(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19108,7 +19117,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_memoryBalloo
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_memoryBalloonDevices_ad3054d6(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19136,7 +19145,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_memorySize_4
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_memorySize_4604196f(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_memorySize_4604196f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("memorySize")
 		})
@@ -19152,7 +19161,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_networkDevic
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_networkDevices_b3bf1b58(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19180,7 +19189,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_platform_0e9
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_platform_0e9fee82(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19208,7 +19217,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_pointingDevi
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_pointingDevices_42d369b6(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19236,7 +19245,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_serialPorts_
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_serialPorts_47c8b972(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19263,7 +19272,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_serialPorts_47c8b972(r
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setAudioDevices__882f692e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setAudioDevices__882f692e(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setAudioDevices__882f692e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAudioDevices:")
 		})
@@ -19277,7 +19286,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setAudioDevices__882f6
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setBootLoader__9fa9d00c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setBootLoader__9fa9d00c(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setBootLoader__9fa9d00c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setBootLoader:")
 		})
@@ -19291,7 +19300,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setBootLoader__9fa9d00
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setCPUCount__fea4ef5f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setCPUCount__fea4ef5f(receiver unsafe.Pointer, p0 uint64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setCPUCount__fea4ef5f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]("setCPUCount:")
 		})
@@ -19305,7 +19314,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setCPUCount__fea4ef5f(
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setConsoleDevices__19766b9b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setConsoleDevices__19766b9b(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setConsoleDevices__19766b9b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setConsoleDevices:")
 		})
@@ -19319,7 +19328,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setConsoleDevices__197
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setCustomVirtioDevices__72648ef5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setCustomVirtioDevices__72648ef5(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setCustomVirtioDevices__72648ef5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setCustomVirtioDevices:")
 		})
@@ -19333,7 +19342,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setCustomVirtioDevices
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setDirectorySharingDevices__538753b5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setDirectorySharingDevices__538753b5(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setDirectorySharingDevices__538753b5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDirectorySharingDevices:")
 		})
@@ -19347,7 +19356,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setDirectorySharingDev
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setEntropyDevices__02906f27 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setEntropyDevices__02906f27(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setEntropyDevices__02906f27.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setEntropyDevices:")
 		})
@@ -19361,7 +19370,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setEntropyDevices__029
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setGraphicsDevices__921ccf59 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setGraphicsDevices__921ccf59(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setGraphicsDevices__921ccf59.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setGraphicsDevices:")
 		})
@@ -19375,7 +19384,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setGraphicsDevices__92
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setKeyboards__57d8e03b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setKeyboards__57d8e03b(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setKeyboards__57d8e03b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setKeyboards:")
 		})
@@ -19389,7 +19398,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setKeyboards__57d8e03b
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setLabel__1f886923 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setLabel__1f886923(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setLabel__1f886923.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setLabel:")
 		})
@@ -19403,7 +19412,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setLabel__1f886923(rec
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setMemoryBalloonDevices__fcd13f5a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setMemoryBalloonDevices__fcd13f5a(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setMemoryBalloonDevices__fcd13f5a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setMemoryBalloonDevices:")
 		})
@@ -19417,7 +19426,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setMemoryBalloonDevice
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setMemorySize__5c4c6668 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setMemorySize__5c4c6668(receiver unsafe.Pointer, p0 uint64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setMemorySize__5c4c6668.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]("setMemorySize:")
 		})
@@ -19431,7 +19440,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setMemorySize__5c4c666
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setNetworkDevices__13b2e5ea lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setNetworkDevices__13b2e5ea(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setNetworkDevices__13b2e5ea.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setNetworkDevices:")
 		})
@@ -19445,7 +19454,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setNetworkDevices__13b
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setPlatform__fd179c7a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setPlatform__fd179c7a(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setPlatform__fd179c7a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setPlatform:")
 		})
@@ -19459,7 +19468,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setPlatform__fd179c7a(
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setPointingDevices__e2b2d0e9 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setPointingDevices__e2b2d0e9(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setPointingDevices__e2b2d0e9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setPointingDevices:")
 		})
@@ -19473,7 +19482,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setPointingDevices__e2
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setSerialPorts__be458d2b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setSerialPorts__be458d2b(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setSerialPorts__be458d2b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setSerialPorts:")
 		})
@@ -19487,7 +19496,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setSerialPorts__be458d
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setSocketDevices__3fd3083b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setSocketDevices__3fd3083b(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setSocketDevices__3fd3083b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setSocketDevices:")
 		})
@@ -19501,7 +19510,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setSocketDevices__3fd3
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setStorageDevices__e26d4209 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setStorageDevices__e26d4209(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setStorageDevices__e26d4209.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setStorageDevices:")
 		})
@@ -19515,7 +19524,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setStorageDevices__e26
 var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setUsbControllers__5990fb1a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_setUsbControllers__5990fb1a(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_setUsbControllers__5990fb1a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUsbControllers:")
 		})
@@ -19530,7 +19539,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_socketDevice
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_socketDevices_a4833275(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19558,7 +19567,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_storageDevic
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_storageDevices_b5e9c155(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19586,7 +19595,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_usbControlle
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_usbControllers_c164f937(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19614,7 +19623,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_validateSave
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_validateSaveRestoreSupportWithError__8f81d53f(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_validateSaveRestoreSupportWithError__8f81d53f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateSaveRestoreSupportWithError:")
 		})
@@ -19630,7 +19639,7 @@ var privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_validateWith
 
 func UnsafePrivate_VZVirtualMachineConfiguration_Instance_validateWithError__66bfde85(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineConfiguration_Instance_validateWithError__66bfde85.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateWithError:")
 		})
@@ -19645,7 +19654,7 @@ func UnsafePrivate_VZVirtualMachineConfiguration_Instance_validateWithError__66b
 var privateCallUnsafePrivate_VZVirtualMachineStartOptions_Instance__cxx_destruct_44122fe5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtualMachineStartOptions_Instance__cxx_destruct_44122fe5(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineStartOptions_Instance__cxx_destruct_44122fe5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -19660,7 +19669,7 @@ var privateCallUnsafePrivate_VZVirtualMachineStartOptions_Instance__delegatedExc
 
 func UnsafePrivate_VZVirtualMachineStartOptions_Instance__delegatedExceptionClasses_c6774e2d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19687,7 +19696,7 @@ func UnsafePrivate_VZVirtualMachineStartOptions_Instance__delegatedExceptionClas
 var privateCallUnsafePrivate_VZVirtualMachineStartOptions_Instance__setDelegatedExceptionClasses__eb5ef7e6 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineStartOptions_Instance__setDelegatedExceptionClasses__eb5ef7e6(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineStartOptions_Instance__setDelegatedExceptionClasses__eb5ef7e6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setDelegatedExceptionClasses:")
 		})
@@ -19702,7 +19711,7 @@ var privateCallUnsafePrivate_VZVirtualMachineStartOptions_Instance_init_31110596
 
 func UnsafePrivate_VZVirtualMachineStartOptions_Instance_init_31110596(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19745,7 +19754,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance__automaticallyRotates
 
 func UnsafePrivate_VZVirtualMachineView_Instance__automaticallyRotatesContent_da8d8e10(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance__automaticallyRotatesContent_da8d8e10.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_automaticallyRotatesContent")
 		})
@@ -19761,7 +19770,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance__canGrabMouseInput_37
 
 func UnsafePrivate_VZVirtualMachineView_Instance__canGrabMouseInput_3746f6b2(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance__canGrabMouseInput_3746f6b2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_canGrabMouseInput")
 		})
@@ -19777,7 +19786,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance__canReleaseMouseInput
 
 func UnsafePrivate_VZVirtualMachineView_Instance__canReleaseMouseInput_1fb92965(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance__canReleaseMouseInput_1fb92965.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_canReleaseMouseInput")
 		})
@@ -19793,7 +19802,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance__cxx_construct_085ef7
 
 func UnsafePrivate_VZVirtualMachineView_Instance__cxx_construct_085ef735(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19820,7 +19829,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance__cxx_construct_085ef735(receive
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance__cxx_destruct_dc1caecb lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance__cxx_destruct_dc1caecb(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance__cxx_destruct_dc1caecb.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -19835,7 +19844,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance__delegate_0dac50f2 la
 
 func UnsafePrivate_VZVirtualMachineView_Instance__delegate_0dac50f2(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19863,7 +19872,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance__grabMouseInput_61d76
 
 func UnsafePrivate_VZVirtualMachineView_Instance__grabMouseInput_61d76a91(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance__grabMouseInput_61d76a91.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_grabMouseInput")
 		})
@@ -19879,7 +19888,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance__graphicsDisplay_4008
 
 func UnsafePrivate_VZVirtualMachineView_Instance__graphicsDisplay_4008d52a(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -19907,7 +19916,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance__releaseMouseInput_2b
 
 func UnsafePrivate_VZVirtualMachineView_Instance__releaseMouseInput_2bdc02f8(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance__releaseMouseInput_2bdc02f8.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_releaseMouseInput")
 		})
@@ -19923,7 +19932,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance__scaleMode_915ca04f l
 
 func UnsafePrivate_VZVirtualMachineView_Instance__scaleMode_915ca04f(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance__scaleMode_915ca04f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("_scaleMode")
 		})
@@ -19938,7 +19947,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance__scaleMode_915ca04f(receiver un
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance__setAutomaticallyRotatesContent__30316af5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance__setAutomaticallyRotatesContent__30316af5(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance__setAutomaticallyRotatesContent__30316af5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setAutomaticallyRotatesContent:")
 		})
@@ -19952,7 +19961,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance__setAutomaticallyRotatesContent
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance__setDelegate__14c5d571 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance__setDelegate__14c5d571(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance__setDelegate__14c5d571.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setDelegate:")
 		})
@@ -19966,7 +19975,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance__setDelegate__14c5d571(receiver
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance__setGraphicsDisplay__ea60c1f3 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance__setGraphicsDisplay__ea60c1f3(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance__setGraphicsDisplay__ea60c1f3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setGraphicsDisplay:")
 		})
@@ -19980,7 +19989,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance__setGraphicsDisplay__ea60c1f3(r
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance__setScaleMode__69bf6710 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance__setScaleMode__69bf6710(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance__setScaleMode__69bf6710.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("_setScaleMode:")
 		})
@@ -19994,7 +20003,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance__setScaleMode__69bf6710(receive
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance__setViewAdaptor__8634df31 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance__setViewAdaptor__8634df31(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance__setViewAdaptor__8634df31.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setViewAdaptor:")
 		})
@@ -20008,7 +20017,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance__setViewAdaptor__8634df31(recei
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance__setVirtualMachineAccessor__af8ded17 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance__setVirtualMachineAccessor__af8ded17(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance__setVirtualMachineAccessor__af8ded17.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setVirtualMachineAccessor:")
 		})
@@ -20023,7 +20032,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance__viewAdaptor_b799dc3f
 
 func UnsafePrivate_VZVirtualMachineView_Instance__viewAdaptor_b799dc3f(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -20051,7 +20060,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance__virtualMachineAccess
 
 func UnsafePrivate_VZVirtualMachineView_Instance__virtualMachineAccessor_f6b1218f(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -20079,7 +20088,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance_acceptsFirstResponder
 
 func UnsafePrivate_VZVirtualMachineView_Instance_acceptsFirstResponder_8fd4f38f(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_acceptsFirstResponder_8fd4f38f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("acceptsFirstResponder")
 		})
@@ -20095,7 +20104,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance_automaticallyReconfig
 
 func UnsafePrivate_VZVirtualMachineView_Instance_automaticallyReconfiguresDisplay_63716045(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_automaticallyReconfiguresDisplay_63716045.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("automaticallyReconfiguresDisplay")
 		})
@@ -20111,7 +20120,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance_becomeFirstResponder_
 
 func UnsafePrivate_VZVirtualMachineView_Instance_becomeFirstResponder_4564495b(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_becomeFirstResponder_4564495b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("becomeFirstResponder")
 		})
@@ -20127,7 +20136,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance_capturesSystemKeys_6a
 
 func UnsafePrivate_VZVirtualMachineView_Instance_capturesSystemKeys_6a15c503(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_capturesSystemKeys_6a15c503.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("capturesSystemKeys")
 		})
@@ -20142,7 +20151,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_capturesSystemKeys_6a15c503(rec
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_dealloc_82c1403d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_dealloc_82c1403d(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_dealloc_82c1403d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -20156,7 +20165,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_dealloc_82c1403d(receiver unsaf
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_displayDidBeginReconfiguration__834b45f8 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_displayDidBeginReconfiguration__834b45f8(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_displayDidBeginReconfiguration__834b45f8.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("displayDidBeginReconfiguration:")
 		})
@@ -20170,7 +20179,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_displayDidBeginReconfiguration_
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_displayDidEndReconfiguration__a01924a1 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_displayDidEndReconfiguration__a01924a1(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_displayDidEndReconfiguration__a01924a1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("displayDidEndReconfiguration:")
 		})
@@ -20184,7 +20193,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_displayDidEndReconfiguration__a
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_display_didUpdateHeadroomRequest__c5e21065 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, float64)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_display_didUpdateHeadroomRequest__c5e21065(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 float64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_display_didUpdateHeadroomRequest__c5e21065.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, float64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, float64)]("display:didUpdateHeadroomRequest:")
 		})
@@ -20198,7 +20207,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_display_didUpdateHeadroomReques
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_display_didUpdateOrientation__ee901b3a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, int64)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_display_didUpdateOrientation__ee901b3a(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_display_didUpdateOrientation__ee901b3a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, int64)]("display:didUpdateOrientation:")
 		})
@@ -20212,7 +20221,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_display_didUpdateOrientation__e
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_flagsChanged__95234229 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_flagsChanged__95234229(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_flagsChanged__95234229.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("flagsChanged:")
 		})
@@ -20227,7 +20236,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance_initWithCoder__94d7b0
 
 func UnsafePrivate_VZVirtualMachineView_Instance_initWithCoder__94d7b0f2(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -20254,7 +20263,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_initWithCoder__94d7b0f2(receive
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_keyDown__c1dafb3a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_keyDown__c1dafb3a(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_keyDown__c1dafb3a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("keyDown:")
 		})
@@ -20268,7 +20277,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_keyDown__c1dafb3a(receiver unsa
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_keyUp__e3f32e8f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_keyUp__e3f32e8f(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_keyUp__e3f32e8f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("keyUp:")
 		})
@@ -20282,7 +20291,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_keyUp__e3f32e8f(receiver unsafe
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_layout_e84a3b77 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_layout_e84a3b77(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_layout_e84a3b77.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("layout")
 		})
@@ -20296,7 +20305,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_layout_e84a3b77(receiver unsafe
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_magnifyWithEvent__94644202 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_magnifyWithEvent__94644202(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_magnifyWithEvent__94644202.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("magnifyWithEvent:")
 		})
@@ -20310,7 +20319,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_magnifyWithEvent__94644202(rece
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_mouseDown__c3ec55b2 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_mouseDown__c3ec55b2(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_mouseDown__c3ec55b2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("mouseDown:")
 		})
@@ -20324,7 +20333,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_mouseDown__c3ec55b2(receiver un
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_mouseDragged__e99adf8e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_mouseDragged__e99adf8e(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_mouseDragged__e99adf8e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("mouseDragged:")
 		})
@@ -20338,7 +20347,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_mouseDragged__e99adf8e(receiver
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_mouseEntered__c147352f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_mouseEntered__c147352f(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_mouseEntered__c147352f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("mouseEntered:")
 		})
@@ -20352,7 +20361,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_mouseEntered__c147352f(receiver
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_mouseExited__70e9c645 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_mouseExited__70e9c645(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_mouseExited__70e9c645.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("mouseExited:")
 		})
@@ -20366,7 +20375,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_mouseExited__70e9c645(receiver 
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_mouseMoved__db8d41bc lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_mouseMoved__db8d41bc(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_mouseMoved__db8d41bc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("mouseMoved:")
 		})
@@ -20380,7 +20389,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_mouseMoved__db8d41bc(receiver u
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_mouseUp__7c1d077a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_mouseUp__7c1d077a(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_mouseUp__7c1d077a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("mouseUp:")
 		})
@@ -20394,7 +20403,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_mouseUp__7c1d077a(receiver unsa
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_observeValueForKeyPath_ofObject_change_context__12ce5683 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_observeValueForKeyPath_ofObject_change_context__12ce5683(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer, p3 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_observeValueForKeyPath_ofObject_change_context__12ce5683.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]("observeValueForKeyPath:ofObject:change:context:")
 		})
@@ -20408,7 +20417,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_observeValueForKeyPath_ofObject
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_otherMouseDown__464c4549 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_otherMouseDown__464c4549(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_otherMouseDown__464c4549.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("otherMouseDown:")
 		})
@@ -20422,7 +20431,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_otherMouseDown__464c4549(receiv
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_otherMouseDragged__f525d37e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_otherMouseDragged__f525d37e(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_otherMouseDragged__f525d37e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("otherMouseDragged:")
 		})
@@ -20436,7 +20445,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_otherMouseDragged__f525d37e(rec
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_otherMouseUp__64f0d748 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_otherMouseUp__64f0d748(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_otherMouseUp__64f0d748.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("otherMouseUp:")
 		})
@@ -20450,7 +20459,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_otherMouseUp__64f0d748(receiver
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_quickLookWithEvent__671dd34e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_quickLookWithEvent__671dd34e(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_quickLookWithEvent__671dd34e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("quickLookWithEvent:")
 		})
@@ -20465,7 +20474,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance_resignFirstResponder_
 
 func UnsafePrivate_VZVirtualMachineView_Instance_resignFirstResponder_89670d94(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_resignFirstResponder_89670d94.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("resignFirstResponder")
 		})
@@ -20480,7 +20489,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_resignFirstResponder_89670d94(r
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_rightMouseDown__0f1a5053 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_rightMouseDown__0f1a5053(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_rightMouseDown__0f1a5053.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("rightMouseDown:")
 		})
@@ -20494,7 +20503,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_rightMouseDown__0f1a5053(receiv
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_rightMouseDragged__fb1505c1 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_rightMouseDragged__fb1505c1(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_rightMouseDragged__fb1505c1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("rightMouseDragged:")
 		})
@@ -20508,7 +20517,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_rightMouseDragged__fb1505c1(rec
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_rightMouseUp__c1f19371 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_rightMouseUp__c1f19371(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_rightMouseUp__c1f19371.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("rightMouseUp:")
 		})
@@ -20522,7 +20531,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_rightMouseUp__c1f19371(receiver
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_rotateWithEvent__70eba69d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_rotateWithEvent__70eba69d(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_rotateWithEvent__70eba69d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("rotateWithEvent:")
 		})
@@ -20536,7 +20545,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_rotateWithEvent__70eba69d(recei
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_scrollWheel__8e1d0eae lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_scrollWheel__8e1d0eae(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_scrollWheel__8e1d0eae.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("scrollWheel:")
 		})
@@ -20550,7 +20559,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_scrollWheel__8e1d0eae(receiver 
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_setAutomaticallyReconfiguresDisplay__4aa66ec3 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_setAutomaticallyReconfiguresDisplay__4aa66ec3(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_setAutomaticallyReconfiguresDisplay__4aa66ec3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setAutomaticallyReconfiguresDisplay:")
 		})
@@ -20564,7 +20573,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_setAutomaticallyReconfiguresDis
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_setCapturesSystemKeys__5fdaac42 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_setCapturesSystemKeys__5fdaac42(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_setCapturesSystemKeys__5fdaac42.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setCapturesSystemKeys:")
 		})
@@ -20578,7 +20587,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_setCapturesSystemKeys__5fdaac42
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_setVirtualMachine__7eda51a8 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_setVirtualMachine__7eda51a8(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_setVirtualMachine__7eda51a8.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setVirtualMachine:")
 		})
@@ -20592,7 +20601,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_setVirtualMachine__7eda51a8(rec
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_smartMagnifyWithEvent__ead0d69f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_smartMagnifyWithEvent__ead0d69f(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_smartMagnifyWithEvent__ead0d69f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("smartMagnifyWithEvent:")
 		})
@@ -20606,7 +20615,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_smartMagnifyWithEvent__ead0d69f
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_updateTrackingAreas_cee0ce71 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_updateTrackingAreas_cee0ce71(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_updateTrackingAreas_cee0ce71.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("updateTrackingAreas")
 		})
@@ -20620,7 +20629,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_updateTrackingAreas_cee0ce71(re
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_viewDidEndLiveResize_a87d5af3 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_viewDidEndLiveResize_a87d5af3(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_viewDidEndLiveResize_a87d5af3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("viewDidEndLiveResize")
 		})
@@ -20634,7 +20643,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_viewDidEndLiveResize_a87d5af3(r
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_viewDidMoveToWindow_0befcfc9 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_viewDidMoveToWindow_0befcfc9(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_viewDidMoveToWindow_0befcfc9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("viewDidMoveToWindow")
 		})
@@ -20648,7 +20657,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_viewDidMoveToWindow_0befcfc9(re
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_viewWillMoveToWindow__8037b602 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_viewWillMoveToWindow__8037b602(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_viewWillMoveToWindow__8037b602.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("viewWillMoveToWindow:")
 		})
@@ -20662,7 +20671,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_viewWillMoveToWindow__8037b602(
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_viewWillStartLiveResize_78e15652 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_viewWillStartLiveResize_78e15652(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_viewWillStartLiveResize_78e15652.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("viewWillStartLiveResize")
 		})
@@ -20676,7 +20685,7 @@ func UnsafePrivate_VZVirtualMachineView_Instance_viewWillStartLiveResize_78e1565
 var privateCallUnsafePrivate_VZVirtualMachineView_Instance_virtualMachineAccessor_associateWithDisplayPresenter__65e9a2cc lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachineView_Instance_virtualMachineAccessor_associateWithDisplayPresenter__65e9a2cc(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachineView_Instance_virtualMachineAccessor_associateWithDisplayPresenter__65e9a2cc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("virtualMachineAccessor:associateWithDisplayPresenter:")
 		})
@@ -20691,7 +20700,7 @@ var privateCallUnsafePrivate_VZVirtualMachineView_Instance_virtualMachine_bb3a44
 
 func UnsafePrivate_VZVirtualMachineView_Instance_virtualMachine_bb3a44c5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -20736,7 +20745,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__audioDevices_b66c0381 la
 
 func UnsafePrivate_VZVirtualMachine_Instance__audioDevices_b66c0381(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -20764,7 +20773,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__bootIdentifier_cd5ebeba 
 
 func UnsafePrivate_VZVirtualMachine_Instance__bootIdentifier_cd5ebeba(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -20792,7 +20801,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__canCreateCore_24babd3a l
 
 func UnsafePrivate_VZVirtualMachine_Instance__canCreateCore_24babd3a(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance__canCreateCore_24babd3a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_canCreateCore")
 		})
@@ -20808,7 +20817,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__coprocessors_a86fa702 la
 
 func UnsafePrivate_VZVirtualMachine_Instance__coprocessors_a86fa702(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -20836,7 +20845,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__crashContextMessage_77b5
 
 func UnsafePrivate_VZVirtualMachine_Instance__crashContextMessage_77b5fa83(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -20864,7 +20873,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__createAccessorEndpointWi
 
 func UnsafePrivate_VZVirtualMachine_Instance__createAccessorEndpointWithOptions__17c58269(receiver unsafe.Pointer, p0 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -20892,7 +20901,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__createAccessorFromAccess
 
 func UnsafePrivate_VZVirtualMachine_Instance__createAccessorFromAccessorManagerForTestingWithOptions__5f908469(receiver unsafe.Pointer, p0 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -20920,7 +20929,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__currentConfiguration_4c4
 
 func UnsafePrivate_VZVirtualMachine_Instance__currentConfiguration_4c4ed24b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -20948,7 +20957,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__cxx_construct_111ba992 l
 
 func UnsafePrivate_VZVirtualMachine_Instance__cxx_construct_111ba992(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -20975,7 +20984,7 @@ func UnsafePrivate_VZVirtualMachine_Instance__cxx_construct_111ba992(receiver un
 var privateCallUnsafePrivate_VZVirtualMachine_Instance__cxx_destruct_04193afa lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance__cxx_destruct_04193afa(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance__cxx_destruct_04193afa.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -20990,7 +20999,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__debugStub_4f03a575 lazyB
 
 func UnsafePrivate_VZVirtualMachine_Instance__debugStub_4f03a575(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21018,7 +21027,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__hidDevices_6a93bc53 lazy
 
 func UnsafePrivate_VZVirtualMachine_Instance__hidDevices_6a93bc53(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21046,7 +21055,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__hidEventMonitor_c4222434
 
 func UnsafePrivate_VZVirtualMachine_Instance__hidEventMonitor_c4222434(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21074,7 +21083,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__keyboards_4d0b5756 lazyB
 
 func UnsafePrivate_VZVirtualMachine_Instance__keyboards_4d0b5756(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21102,7 +21111,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__multiTouchDevices_d8162e
 
 func UnsafePrivate_VZVirtualMachine_Instance__multiTouchDevices_d8162e4e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21130,7 +21139,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__name_14828ca7 lazyBindin
 
 func UnsafePrivate_VZVirtualMachine_Instance__name_14828ca7(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21158,7 +21167,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__pointingDevices_5dbec37d
 
 func UnsafePrivate_VZVirtualMachine_Instance__pointingDevices_5dbec37d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21186,7 +21195,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__powerSourceDevices_840c7
 
 func UnsafePrivate_VZVirtualMachine_Instance__powerSourceDevices_840c7938(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21213,7 +21222,7 @@ func UnsafePrivate_VZVirtualMachine_Instance__powerSourceDevices_840c7938(receiv
 var privateCallUnsafePrivate_VZVirtualMachine_Instance__processHIDReports_forDevice_deviceType__ba6374e9 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32, int32)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance__processHIDReports_forDevice_deviceType__ba6374e9(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32, p2 int32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance__processHIDReports_forDevice_deviceType__ba6374e9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32, int32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32, int32)]("_processHIDReports:forDevice:deviceType:")
 		})
@@ -21228,7 +21237,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__remoteDeviceMatchingDict
 
 func UnsafePrivate_VZVirtualMachine_Instance__remoteDeviceMatchingDictionary_9dd06ced(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21256,7 +21265,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__serialPorts_a20c46ff laz
 
 func UnsafePrivate_VZVirtualMachine_Instance__serialPorts_a20c46ff(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21284,7 +21293,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__serviceProcessIdentifier
 
 func UnsafePrivate_VZVirtualMachine_Instance__serviceProcessIdentifier_83d5f1f9(receiver unsafe.Pointer) int32 {
 	var result int32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance__serviceProcessIdentifier_83d5f1f9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int32]("_serviceProcessIdentifier")
 		})
@@ -21299,7 +21308,7 @@ func UnsafePrivate_VZVirtualMachine_Instance__serviceProcessIdentifier_83d5f1f9(
 var privateCallUnsafePrivate_VZVirtualMachine_Instance__setCrashContextMessage__221c745a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance__setCrashContextMessage__221c745a(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance__setCrashContextMessage__221c745a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setCrashContextMessage:")
 		})
@@ -21313,7 +21322,7 @@ func UnsafePrivate_VZVirtualMachine_Instance__setCrashContextMessage__221c745a(r
 var privateCallUnsafePrivate_VZVirtualMachine_Instance__setName__ceab4e83 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance__setName__ceab4e83(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance__setName__ceab4e83.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setName:")
 		})
@@ -21327,7 +21336,7 @@ func UnsafePrivate_VZVirtualMachine_Instance__setName__ceab4e83(receiver unsafe.
 var privateCallUnsafePrivate_VZVirtualMachine_Instance__setSupportsReconfigurationForTesting_graphicsDeviceIndex_framebufferIndex__8d8fbebd lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool, uint32, uint32)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance__setSupportsReconfigurationForTesting_graphicsDeviceIndex_framebufferIndex__8d8fbebd(receiver unsafe.Pointer, p0 bool, p1 uint32, p2 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance__setSupportsReconfigurationForTesting_graphicsDeviceIndex_framebufferIndex__8d8fbebd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool, uint32, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool, uint32, uint32)]("_setSupportsReconfigurationForTesting:graphicsDeviceIndex:framebufferIndex:")
 		})
@@ -21341,7 +21350,7 @@ func UnsafePrivate_VZVirtualMachine_Instance__setSupportsReconfigurationForTesti
 var privateCallUnsafePrivate_VZVirtualMachine_Instance__setWatchdogHeartbeatInterval__33a13f8e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, float64)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance__setWatchdogHeartbeatInterval__33a13f8e(receiver unsafe.Pointer, p0 float64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance__setWatchdogHeartbeatInterval__33a13f8e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, float64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, float64)]("_setWatchdogHeartbeatInterval:")
 		})
@@ -21356,7 +21365,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__shouldSendHIDReports_5eb
 
 func UnsafePrivate_VZVirtualMachine_Instance__shouldSendHIDReports_5ebbb8e4(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance__shouldSendHIDReports_5ebbb8e4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_shouldSendHIDReports")
 		})
@@ -21372,7 +21381,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__stateDescription_4c2fa51
 
 func UnsafePrivate_VZVirtualMachine_Instance__stateDescription_4c2fa51f(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21400,7 +21409,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__storageDevices_36ab0791 
 
 func UnsafePrivate_VZVirtualMachine_Instance__storageDevices_36ab0791(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21417,6 +21426,7 @@ func UnsafePrivate_VZVirtualMachine_Instance__storageDevices_36ab0791(receiver u
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -21427,7 +21437,7 @@ func UnsafePrivate_VZVirtualMachine_Instance__storageDevices_36ab0791(receiver u
 var privateCallUnsafePrivate_VZVirtualMachine_Instance__triggerWatchdogForTesting_f658a20f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance__triggerWatchdogForTesting_f658a20f(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance__triggerWatchdogForTesting_f658a20f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("_triggerWatchdogForTesting")
 		})
@@ -21442,7 +21452,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance__validateRestrictedModeSu
 
 func UnsafePrivate_VZVirtualMachine_Instance__validateRestrictedModeSupportWithError__e2f9b32b(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance__validateRestrictedModeSupportWithError__e2f9b32b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("_validateRestrictedModeSupportWithError:")
 		})
@@ -21458,7 +21468,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_canPause_e5a56cf8 lazyBin
 
 func UnsafePrivate_VZVirtualMachine_Instance_canPause_e5a56cf8(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_canPause_e5a56cf8.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("canPause")
 		})
@@ -21474,7 +21484,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_canRequestStop_cbafe427 l
 
 func UnsafePrivate_VZVirtualMachine_Instance_canRequestStop_cbafe427(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_canRequestStop_cbafe427.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("canRequestStop")
 		})
@@ -21490,7 +21500,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_canResume_c6a98018 lazyBi
 
 func UnsafePrivate_VZVirtualMachine_Instance_canResume_c6a98018(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_canResume_c6a98018.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("canResume")
 		})
@@ -21506,7 +21516,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_canStart_d8ab7025 lazyBin
 
 func UnsafePrivate_VZVirtualMachine_Instance_canStart_d8ab7025(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_canStart_d8ab7025.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("canStart")
 		})
@@ -21522,7 +21532,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_canStop_6665dcae lazyBind
 
 func UnsafePrivate_VZVirtualMachine_Instance_canStop_6665dcae(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_canStop_6665dcae.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("canStop")
 		})
@@ -21538,7 +21548,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_consoleDevices_d7510ec1 l
 
 func UnsafePrivate_VZVirtualMachine_Instance_consoleDevices_d7510ec1(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21555,6 +21565,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_consoleDevices_d7510ec1(receiver un
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -21565,7 +21576,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_consoleDevices_d7510ec1(receiver un
 var privateCallUnsafePrivate_VZVirtualMachine_Instance_dealloc_9a984212 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance_dealloc_9a984212(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_dealloc_9a984212.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -21580,7 +21591,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_delegate_0231c5dd lazyBin
 
 func UnsafePrivate_VZVirtualMachine_Instance_delegate_0231c5dd(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21608,7 +21619,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_directorySharingDevices_0
 
 func UnsafePrivate_VZVirtualMachine_Instance_directorySharingDevices_02e5c085(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21625,6 +21636,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_directorySharingDevices_02e5c085(re
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -21636,7 +21648,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_graphicsDevices_96db3561 
 
 func UnsafePrivate_VZVirtualMachine_Instance_graphicsDevices_96db3561(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21653,6 +21665,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_graphicsDevices_96db3561(receiver u
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -21664,7 +21677,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_initWithConfiguration__bb
 
 func UnsafePrivate_VZVirtualMachine_Instance_initWithConfiguration__bba5100b(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21692,7 +21705,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_initWithConfiguration_que
 
 func UnsafePrivate_VZVirtualMachine_Instance_initWithConfiguration_queue__3b4d0aee(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21720,7 +21733,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_memoryBalloonDevices_732e
 
 func UnsafePrivate_VZVirtualMachine_Instance_memoryBalloonDevices_732e5236(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21737,6 +21750,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_memoryBalloonDevices_732e5236(recei
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -21748,7 +21762,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_networkDevices_5aacbbe2 l
 
 func UnsafePrivate_VZVirtualMachine_Instance_networkDevices_5aacbbe2(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21765,6 +21779,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_networkDevices_5aacbbe2(receiver un
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -21776,7 +21791,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_queue_8c3a7925 lazyBindin
 
 func UnsafePrivate_VZVirtualMachine_Instance_queue_8c3a7925(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -21804,7 +21819,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_requestStopWithError__ec5
 
 func UnsafePrivate_VZVirtualMachine_Instance_requestStopWithError__ec57fd9a(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_requestStopWithError__ec57fd9a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("requestStopWithError:")
 		})
@@ -21819,7 +21834,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_requestStopWithError__ec57fd9a(rece
 var privateCallUnsafePrivate_VZVirtualMachine_Instance_sendDigitizerEvents_pointingDeviceIndex__dd973daf lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance_sendDigitizerEvents_pointingDeviceIndex__dd973daf(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_sendDigitizerEvents_pointingDeviceIndex__dd973daf.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendDigitizerEvents:pointingDeviceIndex:")
 		})
@@ -21833,7 +21848,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_sendDigitizerEvents_pointingDeviceI
 var privateCallUnsafePrivate_VZVirtualMachine_Instance_sendIOHIDEvents_hidDeviceIndex__264cd5d9 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance_sendIOHIDEvents_hidDeviceIndex__264cd5d9(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_sendIOHIDEvents_hidDeviceIndex__264cd5d9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendIOHIDEvents:hidDeviceIndex:")
 		})
@@ -21847,7 +21862,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_sendIOHIDEvents_hidDeviceIndex__264
 var privateCallUnsafePrivate_VZVirtualMachine_Instance_sendKeyboardEvents_keyboardID__30f2db95 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance_sendKeyboardEvents_keyboardID__30f2db95(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_sendKeyboardEvents_keyboardID__30f2db95.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendKeyboardEvents:keyboardID:")
 		})
@@ -21861,7 +21876,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_sendKeyboardEvents_keyboardID__30f2
 var privateCallUnsafePrivate_VZVirtualMachine_Instance_sendMagnifyEvents_pointingDeviceIndex__5ea80a23 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance_sendMagnifyEvents_pointingDeviceIndex__5ea80a23(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_sendMagnifyEvents_pointingDeviceIndex__5ea80a23.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendMagnifyEvents:pointingDeviceIndex:")
 		})
@@ -21875,7 +21890,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_sendMagnifyEvents_pointingDeviceInd
 var privateCallUnsafePrivate_VZVirtualMachine_Instance_sendMouseEvents_pointingDeviceIndex__b7acc59a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance_sendMouseEvents_pointingDeviceIndex__b7acc59a(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_sendMouseEvents_pointingDeviceIndex__b7acc59a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendMouseEvents:pointingDeviceIndex:")
 		})
@@ -21889,7 +21904,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_sendMouseEvents_pointingDeviceIndex
 var privateCallUnsafePrivate_VZVirtualMachine_Instance_sendMultiTouchEvents_multiTouchDeviceIndex__c988ac5f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance_sendMultiTouchEvents_multiTouchDeviceIndex__c988ac5f(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_sendMultiTouchEvents_multiTouchDeviceIndex__c988ac5f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendMultiTouchEvents:multiTouchDeviceIndex:")
 		})
@@ -21903,7 +21918,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_sendMultiTouchEvents_multiTouchDevi
 var privateCallUnsafePrivate_VZVirtualMachine_Instance_sendPointerNSEvent_pointingDeviceIndex__b0160e6c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance_sendPointerNSEvent_pointingDeviceIndex__b0160e6c(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_sendPointerNSEvent_pointingDeviceIndex__b0160e6c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendPointerNSEvent:pointingDeviceIndex:")
 		})
@@ -21917,7 +21932,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_sendPointerNSEvent_pointingDeviceIn
 var privateCallUnsafePrivate_VZVirtualMachine_Instance_sendQuickLookEvents_pointingDeviceIndex__a8653a58 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance_sendQuickLookEvents_pointingDeviceIndex__a8653a58(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_sendQuickLookEvents_pointingDeviceIndex__a8653a58.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendQuickLookEvents:pointingDeviceIndex:")
 		})
@@ -21931,7 +21946,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_sendQuickLookEvents_pointingDeviceI
 var privateCallUnsafePrivate_VZVirtualMachine_Instance_sendRotationEvents_pointingDeviceIndex__deaada77 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance_sendRotationEvents_pointingDeviceIndex__deaada77(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_sendRotationEvents_pointingDeviceIndex__deaada77.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendRotationEvents:pointingDeviceIndex:")
 		})
@@ -21945,7 +21960,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_sendRotationEvents_pointingDeviceIn
 var privateCallUnsafePrivate_VZVirtualMachine_Instance_sendScrollWheelEvents_pointingDeviceIndex__ab1ce97d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance_sendScrollWheelEvents_pointingDeviceIndex__ab1ce97d(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_sendScrollWheelEvents_pointingDeviceIndex__ab1ce97d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendScrollWheelEvents:pointingDeviceIndex:")
 		})
@@ -21959,7 +21974,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_sendScrollWheelEvents_pointingDevic
 var privateCallUnsafePrivate_VZVirtualMachine_Instance_sendSmartMagnifyEvents_pointingDeviceIndex__bc082487 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance_sendSmartMagnifyEvents_pointingDeviceIndex__bc082487(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_sendSmartMagnifyEvents_pointingDeviceIndex__bc082487.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendSmartMagnifyEvents:pointingDeviceIndex:")
 		})
@@ -21973,7 +21988,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_sendSmartMagnifyEvents_pointingDevi
 var privateCallUnsafePrivate_VZVirtualMachine_Instance_setDelegate__6ac5d231 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance_setDelegate__6ac5d231(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_setDelegate__6ac5d231.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 		})
@@ -21987,7 +22002,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_setDelegate__6ac5d231(receiver unsa
 var privateCallUnsafePrivate_VZVirtualMachine_Instance_setState__39556d62 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate_VZVirtualMachine_Instance_setState__39556d62(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_setState__39556d62.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setState:")
 		})
@@ -22002,7 +22017,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_socketDevices_a1f791c9 la
 
 func UnsafePrivate_VZVirtualMachine_Instance_socketDevices_a1f791c9(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22019,6 +22034,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_socketDevices_a1f791c9(receiver uns
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -22030,7 +22046,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_state_2859b9e0 lazyBindin
 
 func UnsafePrivate_VZVirtualMachine_Instance_state_2859b9e0(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVirtualMachine_Instance_state_2859b9e0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("state")
 		})
@@ -22046,7 +22062,7 @@ var privateCallUnsafePrivate_VZVirtualMachine_Instance_usbControllers_a631df9b l
 
 func UnsafePrivate_VZVirtualMachine_Instance_usbControllers_a631df9b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22063,6 +22079,7 @@ func UnsafePrivate_VZVirtualMachine_Instance_usbControllers_a631df9b(receiver un
 			*(*bool)(invoked) = true
 		}
 		result = binding.call(receiver, binding.selector)
+		InheritObjectQueue(result, receiver)
 		if retainResult && result != nil {
 			result = directRetain(result)
 		}
@@ -22074,7 +22091,7 @@ var privateCallUnsafePrivate_VZVmnetNetworkDeviceAttachment_Instance__cxx_constr
 
 func UnsafePrivate_VZVmnetNetworkDeviceAttachment_Instance__cxx_construct_82b01bf5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22101,7 +22118,7 @@ func UnsafePrivate_VZVmnetNetworkDeviceAttachment_Instance__cxx_construct_82b01b
 var privateCallUnsafePrivate_VZVmnetNetworkDeviceAttachment_Instance__cxx_destruct_f532531b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZVmnetNetworkDeviceAttachment_Instance__cxx_destruct_f532531b(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVmnetNetworkDeviceAttachment_Instance__cxx_destruct_f532531b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -22116,7 +22133,7 @@ var privateCallUnsafePrivate_VZVmnetNetworkDeviceAttachment_Instance_initWithNet
 
 func UnsafePrivate_VZVmnetNetworkDeviceAttachment_Instance_initWithNetwork__4c50f11a(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22144,7 +22161,7 @@ var privateCallUnsafePrivate_VZVmnetNetworkDeviceAttachment_Instance_network_231
 
 func UnsafePrivate_VZVmnetNetworkDeviceAttachment_Instance_network_23154b47(receiver unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZVmnetNetworkDeviceAttachment_Instance_network_23154b47.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("network")
 		})
@@ -22160,7 +22177,7 @@ var privateCallUnsafePrivate_VZXHCIControllerConfiguration_Instance_init_3ae7afe
 
 func UnsafePrivate_VZXHCIControllerConfiguration_Instance_init_3ae7afea(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22188,7 +22205,7 @@ var privateCallUnsafePrivate_VZXHCIControllerConfiguration_Instance_makeUSBContr
 
 func UnsafePrivate_VZXHCIControllerConfiguration_Instance_makeUSBControllerForVirtualMachine_usbControllerIndex_usbDevices__7a13d973(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22215,7 +22232,7 @@ func UnsafePrivate_VZXHCIControllerConfiguration_Instance_makeUSBControllerForVi
 var privateCallUnsafePrivate_VZXHCIController_Instance__capturePassthroughDevicesWithCompletionHandler__36eb784a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate_VZXHCIController_Instance__capturePassthroughDevicesWithCompletionHandler__36eb784a(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZXHCIController_Instance__capturePassthroughDevicesWithCompletionHandler__36eb784a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_capturePassthroughDevicesWithCompletionHandler:")
 		})
@@ -22229,7 +22246,7 @@ func UnsafePrivate_VZXHCIController_Instance__capturePassthroughDevicesWithCompl
 var privateCallUnsafePrivate_VZXHCIController_Instance__cleanupVZUSBPassthroughDevices_d6501b64 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZXHCIController_Instance__cleanupVZUSBPassthroughDevices_d6501b64(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZXHCIController_Instance__cleanupVZUSBPassthroughDevices_d6501b64.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("_cleanupVZUSBPassthroughDevices")
 		})
@@ -22244,7 +22261,7 @@ var privateCallUnsafePrivate_VZXHCIController_Instance__initWithVirtualMachine_u
 
 func UnsafePrivate_VZXHCIController_Instance__initWithVirtualMachine_usbControllerIndex_usbDevices__bbe38c87(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22271,7 +22288,7 @@ func UnsafePrivate_VZXHCIController_Instance__initWithVirtualMachine_usbControll
 var privateCallUnsafePrivate_VZXHCIController_Instance__releasePassthroughDevices_36451fd1 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_VZXHCIController_Instance__releasePassthroughDevices_36451fd1(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_VZXHCIController_Instance__releasePassthroughDevices_36451fd1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("_releasePassthroughDevices")
 		})
@@ -22285,7 +22302,7 @@ func UnsafePrivate_VZXHCIController_Instance__releasePassthroughDevices_36451fd1
 var privateCallUnsafePrivate_Virtualization__VZDiskImageLayerDescriptor_Instance__cxx_destruct_b032d1dc lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_Virtualization__VZDiskImageLayerDescriptor_Instance__cxx_destruct_b032d1dc(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_Virtualization__VZDiskImageLayerDescriptor_Instance__cxx_destruct_b032d1dc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -22300,7 +22317,7 @@ var privateCallUnsafePrivate_Virtualization__VZDiskImageLayerDescriptor_Instance
 
 func UnsafePrivate_Virtualization__VZDiskImageLayerDescriptor_Instance_fileHandle_05af2dfb(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22328,7 +22345,7 @@ var privateCallUnsafePrivate_Virtualization__VZDiskImageLayerDescriptor_Instance
 
 func UnsafePrivate_Virtualization__VZDiskImageLayerDescriptor_Instance_init_082f1922(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22356,7 +22373,7 @@ var privateCallUnsafePrivate_Virtualization__VZDiskImageLayerDescriptor_Instance
 
 func UnsafePrivate_Virtualization__VZDiskImageLayerDescriptor_Instance_isCache_f85081b5(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_Virtualization__VZDiskImageLayerDescriptor_Instance_isCache_f85081b5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isCache")
 		})
@@ -22372,7 +22389,7 @@ var privateCallUnsafePrivate_Virtualization__VZDiskImageLayerDescriptor_Instance
 
 func UnsafePrivate_Virtualization__VZDiskImageLayerDescriptor_Instance_readOnly_3449d0b4(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_Virtualization__VZDiskImageLayerDescriptor_Instance_readOnly_3449d0b4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("readOnly")
 		})
@@ -22387,7 +22404,7 @@ func UnsafePrivate_Virtualization__VZDiskImageLayerDescriptor_Instance_readOnly_
 var privateCallUnsafePrivate_Virtualization__VZDiskImageWrapper_Instance__cxx_destruct_c6ab9d8d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate_Virtualization__VZDiskImageWrapper_Instance__cxx_destruct_c6ab9d8d(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_Virtualization__VZDiskImageWrapper_Instance__cxx_destruct_c6ab9d8d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -22402,7 +22419,7 @@ var privateCallUnsafePrivate_Virtualization__VZDiskImageWrapper_Instance_initWit
 
 func UnsafePrivate_Virtualization__VZDiskImageWrapper_Instance_initWithDiskImage_error__160b54ba(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22430,7 +22447,7 @@ var privateCallUnsafePrivate_Virtualization__VZDiskImageWrapper_Instance_init_ca
 
 func UnsafePrivate_Virtualization__VZDiskImageWrapper_Instance_init_cae5f373(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22458,7 +22475,7 @@ var privateCallUnsafePrivate_Virtualization__VZDiskImageWrapper_Instance_layerDe
 
 func UnsafePrivate_Virtualization__VZDiskImageWrapper_Instance_layerDescriptors_55f16719(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22486,7 +22503,7 @@ var privateCallUnsafePrivate_Virtualization__VZDiskImageWrapper_Instance_readOnl
 
 func UnsafePrivate_Virtualization__VZDiskImageWrapper_Instance_readOnly_cfa26d13(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate_Virtualization__VZDiskImageWrapper_Instance_readOnly_cfa26d13.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("readOnly")
 		})
@@ -22502,7 +22519,7 @@ var privateCallUnsafePrivate_Virtualization__VZDiskImageWrapper_Instance_url_7a2
 
 func UnsafePrivate_Virtualization__VZDiskImageWrapper_Instance_url_7a2834be(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22547,7 +22564,7 @@ var privateCallUnsafePrivate__VZ16550SerialPortConfiguration_Instance_init_babd1
 
 func UnsafePrivate__VZ16550SerialPortConfiguration_Instance_init_babd15f6(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22575,7 +22592,7 @@ var privateCallUnsafePrivate__VZAcceleratorDeviceConfiguration_Instance__init_18
 
 func UnsafePrivate__VZAcceleratorDeviceConfiguration_Instance__init_185b1898(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22603,7 +22620,7 @@ var privateCallUnsafePrivate__VZAcceleratorDeviceConfiguration_Instance_copyWith
 
 func UnsafePrivate__VZAcceleratorDeviceConfiguration_Instance_copyWithZone__6ea4d9de(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22630,7 +22647,7 @@ func UnsafePrivate__VZAcceleratorDeviceConfiguration_Instance_copyWithZone__6ea4
 var privateCallUnsafePrivate__VZAppleTouchScreenConfiguration_Instance__cxx_destruct_6051225a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZAppleTouchScreenConfiguration_Instance__cxx_destruct_6051225a(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZAppleTouchScreenConfiguration_Instance__cxx_destruct_6051225a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -22645,7 +22662,7 @@ var privateCallUnsafePrivate__VZAppleTouchScreenConfiguration_Instance__registry
 
 func UnsafePrivate__VZAppleTouchScreenConfiguration_Instance__registryProperties_232c67de(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22672,7 +22689,7 @@ func UnsafePrivate__VZAppleTouchScreenConfiguration_Instance__registryProperties
 var privateCallUnsafePrivate__VZAppleTouchScreenConfiguration_Instance__setRegistryProperties__90ac4042 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZAppleTouchScreenConfiguration_Instance__setRegistryProperties__90ac4042(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZAppleTouchScreenConfiguration_Instance__setRegistryProperties__90ac4042.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setRegistryProperties:")
 		})
@@ -22687,7 +22704,7 @@ var privateCallUnsafePrivate__VZAppleTouchScreenConfiguration_Instance_copyWithZ
 
 func UnsafePrivate__VZAppleTouchScreenConfiguration_Instance_copyWithZone__82398efe(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22715,7 +22732,7 @@ var privateCallUnsafePrivate__VZAppleTouchScreenConfiguration_Instance_init_30d3
 
 func UnsafePrivate__VZAppleTouchScreenConfiguration_Instance_init_30d379f8(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22743,7 +22760,7 @@ var privateCallUnsafePrivate__VZAppleTouchScreenConfiguration_Instance_makeMulti
 
 func UnsafePrivate__VZAppleTouchScreenConfiguration_Instance_makeMultiTouchDeviceForVirtualMachine_multiTouchDeviceIndex__f7e4193d(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22770,7 +22787,7 @@ func UnsafePrivate__VZAppleTouchScreenConfiguration_Instance_makeMultiTouchDevic
 var privateCallUnsafePrivate__VZAudioDevice_Instance__cxx_destruct_224e0306 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZAudioDevice_Instance__cxx_destruct_224e0306(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZAudioDevice_Instance__cxx_destruct_224e0306.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -22785,7 +22802,7 @@ var privateCallUnsafePrivate__VZAudioDevice_Instance__initWithVirtualMachine_aud
 
 func UnsafePrivate__VZAudioDevice_Instance__initWithVirtualMachine_audioDeviceIndex__d1a1a3c8(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22813,7 +22830,7 @@ var privateCallUnsafePrivate__VZBifrostAttachment_Instance__init_beb0ea8f lazyBi
 
 func UnsafePrivate__VZBifrostAttachment_Instance__init_beb0ea8f(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22841,7 +22858,7 @@ var privateCallUnsafePrivate__VZBifrostDeviceConfiguration_Instance_MMIOSize_fe6
 
 func UnsafePrivate__VZBifrostDeviceConfiguration_Instance_MMIOSize_fe63f9ad(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZBifrostDeviceConfiguration_Instance_MMIOSize_fe63f9ad.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("MMIOSize")
 		})
@@ -22856,7 +22873,7 @@ func UnsafePrivate__VZBifrostDeviceConfiguration_Instance_MMIOSize_fe63f9ad(rece
 var privateCallUnsafePrivate__VZBifrostDeviceConfiguration_Instance__cxx_destruct_e434986c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZBifrostDeviceConfiguration_Instance__cxx_destruct_e434986c(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZBifrostDeviceConfiguration_Instance__cxx_destruct_e434986c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -22871,7 +22888,7 @@ var privateCallUnsafePrivate__VZBifrostDeviceConfiguration_Instance__initWithAtt
 
 func UnsafePrivate__VZBifrostDeviceConfiguration_Instance__initWithAttachment_MMIOSize__cd8c2539(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22899,7 +22916,7 @@ var privateCallUnsafePrivate__VZBifrostDeviceConfiguration_Instance_attachment_0
 
 func UnsafePrivate__VZBifrostDeviceConfiguration_Instance_attachment_0d2d41b7(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22927,7 +22944,7 @@ var privateCallUnsafePrivate__VZBifrostDeviceConfiguration_Instance_copyWithZone
 
 func UnsafePrivate__VZBifrostDeviceConfiguration_Instance_copyWithZone__eaf093a9(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -22954,7 +22971,7 @@ func UnsafePrivate__VZBifrostDeviceConfiguration_Instance_copyWithZone__eaf093a9
 var privateCallUnsafePrivate__VZBifrostDeviceConfiguration_Instance_setAttachment__ad11d911 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZBifrostDeviceConfiguration_Instance_setAttachment__ad11d911(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZBifrostDeviceConfiguration_Instance_setAttachment__ad11d911.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAttachment:")
 		})
@@ -22968,7 +22985,7 @@ func UnsafePrivate__VZBifrostDeviceConfiguration_Instance_setAttachment__ad11d91
 var privateCallUnsafePrivate__VZBifrostDeviceConfiguration_Instance_setMMIOSize__ca670ac5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]]
 
 func UnsafePrivate__VZBifrostDeviceConfiguration_Instance_setMMIOSize__ca670ac5(receiver unsafe.Pointer, p0 uint64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZBifrostDeviceConfiguration_Instance_setMMIOSize__ca670ac5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]("setMMIOSize:")
 		})
@@ -22982,7 +22999,7 @@ func UnsafePrivate__VZBifrostDeviceConfiguration_Instance_setMMIOSize__ca670ac5(
 var privateCallUnsafePrivate__VZBinaryBootLoaderSegment_Instance__cxx_destruct_d128369a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZBinaryBootLoaderSegment_Instance__cxx_destruct_d128369a(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZBinaryBootLoaderSegment_Instance__cxx_destruct_d128369a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -22997,7 +23014,7 @@ var privateCallUnsafePrivate__VZBinaryBootLoaderSegment_Instance_binaryURL_00f9d
 
 func UnsafePrivate__VZBinaryBootLoaderSegment_Instance_binaryURL_00f9de76(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23025,7 +23042,7 @@ var privateCallUnsafePrivate__VZBinaryBootLoaderSegment_Instance_copyWithZone__c
 
 func UnsafePrivate__VZBinaryBootLoaderSegment_Instance_copyWithZone__cabe577e(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23053,7 +23070,7 @@ var privateCallUnsafePrivate__VZBinaryBootLoaderSegment_Instance_initWithBinaryU
 
 func UnsafePrivate__VZBinaryBootLoaderSegment_Instance_initWithBinaryURL_loadAddress__f1069bc1(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23081,7 +23098,7 @@ var privateCallUnsafePrivate__VZBinaryBootLoaderSegment_Instance_loadAddress_578
 
 func UnsafePrivate__VZBinaryBootLoaderSegment_Instance_loadAddress_578dc9db(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZBinaryBootLoaderSegment_Instance_loadAddress_578dc9db.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("loadAddress")
 		})
@@ -23096,7 +23113,7 @@ func UnsafePrivate__VZBinaryBootLoaderSegment_Instance_loadAddress_578dc9db(rece
 var privateCallUnsafePrivate__VZBinaryBootLoader_Instance__cxx_destruct_b3a6702f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZBinaryBootLoader_Instance__cxx_destruct_b3a6702f(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZBinaryBootLoader_Instance__cxx_destruct_b3a6702f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -23111,7 +23128,7 @@ var privateCallUnsafePrivate__VZBinaryBootLoader_Instance_copyWithZone__c62d4ac2
 
 func UnsafePrivate__VZBinaryBootLoader_Instance_copyWithZone__c62d4ac2(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23139,7 +23156,7 @@ var privateCallUnsafePrivate__VZBinaryBootLoader_Instance_entryPointAddress_987c
 
 func UnsafePrivate__VZBinaryBootLoader_Instance_entryPointAddress_987cf952(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZBinaryBootLoader_Instance_entryPointAddress_987cf952.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("entryPointAddress")
 		})
@@ -23155,7 +23172,7 @@ var privateCallUnsafePrivate__VZBinaryBootLoader_Instance_initWithSegments_entry
 
 func UnsafePrivate__VZBinaryBootLoader_Instance_initWithSegments_entryPointAddress__59858955(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23183,7 +23200,7 @@ var privateCallUnsafePrivate__VZBinaryBootLoader_Instance_segments_f388a422 lazy
 
 func UnsafePrivate__VZBinaryBootLoader_Instance_segments_f388a422(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23211,7 +23228,7 @@ var privateCallUnsafePrivate__VZBiometricDeviceConfiguration_Instance__init_d07a
 
 func UnsafePrivate__VZBiometricDeviceConfiguration_Instance__init_d07afdd9(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23239,7 +23256,7 @@ var privateCallUnsafePrivate__VZBiometricDeviceConfiguration_Instance_copyWithZo
 
 func UnsafePrivate__VZBiometricDeviceConfiguration_Instance_copyWithZone__3fde9c23(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23267,7 +23284,7 @@ var privateCallUnsafePrivate__VZCPUEmulatorConfiguration_Instance__init_e8aa06a0
 
 func UnsafePrivate__VZCPUEmulatorConfiguration_Instance__init_e8aa06a0(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23295,7 +23312,7 @@ var privateCallUnsafePrivate__VZCPUEmulatorConfiguration_Instance_copyWithZone__
 
 func UnsafePrivate__VZCPUEmulatorConfiguration_Instance_copyWithZone__fb00c485(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23323,7 +23340,7 @@ var privateCallUnsafePrivate__VZCPUExitContext_Instance_CPUIndex_25f968e9 lazyBi
 
 func UnsafePrivate__VZCPUExitContext_Instance_CPUIndex_25f968e9(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCPUExitContext_Instance_CPUIndex_25f968e9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("CPUIndex")
 		})
@@ -23339,7 +23356,7 @@ var privateCallUnsafePrivate__VZCPUExitContext_Instance__cxx_construct_84e911fe 
 
 func UnsafePrivate__VZCPUExitContext_Instance__cxx_construct_84e911fe(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23366,7 +23383,7 @@ func UnsafePrivate__VZCPUExitContext_Instance__cxx_construct_84e911fe(receiver u
 var privateCallUnsafePrivate__VZCPUExitContext_Instance__cxx_destruct_a16879fe lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZCPUExitContext_Instance__cxx_destruct_a16879fe(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCPUExitContext_Instance__cxx_destruct_a16879fe.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -23381,7 +23398,7 @@ var privateCallUnsafePrivate__VZCPUExitContext_Instance_getPhysicalAddress_forVi
 
 func UnsafePrivate__VZCPUExitContext_Instance_getPhysicalAddress_forVirtualAddress_error__bdd03acd(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCPUExitContext_Instance_getPhysicalAddress_forVirtualAddress_error__bdd03acd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer) bool]("getPhysicalAddress:forVirtualAddress:error:")
 		})
@@ -23397,7 +23414,7 @@ var privateCallUnsafePrivate__VZCPUExitContext_Instance_getRegister_value_error_
 
 func UnsafePrivate__VZCPUExitContext_Instance_getRegister_value_error__a8eab9bc(receiver unsafe.Pointer, p0 uint32, p1 unsafe.Pointer, p2 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCPUExitContext_Instance_getRegister_value_error__a8eab9bc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32, unsafe.Pointer, unsafe.Pointer) bool]("getRegister:value:error:")
 		})
@@ -23413,7 +23430,7 @@ var privateCallUnsafePrivate__VZCPUExitContext_Instance_getSIMDRegister_value_er
 
 func UnsafePrivate__VZCPUExitContext_Instance_getSIMDRegister_value_error__144a8d35(receiver unsafe.Pointer, p0 uint32, p1 unsafe.Pointer, p2 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCPUExitContext_Instance_getSIMDRegister_value_error__144a8d35.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32, unsafe.Pointer, unsafe.Pointer) bool]("getSIMDRegister:value:error:")
 		})
@@ -23429,7 +23446,7 @@ var privateCallUnsafePrivate__VZCPUExitContext_Instance_getSystemRegister_value_
 
 func UnsafePrivate__VZCPUExitContext_Instance_getSystemRegister_value_error__cd7300dd(receiver unsafe.Pointer, p0 uint16, p1 unsafe.Pointer, p2 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCPUExitContext_Instance_getSystemRegister_value_error__cd7300dd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint16, unsafe.Pointer, unsafe.Pointer) bool]("getSystemRegister:value:error:")
 		})
@@ -23445,7 +23462,7 @@ var privateCallUnsafePrivate__VZCPUExitContext_Instance_guestMemoryAtPhysicalAdd
 
 func UnsafePrivate__VZCPUExitContext_Instance_guestMemoryAtPhysicalAddress_length_error__5ec343ea(receiver unsafe.Pointer, p0 uint64, p1 uint64, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23473,7 +23490,7 @@ var privateCallUnsafePrivate__VZCPUExitContext_Instance_setRegister_value_error_
 
 func UnsafePrivate__VZCPUExitContext_Instance_setRegister_value_error__7a2aa94d(receiver unsafe.Pointer, p0 uint32, p1 uint64, p2 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCPUExitContext_Instance_setRegister_value_error__7a2aa94d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32, uint64, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32, uint64, unsafe.Pointer) bool]("setRegister:value:error:")
 		})
@@ -23489,7 +23506,7 @@ var privateCallUnsafePrivate__VZCPUExitContext_Instance_setSystemRegister_value_
 
 func UnsafePrivate__VZCPUExitContext_Instance_setSystemRegister_value_error__6eafc361(receiver unsafe.Pointer, p0 uint16, p1 uint64, p2 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCPUExitContext_Instance_setSystemRegister_value_error__6eafc361.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16, uint64, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint16, uint64, unsafe.Pointer) bool]("setSystemRegister:value:error:")
 		})
@@ -23505,7 +23522,7 @@ var privateCallUnsafePrivate__VZCoprocessorBootLoader_Instance__cxx_construct_ab
 
 func UnsafePrivate__VZCoprocessorBootLoader_Instance__cxx_construct_ab913039(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23532,7 +23549,7 @@ func UnsafePrivate__VZCoprocessorBootLoader_Instance__cxx_construct_ab913039(rec
 var privateCallUnsafePrivate__VZCoprocessorBootLoader_Instance__cxx_destruct_702a97f5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZCoprocessorBootLoader_Instance__cxx_destruct_702a97f5(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCoprocessorBootLoader_Instance__cxx_destruct_702a97f5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -23547,7 +23564,7 @@ var privateCallUnsafePrivate__VZCoprocessorBootLoader_Instance_copyWithZone__6f6
 
 func UnsafePrivate__VZCoprocessorBootLoader_Instance_copyWithZone__6f6a983f(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23575,7 +23592,7 @@ var privateCallUnsafePrivate__VZCoprocessorBootLoader_Instance_init_65a3fc47 laz
 
 func UnsafePrivate__VZCoprocessorBootLoader_Instance_init_65a3fc47(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23602,7 +23619,7 @@ func UnsafePrivate__VZCoprocessorBootLoader_Instance_init_65a3fc47(receiver unsa
 var privateCallUnsafePrivate__VZCoprocessorConfiguration_Instance__cxx_destruct_49b00b5e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZCoprocessorConfiguration_Instance__cxx_destruct_49b00b5e(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCoprocessorConfiguration_Instance__cxx_destruct_49b00b5e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -23617,7 +23634,7 @@ var privateCallUnsafePrivate__VZCoprocessorConfiguration_Instance__init_cb1626bd
 
 func UnsafePrivate__VZCoprocessorConfiguration_Instance__init_cb1626bd(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23645,7 +23662,7 @@ var privateCallUnsafePrivate__VZCoprocessorConfiguration_Instance_copyWithZone__
 
 func UnsafePrivate__VZCoprocessorConfiguration_Instance_copyWithZone__b653c500(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23673,7 +23690,7 @@ var privateCallUnsafePrivate__VZCoprocessorConfiguration_Instance_debugStub_821a
 
 func UnsafePrivate__VZCoprocessorConfiguration_Instance_debugStub_821a1e4c(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23701,7 +23718,7 @@ var privateCallUnsafePrivate__VZCoprocessorConfiguration_Instance_makeCoprocesso
 
 func UnsafePrivate__VZCoprocessorConfiguration_Instance_makeCoprocessorForVirtualMachine_coprocessorIndex__9ae6eb49(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23729,7 +23746,7 @@ var privateCallUnsafePrivate__VZCoprocessorConfiguration_Instance_serialPortAtta
 
 func UnsafePrivate__VZCoprocessorConfiguration_Instance_serialPortAttachment_21d635f9(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23756,7 +23773,7 @@ func UnsafePrivate__VZCoprocessorConfiguration_Instance_serialPortAttachment_21d
 var privateCallUnsafePrivate__VZCoprocessorConfiguration_Instance_setDebugStub__abc9a093 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZCoprocessorConfiguration_Instance_setDebugStub__abc9a093(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCoprocessorConfiguration_Instance_setDebugStub__abc9a093.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDebugStub:")
 		})
@@ -23770,7 +23787,7 @@ func UnsafePrivate__VZCoprocessorConfiguration_Instance_setDebugStub__abc9a093(r
 var privateCallUnsafePrivate__VZCoprocessorConfiguration_Instance_setSerialPortAttachment__e5bbf7dd lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZCoprocessorConfiguration_Instance_setSerialPortAttachment__e5bbf7dd(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCoprocessorConfiguration_Instance_setSerialPortAttachment__e5bbf7dd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setSerialPortAttachment:")
 		})
@@ -23785,7 +23802,7 @@ var privateCallUnsafePrivate__VZCoprocessorStorage_Instance_URL_5dc41628 lazyBin
 
 func UnsafePrivate__VZCoprocessorStorage_Instance_URL_5dc41628(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23812,7 +23829,7 @@ func UnsafePrivate__VZCoprocessorStorage_Instance_URL_5dc41628(receiver unsafe.P
 var privateCallUnsafePrivate__VZCoprocessorStorage_Instance__cxx_destruct_abd23d6b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZCoprocessorStorage_Instance__cxx_destruct_abd23d6b(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCoprocessorStorage_Instance__cxx_destruct_abd23d6b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -23827,7 +23844,7 @@ var privateCallUnsafePrivate__VZCoprocessorStorage_Instance__storageSize_26b7f35
 
 func UnsafePrivate__VZCoprocessorStorage_Instance__storageSize_26b7f354(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCoprocessorStorage_Instance__storageSize_26b7f354.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("_storageSize")
 		})
@@ -23843,7 +23860,7 @@ var privateCallUnsafePrivate__VZCoprocessorStorage_Instance_copyWithZone__9f5d87
 
 func UnsafePrivate__VZCoprocessorStorage_Instance_copyWithZone__9f5d87c5(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23871,7 +23888,7 @@ var privateCallUnsafePrivate__VZCoprocessorStorage_Instance_initCreatingStorageA
 
 func UnsafePrivate__VZCoprocessorStorage_Instance_initCreatingStorageAtURL_error__dd781be4(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23899,7 +23916,7 @@ var privateCallUnsafePrivate__VZCoprocessorStorage_Instance_initWithURL__709e180
 
 func UnsafePrivate__VZCoprocessorStorage_Instance_initWithURL__709e1806(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23926,7 +23943,7 @@ func UnsafePrivate__VZCoprocessorStorage_Instance_initWithURL__709e1806(receiver
 var privateCallUnsafePrivate__VZCoprocessor_Instance__cxx_destruct_1a374efc lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZCoprocessor_Instance__cxx_destruct_1a374efc(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCoprocessor_Instance__cxx_destruct_1a374efc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -23941,7 +23958,7 @@ var privateCallUnsafePrivate__VZCoprocessor_Instance__init_2f50c0ab lazyBinding[
 
 func UnsafePrivate__VZCoprocessor_Instance__init_2f50c0ab(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23969,7 +23986,7 @@ var privateCallUnsafePrivate__VZCoprocessor_Instance_debugStub_fd41318a lazyBind
 
 func UnsafePrivate__VZCoprocessor_Instance_debugStub_fd41318a(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -23996,7 +24013,7 @@ func UnsafePrivate__VZCoprocessor_Instance_debugStub_fd41318a(receiver unsafe.Po
 var privateCallUnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance__cxx_destruct_120ffcec lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance__cxx_destruct_120ffcec(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance__cxx_destruct_120ffcec.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -24011,7 +24028,7 @@ var privateCallUnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_copyWith
 
 func UnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_copyWithZone__cee9f8c8(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24039,7 +24056,7 @@ var privateCallUnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_emulator
 
 func UnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_emulatorURL_60eeeb68(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24067,7 +24084,7 @@ var privateCallUnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_init_75f
 
 func UnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_init_75f8433c(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24095,7 +24112,7 @@ var privateCallUnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_memorySi
 
 func UnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_memorySize_834c55c5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24123,7 +24140,7 @@ var privateCallUnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_options_
 
 func UnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_options_c8b930e9(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24150,7 +24167,7 @@ func UnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_options_c8b930e9(r
 var privateCallUnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_setEmulatorURL__1411065b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_setEmulatorURL__1411065b(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_setEmulatorURL__1411065b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setEmulatorURL:")
 		})
@@ -24164,7 +24181,7 @@ func UnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_setEmulatorURL__14
 var privateCallUnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_setMemorySize__c30bb733 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_setMemorySize__c30bb733(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_setMemorySize__c30bb733.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setMemorySize:")
 		})
@@ -24178,7 +24195,7 @@ func UnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_setMemorySize__c30
 var privateCallUnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_setOptions__43e742fd lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_setOptions__43e742fd(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomCPUEmulatorConfiguration_Instance_setOptions__43e742fd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setOptions:")
 		})
@@ -24193,7 +24210,7 @@ var privateCallUnsafePrivate__VZCustomGuestProvisioningOptions_Instance_applicat
 
 func UnsafePrivate__VZCustomGuestProvisioningOptions_Instance_applicationIdentifier_e4143991(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24221,7 +24238,7 @@ var privateCallUnsafePrivate__VZCustomGuestProvisioningOptions_Instance_data_76f
 
 func UnsafePrivate__VZCustomGuestProvisioningOptions_Instance_data_76fa9b3e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24249,7 +24266,7 @@ var privateCallUnsafePrivate__VZCustomGuestProvisioningOptions_Instance_init_ad2
 
 func UnsafePrivate__VZCustomGuestProvisioningOptions_Instance_init_ad217c81(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24277,7 +24294,7 @@ var privateCallUnsafePrivate__VZCustomGuestProvisioningOptions_Instance_required
 
 func UnsafePrivate__VZCustomGuestProvisioningOptions_Instance_requiredEntitlement_0d664061(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24304,7 +24321,7 @@ func UnsafePrivate__VZCustomGuestProvisioningOptions_Instance_requiredEntitlemen
 var privateCallUnsafePrivate__VZCustomGuestProvisioningOptions_Instance_setApplicationIdentifier__b19dae8e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZCustomGuestProvisioningOptions_Instance_setApplicationIdentifier__b19dae8e(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomGuestProvisioningOptions_Instance_setApplicationIdentifier__b19dae8e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setApplicationIdentifier:")
 		})
@@ -24318,7 +24335,7 @@ func UnsafePrivate__VZCustomGuestProvisioningOptions_Instance_setApplicationIden
 var privateCallUnsafePrivate__VZCustomGuestProvisioningOptions_Instance_setData__8c931804 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZCustomGuestProvisioningOptions_Instance_setData__8c931804(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomGuestProvisioningOptions_Instance_setData__8c931804.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setData:")
 		})
@@ -24332,7 +24349,7 @@ func UnsafePrivate__VZCustomGuestProvisioningOptions_Instance_setData__8c931804(
 var privateCallUnsafePrivate__VZCustomGuestProvisioningOptions_Instance_setRequiredEntitlement__d08461ab lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZCustomGuestProvisioningOptions_Instance_setRequiredEntitlement__d08461ab(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomGuestProvisioningOptions_Instance_setRequiredEntitlement__d08461ab.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setRequiredEntitlement:")
 		})
@@ -24347,7 +24364,7 @@ var privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_MMIORegio
 
 func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_MMIORegions_c23db42d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24374,7 +24391,7 @@ func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_MMIORegions_c23db42
 var privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance__cxx_destruct_232f2628 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance__cxx_destruct_232f2628(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance__cxx_destruct_232f2628.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -24389,7 +24406,7 @@ var privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_additiona
 
 func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_additionalProperties_30d77eb3(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24417,7 +24434,7 @@ var privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_additiona
 
 func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_additionalXPCProperties_f696b071(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24445,7 +24462,7 @@ var privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_copyWithZ
 
 func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_copyWithZone__225da085(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24473,7 +24490,7 @@ var privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_init_d852
 
 func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_init_d8525370(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24501,7 +24518,7 @@ var privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_irqs_d180
 
 func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_irqs_d180bc75(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24529,7 +24546,7 @@ var privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_provider_
 
 func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_provider_e5595f40(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24556,7 +24573,7 @@ func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_provider_e5595f40(r
 var privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setAdditionalProperties__692804e6 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setAdditionalProperties__692804e6(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setAdditionalProperties__692804e6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAdditionalProperties:")
 		})
@@ -24570,7 +24587,7 @@ func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setAdditionalProper
 var privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setAdditionalXPCProperties__eb2aefc8 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setAdditionalXPCProperties__eb2aefc8(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setAdditionalXPCProperties__eb2aefc8.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAdditionalXPCProperties:")
 		})
@@ -24584,7 +24601,7 @@ func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setAdditionalXPCPro
 var privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setIrqs__d8679050 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setIrqs__d8679050(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setIrqs__d8679050.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setIrqs:")
 		})
@@ -24598,7 +24615,7 @@ func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setIrqs__d8679050(r
 var privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setMMIORegions__b7bd0f23 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setMMIORegions__b7bd0f23(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setMMIORegions__b7bd0f23.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setMMIORegions:")
 		})
@@ -24612,7 +24629,7 @@ func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setMMIORegions__b7b
 var privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setProvider__20407bb1 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setProvider__20407bb1(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setProvider__20407bb1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setProvider:")
 		})
@@ -24626,7 +24643,7 @@ func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setProvider__20407b
 var privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setSupportsSaveRestore__5b896f2d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setSupportsSaveRestore__5b896f2d(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_setSupportsSaveRestore__5b896f2d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setSupportsSaveRestore:")
 		})
@@ -24641,7 +24658,7 @@ var privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_supportsS
 
 func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_supportsSaveRestore_78fbeb39(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_supportsSaveRestore_78fbeb39.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("supportsSaveRestore")
 		})
@@ -24656,7 +24673,7 @@ func UnsafePrivate__VZCustomMMIODeviceConfiguration_Instance_supportsSaveRestore
 var privateCallUnsafePrivate__VZCustomMMIODeviceDelegateProvider_Instance__cxx_destruct_c8365094 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZCustomMMIODeviceDelegateProvider_Instance__cxx_destruct_c8365094(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomMMIODeviceDelegateProvider_Instance__cxx_destruct_c8365094.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -24671,7 +24688,7 @@ var privateCallUnsafePrivate__VZCustomMMIODeviceDelegateProvider_Instance_delega
 
 func UnsafePrivate__VZCustomMMIODeviceDelegateProvider_Instance_delegate_fcfe1233(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24699,7 +24716,7 @@ var privateCallUnsafePrivate__VZCustomMMIODeviceDelegateProvider_Instance_device
 
 func UnsafePrivate__VZCustomMMIODeviceDelegateProvider_Instance_deviceQueue_cd4b3a73(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24727,7 +24744,7 @@ var privateCallUnsafePrivate__VZCustomMMIODeviceDelegateProvider_Instance_initWi
 
 func UnsafePrivate__VZCustomMMIODeviceDelegateProvider_Instance_initWithDeviceQueue_delegate__db1cb8c2(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24754,7 +24771,7 @@ func UnsafePrivate__VZCustomMMIODeviceDelegateProvider_Instance_initWithDeviceQu
 var privateCallUnsafePrivate__VZCustomMMIODevicePluginBridge_Instance__cxx_destruct_4dd3b730 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZCustomMMIODevicePluginBridge_Instance__cxx_destruct_4dd3b730(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomMMIODevicePluginBridge_Instance__cxx_destruct_4dd3b730.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -24769,7 +24786,7 @@ var privateCallUnsafePrivate__VZCustomMMIODevicePluginBridge_Instance_initWithXP
 
 func UnsafePrivate__VZCustomMMIODevicePluginBridge_Instance_initWithXPCConnection_personalityDictionary_personalityClass_connectionDelegate_options__231935e3(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer, p3 unsafe.Pointer, p4 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24796,7 +24813,7 @@ func UnsafePrivate__VZCustomMMIODevicePluginBridge_Instance_initWithXPCConnectio
 var privateCallUnsafePrivate__VZCustomMMIODevicePluginProvider_Instance__cxx_destruct_dbd34cea lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZCustomMMIODevicePluginProvider_Instance__cxx_destruct_dbd34cea(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomMMIODevicePluginProvider_Instance__cxx_destruct_dbd34cea.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -24811,7 +24828,7 @@ var privateCallUnsafePrivate__VZCustomMMIODevicePluginProvider_Instance_initWith
 
 func UnsafePrivate__VZCustomMMIODevicePluginProvider_Instance_initWithPluginName_pluginPersonality__b74bac18(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24839,7 +24856,7 @@ var privateCallUnsafePrivate__VZCustomMMIODevicePluginProvider_Instance_pluginNa
 
 func UnsafePrivate__VZCustomMMIODevicePluginProvider_Instance_pluginName_ce241af9(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24867,7 +24884,7 @@ var privateCallUnsafePrivate__VZCustomMMIODevicePluginProvider_Instance_pluginPe
 
 func UnsafePrivate__VZCustomMMIODevicePluginProvider_Instance_pluginPersonality_0fd3f411(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24895,7 +24912,7 @@ var privateCallUnsafePrivate__VZCustomMMIODeviceProvider_Instance__init_2ef9885d
 
 func UnsafePrivate__VZCustomMMIODeviceProvider_Instance__init_2ef9885d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24923,7 +24940,7 @@ var privateCallUnsafePrivate__VZCustomMMIODevice_Instance__cxx_construct_ff4f65f
 
 func UnsafePrivate__VZCustomMMIODevice_Instance__cxx_construct_ff4f65f6(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24950,7 +24967,7 @@ func UnsafePrivate__VZCustomMMIODevice_Instance__cxx_construct_ff4f65f6(receiver
 var privateCallUnsafePrivate__VZCustomMMIODevice_Instance__cxx_destruct_2df28aac lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZCustomMMIODevice_Instance__cxx_destruct_2df28aac(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomMMIODevice_Instance__cxx_destruct_2df28aac.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -24965,7 +24982,7 @@ var privateCallUnsafePrivate__VZCustomMMIODevice_Instance_delegate_c94da0fc lazy
 
 func UnsafePrivate__VZCustomMMIODevice_Instance_delegate_c94da0fc(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -24993,7 +25010,7 @@ var privateCallUnsafePrivate__VZCustomMMIODevice_Instance_deviceQueue_ec4f713a l
 
 func UnsafePrivate__VZCustomMMIODevice_Instance_deviceQueue_ec4f713a(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25021,7 +25038,7 @@ var privateCallUnsafePrivate__VZCustomMMIODevice_Instance_guestMemoryAtPhysicalA
 
 func UnsafePrivate__VZCustomMMIODevice_Instance_guestMemoryAtPhysicalAddress_length__3710996a(receiver unsafe.Pointer, p0 uint64, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25049,7 +25066,7 @@ var privateCallUnsafePrivate__VZCustomMMIODevice_Instance_guestRAMRegions_f68a74
 
 func UnsafePrivate__VZCustomMMIODevice_Instance_guestRAMRegions_f68a7444(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25076,7 +25093,7 @@ func UnsafePrivate__VZCustomMMIODevice_Instance_guestRAMRegions_f68a7444(receive
 var privateCallUnsafePrivate__VZCustomMMIODevice_Instance_pulseIRQ__f1208ed8 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]]
 
 func UnsafePrivate__VZCustomMMIODevice_Instance_pulseIRQ__f1208ed8(receiver unsafe.Pointer, p0 uint64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomMMIODevice_Instance_pulseIRQ__f1208ed8.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]("pulseIRQ:")
 		})
@@ -25090,7 +25107,7 @@ func UnsafePrivate__VZCustomMMIODevice_Instance_pulseIRQ__f1208ed8(receiver unsa
 var privateCallUnsafePrivate__VZCustomMMIODevice_Instance_setDelegate__6a27db48 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZCustomMMIODevice_Instance_setDelegate__6a27db48(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomMMIODevice_Instance_setDelegate__6a27db48.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 		})
@@ -25104,7 +25121,7 @@ func UnsafePrivate__VZCustomMMIODevice_Instance_setDelegate__6a27db48(receiver u
 var privateCallUnsafePrivate__VZCustomMMIODevice_Instance_setIRQ_value__3495a540 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64, bool)]]
 
 func UnsafePrivate__VZCustomMMIODevice_Instance_setIRQ_value__3495a540(receiver unsafe.Pointer, p0 uint64, p1 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomMMIODevice_Instance_setIRQ_value__3495a540.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64, bool)]("setIRQ:value:")
 		})
@@ -25118,7 +25135,7 @@ func UnsafePrivate__VZCustomMMIODevice_Instance_setIRQ_value__3495a540(receiver 
 var privateCallUnsafePrivate__VZCustomVirtioDevicePluginBridge_Instance__cxx_destruct_66ec521a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZCustomVirtioDevicePluginBridge_Instance__cxx_destruct_66ec521a(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomVirtioDevicePluginBridge_Instance__cxx_destruct_66ec521a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -25133,7 +25150,7 @@ var privateCallUnsafePrivate__VZCustomVirtioDevicePluginBridge_Instance_initWith
 
 func UnsafePrivate__VZCustomVirtioDevicePluginBridge_Instance_initWithXPCConnection_personalityDictionary_personalityClass_connectionDelegate_options__03a54a48(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer, p3 unsafe.Pointer, p4 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25160,7 +25177,7 @@ func UnsafePrivate__VZCustomVirtioDevicePluginBridge_Instance_initWithXPCConnect
 var privateCallUnsafePrivate__VZCustomVirtioDevicePluginProvider_Instance__cxx_destruct_29f423ad lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZCustomVirtioDevicePluginProvider_Instance__cxx_destruct_29f423ad(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZCustomVirtioDevicePluginProvider_Instance__cxx_destruct_29f423ad.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -25175,7 +25192,7 @@ var privateCallUnsafePrivate__VZCustomVirtioDevicePluginProvider_Instance_initWi
 
 func UnsafePrivate__VZCustomVirtioDevicePluginProvider_Instance_initWithPluginName_pluginPersonality__178d3954(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25203,7 +25220,7 @@ var privateCallUnsafePrivate__VZCustomVirtioDevicePluginProvider_Instance_plugin
 
 func UnsafePrivate__VZCustomVirtioDevicePluginProvider_Instance_pluginName_f641fa87(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25231,7 +25248,7 @@ var privateCallUnsafePrivate__VZCustomVirtioDevicePluginProvider_Instance_plugin
 
 func UnsafePrivate__VZCustomVirtioDevicePluginProvider_Instance_pluginPersonality_49a7fa4b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25275,7 +25292,7 @@ func UnsafePrivate__VZDRMLayer_Class_isSupported_63b7fbea() bool {
 var privateCallUnsafePrivate__VZDRMLayer_Instance__cxx_destruct_6616f7ec lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZDRMLayer_Instance__cxx_destruct_6616f7ec(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDRMLayer_Instance__cxx_destruct_6616f7ec.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -25290,7 +25307,7 @@ var privateCallUnsafePrivate__VZDRMLayer_Instance_initForTesting_content__370b12
 
 func UnsafePrivate__VZDRMLayer_Instance_initForTesting_content__370b12b9(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25318,7 +25335,7 @@ var privateCallUnsafePrivate__VZDRMLayer_Instance_initWithParentLayer__0447b4d4 
 
 func UnsafePrivate__VZDRMLayer_Instance_initWithParentLayer__0447b4d4(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25345,7 +25362,7 @@ func UnsafePrivate__VZDRMLayer_Instance_initWithParentLayer__0447b4d4(receiver u
 var privateCallUnsafePrivate__VZDRMLayer_Instance_setContents__5687f9c5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZDRMLayer_Instance_setContents__5687f9c5(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDRMLayer_Instance_setContents__5687f9c5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setContents:")
 		})
@@ -25360,7 +25377,7 @@ var privateCallUnsafePrivate__VZDebugStubConfiguration_Instance__init_2abdceff l
 
 func UnsafePrivate__VZDebugStubConfiguration_Instance__init_2abdceff(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25388,7 +25405,7 @@ var privateCallUnsafePrivate__VZDebugStubConfiguration_Instance_copyWithZone__f6
 
 func UnsafePrivate__VZDebugStubConfiguration_Instance_copyWithZone__f6dcfc80(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25416,7 +25433,7 @@ var privateCallUnsafePrivate__VZDebugStubConfiguration_Instance_makeDebugStubFor
 
 func UnsafePrivate__VZDebugStubConfiguration_Instance_makeDebugStubForCoprocessor_83fba4c2(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25444,7 +25461,7 @@ var privateCallUnsafePrivate__VZDebugStubConfiguration_Instance_makeDebugStubFor
 
 func UnsafePrivate__VZDebugStubConfiguration_Instance_makeDebugStubForVirtualMachine__c535bcf0(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25472,7 +25489,7 @@ var privateCallUnsafePrivate__VZDebugStub_Instance__init_c2ba3b49 lazyBinding[di
 
 func UnsafePrivate__VZDebugStub_Instance__init_c2ba3b49(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25500,7 +25517,7 @@ var privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_URL_454d126e lazyBi
 
 func UnsafePrivate__VZDiskImageDescriptor_Instance_URL_454d126e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25527,7 +25544,7 @@ func UnsafePrivate__VZDiskImageDescriptor_Instance_URL_454d126e(receiver unsafe.
 var privateCallUnsafePrivate__VZDiskImageDescriptor_Instance__cxx_destruct_9fde3a17 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZDiskImageDescriptor_Instance__cxx_destruct_9fde3a17(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImageDescriptor_Instance__cxx_destruct_9fde3a17.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -25542,7 +25559,7 @@ var privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_backendType_d12962f
 
 func UnsafePrivate__VZDiskImageDescriptor_Instance_backendType_d12962f4(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_backendType_d12962f4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("backendType")
 		})
@@ -25558,7 +25575,7 @@ var privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_cachingMode_4f0da6b
 
 func UnsafePrivate__VZDiskImageDescriptor_Instance_cachingMode_4f0da6b8(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_cachingMode_4f0da6b8.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("cachingMode")
 		})
@@ -25574,7 +25591,7 @@ var privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_initWithURL__0fac84
 
 func UnsafePrivate__VZDiskImageDescriptor_Instance_initWithURL__0fac840e(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25602,7 +25619,7 @@ var privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_isReadOnly_73e1a930
 
 func UnsafePrivate__VZDiskImageDescriptor_Instance_isReadOnly_73e1a930(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_isReadOnly_73e1a930.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isReadOnly")
 		})
@@ -25618,7 +25635,7 @@ var privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_layerDescriptors_02
 
 func UnsafePrivate__VZDiskImageDescriptor_Instance_layerDescriptors_02094416(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25645,7 +25662,7 @@ func UnsafePrivate__VZDiskImageDescriptor_Instance_layerDescriptors_02094416(rec
 var privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_setBackendType__422521f8 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate__VZDiskImageDescriptor_Instance_setBackendType__422521f8(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_setBackendType__422521f8.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setBackendType:")
 		})
@@ -25659,7 +25676,7 @@ func UnsafePrivate__VZDiskImageDescriptor_Instance_setBackendType__422521f8(rece
 var privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_setCachingMode__914e100b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate__VZDiskImageDescriptor_Instance_setCachingMode__914e100b(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_setCachingMode__914e100b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setCachingMode:")
 		})
@@ -25673,7 +25690,7 @@ func UnsafePrivate__VZDiskImageDescriptor_Instance_setCachingMode__914e100b(rece
 var privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_setReadOnly__8dd66f3d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate__VZDiskImageDescriptor_Instance_setReadOnly__8dd66f3d(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_setReadOnly__8dd66f3d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setReadOnly:")
 		})
@@ -25687,7 +25704,7 @@ func UnsafePrivate__VZDiskImageDescriptor_Instance_setReadOnly__8dd66f3d(receive
 var privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_setSynchronizationMode__b8fd64b5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate__VZDiskImageDescriptor_Instance_setSynchronizationMode__b8fd64b5(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_setSynchronizationMode__b8fd64b5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setSynchronizationMode:")
 		})
@@ -25701,7 +25718,7 @@ func UnsafePrivate__VZDiskImageDescriptor_Instance_setSynchronizationMode__b8fd6
 var privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_setURL__a1c5d5f8 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZDiskImageDescriptor_Instance_setURL__a1c5d5f8(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_setURL__a1c5d5f8.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setURL:")
 		})
@@ -25716,7 +25733,7 @@ var privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_synchronizationMode
 
 func UnsafePrivate__VZDiskImageDescriptor_Instance_synchronizationMode_fa8f0050(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImageDescriptor_Instance_synchronizationMode_fa8f0050.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("synchronizationMode")
 		})
@@ -25790,7 +25807,7 @@ var privateCallUnsafePrivate__VZDiskImageFormat_Instance_canCreateDynamicDiskIma
 
 func UnsafePrivate__VZDiskImageFormat_Instance_canCreateDynamicDiskImages_4cedd25f(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImageFormat_Instance_canCreateDynamicDiskImages_4cedd25f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("canCreateDynamicDiskImages")
 		})
@@ -25806,7 +25823,7 @@ var privateCallUnsafePrivate__VZDiskImageFormat_Instance_canCreateFixedDiskImage
 
 func UnsafePrivate__VZDiskImageFormat_Instance_canCreateFixedDiskImages_4554cb00(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImageFormat_Instance_canCreateFixedDiskImages_4554cb00.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("canCreateFixedDiskImages")
 		})
@@ -25822,7 +25839,7 @@ var privateCallUnsafePrivate__VZDiskImageFormat_Instance_identifier_23777dd7 laz
 
 func UnsafePrivate__VZDiskImageFormat_Instance_identifier_23777dd7(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25850,7 +25867,7 @@ var privateCallUnsafePrivate__VZDiskImage_Instance_URL_cb9f956e lazyBinding[dire
 
 func UnsafePrivate__VZDiskImage_Instance_URL_cb9f956e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25878,7 +25895,7 @@ var privateCallUnsafePrivate__VZDiskImage_Instance__cxx_construct_0b5e3849 lazyB
 
 func UnsafePrivate__VZDiskImage_Instance__cxx_construct_0b5e3849(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25905,7 +25922,7 @@ func UnsafePrivate__VZDiskImage_Instance__cxx_construct_0b5e3849(receiver unsafe
 var privateCallUnsafePrivate__VZDiskImage_Instance__cxx_destruct_e5f43fde lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZDiskImage_Instance__cxx_destruct_e5f43fde(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImage_Instance__cxx_destruct_e5f43fde.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -25920,7 +25937,7 @@ var privateCallUnsafePrivate__VZDiskImage_Instance_cachingMode_10670816 lazyBind
 
 func UnsafePrivate__VZDiskImage_Instance_cachingMode_10670816(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImage_Instance_cachingMode_10670816.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("cachingMode")
 		})
@@ -25936,7 +25953,7 @@ var privateCallUnsafePrivate__VZDiskImage_Instance_identifier_66e6b65c lazyBindi
 
 func UnsafePrivate__VZDiskImage_Instance_identifier_66e6b65c(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25964,7 +25981,7 @@ var privateCallUnsafePrivate__VZDiskImage_Instance_initWithDescriptor_error__2d5
 
 func UnsafePrivate__VZDiskImage_Instance_initWithDescriptor_error__2d571ac6(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -25992,7 +26009,7 @@ var privateCallUnsafePrivate__VZDiskImage_Instance_initWithURL_readOnly_error__8
 
 func UnsafePrivate__VZDiskImage_Instance_initWithURL_readOnly_error__8fb822f6(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 bool, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26020,7 +26037,7 @@ var privateCallUnsafePrivate__VZDiskImage_Instance_isReadOnly_b3a89f91 lazyBindi
 
 func UnsafePrivate__VZDiskImage_Instance_isReadOnly_b3a89f91(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImage_Instance_isReadOnly_b3a89f91.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isReadOnly")
 		})
@@ -26035,7 +26052,7 @@ func UnsafePrivate__VZDiskImage_Instance_isReadOnly_b3a89f91(receiver unsafe.Poi
 var privateCallUnsafePrivate__VZDiskImage_Instance_setUpdateDiskSize__ca54cd45 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZDiskImage_Instance_setUpdateDiskSize__ca54cd45(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImage_Instance_setUpdateDiskSize__ca54cd45.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUpdateDiskSize:")
 		})
@@ -26050,7 +26067,7 @@ var privateCallUnsafePrivate__VZDiskImage_Instance_synchronizationMode_d335dec0 
 
 func UnsafePrivate__VZDiskImage_Instance_synchronizationMode_d335dec0(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDiskImage_Instance_synchronizationMode_d335dec0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("synchronizationMode")
 		})
@@ -26066,7 +26083,7 @@ var privateCallUnsafePrivate__VZDiskImage_Instance_updateDiskSize_176b6158 lazyB
 
 func UnsafePrivate__VZDiskImage_Instance_updateDiskSize_176b6158(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26094,7 +26111,7 @@ var privateCallUnsafePrivate__VZDisplayPresenter_Instance__cxx_construct_a746c47
 
 func UnsafePrivate__VZDisplayPresenter_Instance__cxx_construct_a746c476(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26121,7 +26138,7 @@ func UnsafePrivate__VZDisplayPresenter_Instance__cxx_construct_a746c476(receiver
 var privateCallUnsafePrivate__VZDisplayPresenter_Instance__cxx_destruct_bb6452da lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZDisplayPresenter_Instance__cxx_destruct_bb6452da(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDisplayPresenter_Instance__cxx_destruct_bb6452da.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -26135,7 +26152,7 @@ func UnsafePrivate__VZDisplayPresenter_Instance__cxx_destruct_bb6452da(receiver 
 var privateCallUnsafePrivate__VZDisplayPresenter_Instance_dealloc_fb6bdf39 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZDisplayPresenter_Instance_dealloc_fb6bdf39(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDisplayPresenter_Instance_dealloc_fb6bdf39.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -26149,7 +26166,7 @@ func UnsafePrivate__VZDisplayPresenter_Instance_dealloc_fb6bdf39(receiver unsafe
 var privateCallUnsafePrivate__VZDisplayPresenter_Instance_didDetectRemoteSessionEvent_9c78c860 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZDisplayPresenter_Instance_didDetectRemoteSessionEvent_9c78c860(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZDisplayPresenter_Instance_didDetectRemoteSessionEvent_9c78c860.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("didDetectRemoteSessionEvent")
 		})
@@ -26164,7 +26181,7 @@ var privateCallUnsafePrivate__VZForwardingDebugStubConfiguration_Instance__cxx_c
 
 func UnsafePrivate__VZForwardingDebugStubConfiguration_Instance__cxx_construct_7c23ba8b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26191,7 +26208,7 @@ func UnsafePrivate__VZForwardingDebugStubConfiguration_Instance__cxx_construct_7
 var privateCallUnsafePrivate__VZForwardingDebugStubConfiguration_Instance__cxx_destruct_aed2f757 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZForwardingDebugStubConfiguration_Instance__cxx_destruct_aed2f757(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZForwardingDebugStubConfiguration_Instance__cxx_destruct_aed2f757.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -26206,7 +26223,7 @@ var privateCallUnsafePrivate__VZForwardingDebugStubConfiguration_Instance__initW
 
 func UnsafePrivate__VZForwardingDebugStubConfiguration_Instance__initWithDebugStub__4c640aeb(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26234,7 +26251,7 @@ var privateCallUnsafePrivate__VZForwardingDebugStubConfiguration_Instance_copyWi
 
 func UnsafePrivate__VZForwardingDebugStubConfiguration_Instance_copyWithZone__2935c2db(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26262,7 +26279,7 @@ var privateCallUnsafePrivate__VZForwardingDebugStubConfiguration_Instance_makeDe
 
 func UnsafePrivate__VZForwardingDebugStubConfiguration_Instance_makeDebugStubForCoprocessor_46246274(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26290,7 +26307,7 @@ var privateCallUnsafePrivate__VZForwardingDebugStubConfiguration_Instance_makeDe
 
 func UnsafePrivate__VZForwardingDebugStubConfiguration_Instance_makeDebugStubForVirtualMachine__cc0cf053(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26318,7 +26335,7 @@ var privateCallUnsafePrivate__VZForwardingDebugStub_Instance__cxx_construct_6c81
 
 func UnsafePrivate__VZForwardingDebugStub_Instance__cxx_construct_6c815be9(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26345,7 +26362,7 @@ func UnsafePrivate__VZForwardingDebugStub_Instance__cxx_construct_6c815be9(recei
 var privateCallUnsafePrivate__VZForwardingDebugStub_Instance__cxx_destruct_386bd9a2 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZForwardingDebugStub_Instance__cxx_destruct_386bd9a2(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZForwardingDebugStub_Instance__cxx_destruct_386bd9a2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -26360,7 +26377,7 @@ var privateCallUnsafePrivate__VZForwardingDebugStub_Instance__initWithDebugStub_
 
 func UnsafePrivate__VZForwardingDebugStub_Instance__initWithDebugStub__4a352b75(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26388,7 +26405,7 @@ var privateCallUnsafePrivate__VZFramebufferView_Instance__cxx_construct_16a6b0d4
 
 func UnsafePrivate__VZFramebufferView_Instance__cxx_construct_16a6b0d4(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26415,7 +26432,7 @@ func UnsafePrivate__VZFramebufferView_Instance__cxx_construct_16a6b0d4(receiver 
 var privateCallUnsafePrivate__VZFramebufferView_Instance__cxx_destruct_054efeb1 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZFramebufferView_Instance__cxx_destruct_054efeb1(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZFramebufferView_Instance__cxx_destruct_054efeb1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -26430,7 +26447,7 @@ var privateCallUnsafePrivate__VZFramebufferView_Instance_actionForLayer_forKey__
 
 func UnsafePrivate__VZFramebufferView_Instance_actionForLayer_forKey__6201f0f4(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26458,7 +26475,7 @@ var privateCallUnsafePrivate__VZFramebufferView_Instance_cursor_0d6aa47e lazyBin
 
 func UnsafePrivate__VZFramebufferView_Instance_cursor_0d6aa47e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26486,7 +26503,7 @@ var privateCallUnsafePrivate__VZFramebufferView_Instance_displayProtectionOption
 
 func UnsafePrivate__VZFramebufferView_Instance_displayProtectionOptions_d62094c9(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26514,7 +26531,7 @@ var privateCallUnsafePrivate__VZFramebufferView_Instance_initWithCoder__48af8fcd
 
 func UnsafePrivate__VZFramebufferView_Instance_initWithCoder__48af8fcd(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26541,7 +26558,7 @@ func UnsafePrivate__VZFramebufferView_Instance_initWithCoder__48af8fcd(receiver 
 var privateCallUnsafePrivate__VZFramebufferView_Instance_layout_0964dcdc lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZFramebufferView_Instance_layout_0964dcdc(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZFramebufferView_Instance_layout_0964dcdc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("layout")
 		})
@@ -26555,7 +26572,7 @@ func UnsafePrivate__VZFramebufferView_Instance_layout_0964dcdc(receiver unsafe.P
 var privateCallUnsafePrivate__VZFramebufferView_Instance_presenter_didUpdateContentHeadroom__0990b38a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, float64)]]
 
 func UnsafePrivate__VZFramebufferView_Instance_presenter_didUpdateContentHeadroom__0990b38a(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 float64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZFramebufferView_Instance_presenter_didUpdateContentHeadroom__0990b38a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, float64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, float64)]("presenter:didUpdateContentHeadroom:")
 		})
@@ -26569,7 +26586,7 @@ func UnsafePrivate__VZFramebufferView_Instance_presenter_didUpdateContentHeadroo
 var privateCallUnsafePrivate__VZFramebufferView_Instance_setCursor__64ce8dc5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZFramebufferView_Instance_setCursor__64ce8dc5(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZFramebufferView_Instance_setCursor__64ce8dc5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setCursor:")
 		})
@@ -26583,7 +26600,7 @@ func UnsafePrivate__VZFramebufferView_Instance_setCursor__64ce8dc5(receiver unsa
 var privateCallUnsafePrivate__VZFramebufferView_Instance_setShowsCursor__73c0d1d6 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate__VZFramebufferView_Instance_setShowsCursor__73c0d1d6(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZFramebufferView_Instance_setShowsCursor__73c0d1d6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setShowsCursor:")
 		})
@@ -26597,7 +26614,7 @@ func UnsafePrivate__VZFramebufferView_Instance_setShowsCursor__73c0d1d6(receiver
 var privateCallUnsafePrivate__VZFramebufferView_Instance_setSuppressFrameUpdates__7ea60438 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate__VZFramebufferView_Instance_setSuppressFrameUpdates__7ea60438(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZFramebufferView_Instance_setSuppressFrameUpdates__7ea60438.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setSuppressFrameUpdates:")
 		})
@@ -26611,7 +26628,7 @@ func UnsafePrivate__VZFramebufferView_Instance_setSuppressFrameUpdates__7ea60438
 var privateCallUnsafePrivate__VZFramebufferView_Instance_setWantsLayer__32c0ce7f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate__VZFramebufferView_Instance_setWantsLayer__32c0ce7f(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZFramebufferView_Instance_setWantsLayer__32c0ce7f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setWantsLayer:")
 		})
@@ -26626,7 +26643,7 @@ var privateCallUnsafePrivate__VZFramebufferView_Instance_showsCursor_13a555ab la
 
 func UnsafePrivate__VZFramebufferView_Instance_showsCursor_13a555ab(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZFramebufferView_Instance_showsCursor_13a555ab.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("showsCursor")
 		})
@@ -26642,7 +26659,7 @@ var privateCallUnsafePrivate__VZFramebufferView_Instance_suppressFrameUpdates_01
 
 func UnsafePrivate__VZFramebufferView_Instance_suppressFrameUpdates_01065182(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZFramebufferView_Instance_suppressFrameUpdates_01065182.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("suppressFrameUpdates")
 		})
@@ -26657,7 +26674,7 @@ func UnsafePrivate__VZFramebufferView_Instance_suppressFrameUpdates_01065182(rec
 var privateCallUnsafePrivate__VZFramebufferView_Instance_viewDidMoveToWindow_0b49e738 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZFramebufferView_Instance_viewDidMoveToWindow_0b49e738(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZFramebufferView_Instance_viewDidMoveToWindow_0b49e738.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("viewDidMoveToWindow")
 		})
@@ -26671,7 +26688,7 @@ func UnsafePrivate__VZFramebufferView_Instance_viewDidMoveToWindow_0b49e738(rece
 var privateCallUnsafePrivate__VZFramebufferView_Instance_viewWillMoveToWindow__b8db6e9b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZFramebufferView_Instance_viewWillMoveToWindow__b8db6e9b(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZFramebufferView_Instance_viewWillMoveToWindow__b8db6e9b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("viewWillMoveToWindow:")
 		})
@@ -26686,7 +26703,7 @@ var privateCallUnsafePrivate__VZGDBDebugStubConfiguration_Instance_copyWithZone_
 
 func UnsafePrivate__VZGDBDebugStubConfiguration_Instance_copyWithZone__f9b09ad1(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26714,7 +26731,7 @@ var privateCallUnsafePrivate__VZGDBDebugStubConfiguration_Instance_initWithPort_
 
 func UnsafePrivate__VZGDBDebugStubConfiguration_Instance_initWithPort__be82df9e(receiver unsafe.Pointer, p0 uint16, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26742,7 +26759,7 @@ var privateCallUnsafePrivate__VZGDBDebugStubConfiguration_Instance_init_2cccc437
 
 func UnsafePrivate__VZGDBDebugStubConfiguration_Instance_init_2cccc437(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26770,7 +26787,7 @@ var privateCallUnsafePrivate__VZGDBDebugStubConfiguration_Instance_listensOnAllN
 
 func UnsafePrivate__VZGDBDebugStubConfiguration_Instance_listensOnAllNetworkInterfaces_d7372b0f(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZGDBDebugStubConfiguration_Instance_listensOnAllNetworkInterfaces_d7372b0f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("listensOnAllNetworkInterfaces")
 		})
@@ -26786,7 +26803,7 @@ var privateCallUnsafePrivate__VZGDBDebugStubConfiguration_Instance_makeDebugStub
 
 func UnsafePrivate__VZGDBDebugStubConfiguration_Instance_makeDebugStubForCoprocessor_46ef2677(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26814,7 +26831,7 @@ var privateCallUnsafePrivate__VZGDBDebugStubConfiguration_Instance_makeDebugStub
 
 func UnsafePrivate__VZGDBDebugStubConfiguration_Instance_makeDebugStubForVirtualMachine__576d17f7(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26842,7 +26859,7 @@ var privateCallUnsafePrivate__VZGDBDebugStubConfiguration_Instance_port_21ffbdf5
 
 func UnsafePrivate__VZGDBDebugStubConfiguration_Instance_port_21ffbdf5(receiver unsafe.Pointer) uint16 {
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZGDBDebugStubConfiguration_Instance_port_21ffbdf5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint16] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("port")
 		})
@@ -26857,7 +26874,7 @@ func UnsafePrivate__VZGDBDebugStubConfiguration_Instance_port_21ffbdf5(receiver 
 var privateCallUnsafePrivate__VZGDBDebugStubConfiguration_Instance_setListensOnAllNetworkInterfaces__252eaf6b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate__VZGDBDebugStubConfiguration_Instance_setListensOnAllNetworkInterfaces__252eaf6b(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZGDBDebugStubConfiguration_Instance_setListensOnAllNetworkInterfaces__252eaf6b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setListensOnAllNetworkInterfaces:")
 		})
@@ -26871,7 +26888,7 @@ func UnsafePrivate__VZGDBDebugStubConfiguration_Instance_setListensOnAllNetworkI
 var privateCallUnsafePrivate__VZGDBDebugStubConfiguration_Instance_setPort__45bb8444 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]]
 
 func UnsafePrivate__VZGDBDebugStubConfiguration_Instance_setPort__45bb8444(receiver unsafe.Pointer, p0 uint16) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZGDBDebugStubConfiguration_Instance_setPort__45bb8444.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]("setPort:")
 		})
@@ -26885,7 +26902,7 @@ func UnsafePrivate__VZGDBDebugStubConfiguration_Instance_setPort__45bb8444(recei
 var privateCallUnsafePrivate__VZGDBDebugStub_Instance__cxx_destruct_083ea7cd lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZGDBDebugStub_Instance__cxx_destruct_083ea7cd(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZGDBDebugStub_Instance__cxx_destruct_083ea7cd.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -26900,7 +26917,7 @@ var privateCallUnsafePrivate__VZGDBDebugStub_Instance_delegate_df7e9623 lazyBind
 
 func UnsafePrivate__VZGDBDebugStub_Instance_delegate_df7e9623(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26928,7 +26945,7 @@ var privateCallUnsafePrivate__VZGDBDebugStub_Instance_port_8fb29aab lazyBinding[
 
 func UnsafePrivate__VZGDBDebugStub_Instance_port_8fb29aab(receiver unsafe.Pointer) uint16 {
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZGDBDebugStub_Instance_port_8fb29aab.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint16] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("port")
 		})
@@ -26943,7 +26960,7 @@ func UnsafePrivate__VZGDBDebugStub_Instance_port_8fb29aab(receiver unsafe.Pointe
 var privateCallUnsafePrivate__VZGDBDebugStub_Instance_setDelegate__21969a86 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZGDBDebugStub_Instance_setDelegate__21969a86(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZGDBDebugStub_Instance_setDelegate__21969a86.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 		})
@@ -26958,7 +26975,7 @@ var privateCallUnsafePrivate__VZGuestTraceEvent_Instance__init_8950a05f lazyBind
 
 func UnsafePrivate__VZGuestTraceEvent_Instance__init_8950a05f(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -26986,7 +27003,7 @@ var privateCallUnsafePrivate__VZHIDDeviceConfiguration_Instance__init_3cde5e9b l
 
 func UnsafePrivate__VZHIDDeviceConfiguration_Instance__init_3cde5e9b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27014,7 +27031,7 @@ var privateCallUnsafePrivate__VZHIDDeviceConfiguration_Instance_copyWithZone__bd
 
 func UnsafePrivate__VZHIDDeviceConfiguration_Instance_copyWithZone__bda73a24(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27042,7 +27059,7 @@ var privateCallUnsafePrivate__VZHIDDeviceConfiguration_Instance_makeHIDDeviceFor
 
 func UnsafePrivate__VZHIDDeviceConfiguration_Instance_makeHIDDeviceForVirtualMachine_hidDeviceIndex__d0a43dd5(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27069,7 +27086,7 @@ func UnsafePrivate__VZHIDDeviceConfiguration_Instance_makeHIDDeviceForVirtualMac
 var privateCallUnsafePrivate__VZHIDDevice_Instance__cxx_destruct_ae6010c2 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZHIDDevice_Instance__cxx_destruct_ae6010c2(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZHIDDevice_Instance__cxx_destruct_ae6010c2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -27083,7 +27100,7 @@ func UnsafePrivate__VZHIDDevice_Instance__cxx_destruct_ae6010c2(receiver unsafe.
 var privateCallUnsafePrivate__VZHIDDevice_Instance_sendIOHIDEvents__13260ec7 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZHIDDevice_Instance_sendIOHIDEvents__13260ec7(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZHIDDevice_Instance_sendIOHIDEvents__13260ec7.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("sendIOHIDEvents:")
 		})
@@ -27131,7 +27148,7 @@ func UnsafePrivate__VZHIDEventFilter_Class_isEnabled_147fb592() bool {
 var privateCallUnsafePrivate__VZHIDEventFilter_Instance__cxx_destruct_1960f0e5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZHIDEventFilter_Instance__cxx_destruct_1960f0e5(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZHIDEventFilter_Instance__cxx_destruct_1960f0e5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -27146,7 +27163,7 @@ var privateCallUnsafePrivate__VZHIDEventFilter_Instance_getHIDReportsFromHIDEven
 
 func UnsafePrivate__VZHIDEventFilter_Instance_getHIDReportsFromHIDEvent__aa405ff9(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27174,7 +27191,7 @@ var privateCallUnsafePrivate__VZHIDEventFilter_Instance_getHIDReportsFromNSEvent
 
 func UnsafePrivate__VZHIDEventFilter_Instance_getHIDReportsFromNSEvent__8dcb6362(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27202,7 +27219,7 @@ var privateCallUnsafePrivate__VZHIDEventFilter_Instance_init_2e83bdfd lazyBindin
 
 func UnsafePrivate__VZHIDEventFilter_Instance_init_2e83bdfd(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27229,7 +27246,7 @@ func UnsafePrivate__VZHIDEventFilter_Instance_init_2e83bdfd(receiver unsafe.Poin
 var privateCallUnsafePrivate__VZHIDEventMonitor_Instance__cxx_destruct_e08c1e8c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZHIDEventMonitor_Instance__cxx_destruct_e08c1e8c(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZHIDEventMonitor_Instance__cxx_destruct_e08c1e8c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -27244,7 +27261,7 @@ var privateCallUnsafePrivate__VZHostOnlyNetworkDeviceAttachment_Instance_init_b6
 
 func UnsafePrivate__VZHostOnlyNetworkDeviceAttachment_Instance_init_b6408c74(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27272,7 +27289,7 @@ var privateCallUnsafePrivate__VZIOHIDEvent_Instance__cxx_construct_dbb3b154 lazy
 
 func UnsafePrivate__VZIOHIDEvent_Instance__cxx_construct_dbb3b154(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27299,7 +27316,7 @@ func UnsafePrivate__VZIOHIDEvent_Instance__cxx_construct_dbb3b154(receiver unsaf
 var privateCallUnsafePrivate__VZIOHIDEvent_Instance__cxx_destruct_b49cf20a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZIOHIDEvent_Instance__cxx_destruct_b49cf20a(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZIOHIDEvent_Instance__cxx_destruct_b49cf20a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -27314,7 +27331,7 @@ var privateCallUnsafePrivate__VZIOHIDEvent_Instance_event_2283e0e1 lazyBinding[d
 
 func UnsafePrivate__VZIOHIDEvent_Instance_event_2283e0e1(receiver unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZIOHIDEvent_Instance_event_2283e0e1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("event")
 		})
@@ -27330,7 +27347,7 @@ var privateCallUnsafePrivate__VZIOHIDEvent_Instance_initWithIOHIDEvent__914aa8e4
 
 func UnsafePrivate__VZIOHIDEvent_Instance_initWithIOHIDEvent__914aa8e4(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27357,7 +27374,7 @@ func UnsafePrivate__VZIOHIDEvent_Instance_initWithIOHIDEvent__914aa8e4(receiver 
 var privateCallUnsafePrivate__VZIOPCoprocessorConfiguration_Instance__cxx_destruct_b28eafef lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZIOPCoprocessorConfiguration_Instance__cxx_destruct_b28eafef(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZIOPCoprocessorConfiguration_Instance__cxx_destruct_b28eafef.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -27372,7 +27389,7 @@ var privateCallUnsafePrivate__VZIOPCoprocessorConfiguration_Instance_bootLoader_
 
 func UnsafePrivate__VZIOPCoprocessorConfiguration_Instance_bootLoader_b5b7ce19(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27400,7 +27417,7 @@ var privateCallUnsafePrivate__VZIOPCoprocessorConfiguration_Instance_copyWithZon
 
 func UnsafePrivate__VZIOPCoprocessorConfiguration_Instance_copyWithZone__d60466a1(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27428,7 +27445,7 @@ var privateCallUnsafePrivate__VZIOPCoprocessorConfiguration_Instance_initWithBoo
 
 func UnsafePrivate__VZIOPCoprocessorConfiguration_Instance_initWithBootLoader__74fd6bb3(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27456,7 +27473,7 @@ var privateCallUnsafePrivate__VZIOPCoprocessorConfiguration_Instance_makeCoproce
 
 func UnsafePrivate__VZIOPCoprocessorConfiguration_Instance_makeCoprocessorForVirtualMachine_coprocessorIndex__a0d3c7a3(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27513,7 +27530,7 @@ var privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance
 
 func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance__cxx_construct_5dcd8737(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27540,7 +27557,7 @@ func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance__cxx_cons
 var privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance__cxx_destruct_c2083457 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance__cxx_destruct_c2083457(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance__cxx_destruct_c2083457.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -27555,7 +27572,7 @@ var privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance
 
 func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_copyWithZone__49b80c33(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27583,7 +27600,7 @@ var privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance
 
 func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_initWithService_error__f8e1e1d5(receiver unsafe.Pointer, p0 uint32, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27611,7 +27628,7 @@ var privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance
 
 func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_isDuplicateConfiguration__50b57baf(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_isDuplicateConfiguration__50b57baf.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isDuplicateConfiguration:")
 		})
@@ -27627,7 +27644,7 @@ var privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance
 
 func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_makeUSBDeviceWithVirtualMachine__5925f4af(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27655,7 +27672,7 @@ var privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance
 
 func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_preserveDevice_08708745(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_preserveDevice_08708745.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("preserveDevice")
 		})
@@ -27670,7 +27687,7 @@ func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_preserveD
 var privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_setPreserveDevice__66f548c3 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_setPreserveDevice__66f548c3(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_setPreserveDevice__66f548c3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setPreserveDevice:")
 		})
@@ -27684,7 +27701,7 @@ func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_setPreser
 var privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_setUuid__f6843845 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_setUuid__f6843845(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_setUuid__f6843845.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUuid:")
 		})
@@ -27699,7 +27716,7 @@ var privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance
 
 func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_signature_660befba(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27727,7 +27744,7 @@ var privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance
 
 func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_uuid_557ecac5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27755,7 +27772,7 @@ var privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance
 
 func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_validateWithError__963cb4b0(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_validateWithError__963cb4b0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateWithError:")
 		})
@@ -27770,7 +27787,7 @@ func UnsafePrivate__VZIOUSBHostPassthroughDeviceConfiguration_Instance_validateW
 var privateCallUnsafePrivate__VZIOUSBHostPassthroughDevice_Instance__cxx_destruct_07a317d2 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZIOUSBHostPassthroughDevice_Instance__cxx_destruct_07a317d2(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZIOUSBHostPassthroughDevice_Instance__cxx_destruct_07a317d2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -27785,7 +27802,7 @@ var privateCallUnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_configuratio
 
 func UnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_configuration_016fb7a5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27813,7 +27830,7 @@ var privateCallUnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_initWithConf
 
 func UnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_initWithConfiguration_error__fd06ec77(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27841,7 +27858,7 @@ var privateCallUnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_isPointingDe
 
 func UnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_isPointingDevice_289bff4e(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_isPointingDevice_289bff4e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isPointingDevice")
 		})
@@ -27856,7 +27873,7 @@ func UnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_isPointingDevice_289bf
 var privateCallUnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_setConfiguration__ee05ee45 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_setConfiguration__ee05ee45(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_setConfiguration__ee05ee45.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setConfiguration:")
 		})
@@ -27870,7 +27887,7 @@ func UnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_setConfiguration__ee05
 var privateCallUnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_setUsbController__694c4e5b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_setUsbController__694c4e5b(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_setUsbController__694c4e5b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUsbController:")
 		})
@@ -27884,7 +27901,7 @@ func UnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_setUsbController__694c
 var privateCallUnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_setVirtualMachine__2184844e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_setVirtualMachine__2184844e(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_setVirtualMachine__2184844e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setVirtualMachine:")
 		})
@@ -27899,7 +27916,7 @@ var privateCallUnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_usbControlle
 
 func UnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_usbController_fe5cf1e0(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27927,7 +27944,7 @@ var privateCallUnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_uuid_b1ccbdd
 
 func UnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_uuid_b1ccbddf(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27955,7 +27972,7 @@ var privateCallUnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_virtualMachi
 
 func UnsafePrivate__VZIOUSBHostPassthroughDevice_Instance_virtualMachine_0a211d8c(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -27983,7 +28000,7 @@ var privateCallUnsafePrivate__VZKeyEvent_Instance_initWithEvent__44960779 lazyBi
 
 func UnsafePrivate__VZKeyEvent_Instance_initWithEvent__44960779(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28011,7 +28028,7 @@ var privateCallUnsafePrivate__VZKeyEvent_Instance_initWithType_keyCode__9062691c
 
 func UnsafePrivate__VZKeyEvent_Instance_initWithType_keyCode__9062691c(receiver unsafe.Pointer, p0 int64, p1 uint16, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28039,7 +28056,7 @@ var privateCallUnsafePrivate__VZKeyEvent_Instance_keyCode_06c885f9 lazyBinding[d
 
 func UnsafePrivate__VZKeyEvent_Instance_keyCode_06c885f9(receiver unsafe.Pointer) uint16 {
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZKeyEvent_Instance_keyCode_06c885f9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint16] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("keyCode")
 		})
@@ -28055,7 +28072,7 @@ var privateCallUnsafePrivate__VZKeyEvent_Instance_type_6ba7ace3 lazyBinding[dire
 
 func UnsafePrivate__VZKeyEvent_Instance_type_6ba7ace3(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZKeyEvent_Instance_type_6ba7ace3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("type")
 		})
@@ -28070,7 +28087,7 @@ func UnsafePrivate__VZKeyEvent_Instance_type_6ba7ace3(receiver unsafe.Pointer) i
 var privateCallUnsafePrivate__VZKeyboard_Instance__cxx_destruct_2b4bf4ba lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZKeyboard_Instance__cxx_destruct_2b4bf4ba(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZKeyboard_Instance__cxx_destruct_2b4bf4ba.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -28085,7 +28102,7 @@ var privateCallUnsafePrivate__VZKeyboard_Instance_activeIndicators_c162535d lazy
 
 func UnsafePrivate__VZKeyboard_Instance_activeIndicators_c162535d(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZKeyboard_Instance_activeIndicators_c162535d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("activeIndicators")
 		})
@@ -28101,7 +28118,7 @@ var privateCallUnsafePrivate__VZKeyboard_Instance_initWithType_virtualMachine_de
 
 func UnsafePrivate__VZKeyboard_Instance_initWithType_virtualMachine_deviceIdentifier__a4dc42b5(receiver unsafe.Pointer, p0 int64, p1 unsafe.Pointer, p2 uint32, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28128,7 +28145,7 @@ func UnsafePrivate__VZKeyboard_Instance_initWithType_virtualMachine_deviceIdenti
 var privateCallUnsafePrivate__VZKeyboard_Instance_sendKeyEvents__24592e0e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZKeyboard_Instance_sendKeyEvents__24592e0e(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZKeyboard_Instance_sendKeyEvents__24592e0e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("sendKeyEvents:")
 		})
@@ -28143,7 +28160,7 @@ var privateCallUnsafePrivate__VZKeyboard_Instance_type_eac92fe5 lazyBinding[dire
 
 func UnsafePrivate__VZKeyboard_Instance_type_eac92fe5(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZKeyboard_Instance_type_eac92fe5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("type")
 		})
@@ -28159,7 +28176,7 @@ var privateCallUnsafePrivate__VZLinearFramebufferGraphicsDeviceConfiguration_Ins
 
 func UnsafePrivate__VZLinearFramebufferGraphicsDeviceConfiguration_Instance__initWithConfiguration__cd9c158d(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28187,7 +28204,7 @@ var privateCallUnsafePrivate__VZLinearFramebufferGraphicsDeviceConfiguration_Ins
 
 func UnsafePrivate__VZLinearFramebufferGraphicsDeviceConfiguration_Instance_copyWithZone__b0e39d22(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28215,7 +28232,7 @@ var privateCallUnsafePrivate__VZLinearFramebufferGraphicsDeviceConfiguration_Ins
 
 func UnsafePrivate__VZLinearFramebufferGraphicsDeviceConfiguration_Instance_makeGraphicsDeviceForVirtualMachineAccessor_graphicsDeviceIndex__d3dc2bc6(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28243,7 +28260,7 @@ var privateCallUnsafePrivate__VZLinearFramebufferGraphicsDeviceConfiguration_Ins
 
 func UnsafePrivate__VZLinearFramebufferGraphicsDeviceConfiguration_Instance_makeGraphicsDeviceForVirtualMachine_graphicsDeviceIndex__bc2ba529(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28271,7 +28288,7 @@ var privateCallUnsafePrivate__VZLinearFramebufferGraphicsDeviceConfiguration_Ins
 
 func UnsafePrivate__VZLinearFramebufferGraphicsDeviceConfiguration_Instance_validateWithError__b561b96b(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZLinearFramebufferGraphicsDeviceConfiguration_Instance_validateWithError__b561b96b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateWithError:")
 		})
@@ -28287,7 +28304,7 @@ var privateCallUnsafePrivate__VZLinearFramebufferGraphicsDevice_Instance__initWi
 
 func UnsafePrivate__VZLinearFramebufferGraphicsDevice_Instance__initWithVirtualMachineAccessor_graphicsDeviceIndex_displayPortCount_displays__00be9ffe(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 uint64, p3 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28315,7 +28332,7 @@ var privateCallUnsafePrivate__VZLinearFramebufferGraphicsDevice_Instance__initWi
 
 func UnsafePrivate__VZLinearFramebufferGraphicsDevice_Instance__initWithVirtualMachine_graphicsDeviceIndex_displayPortCount_displays__e731b187(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 uint64, p3 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28343,7 +28360,7 @@ var privateCallUnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance__confi
 
 func UnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance__configuration_794b80be(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28370,7 +28387,7 @@ func UnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance__configuration_7
 var privateCallUnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance__cxx_destruct_5e2bed61 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance__cxx_destruct_5e2bed61(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance__cxx_destruct_5e2bed61.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -28385,7 +28402,7 @@ var privateCallUnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance__graph
 
 func UnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance__graphicsDevice_f285a1d3(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28412,7 +28429,7 @@ func UnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance__graphicsDevice_
 var privateCallUnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance__setGraphicsDevice__036a27f4 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance__setGraphicsDevice__036a27f4(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance__setGraphicsDevice__036a27f4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("_setGraphicsDevice:")
 		})
@@ -28427,7 +28444,7 @@ var privateCallUnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance__suppo
 
 func UnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance__supportsSinglePassHDR_1f0bbbac(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance__supportsSinglePassHDR_1f0bbbac.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_supportsSinglePassHDR")
 		})
@@ -28443,7 +28460,7 @@ var privateCallUnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance_reconf
 
 func UnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance_reconfigureWithConfiguration_error__f5f740e5(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZLinearFramebufferGraphicsDisplay_Instance_reconfigureWithConfiguration_error__f5f740e5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("reconfigureWithConfiguration:error:")
 		})
@@ -28459,7 +28476,7 @@ var privateCallUnsafePrivate__VZMMIORegion_Instance_baseAddress_d0b30b78 lazyBin
 
 func UnsafePrivate__VZMMIORegion_Instance_baseAddress_d0b30b78(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMMIORegion_Instance_baseAddress_d0b30b78.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("baseAddress")
 		})
@@ -28475,7 +28492,7 @@ var privateCallUnsafePrivate__VZMMIORegion_Instance_copyWithZone__441287cb lazyB
 
 func UnsafePrivate__VZMMIORegion_Instance_copyWithZone__441287cb(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28503,7 +28520,7 @@ var privateCallUnsafePrivate__VZMMIORegion_Instance_initWithBaseAddress_length__
 
 func UnsafePrivate__VZMMIORegion_Instance_initWithBaseAddress_length__4616dde9(receiver unsafe.Pointer, p0 uint64, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28531,7 +28548,7 @@ var privateCallUnsafePrivate__VZMMIORegion_Instance_initWithBaseAddress_length_w
 
 func UnsafePrivate__VZMMIORegion_Instance_initWithBaseAddress_length_writeSynchronously__c3f27a1e(receiver unsafe.Pointer, p0 uint64, p1 uint64, p2 bool, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28559,7 +28576,7 @@ var privateCallUnsafePrivate__VZMMIORegion_Instance_length_322b1b3c lazyBinding[
 
 func UnsafePrivate__VZMMIORegion_Instance_length_322b1b3c(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMMIORegion_Instance_length_322b1b3c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("length")
 		})
@@ -28575,7 +28592,7 @@ var privateCallUnsafePrivate__VZMMIORegion_Instance_writeSynchronously_fa8cdfb6 
 
 func UnsafePrivate__VZMMIORegion_Instance_writeSynchronously_fa8cdfb6(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMMIORegion_Instance_writeSynchronously_fa8cdfb6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("writeSynchronously")
 		})
@@ -28590,7 +28607,7 @@ func UnsafePrivate__VZMMIORegion_Instance_writeSynchronously_fa8cdfb6(receiver u
 var privateCallUnsafePrivate__VZMacBatteryPowerSourceDeviceConfiguration_Instance__cxx_destruct_9a6b45c6 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZMacBatteryPowerSourceDeviceConfiguration_Instance__cxx_destruct_9a6b45c6(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacBatteryPowerSourceDeviceConfiguration_Instance__cxx_destruct_9a6b45c6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -28605,7 +28622,7 @@ var privateCallUnsafePrivate__VZMacBatteryPowerSourceDeviceConfiguration_Instanc
 
 func UnsafePrivate__VZMacBatteryPowerSourceDeviceConfiguration_Instance_copyWithZone__3fa02ca6(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28633,7 +28650,7 @@ var privateCallUnsafePrivate__VZMacBatteryPowerSourceDeviceConfiguration_Instanc
 
 func UnsafePrivate__VZMacBatteryPowerSourceDeviceConfiguration_Instance_init_185d7a97(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28661,7 +28678,7 @@ var privateCallUnsafePrivate__VZMacBatteryPowerSourceDeviceConfiguration_Instanc
 
 func UnsafePrivate__VZMacBatteryPowerSourceDeviceConfiguration_Instance_makePowerSourceDeviceForVirtualMachine_powerSourceDeviceIndex__7bc9687f(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28688,7 +28705,7 @@ func UnsafePrivate__VZMacBatteryPowerSourceDeviceConfiguration_Instance_makePowe
 var privateCallUnsafePrivate__VZMacBatteryPowerSourceDeviceConfiguration_Instance_setSource__3b0ab66d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMacBatteryPowerSourceDeviceConfiguration_Instance_setSource__3b0ab66d(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacBatteryPowerSourceDeviceConfiguration_Instance_setSource__3b0ab66d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setSource:")
 		})
@@ -28703,7 +28720,7 @@ var privateCallUnsafePrivate__VZMacBatteryPowerSourceDeviceConfiguration_Instanc
 
 func UnsafePrivate__VZMacBatteryPowerSourceDeviceConfiguration_Instance_source_4274002b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28731,7 +28748,7 @@ var privateCallUnsafePrivate__VZMacBatteryPowerSourceDevice_Instance__cxx_constr
 
 func UnsafePrivate__VZMacBatteryPowerSourceDevice_Instance__cxx_construct_ca1a20f0(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28758,7 +28775,7 @@ func UnsafePrivate__VZMacBatteryPowerSourceDevice_Instance__cxx_construct_ca1a20
 var privateCallUnsafePrivate__VZMacBatteryPowerSourceDevice_Instance__cxx_destruct_ec486e5e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZMacBatteryPowerSourceDevice_Instance__cxx_destruct_ec486e5e(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacBatteryPowerSourceDevice_Instance__cxx_destruct_ec486e5e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -28772,7 +28789,7 @@ func UnsafePrivate__VZMacBatteryPowerSourceDevice_Instance__cxx_destruct_ec486e5
 var privateCallUnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_batterySource_didUpdateCharge__57c2a00d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, float64)]]
 
 func UnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_batterySource_didUpdateCharge__57c2a00d(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 float64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_batterySource_didUpdateCharge__57c2a00d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, float64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, float64)]("batterySource:didUpdateCharge:")
 		})
@@ -28786,7 +28803,7 @@ func UnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_batterySource_didUpda
 var privateCallUnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_batterySource_didUpdateConnectivity__4997622d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, int64)]]
 
 func UnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_batterySource_didUpdateConnectivity__4997622d(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_batterySource_didUpdateConnectivity__4997622d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, int64)]("batterySource:didUpdateConnectivity:")
 		})
@@ -28800,7 +28817,7 @@ func UnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_batterySource_didUpda
 var privateCallUnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_dealloc_0e9fe366 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_dealloc_0e9fe366(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_dealloc_0e9fe366.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -28814,7 +28831,7 @@ func UnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_dealloc_0e9fe366(rece
 var privateCallUnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_setSource__905c8f21 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_setSource__905c8f21(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_setSource__905c8f21.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setSource:")
 		})
@@ -28829,7 +28846,7 @@ var privateCallUnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_source_f62e
 
 func UnsafePrivate__VZMacBatteryPowerSourceDevice_Instance_source_f62e5f0a(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28857,7 +28874,7 @@ var privateCallUnsafePrivate__VZMacBatterySource_Instance__init_a304ebf7 lazyBin
 
 func UnsafePrivate__VZMacBatterySource_Instance__init_a304ebf7(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28884,7 +28901,7 @@ func UnsafePrivate__VZMacBatterySource_Instance__init_a304ebf7(receiver unsafe.P
 var privateCallUnsafePrivate__VZMacBatterySource_Instance_registerObserver__636d1f19 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMacBatterySource_Instance_registerObserver__636d1f19(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacBatterySource_Instance_registerObserver__636d1f19.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("registerObserver:")
 		})
@@ -28898,7 +28915,7 @@ func UnsafePrivate__VZMacBatterySource_Instance_registerObserver__636d1f19(recei
 var privateCallUnsafePrivate__VZMacBatterySource_Instance_unregisterObserver__eea2a181 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMacBatterySource_Instance_unregisterObserver__eea2a181(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacBatterySource_Instance_unregisterObserver__eea2a181.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("unregisterObserver:")
 		})
@@ -28913,7 +28930,7 @@ var privateCallUnsafePrivate__VZMacBifrostDeviceConfiguration_Instance_copyWithZ
 
 func UnsafePrivate__VZMacBifrostDeviceConfiguration_Instance_copyWithZone__40bc8f20(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28941,7 +28958,7 @@ var privateCallUnsafePrivate__VZMacBifrostDeviceConfiguration_Instance_initWithA
 
 func UnsafePrivate__VZMacBifrostDeviceConfiguration_Instance_initWithAttachment_MMIOSize__8962d99d(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -28968,7 +28985,7 @@ func UnsafePrivate__VZMacBifrostDeviceConfiguration_Instance_initWithAttachment_
 var privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance__cxx_destruct_1aa1e02d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance__cxx_destruct_1aa1e02d(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance__cxx_destruct_1aa1e02d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -28983,7 +29000,7 @@ var privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_copyWithZone_
 
 func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_copyWithZone__0d7e45bc(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29011,7 +29028,7 @@ var privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_initWithVendo
 
 func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_initWithVendorID_productID_usagePage_usage__67224e43(receiver unsafe.Pointer, p0 uint16, p1 uint16, p2 uint32, p3 uint32, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29039,7 +29056,7 @@ var privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_makeHIDDevice
 
 func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_makeHIDDeviceForVirtualMachine_hidDeviceIndex__d1021224(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29067,7 +29084,7 @@ var privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_productID_6ec
 
 func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_productID_6ec24ea1(receiver unsafe.Pointer) uint16 {
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_productID_6ec24ea1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint16] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("productID")
 		})
@@ -29083,7 +29100,7 @@ var privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_registryPrope
 
 func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_registryProperties_bb998986(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29110,7 +29127,7 @@ func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_registryProperties_bb99
 var privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setProductID__d2932914 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]]
 
 func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setProductID__d2932914(receiver unsafe.Pointer, p0 uint16) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setProductID__d2932914.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]("setProductID:")
 		})
@@ -29124,7 +29141,7 @@ func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setProductID__d2932914(
 var privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setRegistryProperties__d2529c66 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setRegistryProperties__d2529c66(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setRegistryProperties__d2529c66.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setRegistryProperties:")
 		})
@@ -29138,7 +29155,7 @@ func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setRegistryProperties__
 var privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setUsagePage__3253e995 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]]
 
 func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setUsagePage__3253e995(receiver unsafe.Pointer, p0 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setUsagePage__3253e995.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]("setUsagePage:")
 		})
@@ -29152,7 +29169,7 @@ func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setUsagePage__3253e995(
 var privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setUsage__a3313a2c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]]
 
 func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setUsage__a3313a2c(receiver unsafe.Pointer, p0 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setUsage__a3313a2c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]("setUsage:")
 		})
@@ -29166,7 +29183,7 @@ func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setUsage__a3313a2c(rece
 var privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setVendorID__81217c3c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]]
 
 func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setVendorID__81217c3c(receiver unsafe.Pointer, p0 uint16) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_setVendorID__81217c3c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]("setVendorID:")
 		})
@@ -29181,7 +29198,7 @@ var privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_usagePage_f02
 
 func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_usagePage_f025abbe(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_usagePage_f025abbe.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("usagePage")
 		})
@@ -29197,7 +29214,7 @@ var privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_usage_5d972a8
 
 func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_usage_5d972a84(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_usage_5d972a84.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("usage")
 		})
@@ -29213,7 +29230,7 @@ var privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_vendorID_ba98
 
 func UnsafePrivate__VZMacHIDDeviceConfiguration_Instance_vendorID_ba985e0f(receiver unsafe.Pointer) uint16 {
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHIDDeviceConfiguration_Instance_vendorID_ba985e0f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint16] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("vendorID")
 		})
@@ -29229,7 +29246,7 @@ var privateCallUnsafePrivate__VZMacHardwareModelDescriptor_Instance__cxx_constru
 
 func UnsafePrivate__VZMacHardwareModelDescriptor_Instance__cxx_construct_7df412d1(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29256,7 +29273,7 @@ func UnsafePrivate__VZMacHardwareModelDescriptor_Instance__cxx_construct_7df412d
 var privateCallUnsafePrivate__VZMacHardwareModelDescriptor_Instance__cxx_destruct_6c4bf057 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZMacHardwareModelDescriptor_Instance__cxx_destruct_6c4bf057(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHardwareModelDescriptor_Instance__cxx_destruct_6c4bf057.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -29271,7 +29288,7 @@ var privateCallUnsafePrivate__VZMacHardwareModelDescriptor_Instance_init_6ec74da
 
 func UnsafePrivate__VZMacHardwareModelDescriptor_Instance_init_6ec74dad(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29298,7 +29315,7 @@ func UnsafePrivate__VZMacHardwareModelDescriptor_Instance_init_6ec74dad(receiver
 var privateCallUnsafePrivate__VZMacHardwareModelDescriptor_Instance_setBoardID__1f07fafa lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]]
 
 func UnsafePrivate__VZMacHardwareModelDescriptor_Instance_setBoardID__1f07fafa(receiver unsafe.Pointer, p0 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHardwareModelDescriptor_Instance_setBoardID__1f07fafa.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]("setBoardID:")
 		})
@@ -29312,7 +29329,7 @@ func UnsafePrivate__VZMacHardwareModelDescriptor_Instance_setBoardID__1f07fafa(r
 var privateCallUnsafePrivate__VZMacHardwareModelDescriptor_Instance_setISA__521c233f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate__VZMacHardwareModelDescriptor_Instance_setISA__521c233f(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHardwareModelDescriptor_Instance_setISA__521c233f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setISA:")
 		})
@@ -29326,7 +29343,7 @@ func UnsafePrivate__VZMacHardwareModelDescriptor_Instance_setISA__521c233f(recei
 var privateCallUnsafePrivate__VZMacHardwareModelDescriptor_Instance_setPlatformVersion__e2b29c8b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]]
 
 func UnsafePrivate__VZMacHardwareModelDescriptor_Instance_setPlatformVersion__e2b29c8b(receiver unsafe.Pointer, p0 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHardwareModelDescriptor_Instance_setPlatformVersion__e2b29c8b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]("setPlatformVersion:")
 		})
@@ -29340,7 +29357,7 @@ func UnsafePrivate__VZMacHardwareModelDescriptor_Instance_setPlatformVersion__e2
 var privateCallUnsafePrivate__VZMacHardwareModelDescriptor_Instance_setVariantID_variantName__ca642d8b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMacHardwareModelDescriptor_Instance_setVariantID_variantName__ca642d8b(receiver unsafe.Pointer, p0 uint32, p1 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHardwareModelDescriptor_Instance_setVariantID_variantName__ca642d8b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32, unsafe.Pointer)]("setVariantID:variantName:")
 		})
@@ -29355,7 +29372,7 @@ var privateCallUnsafePrivate__VZMacHostBatterySource_Instance_init_9cd7ddf5 lazy
 
 func UnsafePrivate__VZMacHostBatterySource_Instance_init_9cd7ddf5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29382,7 +29399,7 @@ func UnsafePrivate__VZMacHostBatterySource_Instance_init_9cd7ddf5(receiver unsaf
 var privateCallUnsafePrivate__VZMacHostBatterySource_Instance_registerObserver__16a97d49 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMacHostBatterySource_Instance_registerObserver__16a97d49(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHostBatterySource_Instance_registerObserver__16a97d49.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("registerObserver:")
 		})
@@ -29396,7 +29413,7 @@ func UnsafePrivate__VZMacHostBatterySource_Instance_registerObserver__16a97d49(r
 var privateCallUnsafePrivate__VZMacHostBatterySource_Instance_unregisterObserver__d2d904de lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMacHostBatterySource_Instance_unregisterObserver__d2d904de(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacHostBatterySource_Instance_unregisterObserver__d2d904de.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("unregisterObserver:")
 		})
@@ -29411,7 +29428,7 @@ var privateCallUnsafePrivate__VZMacNeuralEngineDeviceConfiguration_Instance__isS
 
 func UnsafePrivate__VZMacNeuralEngineDeviceConfiguration_Instance__isSignatureMismatchAllowed_11a4db0c(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacNeuralEngineDeviceConfiguration_Instance__isSignatureMismatchAllowed_11a4db0c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_isSignatureMismatchAllowed")
 		})
@@ -29426,7 +29443,7 @@ func UnsafePrivate__VZMacNeuralEngineDeviceConfiguration_Instance__isSignatureMi
 var privateCallUnsafePrivate__VZMacNeuralEngineDeviceConfiguration_Instance__setSignatureMismatchAllowed__d6f6f5e3 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate__VZMacNeuralEngineDeviceConfiguration_Instance__setSignatureMismatchAllowed__d6f6f5e3(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacNeuralEngineDeviceConfiguration_Instance__setSignatureMismatchAllowed__d6f6f5e3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("_setSignatureMismatchAllowed:")
 		})
@@ -29441,7 +29458,7 @@ var privateCallUnsafePrivate__VZMacNeuralEngineDeviceConfiguration_Instance_copy
 
 func UnsafePrivate__VZMacNeuralEngineDeviceConfiguration_Instance_copyWithZone__e08b830d(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29469,7 +29486,7 @@ var privateCallUnsafePrivate__VZMacNeuralEngineDeviceConfiguration_Instance_init
 
 func UnsafePrivate__VZMacNeuralEngineDeviceConfiguration_Instance_init_75a0e851(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29497,7 +29514,7 @@ var privateCallUnsafePrivate__VZMacOSBootLoaderGuestTraceEvent_Instance_data0_55
 
 func UnsafePrivate__VZMacOSBootLoaderGuestTraceEvent_Instance_data0_551384ee(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacOSBootLoaderGuestTraceEvent_Instance_data0_551384ee.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("data0")
 		})
@@ -29513,7 +29530,7 @@ var privateCallUnsafePrivate__VZMacOSBootLoaderGuestTraceEvent_Instance_data1_54
 
 func UnsafePrivate__VZMacOSBootLoaderGuestTraceEvent_Instance_data1_54a2ca99(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacOSBootLoaderGuestTraceEvent_Instance_data1_54a2ca99.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("data1")
 		})
@@ -29529,7 +29546,7 @@ var privateCallUnsafePrivate__VZMacOSBootLoaderGuestTraceEvent_Instance_data2_14
 
 func UnsafePrivate__VZMacOSBootLoaderGuestTraceEvent_Instance_data2_140735a7(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacOSBootLoaderGuestTraceEvent_Instance_data2_140735a7.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("data2")
 		})
@@ -29545,7 +29562,7 @@ var privateCallUnsafePrivate__VZMacOSBootLoaderGuestTraceEvent_Instance_status_c
 
 func UnsafePrivate__VZMacOSBootLoaderGuestTraceEvent_Instance_status_cf6a32df(receiver unsafe.Pointer) uint32 {
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacOSBootLoaderGuestTraceEvent_Instance_status_cf6a32df.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("status")
 		})
@@ -29560,7 +29577,7 @@ func UnsafePrivate__VZMacOSBootLoaderGuestTraceEvent_Instance_status_cf6a32df(re
 var privateCallUnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance__cxx_destruct_e1baec08 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance__cxx_destruct_e1baec08(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance__cxx_destruct_e1baec08.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -29575,7 +29592,7 @@ var privateCallUnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance_
 
 func UnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance_copyWithZone__78345c3d(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29603,7 +29620,7 @@ var privateCallUnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance_
 
 func UnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance_guestServiceAllowList_1457d66e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29631,7 +29648,7 @@ var privateCallUnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance_
 
 func UnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance_hostServiceAllowList_0b92393b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29658,7 +29675,7 @@ func UnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance_hostServic
 var privateCallUnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance_setGuestServiceAllowList__1cc3fcca lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance_setGuestServiceAllowList__1cc3fcca(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance_setGuestServiceAllowList__1cc3fcca.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setGuestServiceAllowList:")
 		})
@@ -29672,7 +29689,7 @@ func UnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance_setGuestSe
 var privateCallUnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance_setHostServiceAllowList__d4876cb6 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance_setHostServiceAllowList__d4876cb6(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacRemoteServiceDiscoveryConfiguration_Instance_setHostServiceAllowList__d4876cb6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setHostServiceAllowList:")
 		})
@@ -29687,7 +29704,7 @@ var privateCallUnsafePrivate__VZMacScalerAcceleratorDeviceConfiguration_Instance
 
 func UnsafePrivate__VZMacScalerAcceleratorDeviceConfiguration_Instance_copyWithZone__46adcbcc(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29715,7 +29732,7 @@ var privateCallUnsafePrivate__VZMacScalerAcceleratorDeviceConfiguration_Instance
 
 func UnsafePrivate__VZMacScalerAcceleratorDeviceConfiguration_Instance_init_d4e66fb4(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29743,7 +29760,7 @@ var privateCallUnsafePrivate__VZMacSerialNumber_Instance_copyWithZone__7624106b 
 
 func UnsafePrivate__VZMacSerialNumber_Instance_copyWithZone__7624106b(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29771,7 +29788,7 @@ var privateCallUnsafePrivate__VZMacSerialNumber_Instance_hash_c7202da5 lazyBindi
 
 func UnsafePrivate__VZMacSerialNumber_Instance_hash_c7202da5(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacSerialNumber_Instance_hash_c7202da5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 		})
@@ -29787,7 +29804,7 @@ var privateCallUnsafePrivate__VZMacSerialNumber_Instance_initWithString__637e56b
 
 func UnsafePrivate__VZMacSerialNumber_Instance_initWithString__637e56b8(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29815,7 +29832,7 @@ var privateCallUnsafePrivate__VZMacSerialNumber_Instance_isEqual__e60d892e lazyB
 
 func UnsafePrivate__VZMacSerialNumber_Instance_isEqual__e60d892e(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacSerialNumber_Instance_isEqual__e60d892e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 		})
@@ -29831,7 +29848,7 @@ var privateCallUnsafePrivate__VZMacSerialNumber_Instance_string_6789fa94 lazyBin
 
 func UnsafePrivate__VZMacSerialNumber_Instance_string_6789fa94(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29859,7 +29876,7 @@ var privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance__cxx_construc
 
 func UnsafePrivate__VZMacSyntheticBatterySource_Instance__cxx_construct_04fd1dc4(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29886,7 +29903,7 @@ func UnsafePrivate__VZMacSyntheticBatterySource_Instance__cxx_construct_04fd1dc4
 var privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance__cxx_destruct_5b202bfc lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZMacSyntheticBatterySource_Instance__cxx_destruct_5b202bfc(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance__cxx_destruct_5b202bfc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -29901,7 +29918,7 @@ var privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance_charge_7b2733
 
 func UnsafePrivate__VZMacSyntheticBatterySource_Instance_charge_7b2733cf(receiver unsafe.Pointer) float64 {
 	var result float64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance_charge_7b2733cf.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) float64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) float64]("charge")
 		})
@@ -29917,7 +29934,7 @@ var privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance_connectivity_
 
 func UnsafePrivate__VZMacSyntheticBatterySource_Instance_connectivity_e8d67a30(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance_connectivity_e8d67a30.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("connectivity")
 		})
@@ -29933,7 +29950,7 @@ var privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance_init_0519257b
 
 func UnsafePrivate__VZMacSyntheticBatterySource_Instance_init_0519257b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -29960,7 +29977,7 @@ func UnsafePrivate__VZMacSyntheticBatterySource_Instance_init_0519257b(receiver 
 var privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance_registerObserver__3f6bcb58 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMacSyntheticBatterySource_Instance_registerObserver__3f6bcb58(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance_registerObserver__3f6bcb58.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("registerObserver:")
 		})
@@ -29974,7 +29991,7 @@ func UnsafePrivate__VZMacSyntheticBatterySource_Instance_registerObserver__3f6bc
 var privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance_setCharge__461c2249 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, float64)]]
 
 func UnsafePrivate__VZMacSyntheticBatterySource_Instance_setCharge__461c2249(receiver unsafe.Pointer, p0 float64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance_setCharge__461c2249.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, float64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, float64)]("setCharge:")
 		})
@@ -29988,7 +30005,7 @@ func UnsafePrivate__VZMacSyntheticBatterySource_Instance_setCharge__461c2249(rec
 var privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance_setConnectivity__1a1d95aa lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate__VZMacSyntheticBatterySource_Instance_setConnectivity__1a1d95aa(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance_setConnectivity__1a1d95aa.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setConnectivity:")
 		})
@@ -30002,7 +30019,7 @@ func UnsafePrivate__VZMacSyntheticBatterySource_Instance_setConnectivity__1a1d95
 var privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance_unregisterObserver__1b8a530b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMacSyntheticBatterySource_Instance_unregisterObserver__1b8a530b(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMacSyntheticBatterySource_Instance_unregisterObserver__1b8a530b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("unregisterObserver:")
 		})
@@ -30017,7 +30034,7 @@ var privateCallUnsafePrivate__VZMacTouchIDDeviceConfiguration_Instance_copyWithZ
 
 func UnsafePrivate__VZMacTouchIDDeviceConfiguration_Instance_copyWithZone__1951a30b(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30045,7 +30062,7 @@ var privateCallUnsafePrivate__VZMacTouchIDDeviceConfiguration_Instance_init_eb38
 
 func UnsafePrivate__VZMacTouchIDDeviceConfiguration_Instance_init_eb38a7f7(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30090,7 +30107,7 @@ var privateCallUnsafePrivate__VZMacVideoToolboxDeviceConfiguration_Instance_copy
 
 func UnsafePrivate__VZMacVideoToolboxDeviceConfiguration_Instance_copyWithZone__29d23b99(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30118,7 +30135,7 @@ var privateCallUnsafePrivate__VZMacVideoToolboxDeviceConfiguration_Instance_init
 
 func UnsafePrivate__VZMacVideoToolboxDeviceConfiguration_Instance_init_031df191(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30146,7 +30163,7 @@ var privateCallUnsafePrivate__VZMacWallPowerSourceDeviceConfiguration_Instance_c
 
 func UnsafePrivate__VZMacWallPowerSourceDeviceConfiguration_Instance_copyWithZone__cdc5757b(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30174,7 +30191,7 @@ var privateCallUnsafePrivate__VZMacWallPowerSourceDeviceConfiguration_Instance_i
 
 func UnsafePrivate__VZMacWallPowerSourceDeviceConfiguration_Instance_init_8f0274a9(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30202,7 +30219,7 @@ var privateCallUnsafePrivate__VZMacWallPowerSourceDeviceConfiguration_Instance_m
 
 func UnsafePrivate__VZMacWallPowerSourceDeviceConfiguration_Instance_makePowerSourceDeviceForVirtualMachine_powerSourceDeviceIndex__0f2b412e(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30230,7 +30247,7 @@ var privateCallUnsafePrivate__VZMagnifyEvent_Instance_initWithEvent__c42cbd7c la
 
 func UnsafePrivate__VZMagnifyEvent_Instance_initWithEvent__c42cbd7c(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30258,7 +30275,7 @@ var privateCallUnsafePrivate__VZMagnifyEvent_Instance_initWithMagnification_phas
 
 func UnsafePrivate__VZMagnifyEvent_Instance_initWithMagnification_phase__73307bbd(receiver unsafe.Pointer, p0 float64, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30286,7 +30303,7 @@ var privateCallUnsafePrivate__VZMagnifyEvent_Instance_magnification_fa5d6d54 laz
 
 func UnsafePrivate__VZMagnifyEvent_Instance_magnification_fa5d6d54(receiver unsafe.Pointer) float64 {
 	var result float64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMagnifyEvent_Instance_magnification_fa5d6d54.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) float64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) float64]("magnification")
 		})
@@ -30302,7 +30319,7 @@ var privateCallUnsafePrivate__VZMagnifyEvent_Instance_phase_b420753e lazyBinding
 
 func UnsafePrivate__VZMagnifyEvent_Instance_phase_b420753e(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMagnifyEvent_Instance_phase_b420753e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("phase")
 		})
@@ -30318,7 +30335,7 @@ var privateCallUnsafePrivate__VZMailboxDeviceAttachment_Instance__init_f9c68bc3 
 
 func UnsafePrivate__VZMailboxDeviceAttachment_Instance__init_f9c68bc3(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30345,7 +30362,7 @@ func UnsafePrivate__VZMailboxDeviceAttachment_Instance__init_f9c68bc3(receiver u
 var privateCallUnsafePrivate__VZMailboxDeviceConfiguration_Instance__cxx_destruct_b7eb7ce5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZMailboxDeviceConfiguration_Instance__cxx_destruct_b7eb7ce5(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMailboxDeviceConfiguration_Instance__cxx_destruct_b7eb7ce5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -30360,7 +30377,7 @@ var privateCallUnsafePrivate__VZMailboxDeviceConfiguration_Instance__init_d0d3f1
 
 func UnsafePrivate__VZMailboxDeviceConfiguration_Instance__init_d0d3f13a(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30388,7 +30405,7 @@ var privateCallUnsafePrivate__VZMailboxDeviceConfiguration_Instance_attachment_5
 
 func UnsafePrivate__VZMailboxDeviceConfiguration_Instance_attachment_59fe188b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30416,7 +30433,7 @@ var privateCallUnsafePrivate__VZMailboxDeviceConfiguration_Instance_copyWithZone
 
 func UnsafePrivate__VZMailboxDeviceConfiguration_Instance_copyWithZone__841774b5(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30443,7 +30460,7 @@ func UnsafePrivate__VZMailboxDeviceConfiguration_Instance_copyWithZone__841774b5
 var privateCallUnsafePrivate__VZMailboxDeviceConfiguration_Instance_setAttachment__93cc0e35 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMailboxDeviceConfiguration_Instance_setAttachment__93cc0e35(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMailboxDeviceConfiguration_Instance_setAttachment__93cc0e35.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAttachment:")
 		})
@@ -30458,7 +30475,7 @@ var privateCallUnsafePrivate__VZMailboxDeviceConfiguration_Instance_validateWith
 
 func UnsafePrivate__VZMailboxDeviceConfiguration_Instance_validateWithError__4a973f46(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMailboxDeviceConfiguration_Instance_validateWithError__4a973f46.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateWithError:")
 		})
@@ -30474,7 +30491,7 @@ var privateCallUnsafePrivate__VZMailboxHandleMailboxDeviceConfiguration_Instance
 
 func UnsafePrivate__VZMailboxHandleMailboxDeviceConfiguration_Instance_init_d91354d4(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30502,7 +30519,7 @@ var privateCallUnsafePrivate__VZMouseEvent_Instance_initWithPressedButtons_delta
 
 func UnsafePrivate__VZMouseEvent_Instance_initWithPressedButtons_deltaX_deltaY__b0d656b9(receiver unsafe.Pointer, p0 int64, p1 float64, p2 float64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30546,7 +30563,7 @@ func UnsafePrivate__VZMouse_Class_requiresGrabbingMouseInput_e0799354() bool {
 var privateCallUnsafePrivate__VZMouse_Instance_sendMouseEvents__513138fa lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMouse_Instance_sendMouseEvents__513138fa(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMouse_Instance_sendMouseEvents__513138fa.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("sendMouseEvents:")
 		})
@@ -30560,7 +30577,7 @@ func UnsafePrivate__VZMouse_Instance_sendMouseEvents__513138fa(receiver unsafe.P
 var privateCallUnsafePrivate__VZMultiTouchDeviceConfiguration_Instance__cxx_destruct_48ac8559 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZMultiTouchDeviceConfiguration_Instance__cxx_destruct_48ac8559(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMultiTouchDeviceConfiguration_Instance__cxx_destruct_48ac8559.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -30575,7 +30592,7 @@ var privateCallUnsafePrivate__VZMultiTouchDeviceConfiguration_Instance__init_4e8
 
 func UnsafePrivate__VZMultiTouchDeviceConfiguration_Instance__init_4e8e3d70(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30603,7 +30620,7 @@ var privateCallUnsafePrivate__VZMultiTouchDeviceConfiguration_Instance_associati
 
 func UnsafePrivate__VZMultiTouchDeviceConfiguration_Instance_associationIdentifier_31139b80(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30631,7 +30648,7 @@ var privateCallUnsafePrivate__VZMultiTouchDeviceConfiguration_Instance_copyWithZ
 
 func UnsafePrivate__VZMultiTouchDeviceConfiguration_Instance_copyWithZone__115bebc0(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30659,7 +30676,7 @@ var privateCallUnsafePrivate__VZMultiTouchDeviceConfiguration_Instance_makeMulti
 
 func UnsafePrivate__VZMultiTouchDeviceConfiguration_Instance_makeMultiTouchDeviceForVirtualMachine_multiTouchDeviceIndex__1a8fe262(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30686,7 +30703,7 @@ func UnsafePrivate__VZMultiTouchDeviceConfiguration_Instance_makeMultiTouchDevic
 var privateCallUnsafePrivate__VZMultiTouchDeviceConfiguration_Instance_setAssociationIdentifier__a686079a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMultiTouchDeviceConfiguration_Instance_setAssociationIdentifier__a686079a(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMultiTouchDeviceConfiguration_Instance_setAssociationIdentifier__a686079a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAssociationIdentifier:")
 		})
@@ -30700,7 +30717,7 @@ func UnsafePrivate__VZMultiTouchDeviceConfiguration_Instance_setAssociationIdent
 var privateCallUnsafePrivate__VZMultiTouchDevice_Instance__cxx_destruct_ef862989 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZMultiTouchDevice_Instance__cxx_destruct_ef862989(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMultiTouchDevice_Instance__cxx_destruct_ef862989.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -30715,7 +30732,7 @@ var privateCallUnsafePrivate__VZMultiTouchDevice_Instance_associationIdentifier_
 
 func UnsafePrivate__VZMultiTouchDevice_Instance_associationIdentifier_f3e6df69(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30742,7 +30759,7 @@ func UnsafePrivate__VZMultiTouchDevice_Instance_associationIdentifier_f3e6df69(r
 var privateCallUnsafePrivate__VZMultiTouchDevice_Instance_sendMultiTouchEvents__dd26c474 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZMultiTouchDevice_Instance_sendMultiTouchEvents__dd26c474(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMultiTouchDevice_Instance_sendMultiTouchEvents__dd26c474.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("sendMultiTouchEvents:")
 		})
@@ -30756,7 +30773,7 @@ func UnsafePrivate__VZMultiTouchDevice_Instance_sendMultiTouchEvents__dd26c474(r
 var privateCallUnsafePrivate__VZMultiTouchEvent_Instance__cxx_destruct_ada90523 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZMultiTouchEvent_Instance__cxx_destruct_ada90523(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZMultiTouchEvent_Instance__cxx_destruct_ada90523.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -30771,7 +30788,7 @@ var privateCallUnsafePrivate__VZMultiTouchEvent_Instance_initWithEvent_view__e15
 
 func UnsafePrivate__VZMultiTouchEvent_Instance_initWithEvent_view__e15c4b7f(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30799,7 +30816,7 @@ var privateCallUnsafePrivate__VZMultiTouchEvent_Instance_initWithTouches__06aa1f
 
 func UnsafePrivate__VZMultiTouchEvent_Instance_initWithTouches__06aa1f7b(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30827,7 +30844,7 @@ var privateCallUnsafePrivate__VZMultiTouchEvent_Instance_touches_f8f2d8db lazyBi
 
 func UnsafePrivate__VZMultiTouchEvent_Instance_touches_f8f2d8db(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30855,7 +30872,7 @@ var privateCallUnsafePrivate__VZPCIDeviceConfiguration_Instance__init_86d15167 l
 
 func UnsafePrivate__VZPCIDeviceConfiguration_Instance__init_86d15167(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30883,7 +30900,7 @@ var privateCallUnsafePrivate__VZPCIDeviceConfiguration_Instance_copyWithZone__d2
 
 func UnsafePrivate__VZPCIDeviceConfiguration_Instance_copyWithZone__d2c586d0(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30911,7 +30928,7 @@ var privateCallUnsafePrivate__VZPCIPassthroughDeviceConfiguration_Instance__cxx_
 
 func UnsafePrivate__VZPCIPassthroughDeviceConfiguration_Instance__cxx_construct_78da4a77(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30939,7 +30956,7 @@ var privateCallUnsafePrivate__VZPCIPassthroughDeviceConfiguration_Instance_copyW
 
 func UnsafePrivate__VZPCIPassthroughDeviceConfiguration_Instance_copyWithZone__3ecc3ed8(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30967,7 +30984,7 @@ var privateCallUnsafePrivate__VZPCIPassthroughDeviceConfiguration_Instance_initW
 
 func UnsafePrivate__VZPCIPassthroughDeviceConfiguration_Instance_initWithDomain_bus_device_function__21a69534(receiver unsafe.Pointer, p0 uint32, p1 uint8, p2 uint8, p3 uint8, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -30995,7 +31012,7 @@ var privateCallUnsafePrivate__VZPCIPassthroughDeviceConfiguration_Instance_isEqu
 
 func UnsafePrivate__VZPCIPassthroughDeviceConfiguration_Instance_isEqual__4fe9f30c(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZPCIPassthroughDeviceConfiguration_Instance_isEqual__4fe9f30c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 		})
@@ -31028,7 +31045,7 @@ var privateCallUnsafePrivate__VZPL011SerialPortConfiguration_Instance_copyWithZo
 
 func UnsafePrivate__VZPL011SerialPortConfiguration_Instance_copyWithZone__06e952f5(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31056,7 +31073,7 @@ var privateCallUnsafePrivate__VZPL011SerialPortConfiguration_Instance_init_30e88
 
 func UnsafePrivate__VZPL011SerialPortConfiguration_Instance_init_30e88f32(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31084,7 +31101,7 @@ var privateCallUnsafePrivate__VZPanicDeviceConfiguration_Instance__init_87706262
 
 func UnsafePrivate__VZPanicDeviceConfiguration_Instance__init_87706262(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31112,7 +31129,7 @@ var privateCallUnsafePrivate__VZPanicDeviceConfiguration_Instance_copyWithZone__
 
 func UnsafePrivate__VZPanicDeviceConfiguration_Instance_copyWithZone__2e021e93(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31173,7 +31190,7 @@ func UnsafePrivate__VZPointingDevice_Class_requiresGrabbingMouseInput_4288f9e9()
 var privateCallUnsafePrivate__VZPointingDevice_Instance__cxx_destruct_2f01f46d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZPointingDevice_Instance__cxx_destruct_2f01f46d(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZPointingDevice_Instance__cxx_destruct_2f01f46d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -31187,7 +31204,7 @@ func UnsafePrivate__VZPointingDevice_Instance__cxx_destruct_2f01f46d(receiver un
 var privateCallUnsafePrivate__VZPointingDevice_Instance_sendMagnifyEvents__c17308d1 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZPointingDevice_Instance_sendMagnifyEvents__c17308d1(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZPointingDevice_Instance_sendMagnifyEvents__c17308d1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("sendMagnifyEvents:")
 		})
@@ -31201,7 +31218,7 @@ func UnsafePrivate__VZPointingDevice_Instance_sendMagnifyEvents__c17308d1(receiv
 var privateCallUnsafePrivate__VZPointingDevice_Instance_sendQuickLookEvents__771cf415 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZPointingDevice_Instance_sendQuickLookEvents__771cf415(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZPointingDevice_Instance_sendQuickLookEvents__771cf415.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("sendQuickLookEvents:")
 		})
@@ -31215,7 +31232,7 @@ func UnsafePrivate__VZPointingDevice_Instance_sendQuickLookEvents__771cf415(rece
 var privateCallUnsafePrivate__VZPointingDevice_Instance_sendRotationEvents__22252ebc lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZPointingDevice_Instance_sendRotationEvents__22252ebc(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZPointingDevice_Instance_sendRotationEvents__22252ebc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("sendRotationEvents:")
 		})
@@ -31229,7 +31246,7 @@ func UnsafePrivate__VZPointingDevice_Instance_sendRotationEvents__22252ebc(recei
 var privateCallUnsafePrivate__VZPointingDevice_Instance_sendScrollWheelEvents__af820412 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZPointingDevice_Instance_sendScrollWheelEvents__af820412(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZPointingDevice_Instance_sendScrollWheelEvents__af820412.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("sendScrollWheelEvents:")
 		})
@@ -31243,7 +31260,7 @@ func UnsafePrivate__VZPointingDevice_Instance_sendScrollWheelEvents__af820412(re
 var privateCallUnsafePrivate__VZPointingDevice_Instance_sendSmartMagnifyEvents__675aedb2 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZPointingDevice_Instance_sendSmartMagnifyEvents__675aedb2(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZPointingDevice_Instance_sendSmartMagnifyEvents__675aedb2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("sendSmartMagnifyEvents:")
 		})
@@ -31258,7 +31275,7 @@ var privateCallUnsafePrivate__VZPointingDevice_Instance_type_cb59ed86 lazyBindin
 
 func UnsafePrivate__VZPointingDevice_Instance_type_cb59ed86(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZPointingDevice_Instance_type_cb59ed86.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("type")
 		})
@@ -31274,7 +31291,7 @@ var privateCallUnsafePrivate__VZPowerSourceDeviceConfiguration_Instance__init_2d
 
 func UnsafePrivate__VZPowerSourceDeviceConfiguration_Instance__init_2dd4e9b6(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31302,7 +31319,7 @@ var privateCallUnsafePrivate__VZPowerSourceDeviceConfiguration_Instance_copyWith
 
 func UnsafePrivate__VZPowerSourceDeviceConfiguration_Instance_copyWithZone__1eeb277b(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31330,7 +31347,7 @@ var privateCallUnsafePrivate__VZPowerSourceDeviceConfiguration_Instance_makePowe
 
 func UnsafePrivate__VZPowerSourceDeviceConfiguration_Instance_makePowerSourceDeviceForVirtualMachine_powerSourceDeviceIndex__31c44f8f(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31358,7 +31375,7 @@ var privateCallUnsafePrivate__VZPowerSourceDevice_Instance__init_df7ba296 lazyBi
 
 func UnsafePrivate__VZPowerSourceDevice_Instance__init_df7ba296(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31386,7 +31403,7 @@ var privateCallUnsafePrivate__VZPvPanicDeviceConfiguration_Instance_copyWithZone
 
 func UnsafePrivate__VZPvPanicDeviceConfiguration_Instance_copyWithZone__bb924e9c(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31414,7 +31431,7 @@ var privateCallUnsafePrivate__VZPvPanicDeviceConfiguration_Instance_init_dbb16da
 
 func UnsafePrivate__VZPvPanicDeviceConfiguration_Instance_init_dbb16daa(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31442,7 +31459,7 @@ var privateCallUnsafePrivate__VZQuickLookEvent_Instance_initWithEvent__7884375a 
 
 func UnsafePrivate__VZQuickLookEvent_Instance_initWithEvent__7884375a(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31470,7 +31487,7 @@ var privateCallUnsafePrivate__VZRemoteSessionNotifier_Instance__cxx_construct_97
 
 func UnsafePrivate__VZRemoteSessionNotifier_Instance__cxx_construct_9758f3d8(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31497,7 +31514,7 @@ func UnsafePrivate__VZRemoteSessionNotifier_Instance__cxx_construct_9758f3d8(rec
 var privateCallUnsafePrivate__VZRemoteSessionNotifier_Instance__cxx_destruct_b833cc6b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZRemoteSessionNotifier_Instance__cxx_destruct_b833cc6b(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZRemoteSessionNotifier_Instance__cxx_destruct_b833cc6b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -31511,7 +31528,7 @@ func UnsafePrivate__VZRemoteSessionNotifier_Instance__cxx_destruct_b833cc6b(rece
 var privateCallUnsafePrivate__VZRemoteSessionNotifier_Instance_dealloc_f3ef5703 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZRemoteSessionNotifier_Instance_dealloc_f3ef5703(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZRemoteSessionNotifier_Instance_dealloc_f3ef5703.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -31526,7 +31543,7 @@ var privateCallUnsafePrivate__VZRotationEvent_Instance_initWithEvent__4c7face9 l
 
 func UnsafePrivate__VZRotationEvent_Instance_initWithEvent__4c7face9(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31554,7 +31571,7 @@ var privateCallUnsafePrivate__VZRotationEvent_Instance_initWithRotation_phase__d
 
 func UnsafePrivate__VZRotationEvent_Instance_initWithRotation_phase__db250669(receiver unsafe.Pointer, p0 float64, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31582,7 +31599,7 @@ var privateCallUnsafePrivate__VZRotationEvent_Instance_phase_53c54b55 lazyBindin
 
 func UnsafePrivate__VZRotationEvent_Instance_phase_53c54b55(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZRotationEvent_Instance_phase_53c54b55.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("phase")
 		})
@@ -31598,7 +31615,7 @@ var privateCallUnsafePrivate__VZRotationEvent_Instance_rotation_e0f77d2b lazyBin
 
 func UnsafePrivate__VZRotationEvent_Instance_rotation_e0f77d2b(receiver unsafe.Pointer) float64 {
 	var result float64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZRotationEvent_Instance_rotation_e0f77d2b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) float64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) float64]("rotation")
 		})
@@ -31613,7 +31630,7 @@ func UnsafePrivate__VZRotationEvent_Instance_rotation_e0f77d2b(receiver unsafe.P
 var privateCallUnsafePrivate__VZSEPCoprocessorConfiguration_Instance__cxx_destruct_205071c2 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZSEPCoprocessorConfiguration_Instance__cxx_destruct_205071c2(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSEPCoprocessorConfiguration_Instance__cxx_destruct_205071c2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -31628,7 +31645,7 @@ var privateCallUnsafePrivate__VZSEPCoprocessorConfiguration_Instance_copyWithZon
 
 func UnsafePrivate__VZSEPCoprocessorConfiguration_Instance_copyWithZone__f51ee8d0(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31656,7 +31673,7 @@ var privateCallUnsafePrivate__VZSEPCoprocessorConfiguration_Instance_initWithSto
 
 func UnsafePrivate__VZSEPCoprocessorConfiguration_Instance_initWithStorageURL__4895a35b(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31684,7 +31701,7 @@ var privateCallUnsafePrivate__VZSEPCoprocessorConfiguration_Instance_initWithSto
 
 func UnsafePrivate__VZSEPCoprocessorConfiguration_Instance_initWithStorage__b4570095(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31712,7 +31729,7 @@ var privateCallUnsafePrivate__VZSEPCoprocessorConfiguration_Instance_makeCoproce
 
 func UnsafePrivate__VZSEPCoprocessorConfiguration_Instance_makeCoprocessorForVirtualMachine_coprocessorIndex__29fff7aa(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31740,7 +31757,7 @@ var privateCallUnsafePrivate__VZSEPCoprocessorConfiguration_Instance_romBinaryUR
 
 func UnsafePrivate__VZSEPCoprocessorConfiguration_Instance_romBinaryURL_dc7b9372(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31767,7 +31784,7 @@ func UnsafePrivate__VZSEPCoprocessorConfiguration_Instance_romBinaryURL_dc7b9372
 var privateCallUnsafePrivate__VZSEPCoprocessorConfiguration_Instance_setRomBinaryURL__348af493 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZSEPCoprocessorConfiguration_Instance_setRomBinaryURL__348af493(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSEPCoprocessorConfiguration_Instance_setRomBinaryURL__348af493.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setRomBinaryURL:")
 		})
@@ -31782,7 +31799,7 @@ var privateCallUnsafePrivate__VZSEPCoprocessorConfiguration_Instance_storage_fbc
 
 func UnsafePrivate__VZSEPCoprocessorConfiguration_Instance_storage_fbcef618(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31810,7 +31827,7 @@ var privateCallUnsafePrivate__VZSEPStorage_Instance__storageSize_c4cb7ff7 lazyBi
 
 func UnsafePrivate__VZSEPStorage_Instance__storageSize_c4cb7ff7(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSEPStorage_Instance__storageSize_c4cb7ff7.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("_storageSize")
 		})
@@ -31826,7 +31843,7 @@ var privateCallUnsafePrivate__VZScreenCoordinatePointerEvent_Instance_initWithEv
 
 func UnsafePrivate__VZScreenCoordinatePointerEvent_Instance_initWithEvent_view__993e8e78(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31854,7 +31871,7 @@ var privateCallUnsafePrivate__VZScreenCoordinatePointerEvent_Instance_pressedBut
 
 func UnsafePrivate__VZScreenCoordinatePointerEvent_Instance_pressedButtons_597c5ad6(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZScreenCoordinatePointerEvent_Instance_pressedButtons_597c5ad6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("pressedButtons")
 		})
@@ -31887,7 +31904,7 @@ var privateCallUnsafePrivate__VZScreenCoordinatePointingDevice_Instance__cxx_con
 
 func UnsafePrivate__VZScreenCoordinatePointingDevice_Instance__cxx_construct_5e16d44d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31914,7 +31931,7 @@ func UnsafePrivate__VZScreenCoordinatePointingDevice_Instance__cxx_construct_5e1
 var privateCallUnsafePrivate__VZScreenCoordinatePointingDevice_Instance_sendPointerEvents__1a40958a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZScreenCoordinatePointingDevice_Instance_sendPointerEvents__1a40958a(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZScreenCoordinatePointingDevice_Instance_sendPointerEvents__1a40958a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("sendPointerEvents:")
 		})
@@ -31929,7 +31946,7 @@ var privateCallUnsafePrivate__VZScrollWheelEvent_Instance_acceleratedScrollingDe
 
 func UnsafePrivate__VZScrollWheelEvent_Instance_acceleratedScrollingDeltaX_c650b7c1(receiver unsafe.Pointer) float64 {
 	var result float64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZScrollWheelEvent_Instance_acceleratedScrollingDeltaX_c650b7c1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) float64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) float64]("acceleratedScrollingDeltaX")
 		})
@@ -31945,7 +31962,7 @@ var privateCallUnsafePrivate__VZScrollWheelEvent_Instance_acceleratedScrollingDe
 
 func UnsafePrivate__VZScrollWheelEvent_Instance_acceleratedScrollingDeltaY_46c8a49e(receiver unsafe.Pointer) float64 {
 	var result float64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZScrollWheelEvent_Instance_acceleratedScrollingDeltaY_46c8a49e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) float64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) float64]("acceleratedScrollingDeltaY")
 		})
@@ -31961,7 +31978,7 @@ var privateCallUnsafePrivate__VZScrollWheelEvent_Instance_initWithEvent__99eb22b
 
 func UnsafePrivate__VZScrollWheelEvent_Instance_initWithEvent__99eb22bd(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -31989,7 +32006,7 @@ var privateCallUnsafePrivate__VZScrollWheelEvent_Instance_initWithScrollingDelta
 
 func UnsafePrivate__VZScrollWheelEvent_Instance_initWithScrollingDeltaX_scrollingDeltaY_acceleratedScrollingDeltaX_acceleratedScrollingDeltaY_scrollPhase_momentumPhase__2c88ea36(receiver unsafe.Pointer, p0 float64, p1 float64, p2 float64, p3 float64, p4 uint64, p5 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -32017,7 +32034,7 @@ var privateCallUnsafePrivate__VZScrollWheelEvent_Instance_momentumPhase_942b8e99
 
 func UnsafePrivate__VZScrollWheelEvent_Instance_momentumPhase_942b8e99(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZScrollWheelEvent_Instance_momentumPhase_942b8e99.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("momentumPhase")
 		})
@@ -32033,7 +32050,7 @@ var privateCallUnsafePrivate__VZScrollWheelEvent_Instance_scrollPhase_1bf1492c l
 
 func UnsafePrivate__VZScrollWheelEvent_Instance_scrollPhase_1bf1492c(receiver unsafe.Pointer) uint64 {
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZScrollWheelEvent_Instance_scrollPhase_1bf1492c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("scrollPhase")
 		})
@@ -32049,7 +32066,7 @@ var privateCallUnsafePrivate__VZScrollWheelEvent_Instance_scrollingDeltaX_4553ff
 
 func UnsafePrivate__VZScrollWheelEvent_Instance_scrollingDeltaX_4553ffbe(receiver unsafe.Pointer) float64 {
 	var result float64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZScrollWheelEvent_Instance_scrollingDeltaX_4553ffbe.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) float64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) float64]("scrollingDeltaX")
 		})
@@ -32065,7 +32082,7 @@ var privateCallUnsafePrivate__VZScrollWheelEvent_Instance_scrollingDeltaY_578ec7
 
 func UnsafePrivate__VZScrollWheelEvent_Instance_scrollingDeltaY_578ec7b9(receiver unsafe.Pointer) float64 {
 	var result float64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZScrollWheelEvent_Instance_scrollingDeltaY_578ec7b9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) float64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) float64]("scrollingDeltaY")
 		})
@@ -32080,7 +32097,7 @@ func UnsafePrivate__VZScrollWheelEvent_Instance_scrollingDeltaY_578ec7b9(receive
 var privateCallUnsafePrivate__VZSealedRegisterHistoryEvent_Instance__cxx_destruct_2c247efc lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZSealedRegisterHistoryEvent_Instance__cxx_destruct_2c247efc(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSealedRegisterHistoryEvent_Instance__cxx_destruct_2c247efc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -32095,7 +32112,7 @@ var privateCallUnsafePrivate__VZSealedRegisterHistoryEvent_Instance_data_514b744
 
 func UnsafePrivate__VZSealedRegisterHistoryEvent_Instance_data_514b7445(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -32123,7 +32140,7 @@ var privateCallUnsafePrivate__VZSealedRegisterHistoryEvent_Instance_operation_c5
 
 func UnsafePrivate__VZSealedRegisterHistoryEvent_Instance_operation_c523551c(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSealedRegisterHistoryEvent_Instance_operation_c523551c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("operation")
 		})
@@ -32139,7 +32156,7 @@ var privateCallUnsafePrivate__VZSealedRegisterHistoryEvent_Instance_type_67e4aa5
 
 func UnsafePrivate__VZSealedRegisterHistoryEvent_Instance_type_67e4aa54(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSealedRegisterHistoryEvent_Instance_type_67e4aa54.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("type")
 		})
@@ -32155,7 +32172,7 @@ var privateCallUnsafePrivate__VZSealedRegisterHistoryEvent_Instance_uuid_a0ae7ad
 
 func UnsafePrivate__VZSealedRegisterHistoryEvent_Instance_uuid_a0ae7ad5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -32182,7 +32199,7 @@ func UnsafePrivate__VZSealedRegisterHistoryEvent_Instance_uuid_a0ae7ad5(receiver
 var privateCallUnsafePrivate__VZSerialPort_Instance__cxx_destruct_6d612a8d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZSerialPort_Instance__cxx_destruct_6d612a8d(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSerialPort_Instance__cxx_destruct_6d612a8d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -32197,7 +32214,7 @@ var privateCallUnsafePrivate__VZSerialPort_Instance_attachment_4faaf345 lazyBind
 
 func UnsafePrivate__VZSerialPort_Instance_attachment_4faaf345(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -32224,7 +32241,7 @@ func UnsafePrivate__VZSerialPort_Instance_attachment_4faaf345(receiver unsafe.Po
 var privateCallUnsafePrivate__VZSerialPort_Instance_setAttachment__589471ef lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZSerialPort_Instance_setAttachment__589471ef(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSerialPort_Instance_setAttachment__589471ef.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAttachment:")
 		})
@@ -32239,7 +32256,7 @@ var privateCallUnsafePrivate__VZSerialPort_Instance_type_4799898b lazyBinding[di
 
 func UnsafePrivate__VZSerialPort_Instance_type_4799898b(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSerialPort_Instance_type_4799898b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("type")
 		})
@@ -32255,7 +32272,7 @@ var privateCallUnsafePrivate__VZSmartMagnifyEvent_Instance_initWithEvent__717466
 
 func UnsafePrivate__VZSmartMagnifyEvent_Instance_initWithEvent__71746696(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -32282,7 +32299,7 @@ func UnsafePrivate__VZSmartMagnifyEvent_Instance_initWithEvent__71746696(receive
 var privateCallUnsafePrivate__VZSocketSerialPortAttachment_Instance__cxx_destruct_a46ea9aa lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZSocketSerialPortAttachment_Instance__cxx_destruct_a46ea9aa(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSocketSerialPortAttachment_Instance__cxx_destruct_a46ea9aa.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -32297,7 +32314,7 @@ var privateCallUnsafePrivate__VZSocketSerialPortAttachment_Instance_address_a438
 
 func UnsafePrivate__VZSocketSerialPortAttachment_Instance_address_a4386727(receiver unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSocketSerialPortAttachment_Instance_address_a4386727.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("address")
 		})
@@ -32313,7 +32330,7 @@ var privateCallUnsafePrivate__VZSocketSerialPortAttachment_Instance_initWithMode
 
 func UnsafePrivate__VZSocketSerialPortAttachment_Instance_initWithMode_address__71a26a69(receiver unsafe.Pointer, p0 int64, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -32341,7 +32358,7 @@ var privateCallUnsafePrivate__VZSocketSerialPortAttachment_Instance_initWithMode
 
 func UnsafePrivate__VZSocketSerialPortAttachment_Instance_initWithMode_unixSocketAddress__6d35990d(receiver unsafe.Pointer, p0 int64, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -32369,7 +32386,7 @@ var privateCallUnsafePrivate__VZSocketSerialPortAttachment_Instance_mode_4132c0e
 
 func UnsafePrivate__VZSocketSerialPortAttachment_Instance_mode_4132c0e0(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSocketSerialPortAttachment_Instance_mode_4132c0e0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("mode")
 		})
@@ -32385,7 +32402,7 @@ var privateCallUnsafePrivate__VZSocketSerialPortAttachment_Instance_unixSocketAd
 
 func UnsafePrivate__VZSocketSerialPortAttachment_Instance_unixSocketAddress_7aac385c(receiver unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSocketSerialPortAttachment_Instance_unixSocketAddress_7aac385c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("unixSocketAddress")
 		})
@@ -32401,7 +32418,7 @@ var privateCallUnsafePrivate__VZSpiceAgentCoreCapabilities_Instance_clipboard_70
 
 func UnsafePrivate__VZSpiceAgentCoreCapabilities_Instance_clipboard_70df11e6(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSpiceAgentCoreCapabilities_Instance_clipboard_70df11e6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("clipboard")
 		})
@@ -32416,7 +32433,7 @@ func UnsafePrivate__VZSpiceAgentCoreCapabilities_Instance_clipboard_70df11e6(rec
 var privateCallUnsafePrivate__VZSpiceAgentCoreCapabilities_Instance_setClipboard__69c48a4c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate__VZSpiceAgentCoreCapabilities_Instance_setClipboard__69c48a4c(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSpiceAgentCoreCapabilities_Instance_setClipboard__69c48a4c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setClipboard:")
 		})
@@ -32431,7 +32448,7 @@ var privateCallUnsafePrivate__VZSpiceAgentCorePasteboardItemState_Instance__cxx_
 
 func UnsafePrivate__VZSpiceAgentCorePasteboardItemState_Instance__cxx_construct_64190010(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -32458,7 +32475,7 @@ func UnsafePrivate__VZSpiceAgentCorePasteboardItemState_Instance__cxx_construct_
 var privateCallUnsafePrivate__VZSpiceAgentCorePasteboardItemState_Instance__cxx_destruct_aa04d1f0 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZSpiceAgentCorePasteboardItemState_Instance__cxx_destruct_aa04d1f0(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSpiceAgentCorePasteboardItemState_Instance__cxx_destruct_aa04d1f0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -32472,7 +32489,7 @@ func UnsafePrivate__VZSpiceAgentCorePasteboardItemState_Instance__cxx_destruct_a
 var privateCallUnsafePrivate__VZSpiceAgentCorePasteboardState_Instance__cxx_destruct_a9f32611 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZSpiceAgentCorePasteboardState_Instance__cxx_destruct_a9f32611(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSpiceAgentCorePasteboardState_Instance__cxx_destruct_a9f32611.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -32487,7 +32504,7 @@ var privateCallUnsafePrivate__VZSpiceAgentCoreSession_Instance__cxx_construct_d9
 
 func UnsafePrivate__VZSpiceAgentCoreSession_Instance__cxx_construct_d9ffab15(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -32514,7 +32531,7 @@ func UnsafePrivate__VZSpiceAgentCoreSession_Instance__cxx_construct_d9ffab15(rec
 var privateCallUnsafePrivate__VZSpiceAgentCoreSession_Instance__cxx_destruct_dd06af66 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZSpiceAgentCoreSession_Instance__cxx_destruct_dd06af66(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSpiceAgentCoreSession_Instance__cxx_destruct_dd06af66.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -32529,7 +32546,7 @@ var privateCallUnsafePrivate__VZSpiceAgentCoreSession_Instance_init_0a4874af laz
 
 func UnsafePrivate__VZSpiceAgentCoreSession_Instance_init_0a4874af(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -32572,7 +32589,7 @@ var privateCallUnsafePrivate__VZSpiceAgentCore_Instance__cxx_construct_8ecc2d49 
 
 func UnsafePrivate__VZSpiceAgentCore_Instance__cxx_construct_8ecc2d49(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -32599,7 +32616,7 @@ func UnsafePrivate__VZSpiceAgentCore_Instance__cxx_construct_8ecc2d49(receiver u
 var privateCallUnsafePrivate__VZSpiceAgentCore_Instance__cxx_destruct_68d7abf1 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZSpiceAgentCore_Instance__cxx_destruct_68d7abf1(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSpiceAgentCore_Instance__cxx_destruct_68d7abf1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -32613,7 +32630,7 @@ func UnsafePrivate__VZSpiceAgentCore_Instance__cxx_destruct_68d7abf1(receiver un
 var privateCallUnsafePrivate__VZSpiceAgentCore_Instance_dealloc_44244ac0 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZSpiceAgentCore_Instance_dealloc_44244ac0(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSpiceAgentCore_Instance_dealloc_44244ac0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -32627,7 +32644,7 @@ func UnsafePrivate__VZSpiceAgentCore_Instance_dealloc_44244ac0(receiver unsafe.P
 var privateCallUnsafePrivate__VZSpiceAgentCore_Instance_didClosePort_1291c107 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZSpiceAgentCore_Instance_didClosePort_1291c107(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSpiceAgentCore_Instance_didClosePort_1291c107.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("didClosePort")
 		})
@@ -32641,7 +32658,7 @@ func UnsafePrivate__VZSpiceAgentCore_Instance_didClosePort_1291c107(receiver uns
 var privateCallUnsafePrivate__VZSpiceAgentCore_Instance_didOpenPort_515e6409 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZSpiceAgentCore_Instance_didOpenPort_515e6409(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSpiceAgentCore_Instance_didOpenPort_515e6409.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("didOpenPort")
 		})
@@ -32656,7 +32673,7 @@ var privateCallUnsafePrivate__VZSpiceAgentCore_Instance_isValid_0b6161e1 lazyBin
 
 func UnsafePrivate__VZSpiceAgentCore_Instance_isValid_0b6161e1(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSpiceAgentCore_Instance_isValid_0b6161e1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isValid")
 		})
@@ -32671,7 +32688,7 @@ func UnsafePrivate__VZSpiceAgentCore_Instance_isValid_0b6161e1(receiver unsafe.P
 var privateCallUnsafePrivate__VZSpiceAgentCore_Instance_pasteboard_item_provideDataForType__36312fc5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]]
 
 func UnsafePrivate__VZSpiceAgentCore_Instance_pasteboard_item_provideDataForType__36312fc5(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSpiceAgentCore_Instance_pasteboard_item_provideDataForType__36312fc5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]("pasteboard:item:provideDataForType:")
 		})
@@ -32685,7 +32702,7 @@ func UnsafePrivate__VZSpiceAgentCore_Instance_pasteboard_item_provideDataForType
 var privateCallUnsafePrivate__VZSpiceAgentCore_Instance_pause_e9f1a69d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZSpiceAgentCore_Instance_pause_e9f1a69d(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSpiceAgentCore_Instance_pause_e9f1a69d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("pause")
 		})
@@ -32699,7 +32716,7 @@ func UnsafePrivate__VZSpiceAgentCore_Instance_pause_e9f1a69d(receiver unsafe.Poi
 var privateCallUnsafePrivate__VZSpiceAgentCore_Instance_resume_fe172509 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZSpiceAgentCore_Instance_resume_fe172509(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSpiceAgentCore_Instance_resume_fe172509.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("resume")
 		})
@@ -32713,7 +32730,7 @@ func UnsafePrivate__VZSpiceAgentCore_Instance_resume_fe172509(receiver unsafe.Po
 var privateCallUnsafePrivate__VZSpiceAgentCore_Instance_stop_c3923fdf lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZSpiceAgentCore_Instance_stop_c3923fdf(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZSpiceAgentCore_Instance_stop_c3923fdf.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("stop")
 		})
@@ -32728,7 +32745,7 @@ var privateCallUnsafePrivate__VZTemporaryRAMStorageDeviceAttachment_Instance_URL
 
 func UnsafePrivate__VZTemporaryRAMStorageDeviceAttachment_Instance_URL_2be800ef(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -32756,7 +32773,7 @@ var privateCallUnsafePrivate__VZTemporaryRAMStorageDeviceAttachment_Instance__cx
 
 func UnsafePrivate__VZTemporaryRAMStorageDeviceAttachment_Instance__cxx_construct_63c6330d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -32783,7 +32800,7 @@ func UnsafePrivate__VZTemporaryRAMStorageDeviceAttachment_Instance__cxx_construc
 var privateCallUnsafePrivate__VZTemporaryRAMStorageDeviceAttachment_Instance__cxx_destruct_05d3a337 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZTemporaryRAMStorageDeviceAttachment_Instance__cxx_destruct_05d3a337(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZTemporaryRAMStorageDeviceAttachment_Instance__cxx_destruct_05d3a337.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -32798,7 +32815,7 @@ var privateCallUnsafePrivate__VZTemporaryRAMStorageDeviceAttachment_Instance_ini
 
 func UnsafePrivate__VZTemporaryRAMStorageDeviceAttachment_Instance_initWithURL_readOnly_error__37c86c59(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 bool, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -32826,7 +32843,7 @@ var privateCallUnsafePrivate__VZTemporaryRAMStorageDeviceAttachment_Instance_isR
 
 func UnsafePrivate__VZTemporaryRAMStorageDeviceAttachment_Instance_isReadOnly_7cbec3e2(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZTemporaryRAMStorageDeviceAttachment_Instance_isReadOnly_7cbec3e2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isReadOnly")
 		})
@@ -32842,7 +32859,7 @@ var privateCallUnsafePrivate__VZTouch_Instance_index_5cb4cf97 lazyBinding[direct
 
 func UnsafePrivate__VZTouch_Instance_index_5cb4cf97(receiver unsafe.Pointer) uint8 {
 	var result uint8
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZTouch_Instance_index_5cb4cf97.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint8] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint8]("index")
 		})
@@ -32858,7 +32875,7 @@ var privateCallUnsafePrivate__VZTouch_Instance_phase_bf8e6fba lazyBinding[direct
 
 func UnsafePrivate__VZTouch_Instance_phase_bf8e6fba(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZTouch_Instance_phase_bf8e6fba.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("phase")
 		})
@@ -32874,7 +32891,7 @@ var privateCallUnsafePrivate__VZTouch_Instance_swipeAim_f312578b lazyBinding[dir
 
 func UnsafePrivate__VZTouch_Instance_swipeAim_f312578b(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZTouch_Instance_swipeAim_f312578b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("swipeAim")
 		})
@@ -32890,7 +32907,7 @@ var privateCallUnsafePrivate__VZTouch_Instance_timestamp_0a56be5a lazyBinding[di
 
 func UnsafePrivate__VZTouch_Instance_timestamp_0a56be5a(receiver unsafe.Pointer) float64 {
 	var result float64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZTouch_Instance_timestamp_0a56be5a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) float64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) float64]("timestamp")
 		})
@@ -32964,7 +32981,7 @@ var privateCallUnsafePrivate__VZUSBHubConfiguration_Instance__cxx_construct_93f8
 
 func UnsafePrivate__VZUSBHubConfiguration_Instance__cxx_construct_93f857a4(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -32991,7 +33008,7 @@ func UnsafePrivate__VZUSBHubConfiguration_Instance__cxx_construct_93f857a4(recei
 var privateCallUnsafePrivate__VZUSBHubConfiguration_Instance__cxx_destruct_a390b621 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZUSBHubConfiguration_Instance__cxx_destruct_a390b621(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZUSBHubConfiguration_Instance__cxx_destruct_a390b621.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -33006,7 +33023,7 @@ var privateCallUnsafePrivate__VZUSBHubConfiguration_Instance_copyWithZone__a7fc7
 
 func UnsafePrivate__VZUSBHubConfiguration_Instance_copyWithZone__a7fc7e9d(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33034,7 +33051,7 @@ var privateCallUnsafePrivate__VZUSBHubConfiguration_Instance_isDuplicateConfigur
 
 func UnsafePrivate__VZUSBHubConfiguration_Instance_isDuplicateConfiguration__b36cc005(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZUSBHubConfiguration_Instance_isDuplicateConfiguration__b36cc005.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isDuplicateConfiguration:")
 		})
@@ -33050,7 +33067,7 @@ var privateCallUnsafePrivate__VZUSBHubConfiguration_Instance_makeUSBDeviceWithVi
 
 func UnsafePrivate__VZUSBHubConfiguration_Instance_makeUSBDeviceWithVirtualMachine__4f04c9b5(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33077,7 +33094,7 @@ func UnsafePrivate__VZUSBHubConfiguration_Instance_makeUSBDeviceWithVirtualMachi
 var privateCallUnsafePrivate__VZUSBHubConfiguration_Instance_setUuid__3dbc1503 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZUSBHubConfiguration_Instance_setUuid__3dbc1503(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZUSBHubConfiguration_Instance_setUuid__3dbc1503.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUuid:")
 		})
@@ -33092,7 +33109,7 @@ var privateCallUnsafePrivate__VZUSBHubConfiguration_Instance_signature_3b78ff20 
 
 func UnsafePrivate__VZUSBHubConfiguration_Instance_signature_3b78ff20(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33120,7 +33137,7 @@ var privateCallUnsafePrivate__VZUSBHubConfiguration_Instance_uuid_e5ccb673 lazyB
 
 func UnsafePrivate__VZUSBHubConfiguration_Instance_uuid_e5ccb673(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33148,7 +33165,7 @@ var privateCallUnsafePrivate__VZUSBHubConfiguration_Instance_validateWithError__
 
 func UnsafePrivate__VZUSBHubConfiguration_Instance_validateWithError__4334f300(receiver unsafe.Pointer, p0 unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZUSBHubConfiguration_Instance_validateWithError__4334f300.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateWithError:")
 		})
@@ -33164,7 +33181,7 @@ var privateCallUnsafePrivate__VZUSBHub_Instance__cxx_construct_d8b6e61b lazyBind
 
 func UnsafePrivate__VZUSBHub_Instance__cxx_construct_d8b6e61b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33191,7 +33208,7 @@ func UnsafePrivate__VZUSBHub_Instance__cxx_construct_d8b6e61b(receiver unsafe.Po
 var privateCallUnsafePrivate__VZUSBHub_Instance__cxx_destruct_bd127c71 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZUSBHub_Instance__cxx_destruct_bd127c71(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZUSBHub_Instance__cxx_destruct_bd127c71.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -33206,7 +33223,7 @@ var privateCallUnsafePrivate__VZUSBHub_Instance_configuration_ddae8569 lazyBindi
 
 func UnsafePrivate__VZUSBHub_Instance_configuration_ddae8569(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33233,7 +33250,7 @@ func UnsafePrivate__VZUSBHub_Instance_configuration_ddae8569(receiver unsafe.Poi
 var privateCallUnsafePrivate__VZUSBHub_Instance_dealloc_00d06290 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZUSBHub_Instance_dealloc_00d06290(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZUSBHub_Instance_dealloc_00d06290.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -33248,7 +33265,7 @@ var privateCallUnsafePrivate__VZUSBHub_Instance_isPointingDevice_2fd354fe lazyBi
 
 func UnsafePrivate__VZUSBHub_Instance_isPointingDevice_2fd354fe(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZUSBHub_Instance_isPointingDevice_2fd354fe.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isPointingDevice")
 		})
@@ -33263,7 +33280,7 @@ func UnsafePrivate__VZUSBHub_Instance_isPointingDevice_2fd354fe(receiver unsafe.
 var privateCallUnsafePrivate__VZUSBHub_Instance_setUsbController__613a93de lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZUSBHub_Instance_setUsbController__613a93de(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZUSBHub_Instance_setUsbController__613a93de.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUsbController:")
 		})
@@ -33277,7 +33294,7 @@ func UnsafePrivate__VZUSBHub_Instance_setUsbController__613a93de(receiver unsafe
 var privateCallUnsafePrivate__VZUSBHub_Instance_setVirtualMachine__c9920ba3 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZUSBHub_Instance_setVirtualMachine__c9920ba3(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZUSBHub_Instance_setVirtualMachine__c9920ba3.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setVirtualMachine:")
 		})
@@ -33292,7 +33309,7 @@ var privateCallUnsafePrivate__VZUSBHub_Instance_usbController_153874d5 lazyBindi
 
 func UnsafePrivate__VZUSBHub_Instance_usbController_153874d5(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33319,7 +33336,7 @@ func UnsafePrivate__VZUSBHub_Instance_usbController_153874d5(receiver unsafe.Poi
 var privateCallUnsafePrivate__VZUSBHub_Instance_usbDeviceDidDisconnectOnPort__4fb401fc lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]]
 
 func UnsafePrivate__VZUSBHub_Instance_usbDeviceDidDisconnectOnPort__4fb401fc(receiver unsafe.Pointer, p0 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZUSBHub_Instance_usbDeviceDidDisconnectOnPort__4fb401fc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]("usbDeviceDidDisconnectOnPort:")
 		})
@@ -33333,7 +33350,7 @@ func UnsafePrivate__VZUSBHub_Instance_usbDeviceDidDisconnectOnPort__4fb401fc(rec
 var privateCallUnsafePrivate__VZUSBHub_Instance_usbDevice_didConnectOnPort__287d85c4 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate__VZUSBHub_Instance_usbDevice_didConnectOnPort__287d85c4(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZUSBHub_Instance_usbDevice_didConnectOnPort__287d85c4.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("usbDevice:didConnectOnPort:")
 		})
@@ -33348,7 +33365,7 @@ var privateCallUnsafePrivate__VZUSBHub_Instance_uuid_38458682 lazyBinding[direct
 
 func UnsafePrivate__VZUSBHub_Instance_uuid_38458682(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33376,7 +33393,7 @@ var privateCallUnsafePrivate__VZUSBHub_Instance_virtualMachine_5724300b lazyBind
 
 func UnsafePrivate__VZUSBHub_Instance_virtualMachine_5724300b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33403,7 +33420,7 @@ func UnsafePrivate__VZUSBHub_Instance_virtualMachine_5724300b(receiver unsafe.Po
 var privateCallUnsafePrivate__VZUSBKeyboard_Instance__cxx_destruct_ee548ada lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZUSBKeyboard_Instance__cxx_destruct_ee548ada(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZUSBKeyboard_Instance__cxx_destruct_ee548ada.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -33418,7 +33435,7 @@ var privateCallUnsafePrivate__VZUSBKeyboard_Instance_initWithConfiguration__a47d
 
 func UnsafePrivate__VZUSBKeyboard_Instance_initWithConfiguration__a47d05dc(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33446,7 +33463,7 @@ var privateCallUnsafePrivate__VZUSBMouseConfiguration_Instance__pointingDevice_5
 
 func UnsafePrivate__VZUSBMouseConfiguration_Instance__pointingDevice_57b7cc37(receiver unsafe.Pointer) int32 {
 	var result int32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZUSBMouseConfiguration_Instance__pointingDevice_57b7cc37.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int32]("_pointingDevice")
 		})
@@ -33462,7 +33479,7 @@ var privateCallUnsafePrivate__VZUSBMouseConfiguration_Instance_copyWithZone__fef
 
 func UnsafePrivate__VZUSBMouseConfiguration_Instance_copyWithZone__fefb689d(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33490,7 +33507,7 @@ var privateCallUnsafePrivate__VZUSBMouseConfiguration_Instance_init_5d84d61d laz
 
 func UnsafePrivate__VZUSBMouseConfiguration_Instance_init_5d84d61d(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33518,7 +33535,7 @@ var privateCallUnsafePrivate__VZUSBMouseConfiguration_Instance_makePointingDevic
 
 func UnsafePrivate__VZUSBMouseConfiguration_Instance_makePointingDeviceForVirtualMachine_pointingDeviceIndex__e84ea727(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33546,7 +33563,7 @@ var privateCallUnsafePrivate__VZUSBOpticalDriveDeviceConfiguration_Instance_copy
 
 func UnsafePrivate__VZUSBOpticalDriveDeviceConfiguration_Instance_copyWithZone__9c36b50b(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33574,7 +33591,7 @@ var privateCallUnsafePrivate__VZUSBOpticalDriveDeviceConfiguration_Instance_init
 
 func UnsafePrivate__VZUSBOpticalDriveDeviceConfiguration_Instance_initWithAttachment__1e2bdb8b(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33602,7 +33619,7 @@ var privateCallUnsafePrivate__VZUSBTouchScreenConfiguration_Instance_copyWithZon
 
 func UnsafePrivate__VZUSBTouchScreenConfiguration_Instance_copyWithZone__6f91acbb(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33630,7 +33647,7 @@ var privateCallUnsafePrivate__VZUSBTouchScreenConfiguration_Instance_init_cdbe5f
 
 func UnsafePrivate__VZUSBTouchScreenConfiguration_Instance_init_cdbe5f82(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33658,7 +33675,7 @@ var privateCallUnsafePrivate__VZUSBTouchScreenConfiguration_Instance_makeMultiTo
 
 func UnsafePrivate__VZUSBTouchScreenConfiguration_Instance_makeMultiTouchDeviceForVirtualMachine_multiTouchDeviceIndex__ba036167(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33702,7 +33719,7 @@ func UnsafePrivate__VZUnixSocketBifrostAttachment_Class_maximumPathLength_4d6d76
 var privateCallUnsafePrivate__VZUnixSocketBifrostAttachment_Instance__cxx_destruct_15b9aec7 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZUnixSocketBifrostAttachment_Instance__cxx_destruct_15b9aec7(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZUnixSocketBifrostAttachment_Instance__cxx_destruct_15b9aec7.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -33717,7 +33734,7 @@ var privateCallUnsafePrivate__VZUnixSocketBifrostAttachment_Instance_initWithPat
 
 func UnsafePrivate__VZUnixSocketBifrostAttachment_Instance_initWithPath_error__4ba95136(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33745,7 +33762,7 @@ var privateCallUnsafePrivate__VZUnixSocketBifrostAttachment_Instance_path_e3ba73
 
 func UnsafePrivate__VZUnixSocketBifrostAttachment_Instance_path_e3ba732e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33772,7 +33789,7 @@ func UnsafePrivate__VZUnixSocketBifrostAttachment_Instance_path_e3ba732e(receive
 var privateCallUnsafePrivate__VZVNCAuthenticationSecurityConfiguration_Instance__cxx_destruct_90d8ba86 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZVNCAuthenticationSecurityConfiguration_Instance__cxx_destruct_90d8ba86(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVNCAuthenticationSecurityConfiguration_Instance__cxx_destruct_90d8ba86.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -33787,7 +33804,7 @@ var privateCallUnsafePrivate__VZVNCAuthenticationSecurityConfiguration_Instance_
 
 func UnsafePrivate__VZVNCAuthenticationSecurityConfiguration_Instance_copyWithZone__a6683e21(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33815,7 +33832,7 @@ var privateCallUnsafePrivate__VZVNCAuthenticationSecurityConfiguration_Instance_
 
 func UnsafePrivate__VZVNCAuthenticationSecurityConfiguration_Instance_initWithPassword__6810cbfd(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33843,7 +33860,7 @@ var privateCallUnsafePrivate__VZVNCAuthenticationSecurityConfiguration_Instance_
 
 func UnsafePrivate__VZVNCAuthenticationSecurityConfiguration_Instance_password_37ff4a19(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33871,7 +33888,7 @@ var privateCallUnsafePrivate__VZVNCNoSecuritySecurityConfiguration_Instance_copy
 
 func UnsafePrivate__VZVNCNoSecuritySecurityConfiguration_Instance_copyWithZone__040195e1(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33899,7 +33916,7 @@ var privateCallUnsafePrivate__VZVNCNoSecuritySecurityConfiguration_Instance_init
 
 func UnsafePrivate__VZVNCNoSecuritySecurityConfiguration_Instance_init_ab84085e(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33927,7 +33944,7 @@ var privateCallUnsafePrivate__VZVNCSecurityConfiguration_Instance__cxx_construct
 
 func UnsafePrivate__VZVNCSecurityConfiguration_Instance__cxx_construct_ed26d785(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33954,7 +33971,7 @@ func UnsafePrivate__VZVNCSecurityConfiguration_Instance__cxx_construct_ed26d785(
 var privateCallUnsafePrivate__VZVNCSecurityConfiguration_Instance__cxx_destruct_acd9daaa lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZVNCSecurityConfiguration_Instance__cxx_destruct_acd9daaa(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVNCSecurityConfiguration_Instance__cxx_destruct_acd9daaa.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -33969,7 +33986,7 @@ var privateCallUnsafePrivate__VZVNCSecurityConfiguration_Instance__init_cbba5d52
 
 func UnsafePrivate__VZVNCSecurityConfiguration_Instance__init_cbba5d52(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -33997,7 +34014,7 @@ var privateCallUnsafePrivate__VZVNCSecurityConfiguration_Instance_copyWithZone__
 
 func UnsafePrivate__VZVNCSecurityConfiguration_Instance_copyWithZone__1fba9322(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34025,7 +34042,7 @@ var privateCallUnsafePrivate__VZVNCServer_Instance__cxx_construct_b1a5e479 lazyB
 
 func UnsafePrivate__VZVNCServer_Instance__cxx_construct_b1a5e479(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34052,7 +34069,7 @@ func UnsafePrivate__VZVNCServer_Instance__cxx_construct_b1a5e479(receiver unsafe
 var privateCallUnsafePrivate__VZVNCServer_Instance__cxx_destruct_722e0a1e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZVNCServer_Instance__cxx_destruct_722e0a1e(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVNCServer_Instance__cxx_destruct_722e0a1e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -34067,7 +34084,7 @@ var privateCallUnsafePrivate__VZVNCServer_Instance_delegate_eeaedebf lazyBinding
 
 func UnsafePrivate__VZVNCServer_Instance_delegate_eeaedebf(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34095,7 +34112,7 @@ var privateCallUnsafePrivate__VZVNCServer_Instance_graphicsDisplay_8b124d50 lazy
 
 func UnsafePrivate__VZVNCServer_Instance_graphicsDisplay_8b124d50(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34123,7 +34140,7 @@ var privateCallUnsafePrivate__VZVNCServer_Instance_initWithBonjourServiceName__b
 
 func UnsafePrivate__VZVNCServer_Instance_initWithBonjourServiceName__b54cbf9c(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34151,7 +34168,7 @@ var privateCallUnsafePrivate__VZVNCServer_Instance_initWithBonjourServiceName_qu
 
 func UnsafePrivate__VZVNCServer_Instance_initWithBonjourServiceName_queue__6af33ea7(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34179,7 +34196,7 @@ var privateCallUnsafePrivate__VZVNCServer_Instance_initWithBonjourServiceName_qu
 
 func UnsafePrivate__VZVNCServer_Instance_initWithBonjourServiceName_queue_securityConfiguration__7bbfc902(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34207,7 +34224,7 @@ var privateCallUnsafePrivate__VZVNCServer_Instance_initWithPort__4ae6d227 lazyBi
 
 func UnsafePrivate__VZVNCServer_Instance_initWithPort__4ae6d227(receiver unsafe.Pointer, p0 uint16, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34235,7 +34252,7 @@ var privateCallUnsafePrivate__VZVNCServer_Instance_initWithPort_queue__b8565d92 
 
 func UnsafePrivate__VZVNCServer_Instance_initWithPort_queue__b8565d92(receiver unsafe.Pointer, p0 uint16, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34263,7 +34280,7 @@ var privateCallUnsafePrivate__VZVNCServer_Instance_initWithPort_queue_securityCo
 
 func UnsafePrivate__VZVNCServer_Instance_initWithPort_queue_securityConfiguration__5b1df54c(receiver unsafe.Pointer, p0 uint16, p1 unsafe.Pointer, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34291,7 +34308,7 @@ var privateCallUnsafePrivate__VZVNCServer_Instance_port_85c44861 lazyBinding[dir
 
 func UnsafePrivate__VZVNCServer_Instance_port_85c44861(receiver unsafe.Pointer) uint16 {
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVNCServer_Instance_port_85c44861.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) uint16] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("port")
 		})
@@ -34306,7 +34323,7 @@ func UnsafePrivate__VZVNCServer_Instance_port_85c44861(receiver unsafe.Pointer) 
 var privateCallUnsafePrivate__VZVNCServer_Instance_presenter_didUpdateContentHeadroom__0b2ec283 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, float64)]]
 
 func UnsafePrivate__VZVNCServer_Instance_presenter_didUpdateContentHeadroom__0b2ec283(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 float64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVNCServer_Instance_presenter_didUpdateContentHeadroom__0b2ec283.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, float64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, float64)]("presenter:didUpdateContentHeadroom:")
 		})
@@ -34321,7 +34338,7 @@ var privateCallUnsafePrivate__VZVNCServer_Instance_queue_fb2cfcc1 lazyBinding[di
 
 func UnsafePrivate__VZVNCServer_Instance_queue_fb2cfcc1(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34349,7 +34366,7 @@ var privateCallUnsafePrivate__VZVNCServer_Instance_securityConfiguration_ba23c50
 
 func UnsafePrivate__VZVNCServer_Instance_securityConfiguration_ba23c50b(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34376,7 +34393,7 @@ func UnsafePrivate__VZVNCServer_Instance_securityConfiguration_ba23c50b(receiver
 var privateCallUnsafePrivate__VZVNCServer_Instance_setDelegate__d143306d lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZVNCServer_Instance_setDelegate__d143306d(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVNCServer_Instance_setDelegate__d143306d.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 		})
@@ -34390,7 +34407,7 @@ func UnsafePrivate__VZVNCServer_Instance_setDelegate__d143306d(receiver unsafe.P
 var privateCallUnsafePrivate__VZVNCServer_Instance_setGraphicsDisplay__ef8a7e27 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZVNCServer_Instance_setGraphicsDisplay__ef8a7e27(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVNCServer_Instance_setGraphicsDisplay__ef8a7e27.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setGraphicsDisplay:")
 		})
@@ -34404,7 +34421,7 @@ func UnsafePrivate__VZVNCServer_Instance_setGraphicsDisplay__ef8a7e27(receiver u
 var privateCallUnsafePrivate__VZVNCServer_Instance_setState__e5ee3a71 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)]]
 
 func UnsafePrivate__VZVNCServer_Instance_setState__e5ee3a71(receiver unsafe.Pointer, p0 int64) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVNCServer_Instance_setState__e5ee3a71.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setState:")
 		})
@@ -34418,7 +34435,7 @@ func UnsafePrivate__VZVNCServer_Instance_setState__e5ee3a71(receiver unsafe.Poin
 var privateCallUnsafePrivate__VZVNCServer_Instance_setVirtualMachine__868ca2db lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZVNCServer_Instance_setVirtualMachine__868ca2db(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVNCServer_Instance_setVirtualMachine__868ca2db.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setVirtualMachine:")
 		})
@@ -34432,7 +34449,7 @@ func UnsafePrivate__VZVNCServer_Instance_setVirtualMachine__868ca2db(receiver un
 var privateCallUnsafePrivate__VZVNCServer_Instance_start_243bb931 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZVNCServer_Instance_start_243bb931(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVNCServer_Instance_start_243bb931.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("start")
 		})
@@ -34447,7 +34464,7 @@ var privateCallUnsafePrivate__VZVNCServer_Instance_state_72edf054 lazyBinding[di
 
 func UnsafePrivate__VZVNCServer_Instance_state_72edf054(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVNCServer_Instance_state_72edf054.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("state")
 		})
@@ -34462,7 +34479,7 @@ func UnsafePrivate__VZVNCServer_Instance_state_72edf054(receiver unsafe.Pointer)
 var privateCallUnsafePrivate__VZVNCServer_Instance_stop_9013d082 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZVNCServer_Instance_stop_9013d082(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVNCServer_Instance_stop_9013d082.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("stop")
 		})
@@ -34476,7 +34493,7 @@ func UnsafePrivate__VZVNCServer_Instance_stop_9013d082(receiver unsafe.Pointer) 
 var privateCallUnsafePrivate__VZVNCServer_Instance_virtualMachineAccessor_associateWithDisplayPresenter__4a89147f lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]]
 
 func UnsafePrivate__VZVNCServer_Instance_virtualMachineAccessor_associateWithDisplayPresenter__4a89147f(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVNCServer_Instance_virtualMachineAccessor_associateWithDisplayPresenter__4a89147f.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("virtualMachineAccessor:associateWithDisplayPresenter:")
 		})
@@ -34491,7 +34508,7 @@ var privateCallUnsafePrivate__VZVNCServer_Instance_virtualMachine_4d5dd981 lazyB
 
 func UnsafePrivate__VZVNCServer_Instance_virtualMachine_4d5dd981(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34552,7 +34569,7 @@ func UnsafePrivate__VZVhostUserNetworkDeviceAttachment_Class__defaultOffloadMode
 var privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance__cxx_destruct_45fc38fc lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance__cxx_destruct_45fc38fc(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance__cxx_destruct_45fc38fc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -34567,7 +34584,7 @@ var privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_guestC
 
 func UnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_guestChecksumOffload_cbfcdeaa(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_guestChecksumOffload_cbfcdeaa.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("guestChecksumOffload")
 		})
@@ -34583,7 +34600,7 @@ var privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_guestT
 
 func UnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_guestTcpSegmentationOffload_fe85b47e(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_guestTcpSegmentationOffload_fe85b47e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("guestTcpSegmentationOffload")
 		})
@@ -34599,7 +34616,7 @@ var privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_hostCh
 
 func UnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_hostChecksumOffload_5d54abdc(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_hostChecksumOffload_5d54abdc.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("hostChecksumOffload")
 		})
@@ -34615,7 +34632,7 @@ var privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_hostTc
 
 func UnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_hostTcpSegmentationOffload_889dd891(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_hostTcpSegmentationOffload_889dd891.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("hostTcpSegmentationOffload")
 		})
@@ -34631,7 +34648,7 @@ var privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_initWi
 
 func UnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_initWithInterface_error__d7b40d95(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34659,7 +34676,7 @@ var privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_initWi
 
 func UnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_initWithInterface_maximumTransmissionUnit_hostChecksumOffload_guestChecksumOffload_hostTcpSegmentationOffload_guestTcpSegmentationOffload_error__f335e2fa(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 int64, p2 int64, p3 int64, p4 int64, p5 int64, p6 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34687,7 +34704,7 @@ var privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_initWi
 
 func UnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_initWithInterface_xpcService_maximumTransmissionUnit_hostChecksumOffload_guestChecksumOffload_hostTcpSegmentationOffload_guestTcpSegmentationOffload_error__10755b38(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 int64, p2 int64, p3 int64, p4 int64, p5 int64, p6 int64, p7 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34715,7 +34732,7 @@ var privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_interf
 
 func UnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_interface_c06041c2(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34743,7 +34760,7 @@ var privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_maximu
 
 func UnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_maximumTransmissionUnit_d8c688af(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_maximumTransmissionUnit_d8c688af.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("maximumTransmissionUnit")
 		})
@@ -34759,7 +34776,7 @@ var privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_xpcSer
 
 func UnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_xpcService_b9a79977(receiver unsafe.Pointer) int64 {
 	var result int64
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVhostUserNetworkDeviceAttachment_Instance_xpcService_b9a79977.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int64] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("xpcService")
 		})
@@ -34775,7 +34792,7 @@ var privateCallUnsafePrivate__VZVirtioKeyboardInputDeviceConfiguration_Instance_
 
 func UnsafePrivate__VZVirtioKeyboardInputDeviceConfiguration_Instance_copyWithZone__1934b874(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34803,7 +34820,7 @@ var privateCallUnsafePrivate__VZVirtioKeyboardInputDeviceConfiguration_Instance_
 
 func UnsafePrivate__VZVirtioKeyboardInputDeviceConfiguration_Instance_init_6bfdaa6f(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34831,7 +34848,7 @@ var privateCallUnsafePrivate__VZVirtioKeyboardInputDeviceConfiguration_Instance_
 
 func UnsafePrivate__VZVirtioKeyboardInputDeviceConfiguration_Instance_makeKeyboardForVirtualMachine_deviceIdentifier__94424a29(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34859,7 +34876,7 @@ var privateCallUnsafePrivate__VZVirtioMouseInputDeviceConfiguration_Instance__po
 
 func UnsafePrivate__VZVirtioMouseInputDeviceConfiguration_Instance__pointingDevice_655d15b6(receiver unsafe.Pointer) int32 {
 	var result int32
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtioMouseInputDeviceConfiguration_Instance__pointingDevice_655d15b6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) int32] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int32]("_pointingDevice")
 		})
@@ -34875,7 +34892,7 @@ var privateCallUnsafePrivate__VZVirtioMouseInputDeviceConfiguration_Instance_cop
 
 func UnsafePrivate__VZVirtioMouseInputDeviceConfiguration_Instance_copyWithZone__072d76d5(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34903,7 +34920,7 @@ var privateCallUnsafePrivate__VZVirtioMouseInputDeviceConfiguration_Instance_ini
 
 func UnsafePrivate__VZVirtioMouseInputDeviceConfiguration_Instance_init_8f94f6d0(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34931,7 +34948,7 @@ var privateCallUnsafePrivate__VZVirtioMouseInputDeviceConfiguration_Instance_mak
 
 func UnsafePrivate__VZVirtioMouseInputDeviceConfiguration_Instance_makePointingDeviceForVirtualMachine_pointingDeviceIndex__5640c765(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34959,7 +34976,7 @@ var privateCallUnsafePrivate__VZVirtioSocketDeviceObserver_Instance__cxx_constru
 
 func UnsafePrivate__VZVirtioSocketDeviceObserver_Instance__cxx_construct_582b94ad(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -34986,7 +35003,7 @@ func UnsafePrivate__VZVirtioSocketDeviceObserver_Instance__cxx_construct_582b94a
 var privateCallUnsafePrivate__VZVirtioSocketDeviceObserver_Instance__cxx_destruct_479822b0 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZVirtioSocketDeviceObserver_Instance__cxx_destruct_479822b0(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtioSocketDeviceObserver_Instance__cxx_destruct_479822b0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -35001,7 +35018,7 @@ var privateCallUnsafePrivate__VZVirtioSocketDeviceObserver_Instance__initWithCon
 
 func UnsafePrivate__VZVirtioSocketDeviceObserver_Instance__initWithConnection_queue_delegate__b84d6398(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35028,7 +35045,7 @@ func UnsafePrivate__VZVirtioSocketDeviceObserver_Instance__initWithConnection_qu
 var privateCallUnsafePrivate__VZVirtioSoundDevice_Instance__cxx_destruct_103b6aa7 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZVirtioSoundDevice_Instance__cxx_destruct_103b6aa7(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtioSoundDevice_Instance__cxx_destruct_103b6aa7.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -35043,7 +35060,7 @@ var privateCallUnsafePrivate__VZVirtualMachineAccessorManager_Instance__cxx_cons
 
 func UnsafePrivate__VZVirtualMachineAccessorManager_Instance__cxx_construct_5e716e6f(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35070,7 +35087,7 @@ func UnsafePrivate__VZVirtualMachineAccessorManager_Instance__cxx_construct_5e71
 var privateCallUnsafePrivate__VZVirtualMachineAccessorManager_Instance__cxx_destruct_6145e4ab lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZVirtualMachineAccessorManager_Instance__cxx_destruct_6145e4ab(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessorManager_Instance__cxx_destruct_6145e4ab.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -35084,7 +35101,7 @@ func UnsafePrivate__VZVirtualMachineAccessorManager_Instance__cxx_destruct_6145e
 var privateCallUnsafePrivate__VZVirtualMachineAccessorManager_Instance_dealloc_5206f1c1 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZVirtualMachineAccessorManager_Instance_dealloc_5206f1c1(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessorManager_Instance_dealloc_5206f1c1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -35098,7 +35115,7 @@ func UnsafePrivate__VZVirtualMachineAccessorManager_Instance_dealloc_5206f1c1(re
 var privateCallUnsafePrivate__VZVirtualMachineAccessorManager_Instance_observeValueForKeyPath_ofObject_change_context__45cdacb5 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]]
 
 func UnsafePrivate__VZVirtualMachineAccessorManager_Instance_observeValueForKeyPath_ofObject_change_context__45cdacb5(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer, p3 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessorManager_Instance_observeValueForKeyPath_ofObject_change_context__45cdacb5.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]("observeValueForKeyPath:ofObject:change:context:")
 		})
@@ -35113,7 +35130,7 @@ var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance__cxx_construct_9
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance__cxx_construct_94d66058(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35140,7 +35157,7 @@ func UnsafePrivate__VZVirtualMachineAccessor_Instance__cxx_construct_94d66058(re
 var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance__cxx_destruct_7fdb87c1 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance__cxx_destruct_7fdb87c1(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance__cxx_destruct_7fdb87c1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -35155,7 +35172,7 @@ var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance__hidEventMonitor
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance__hidEventMonitor_14f3bff2(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35182,7 +35199,7 @@ func UnsafePrivate__VZVirtualMachineAccessor_Instance__hidEventMonitor_14f3bff2(
 var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance__processHIDReports_forDevice_deviceType__ee64ff87 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32, int32)]]
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance__processHIDReports_forDevice_deviceType__ee64ff87(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32, p2 int32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance__processHIDReports_forDevice_deviceType__ee64ff87.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32, int32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32, int32)]("_processHIDReports:forDevice:deviceType:")
 		})
@@ -35197,7 +35214,7 @@ var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance__shouldSendHIDRe
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance__shouldSendHIDReports_9951d5f6(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance__shouldSendHIDReports_9951d5f6.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("_shouldSendHIDReports")
 		})
@@ -35212,7 +35229,7 @@ func UnsafePrivate__VZVirtualMachineAccessor_Instance__shouldSendHIDReports_9951
 var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_dealloc_d123353c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance_dealloc_d123353c(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_dealloc_d123353c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("dealloc")
 		})
@@ -35227,7 +35244,7 @@ var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_graphicsDevices_
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance_graphicsDevices_5243f307(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35255,7 +35272,7 @@ var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_initWithAccessor
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance_initWithAccessorEndpoint__45a3eaa0(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35283,7 +35300,7 @@ var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_queue_206cf2e7 l
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance_queue_206cf2e7(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35310,7 +35327,7 @@ func UnsafePrivate__VZVirtualMachineAccessor_Instance_queue_206cf2e7(receiver un
 var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendDigitizerEvents_pointingDeviceIndex__63ffbb1e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendDigitizerEvents_pointingDeviceIndex__63ffbb1e(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendDigitizerEvents_pointingDeviceIndex__63ffbb1e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendDigitizerEvents:pointingDeviceIndex:")
 		})
@@ -35324,7 +35341,7 @@ func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendDigitizerEvents_pointi
 var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendIOHIDEvents_hidDeviceIndex__3c40a7cb lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendIOHIDEvents_hidDeviceIndex__3c40a7cb(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendIOHIDEvents_hidDeviceIndex__3c40a7cb.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendIOHIDEvents:hidDeviceIndex:")
 		})
@@ -35338,7 +35355,7 @@ func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendIOHIDEvents_hidDeviceI
 var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendKeyboardEvents_keyboardID__800038cb lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendKeyboardEvents_keyboardID__800038cb(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendKeyboardEvents_keyboardID__800038cb.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendKeyboardEvents:keyboardID:")
 		})
@@ -35352,7 +35369,7 @@ func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendKeyboardEvents_keyboar
 var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendMagnifyEvents_pointingDeviceIndex__81b53df2 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendMagnifyEvents_pointingDeviceIndex__81b53df2(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendMagnifyEvents_pointingDeviceIndex__81b53df2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendMagnifyEvents:pointingDeviceIndex:")
 		})
@@ -35366,7 +35383,7 @@ func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendMagnifyEvents_pointing
 var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendMouseEvents_pointingDeviceIndex__c667dc55 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendMouseEvents_pointingDeviceIndex__c667dc55(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendMouseEvents_pointingDeviceIndex__c667dc55.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendMouseEvents:pointingDeviceIndex:")
 		})
@@ -35380,7 +35397,7 @@ func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendMouseEvents_pointingDe
 var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendMultiTouchEvents_multiTouchDeviceIndex__13a02e0c lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendMultiTouchEvents_multiTouchDeviceIndex__13a02e0c(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendMultiTouchEvents_multiTouchDeviceIndex__13a02e0c.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendMultiTouchEvents:multiTouchDeviceIndex:")
 		})
@@ -35394,7 +35411,7 @@ func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendMultiTouchEvents_multi
 var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendPointerNSEvent_pointingDeviceIndex__5a09990b lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendPointerNSEvent_pointingDeviceIndex__5a09990b(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendPointerNSEvent_pointingDeviceIndex__5a09990b.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendPointerNSEvent:pointingDeviceIndex:")
 		})
@@ -35408,7 +35425,7 @@ func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendPointerNSEvent_pointin
 var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendQuickLookEvents_pointingDeviceIndex__56d8cc80 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendQuickLookEvents_pointingDeviceIndex__56d8cc80(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendQuickLookEvents_pointingDeviceIndex__56d8cc80.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendQuickLookEvents:pointingDeviceIndex:")
 		})
@@ -35422,7 +35439,7 @@ func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendQuickLookEvents_pointi
 var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendRotationEvents_pointingDeviceIndex__afa9dc6a lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendRotationEvents_pointingDeviceIndex__afa9dc6a(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendRotationEvents_pointingDeviceIndex__afa9dc6a.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendRotationEvents:pointingDeviceIndex:")
 		})
@@ -35436,7 +35453,7 @@ func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendRotationEvents_pointin
 var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendScrollWheelEvents_pointingDeviceIndex__5cea53d2 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendScrollWheelEvents_pointingDeviceIndex__5cea53d2(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendScrollWheelEvents_pointingDeviceIndex__5cea53d2.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendScrollWheelEvents:pointingDeviceIndex:")
 		})
@@ -35450,7 +35467,7 @@ func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendScrollWheelEvents_poin
 var privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendSmartMagnifyEvents_pointingDeviceIndex__597f7142 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]]
 
 func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendSmartMagnifyEvents_pointingDeviceIndex__597f7142(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint32) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineAccessor_Instance_sendSmartMagnifyEvents_pointingDeviceIndex__597f7142.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("sendSmartMagnifyEvents:pointingDeviceIndex:")
 		})
@@ -35464,7 +35481,7 @@ func UnsafePrivate__VZVirtualMachineAccessor_Instance_sendSmartMagnifyEvents_poi
 var privateCallUnsafePrivate__VZVirtualMachineConfigurationDecoder_Instance__cxx_destruct_bc6213c9 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZVirtualMachineConfigurationDecoder_Instance__cxx_destruct_bc6213c9(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineConfigurationDecoder_Instance__cxx_destruct_bc6213c9.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -35479,7 +35496,7 @@ var privateCallUnsafePrivate__VZVirtualMachineConfigurationDecoder_Instance_conf
 
 func UnsafePrivate__VZVirtualMachineConfigurationDecoder_Instance_configurationFromData_format_error__b5a4b692(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35507,7 +35524,7 @@ var privateCallUnsafePrivate__VZVirtualMachineConfigurationDecoder_Instance_dele
 
 func UnsafePrivate__VZVirtualMachineConfigurationDecoder_Instance_delegate_6e6c0a12(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35535,7 +35552,7 @@ var privateCallUnsafePrivate__VZVirtualMachineConfigurationDecoder_Instance_init
 
 func UnsafePrivate__VZVirtualMachineConfigurationDecoder_Instance_initWithBaseURL__928ab55f(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35562,7 +35579,7 @@ func UnsafePrivate__VZVirtualMachineConfigurationDecoder_Instance_initWithBaseUR
 var privateCallUnsafePrivate__VZVirtualMachineConfigurationDecoder_Instance_setDelegate__5348b955 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]]
 
 func UnsafePrivate__VZVirtualMachineConfigurationDecoder_Instance_setDelegate__5348b955(receiver unsafe.Pointer, p0 unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineConfigurationDecoder_Instance_setDelegate__5348b955.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 		})
@@ -35576,7 +35593,7 @@ func UnsafePrivate__VZVirtualMachineConfigurationDecoder_Instance_setDelegate__5
 var privateCallUnsafePrivate__VZVirtualMachineConfigurationEncoder_Instance__cxx_destruct_632c960e lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZVirtualMachineConfigurationEncoder_Instance__cxx_destruct_632c960e(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineConfigurationEncoder_Instance__cxx_destruct_632c960e.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -35591,7 +35608,7 @@ var privateCallUnsafePrivate__VZVirtualMachineConfigurationEncoder_Instance_data
 
 func UnsafePrivate__VZVirtualMachineConfigurationEncoder_Instance_dataWithConfiguration_format_error__67ee88e9(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 uint64, p2 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35619,7 +35636,7 @@ var privateCallUnsafePrivate__VZVirtualMachineConfigurationEncoder_Instance_init
 
 func UnsafePrivate__VZVirtualMachineConfigurationEncoder_Instance_initWithBaseURL__e4b58bff(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35647,7 +35664,7 @@ var privateCallUnsafePrivate__VZVirtualMachineSaveOptions_Instance_compress_b93c
 
 func UnsafePrivate__VZVirtualMachineSaveOptions_Instance_compress_b93cc316(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineSaveOptions_Instance_compress_b93cc316.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("compress")
 		})
@@ -35663,7 +35680,7 @@ var privateCallUnsafePrivate__VZVirtualMachineSaveOptions_Instance_encrypt_89f30
 
 func UnsafePrivate__VZVirtualMachineSaveOptions_Instance_encrypt_89f30ddb(receiver unsafe.Pointer) bool {
 	var result bool
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineSaveOptions_Instance_encrypt_89f30ddb.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL) bool] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("encrypt")
 		})
@@ -35679,7 +35696,7 @@ var privateCallUnsafePrivate__VZVirtualMachineSaveOptions_Instance_init_21bd26d3
 
 func UnsafePrivate__VZVirtualMachineSaveOptions_Instance_init_21bd26d3(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35706,7 +35723,7 @@ func UnsafePrivate__VZVirtualMachineSaveOptions_Instance_init_21bd26d3(receiver 
 var privateCallUnsafePrivate__VZVirtualMachineSaveOptions_Instance_setCompress__1bb757b1 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate__VZVirtualMachineSaveOptions_Instance_setCompress__1bb757b1(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineSaveOptions_Instance_setCompress__1bb757b1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setCompress:")
 		})
@@ -35720,7 +35737,7 @@ func UnsafePrivate__VZVirtualMachineSaveOptions_Instance_setCompress__1bb757b1(r
 var privateCallUnsafePrivate__VZVirtualMachineSaveOptions_Instance_setEncrypt__05de8fce lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)]]
 
 func UnsafePrivate__VZVirtualMachineSaveOptions_Instance_setEncrypt__05de8fce(receiver unsafe.Pointer, p0 bool) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineSaveOptions_Instance_setEncrypt__05de8fce.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setEncrypt:")
 		})
@@ -35735,7 +35752,7 @@ var privateCallUnsafePrivate__VZVirtualMachineViewAdaptorInternal_Instance__cxx_
 
 func UnsafePrivate__VZVirtualMachineViewAdaptorInternal_Instance__cxx_construct_25f92c72(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35762,7 +35779,7 @@ func UnsafePrivate__VZVirtualMachineViewAdaptorInternal_Instance__cxx_construct_
 var privateCallUnsafePrivate__VZVirtualMachineViewAdaptorInternal_Instance__cxx_destruct_12df6064 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZVirtualMachineViewAdaptorInternal_Instance__cxx_destruct_12df6064(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZVirtualMachineViewAdaptorInternal_Instance__cxx_destruct_12df6064.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -35777,7 +35794,7 @@ var privateCallUnsafePrivate__VZVirtualMachineViewAdaptorInternal_Instance_initW
 
 func UnsafePrivate__VZVirtualMachineViewAdaptorInternal_Instance_initWithGraphicsDisplay__3aec0ca7(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35805,7 +35822,7 @@ var privateCallUnsafePrivate__VZVirtualMachineViewAdaptorInternal_Instance_initW
 
 func UnsafePrivate__VZVirtualMachineViewAdaptorInternal_Instance_initWithVirtualMachine__2b7b14dc(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35833,7 +35850,7 @@ var privateCallUnsafePrivate__VZWrappingKey_Instance__cxx_construct_003ec7f0 laz
 
 func UnsafePrivate__VZWrappingKey_Instance__cxx_construct_003ec7f0(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35860,7 +35877,7 @@ func UnsafePrivate__VZWrappingKey_Instance__cxx_construct_003ec7f0(receiver unsa
 var privateCallUnsafePrivate__VZWrappingKey_Instance__cxx_destruct_a415eb88 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZWrappingKey_Instance__cxx_destruct_a415eb88(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZWrappingKey_Instance__cxx_destruct_a415eb88.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -35875,7 +35892,7 @@ var privateCallUnsafePrivate__VZWrappingKey_Instance_copyWithZone__7959013e lazy
 
 func UnsafePrivate__VZWrappingKey_Instance_copyWithZone__7959013e(receiver unsafe.Pointer, p0 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35903,7 +35920,7 @@ var privateCallUnsafePrivate__VZWrappingKey_Instance_initWithAESKey_error__1bd05
 
 func UnsafePrivate__VZWrappingKey_Instance_initWithAESKey_error__1bd05eff(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35931,7 +35948,7 @@ var privateCallUnsafePrivate__VZWrappingKey_Instance_initWithAsymmetricKey_error
 
 func UnsafePrivate__VZWrappingKey_Instance_initWithAsymmetricKey_error__11f52672(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35959,7 +35976,7 @@ var privateCallUnsafePrivate__VZWrappingKey_Instance_initWithPassword_error__6ad
 
 func UnsafePrivate__VZWrappingKey_Instance_initWithPassword_error__6ad9c05e(receiver unsafe.Pointer, p0 unsafe.Pointer, p1 unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -35987,7 +36004,7 @@ var privateCallUnsafePrivate__VZXPCBifrostAttachment_Instance_init_3282d3a7 lazy
 
 func UnsafePrivate__VZXPCBifrostAttachment_Instance_init_3282d3a7(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -36015,7 +36032,7 @@ var privateCallUnsafePrivate__VZXPCClientMailboxDeviceAttachment_Instance__cxx_c
 
 func UnsafePrivate__VZXPCClientMailboxDeviceAttachment_Instance__cxx_construct_c886724a(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}
@@ -36042,7 +36059,7 @@ func UnsafePrivate__VZXPCClientMailboxDeviceAttachment_Instance__cxx_construct_c
 var privateCallUnsafePrivate__VZXPCClientMailboxDeviceAttachment_Instance__cxx_destruct_84ea7725 lazyBinding[directBinding[func(unsafe.Pointer, runtimeobjc.SEL)]]
 
 func UnsafePrivate__VZXPCClientMailboxDeviceAttachment_Instance__cxx_destruct_84ea7725(receiver unsafe.Pointer) {
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		binding := privateCallUnsafePrivate__VZXPCClientMailboxDeviceAttachment_Instance__cxx_destruct_84ea7725.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 			return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)](".cxx_destruct")
 		})
@@ -36057,7 +36074,7 @@ var privateCallUnsafePrivate__VZXPCClientMailboxDeviceAttachment_Instance_init_c
 
 func UnsafePrivate__VZXPCClientMailboxDeviceAttachment_Instance_init_c37a565a(receiver unsafe.Pointer, retainResult bool, invoked unsafe.Pointer) unsafe.Pointer {
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(receiver, func() {
 		if invoked != nil {
 			*(*bool)(invoked) = false
 		}

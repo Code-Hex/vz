@@ -155,7 +155,15 @@ func generatePrivateMethod(method privateMethod, name string) (string, error) {
 	if result != "" {
 		fmt.Fprintf(&out, "var result %s\n", result)
 	}
-	out.WriteString("onQueue(func(){\n")
+	queueOwner := "receiver"
+	if method.Class == "VZMacOSInstaller" && method.Selector == "initWithVirtualMachine:restoreImageURL:" && !method.ClassMethod {
+		queueOwner = "p0"
+	}
+	if method.ClassMethod {
+		out.WriteString("onQueue(func(){\n")
+	} else {
+		fmt.Fprintf(&out, "onObjectQueue(%s,func(){\n", queueOwner)
+	}
 	if objectResult {
 		out.WriteString("if invoked != nil { *(*bool)(invoked) = false }\n")
 	}
@@ -176,6 +184,9 @@ func generatePrivateMethod(method privateMethod, name string) (string, error) {
 	}
 	fmt.Fprintf(&out, "binding.call(%s)\n", strings.Join(append([]string{"receiver", "binding.selector"}, args...), ", "))
 	if objectResult {
+		if !method.ClassMethod && inheritsMachineQueue(method.Class, method.Selector) {
+			fmt.Fprintf(&out, "InheritObjectQueue(result, %s)\n", queueOwner)
+		}
 		out.WriteString("if retainResult && result != nil { result = directRetain(result) }\n")
 	}
 	out.WriteString("})\n")

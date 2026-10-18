@@ -60,11 +60,15 @@ func main() { fmt.Println(vz.VirtualMachineConfigurationMinimumAllowedCPUCount()
 			foundUsed = true
 			continue
 		}
+		// The dispatcher and Objective-C listener/installer methods need these helpers.
+		if symbol == "_vz_dispatchSyncOnObject" || symbol == "_vz_inheritObjectQueue" {
+			continue
+		}
 		if strings.HasPrefix(symbol, bridge+"sdkCall") ||
 			strings.HasPrefix(symbol, bridge+"privateCall") ||
 			strings.HasPrefix(symbol, bridge+"UnsafePrivate") ||
 			strings.HasPrefix(symbol, bridge+"call") ||
-			strings.HasPrefix(symbol, "_vz_") && symbol != "_vz_dispatchSync" {
+			strings.HasPrefix(symbol, "_vz_") {
 			unused = append(unused, symbol)
 		}
 	}

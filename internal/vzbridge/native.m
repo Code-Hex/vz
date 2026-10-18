@@ -3,27 +3,59 @@
 #import <Virtualization/Virtualization.h>
 #import <errno.h>
 #import <objc/runtime.h>
+#import <stdatomic.h>
 #import <unistd.h>
 
 static dispatch_queue_t bridgeQueue;
 static char bridgeQueueKey;
 typedef uint64_t (*BridgeCallback)(uint32_t, uint64_t, void *, void *, uint64_t);
-static BridgeCallback bridgeCallback;
+static _Atomic(BridgeCallback) bridgeCallback;
+static char objectQueueKey;
 
-static dispatch_queue_t queue(void)
+static dispatch_queue_t commonQueue(void)
 {
     static dispatch_once_t once;
     dispatch_once(&once, ^{
         bridgeQueue = dispatch_queue_create("com.codehex.vz.native", DISPATCH_QUEUE_SERIAL);
-        dispatch_queue_set_specific(bridgeQueue, &bridgeQueueKey, &bridgeQueueKey, NULL);
+        dispatch_queue_set_specific(bridgeQueue, &bridgeQueueKey, bridgeQueue, NULL);
     });
     return bridgeQueue;
 }
 
-static void syncNative(void (^body)(void))
+@interface VZBridgeQueue : NSObject {
+@public
+    dispatch_queue_t queue;
+}
+@end
+
+@implementation VZBridgeQueue
+- (instancetype)init
 {
-    dispatch_queue_t target = queue();
-    if (dispatch_get_specific(&bridgeQueueKey)) {
+    self = [super init];
+    if (self) {
+        queue = dispatch_queue_create("com.codehex.vz.machine", DISPATCH_QUEUE_SERIAL);
+        dispatch_queue_set_specific(queue, &bridgeQueueKey, queue, NULL);
+    }
+    return self;
+}
+- (void)dealloc
+{
+    dispatch_release(queue);
+    [super dealloc];
+}
+@end
+
+void *vz_objectQueue(void *object)
+{
+    @autoreleasepool {
+        VZBridgeQueue *owner = objc_getAssociatedObject((id)object, &objectQueueKey);
+        return owner ? owner->queue : commonQueue();
+    }
+}
+
+static void syncOnQueue(dispatch_queue_t target, void (^body)(void))
+{
+    if (dispatch_get_specific(&bridgeQueueKey) == target) {
         @autoreleasepool {
             body();
         }
@@ -32,20 +64,75 @@ static void syncNative(void (^body)(void))
     }
 }
 
-void vz_dispatchSync(uintptr_t callback, uintptr_t context)
+static void syncNative(void (^body)(void))
 {
-    syncNative(^{ ((void (*)(uintptr_t))callback)(context); });
+    syncOnQueue(commonQueue(), body);
 }
 
-void *vz_dispatchQueuePointer(void) { return queue(); }
-void vz_drain(void) { syncNative(^ { }); }
-void vz_setCallback(uint64_t callback) { bridgeCallback = (BridgeCallback)(uintptr_t)callback; }
+static void syncObject(id object, void (^body)(void))
+{
+    @autoreleasepool {
+        VZBridgeQueue *owner = objc_getAssociatedObject(object, &objectQueueKey);
+        syncOnQueue(owner ? owner->queue : commonQueue(), body);
+    }
+}
+
+void vz_inheritObjectQueue(void *object, void *source)
+{
+    if (!object || !source)
+        return;
+    @autoreleasepool {
+        VZBridgeQueue *owner = objc_getAssociatedObject((id)source, &objectQueueKey);
+        if (!owner)
+            return;
+        if ([(id)object isKindOfClass:[NSArray class]]) {
+            for (id element in (NSArray *)object)
+                objc_setAssociatedObject(element, &objectQueueKey, owner, OBJC_ASSOCIATION_RETAIN);
+        } else {
+            objc_setAssociatedObject((id)object, &objectQueueKey, owner, OBJC_ASSOCIATION_RETAIN);
+        }
+    }
+}
+
+void vz_dispatchSyncOnObject(void *object, uintptr_t callback, uintptr_t context)
+{
+    syncObject((id)object, ^{ ((void (*)(uintptr_t))callback)(context); });
+}
+
+void *vz_dispatchQueuePointer(void) { return commonQueue(); }
+
+static dispatch_group_t pendingReleases(void)
+{
+    static dispatch_group_t group;
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{ group = dispatch_group_create(); });
+    return group;
+}
+
+void vz_drain(void)
+{
+    syncNative(^ {});
+    dispatch_group_wait(pendingReleases(), DISPATCH_TIME_FOREVER);
+}
+
+void vz_setCallback(uint64_t callback) { atomic_store(&bridgeCallback, (BridgeCallback)(uintptr_t)callback); }
+
 void vz_releaseObject(void *object)
 {
     if (!object)
         return;
-    // A void pointer keeps the block from taking an extra Objective-C reference.
-    dispatch_async(queue(), ^{ @autoreleasepool { [(id)object release]; } });
+    @autoreleasepool {
+        VZBridgeQueue *owner = objc_getAssociatedObject((id)object, &objectQueueKey);
+        dispatch_queue_t target = owner ? owner->queue : commonQueue();
+        dispatch_retain(target);
+        // A void pointer keeps the block from taking an extra Objective-C reference.
+        dispatch_group_async(pendingReleases(), target, ^{
+            @autoreleasepool {
+                [(id)object release];
+            }
+            dispatch_release(target);
+        });
+    }
 }
 
 void vz_setInvalidDiskModeError(void **errorOut)
@@ -57,18 +144,25 @@ void vz_setInvalidDiskModeError(void **errorOut)
 
 static uint64_t emit(uint32_t kind, uint64_t context, id first, id second, uint64_t value)
 {
-    __block uint64_t result = 0;
-    syncNative(^{
-        if (bridgeCallback) {
-            result = bridgeCallback(kind, context, first, second, value);
-        } else {
-            if (kind == 1 || kind == 3 || kind == 5 || kind == 6 || kind == 7 || kind == 9 || kind == 10 || kind == 11)
-                [first release];
-            if (kind == 5 || kind == 10)
-                [second release];
-        }
-    });
-    return result;
+    BridgeCallback callback = atomic_load(&bridgeCallback);
+    if (callback)
+        return callback(kind, context, first, second, value);
+    switch (kind) {
+    case VZBridgeCallbackSocketConnected:
+    case VZBridgeCallbackRestoreImageLoaded:
+        [first release];
+        [second release];
+        break;
+    case VZBridgeCallbackCompletion:
+    case VZBridgeCallbackNetworkDisconnected:
+    case VZBridgeCallbackSocketAccepted:
+    case VZBridgeCallbackNetworkBlockDeviceError:
+    case VZBridgeCallbackRosettaInstallCompleted:
+    case VZBridgeCallbackMacOSInstallCompleted:
+        [first release];
+        break;
+    }
+    return 0;
 }
 
 static void fail(NSError *error, void **output)
@@ -85,7 +179,7 @@ static NSError *posixError(int code)
 static void unavailable(uint32_t kind, uint64_t context)
 {
     NSError *error = [NSError errorWithDomain:NSPOSIXErrorDomain code:ENOTSUP userInfo:nil];
-    if (kind == 10)
+    if (kind == VZBridgeCallbackRestoreImageLoaded)
         emit(kind, context, nil, [error retain], 0);
     else
         emit(kind, context, [error retain], nil, 0);
@@ -100,14 +194,15 @@ static NSURL *fileURL(const char *value) { return [NSURL fileURLWithPath:text(va
     BOOL _observing;
     NSHashTable<id<VZVirtualMachineDelegate>> *_externalDelegates;
 }
-- (instancetype)initWithConfiguration:(VZVirtualMachineConfiguration *)configuration state:(uint64_t)state network:(uint64_t)network;
+- (instancetype)initWithConfiguration:(VZVirtualMachineConfiguration *)configuration queueOwner:(VZBridgeQueue *)owner state:(uint64_t)state network:(uint64_t)network;
 @end
 
 @implementation VZBridgeMachine
-- (instancetype)initWithConfiguration:(VZVirtualMachineConfiguration *)configuration state:(uint64_t)state network:(uint64_t)network
+- (instancetype)initWithConfiguration:(VZVirtualMachineConfiguration *)configuration queueOwner:(VZBridgeQueue *)owner state:(uint64_t)state network:(uint64_t)network
 {
-    self = [super initWithConfiguration:configuration queue:queue()];
+    self = [super initWithConfiguration:configuration queue:owner->queue];
     if (self) {
+        objc_setAssociatedObject(self, &objectQueueKey, owner, OBJC_ASSOCIATION_RETAIN);
         _stateContext = state;
         _networkContext = network;
         _externalDelegates = [[NSHashTable weakObjectsHashTable] retain];
@@ -120,7 +215,7 @@ static NSURL *fileURL(const char *value) { return [NSURL fileURLWithPath:text(va
 - (void)observeValueForKeyPath:(NSString *)key ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == &bridgeQueueKey) {
-        emit(2, _stateContext, nil, nil, [change[NSKeyValueChangeNewKey] unsignedLongLongValue]);
+        emit(VZBridgeCallbackMachineStateChanged, _stateContext, nil, nil, [change[NSKeyValueChangeNewKey] unsignedLongLongValue]);
     } else {
         [super observeValueForKeyPath:key ofObject:object change:change context:context];
     }
@@ -129,7 +224,7 @@ static NSURL *fileURL(const char *value) { return [NSURL fileURLWithPath:text(va
 {
     if (delegate == self)
         return;
-    syncNative(^{
+    syncObject(self, ^{
         if (delegate)
             [_externalDelegates addObject:delegate];
         else
@@ -154,7 +249,7 @@ static NSURL *fileURL(const char *value) { return [NSURL fileURLWithPath:text(va
 - (void)virtualMachine:(VZVirtualMachine *)machine networkDevice:(VZNetworkDevice *)device attachmentWasDisconnectedWithError:(NSError *)error API_AVAILABLE(macos(12.0))
 {
     NSInteger index = [machine.networkDevices indexOfObjectIdenticalTo:device];
-    emit(3, _networkContext, [error retain], nil, index == NSNotFound ? UINT64_MAX : (uint64_t)index);
+    emit(VZBridgeCallbackNetworkDisconnected, _networkContext, [error retain], nil, index == NSNotFound ? UINT64_MAX : (uint64_t)index);
     for (id<VZVirtualMachineDelegate> delegate in _externalDelegates.allObjects) {
         if ([delegate respondsToSelector:_cmd])
             [delegate virtualMachine:machine networkDevice:device attachmentWasDisconnectedWithError:error];
@@ -168,22 +263,28 @@ static NSURL *fileURL(const char *value) { return [NSURL fileURLWithPath:text(va
     [super setDelegate:nil];
     [_externalDelegates release];
     if (_stateContext)
-        emit(4, _stateContext, nil, nil, 0);
+        emit(VZBridgeCallbackContextReleased, _stateContext, nil, nil, 0);
     if (_networkContext)
-        emit(4, _networkContext, nil, nil, 0);
+        emit(VZBridgeCallbackContextReleased, _networkContext, nil, nil, 0);
     [super dealloc];
 }
 @end
 
 void *vz_newVZVirtualMachineWithDispatchQueue(void *config, uint64_t state, uint64_t network)
 {
-    return [[VZBridgeMachine alloc] initWithConfiguration:config state:state network:network];
+    VZBridgeQueue *owner = [[VZBridgeQueue alloc] init];
+    __block VZBridgeMachine *machine;
+    syncOnQueue(owner->queue, ^{
+        machine = [[VZBridgeMachine alloc] initWithConfiguration:config queueOwner:owner state:state network:network];
+    });
+    [owner release];
+    return machine;
 }
 
 static void (^completion(id owner, uint64_t context))(NSError *)
 {
     return [[^(NSError *error) {
-        emit(1, context, [error retain], nil, 0);
+        emit(VZBridgeCallbackCompletion, context, [error retain], nil, 0);
         [owner self];
     } copy] autorelease];
 }
@@ -207,7 +308,7 @@ void vz_stopWithCompletionHandler(void *machine, uint64_t context)
         return;
     }
 #endif
-    unavailable(1, context);
+    unavailable(VZBridgeCallbackCompletion, context);
 }
 void vz_startWithOptionsCompletionHandler(void *machine, void *options, uint64_t context)
 {
@@ -217,7 +318,7 @@ void vz_startWithOptionsCompletionHandler(void *machine, void *options, uint64_t
         return;
     }
 #endif
-    unavailable(1, context);
+    unavailable(VZBridgeCallbackCompletion, context);
 }
 
 @interface VZBridgeSocketListener : VZVirtioSocketListener <VZVirtioSocketListenerDelegate> {
@@ -240,7 +341,8 @@ void vz_startWithOptionsCompletionHandler(void *machine, void *options, uint64_t
 {
     if (!_context)
         return NO;
-    return emit(6, _context, [connection retain], device, 0) != 0;
+    vz_inheritObjectQueue(connection, device);
+    return emit(VZBridgeCallbackSocketAccepted, _context, [connection retain], device, 0) != 0;
 }
 - (void)invalidate
 {
@@ -248,7 +350,7 @@ void vz_startWithOptionsCompletionHandler(void *machine, void *options, uint64_t
     uint64_t context = _context;
     _context = 0;
     if (context)
-        emit(4, context, nil, nil, 0);
+        emit(VZBridgeCallbackContextReleased, context, nil, nil, 0);
 }
 - (void)dealloc
 {
@@ -257,14 +359,20 @@ void vz_startWithOptionsCompletionHandler(void *machine, void *options, uint64_t
 }
 @end
 
-void *vz_newVZVirtioSocketListener(uint64_t context) { return [[VZBridgeSocketListener alloc] initWithContext:context]; }
+void *vz_newVZVirtioSocketListener(void *device, uint64_t context)
+{
+    VZBridgeSocketListener *listener = [[VZBridgeSocketListener alloc] initWithContext:context];
+    vz_inheritObjectQueue(listener, device);
+    return listener;
+}
 void vz_invalidateVZVirtioSocketListener(void *listener) { [(VZBridgeSocketListener *)listener invalidate]; }
 void vz_VZVirtioSocketDevice_connectToPort(void *pointer, uint32_t port, uint64_t context)
 {
     VZVirtioSocketDevice *device = pointer;
     [device connectToPort:port
         completionHandler:^(VZVirtioSocketConnection *connection, NSError *error) {
-            emit(5, context, [connection retain], [error retain], 0);
+            vz_inheritObjectQueue(connection, device);
+            emit(VZBridgeCallbackSocketConnected, context, [connection retain], [error retain], 0);
             [device self];
         }];
 }
@@ -291,14 +399,16 @@ void vz_attachDeviceVZUSBController(void *pointer, void *devicePointer, uint64_t
         id<VZUSBDevice> device = devicePointer;
         [controller attachDevice:device
                completionHandler:^(NSError *error) {
-                   emit(1, context, [error retain], nil, 0);
+                   if (!error)
+                       vz_inheritObjectQueue(device, controller);
+                   emit(VZBridgeCallbackCompletion, context, [error retain], nil, 0);
                    [controller self];
                    [device self];
                }];
         return;
     }
 #endif
-    unavailable(1, context);
+    unavailable(VZBridgeCallbackCompletion, context);
 }
 void vz_detachDeviceVZUSBController(void *pointer, void *devicePointer, uint64_t context)
 {
@@ -308,14 +418,14 @@ void vz_detachDeviceVZUSBController(void *pointer, void *devicePointer, uint64_t
         id<VZUSBDevice> device = devicePointer;
         [controller detachDevice:device
                completionHandler:^(NSError *error) {
-                   emit(1, context, [error retain], nil, 0);
+                   emit(VZBridgeCallbackCompletion, context, [error retain], nil, 0);
                    [controller self];
                    [device self];
                }];
         return;
     }
 #endif
-    unavailable(1, context);
+    unavailable(VZBridgeCallbackCompletion, context);
 }
 
 static NSFileHandle *duplicateFile(int descriptor, void **output)
@@ -388,16 +498,16 @@ API_AVAILABLE(macos(14.0))
 }
 - (void)attachment:(VZNetworkBlockDeviceStorageDeviceAttachment *)attachment didEncounterError:(NSError *)error
 {
-    emit(7, _context, [error retain], nil, 0);
+    emit(VZBridgeCallbackNetworkBlockDeviceError, _context, [error retain], nil, 0);
 }
 - (void)attachmentWasConnected:(VZNetworkBlockDeviceStorageDeviceAttachment *)attachment
 {
-    emit(8, _context, nil, nil, 0);
+    emit(VZBridgeCallbackNetworkBlockDeviceConnected, _context, nil, nil, 0);
 }
 - (void)dealloc
 {
     if (_context)
-        emit(4, _context, nil, nil, 0);
+        emit(VZBridgeCallbackContextReleased, _context, nil, nil, 0);
     [super dealloc];
 }
 @end
@@ -437,22 +547,22 @@ void vz_fetchLatestSupportedMacOSRestoreImageWithCompletionHandler(uint64_t cont
 {
     if (@available(macOS 12, *)) {
         [VZMacOSRestoreImage fetchLatestSupportedWithCompletionHandler:^(VZMacOSRestoreImage *image, NSError *error) {
-            emit(10, context, [image retain], [error retain], 0);
+            emit(VZBridgeCallbackRestoreImageLoaded, context, [image retain], [error retain], 0);
         }];
         return;
     }
-    unavailable(10, context);
+    unavailable(VZBridgeCallbackRestoreImageLoaded, context);
 }
 void vz_loadMacOSRestoreImageFile(const char *path, uint64_t context)
 {
     if (@available(macOS 12, *)) {
         [VZMacOSRestoreImage loadFileURL:fileURL(path)
                        completionHandler:^(VZMacOSRestoreImage *image, NSError *error) {
-                           emit(10, context, [image retain], [error retain], 0);
+                           emit(VZBridgeCallbackRestoreImageLoaded, context, [image retain], [error retain], 0);
                        }];
         return;
     }
-    unavailable(10, context);
+    unavailable(VZBridgeCallbackRestoreImageLoaded, context);
 }
 int64_t vz_macOSRestoreImageMajorVersion(void *object)
 {
@@ -487,8 +597,11 @@ API_AVAILABLE(macos(12.0))
 - (instancetype)initWithMachine:(VZVirtualMachine *)machine path:(const char *)path
 {
     self = [super init];
-    if (self)
+    if (self) {
+        vz_inheritObjectQueue(self, machine);
         _installer = [[VZMacOSInstaller alloc] initWithVirtualMachine:machine restoreImageURL:fileURL(path)];
+        vz_inheritObjectQueue(_installer, machine);
+    }
     return self;
 }
 - (void)finishProgress
@@ -500,22 +613,22 @@ API_AVAILABLE(macos(12.0))
     uint64_t context = _progressContext;
     _progressContext = 0;
     if (context)
-        emit(4, context, nil, nil, 0);
+        emit(VZBridgeCallbackContextReleased, context, nil, nil, 0);
 }
 - (void)install:(uint64_t)completionContext progress:(uint64_t)progress
 {
     if (_progressContext) {
-        emit(4, progress, nil, nil, 0);
-        emit(11, completionContext, [posixError(EBUSY) retain], nil, 0);
+        emit(VZBridgeCallbackContextReleased, progress, nil, nil, 0);
+        emit(VZBridgeCallbackMacOSInstallCompleted, completionContext, [posixError(EBUSY) retain], nil, 0);
         return;
     }
     _progressContext = progress;
     _observing = YES;
     [_installer.progress addObserver:self forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:&bridgeQueueKey];
     [_installer installWithCompletionHandler:^(NSError *error) {
-        syncNative(^{
+        syncObject(self, ^{
             [self finishProgress];
-            emit(11, completionContext, [error retain], nil, 0);
+            emit(VZBridgeCallbackMacOSInstallCompleted, completionContext, [error retain], nil, 0);
         });
     }];
 }
@@ -528,7 +641,7 @@ API_AVAILABLE(macos(12.0))
     double progress = [change[NSKeyValueChangeNewKey] doubleValue];
     uint64_t bits;
     memcpy(&bits, &progress, sizeof(bits));
-    syncNative(^{ if (_progressContext) emit(12, _progressContext, nil, nil, bits); });
+    syncObject(self, ^{ if (_progressContext) emit(VZBridgeCallbackMacOSInstallProgress, _progressContext, nil, nil, bits); });
 }
 - (void)cancel
 {
@@ -554,8 +667,8 @@ void vz_installByVZMacOSInstaller(void *installer, uint64_t completionContext, u
         [(VZBridgeInstaller *)installer install:completionContext progress:progress];
         return;
     }
-    emit(4, progress, nil, nil, 0);
-    unavailable(11, completionContext);
+    emit(VZBridgeCallbackContextReleased, progress, nil, nil, 0);
+    unavailable(VZBridgeCallbackMacOSInstallCompleted, completionContext);
 }
 void vz_cancelInstallVZMacOSInstaller(void *installer)
 {
@@ -563,16 +676,16 @@ void vz_cancelInstallVZMacOSInstaller(void *installer)
         [(VZBridgeInstaller *)installer cancel];
 }
 #else
-void vz_fetchLatestSupportedMacOSRestoreImageWithCompletionHandler(uint64_t context) { unavailable(10, context); }
-void vz_loadMacOSRestoreImageFile(const char *path, uint64_t context) { unavailable(10, context); }
+void vz_fetchLatestSupportedMacOSRestoreImageWithCompletionHandler(uint64_t context) { unavailable(VZBridgeCallbackRestoreImageLoaded, context); }
+void vz_loadMacOSRestoreImageFile(const char *path, uint64_t context) { unavailable(VZBridgeCallbackRestoreImageLoaded, context); }
 int64_t vz_macOSRestoreImageMajorVersion(void *object) { return 0; }
 int64_t vz_macOSRestoreImageMinorVersion(void *object) { return 0; }
 int64_t vz_macOSRestoreImagePatchVersion(void *object) { return 0; }
 void *vz_newVZMacOSInstaller(void *machine, const char *path) { return nil; }
 void vz_installByVZMacOSInstaller(void *installer, uint64_t context, uint64_t progress)
 {
-    emit(4, progress, nil, nil, 0);
-    unavailable(11, context);
+    emit(VZBridgeCallbackContextReleased, progress, nil, nil, 0);
+    unavailable(VZBridgeCallbackMacOSInstallCompleted, context);
 }
 void vz_cancelInstallVZMacOSInstaller(void *installer) { }
 #endif
@@ -581,11 +694,11 @@ void vz_linuxInstallRosetta(uint64_t context)
 {
 #if defined(__arm64__) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 130000
     if (@available(macOS 13, *)) {
-        [VZLinuxRosettaDirectoryShare installRosettaWithCompletionHandler:^(NSError *error) { emit(9, context, [error retain], nil, 0); }];
+        [VZLinuxRosettaDirectoryShare installRosettaWithCompletionHandler:^(NSError *error) { emit(VZBridgeCallbackRosettaInstallCompleted, context, [error retain], nil, 0); }];
         return;
     }
 #endif
-    unavailable(9, context);
+    unavailable(VZBridgeCallbackRosettaInstallCompleted, context);
 }
 void vz_saveMachineStateToURLWithCompletionHandler(void *machine, uint64_t context, const char *path)
 {
@@ -595,7 +708,7 @@ void vz_saveMachineStateToURLWithCompletionHandler(void *machine, uint64_t conte
         return;
     }
 #endif
-    unavailable(1, context);
+    unavailable(VZBridgeCallbackCompletion, context);
 }
 void vz_restoreMachineStateFromURLWithCompletionHandler(void *machine, uint64_t context, const char *path)
 {
@@ -605,5 +718,5 @@ void vz_restoreMachineStateFromURLWithCompletionHandler(void *machine, uint64_t 
         return;
     }
 #endif
-    unavailable(1, context);
+    unavailable(VZBridgeCallbackCompletion, context);
 }

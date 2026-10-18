@@ -17,6 +17,7 @@ type binding struct {
 	Name, Symbol, Result string
 	Parameters           []parameter
 	Queue                bool
+	ObjectQueue          bool
 }
 
 type clangType struct {
@@ -113,7 +114,7 @@ func discoverBindings(path string) ([]binding, error) {
 		if err != nil {
 			return nil, err
 		}
-		if metadata != "" && metadata != "noqueue" && metadata != "manual" {
+		if metadata != "" && metadata != "noqueue" && metadata != "manual" && metadata != "objectqueue" {
 			return nil, fmt.Errorf("%s: unknown annotation %q for function", node.Name, metadata)
 		}
 		if node.Variadic {
@@ -130,7 +131,13 @@ func discoverBindings(path string) ([]binding, error) {
 		if err != nil {
 			return nil, fmt.Errorf("%s result: %w", node.Name, err)
 		}
-		b := binding{Name: name, Symbol: node.Name, Result: goResult, Queue: metadata == ""}
+		b := binding{
+			Name:        name,
+			Symbol:      node.Name,
+			Result:      goResult,
+			Queue:       metadata == "" || metadata == "objectqueue",
+			ObjectQueue: metadata == "objectqueue",
+		}
 		parameters := make(map[string]bool)
 		for _, child := range node.Inner {
 			if child.Kind != "ParmVarDecl" {
@@ -150,6 +157,9 @@ func discoverBindings(path string) ([]binding, error) {
 				return nil, fmt.Errorf("%s parameter %s: %w", node.Name, child.Name, err)
 			}
 			b.Parameters = append(b.Parameters, parameter{Name: child.Name, Type: typ})
+		}
+		if b.ObjectQueue && (len(b.Parameters) == 0 || b.Parameters[0].Type != "objc.NSObject") {
+			return nil, fmt.Errorf("%s: objectqueue requires an object as its first parameter", node.Name)
 		}
 		if metadata != "manual" {
 			bindings = append(bindings, b)

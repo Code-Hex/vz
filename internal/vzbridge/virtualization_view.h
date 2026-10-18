@@ -24,7 +24,11 @@
 @end
 
 API_AVAILABLE(macos(12.0))
-@interface AppDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate, VZVirtualMachineDelegate, NSToolbarDelegate>
+@interface VZGraphicWindowController : NSObject <NSWindowDelegate, VZVirtualMachineDelegate, NSToolbarDelegate>
+@property(nonatomic, copy) void (^didClose)(VZGraphicWindowController *window);
+- (void)showWindow;
+- (void)close;
+- (void)setupMenuBar;
 - (instancetype)initWithVirtualMachine:(VZVirtualMachine *)virtualMachine
                                  queue:(dispatch_queue_t)queue
                            windowWidth:(CGFloat)windowWidth

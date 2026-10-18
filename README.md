@@ -11,6 +11,36 @@ vz provides the power of the Apple Virtualization.framework in Go. Put here is b
 
 Please see the [example](https://github.com/Code-Hex/vz/tree/main/example) directory.
 
+## VM windows
+
+Each VM has its own dispatch queue. To display several VMs in one process,
+configure their windows and run one graphic application on the main thread.
+Call `runtime.LockOSThread()` in `init()` to keep the main goroutine there.
+
+```go
+func init() {
+    runtime.LockOSThread()
+}
+
+func showWindows(first, second *vz.VirtualMachine) error {
+    firstWindow, err := vz.NewGraphicWindow(first, 800, 600, vz.WithWindowTitle("First VM"))
+    if err != nil {
+        return err
+    }
+    secondWindow, err := vz.NewGraphicWindow(second, 800, 600, vz.WithWindowTitle("Second VM"))
+    if err != nil {
+        return err
+    }
+    return vz.StartGraphicApplication(firstWindow, secondWindow)
+}
+```
+
+Call `showWindows` from `main` after starting both VMs. Closing a window leaves
+its VM running and does not affect other windows. Stopping a VM closes its window.
+`StartGraphicApplication` returns when the last window closes. The caller remains
+responsible for stopping the VMs. For one VM, the existing
+`vm.StartGraphicApplication` method is also available.
+
 ## Requirements
 
 - macOS Monterey (12.0) or later.

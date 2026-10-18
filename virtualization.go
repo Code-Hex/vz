@@ -2,6 +2,8 @@ package vz
 
 import (
 	"fmt"
+	"math"
+	"runtime"
 	"sync"
 	"unsafe"
 
@@ -327,29 +329,88 @@ func WithController(enable bool) StartGraphicApplicationOption {
 	}
 }
 
-// StartGraphicApplication starts an application to display graphics of the VM.
+// GraphicWindow describes a VM window. Create one with NewGraphicWindow.
+type GraphicWindow struct {
+	machine *VirtualMachine
+	width   float64
+	height  float64
+	options startGraphicApplicationOptions
+}
+
+// NewGraphicWindow configures a window without opening it.
+func NewGraphicWindow(machine *VirtualMachine, width, height float64, opts ...StartGraphicApplicationOption) (*GraphicWindow, error) {
+	if machine == nil {
+		return nil, fmt.Errorf("graphic window requires a virtual machine")
+	}
+	if width <= 0 || height <= 0 || math.IsNaN(width) || math.IsNaN(height) || math.IsInf(width, 0) || math.IsInf(height, 0) {
+		return nil, fmt.Errorf("graphic window dimensions must be finite and positive")
+	}
+	window := &GraphicWindow{
+		machine: machine,
+		width:   width,
+		height:  height,
+	}
+	for _, opt := range opts {
+		if opt == nil {
+			return nil, fmt.Errorf("graphic window option must not be nil")
+		}
+		if err := opt(&window.options); err != nil {
+			return nil, err
+		}
+	}
+	return window, nil
+}
+
+// StartGraphicApplication displays the windows until all of them close.
+// Closing a window does not stop its VM. A stopped VM closes its own window.
 //
-// You must to call runtime.LockOSThread before calling this method.
-//
-// This is only supported on macOS 12 and newer, error will be returned on older versions.
-func (v *VirtualMachine) StartGraphicApplication(width, height float64, opts ...StartGraphicApplicationOption) error {
+// Call this function from the main goroutine after calling runtime.LockOSThread
+// in init. Only one graphic application can run at a time.
+// This is supported on macOS 12 and newer.
+func StartGraphicApplication(windows ...*GraphicWindow) error {
 	if err := macOSAvailable(12); err != nil {
 		return err
 	}
-	defaultOpts := &startGraphicApplicationOptions{}
-	for _, opt := range opts {
-		if err := opt(defaultOpts); err != nil {
-			return err
-		}
+	if len(windows) == 0 {
+		return fmt.Errorf("graphic application requires at least one window")
 	}
-	vzbridge.StartVirtualMachineWindow(
-		v,
-		width,
-		height,
-		defaultOpts.title,
-		defaultOpts.enableController,
-	)
+	seen := make(map[*VirtualMachine]bool, len(windows))
+	for _, window := range windows {
+		if window == nil || window.machine == nil {
+			return fmt.Errorf("graphic application requires valid windows")
+		}
+		if seen[window.machine] {
+			return fmt.Errorf("graphic application cannot display the same virtual machine twice")
+		}
+		seen[window.machine] = true
+	}
+	application := vzbridge.NewGraphicApplication()
+	defer vzbridge.FreeGraphicApplication(application)
+	for _, window := range windows {
+		vzbridge.AddGraphicWindow(application, window.machine, window.width, window.height, window.options.title, window.options.enableController)
+	}
+	status := vzbridge.RunGraphicApplication(application)
+	runtime.KeepAlive(windows)
+	switch status {
+	case 1:
+		return fmt.Errorf("graphic application must run on the main thread")
+	case 2:
+		return fmt.Errorf("a graphic application is already running")
+	}
 	return nil
+}
+
+// StartGraphicApplication displays a single VM window until it closes.
+//
+// Call this method from the main goroutine after calling runtime.LockOSThread
+// in init. Use the package-level StartGraphicApplication to display multiple VMs.
+// This is supported on macOS 12 and newer.
+func (v *VirtualMachine) StartGraphicApplication(width, height float64, opts ...StartGraphicApplicationOption) error {
+	window, err := NewGraphicWindow(v, width, height, opts...)
+	if err != nil {
+		return err
+	}
+	return StartGraphicApplication(window)
 }
 
 // DisconnectedError represents an error that occurs when a VM’s network attachment is disconnected

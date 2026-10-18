@@ -2,7 +2,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <math.h>
 
-@interface AppDelegate (GraphicsTest)
+@interface VZGraphicWindowController (GraphicsTest)
 - (void)setupGraphicWindow;
 - (void)handleMouseMovement:(NSEvent *)event;
 - (void)stopScrollTimer;
@@ -151,8 +151,8 @@ static NSEvent *mouseMoved(NSWindow *window, NSPoint point)
                               pressure:0];
 }
 
-static void checkEdgePanning(AppDelegate *delegate, NSWindow *window, NSScrollView *scroll, NSString *label) API_AVAILABLE(macos(12.0));
-static void checkEdgePanning(AppDelegate *delegate, NSWindow *window, NSScrollView *scroll, NSString *label)
+static void checkEdgePanning(VZGraphicWindowController *delegate, NSWindow *window, NSScrollView *scroll, NSString *label) API_AVAILABLE(macos(12.0));
+static void checkEdgePanning(VZGraphicWindowController *delegate, NSWindow *window, NSScrollView *scroll, NSString *label)
 {
     [scroll setMagnification:2 centeredAtPoint:NSMakePoint(480, 300)];
     settle(window);
@@ -406,7 +406,7 @@ static void checkWindowActions(void)
 {
     NSString *title = @"VZ graphics window actions";
     dispatch_queue_t queue = dispatch_queue_create("vz.window-actions-test", DISPATCH_QUEUE_SERIAL);
-    AppDelegate *controller = [[AppDelegate alloc] initWithVirtualMachine:nil
+    VZGraphicWindowController *controller = [[VZGraphicWindowController alloc] initWithVirtualMachine:nil
                                                                     queue:queue
                                                               windowWidth:640
                                                              windowHeight:480
@@ -472,7 +472,7 @@ static void exerciseWindow(NSScrollerStyle style)
     NSString *label = style == NSScrollerStyleLegacy ? @"Legacy" : @"Overlay";
     NSString *title = [@"VZ graphics regression " stringByAppendingString:label];
     dispatch_queue_t queue = dispatch_queue_create("vz.graphics-test", DISPATCH_QUEUE_SERIAL);
-    AppDelegate *delegate = [[AppDelegate alloc] initWithVirtualMachine:nil
+    VZGraphicWindowController *delegate = [[VZGraphicWindowController alloc] initWithVirtualMachine:nil
                                                                   queue:queue
                                                             windowWidth:960
                                                            windowHeight:600

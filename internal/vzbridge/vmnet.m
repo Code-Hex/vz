@@ -87,6 +87,15 @@ void vz_disableVmnetRouterAdvertisement(void *configuration)
 #endif
 }
 
+void vz_setVmnetExternalInterface(void *configuration, const char *name, void **errorOut)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *)) {
+        vmnetError(vmnet_network_configuration_set_external_interface(configuration, name), @"vmnet_network_configuration_set_external_interface", errorOut);
+    }
+#endif
+}
+
 void vz_setVmnetMTU(void *configuration, uint32_t mtu, void **errorOut)
 {
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
@@ -123,6 +132,23 @@ void vz_addVmnetDHCPReservation(void *configuration, const void *mac, uint32_t a
     if (@available(macOS 26, *)) {
         struct in_addr reservation = { .s_addr = htonl(address) };
         vmnetError(vmnet_network_configuration_add_dhcp_reservation(configuration, mac, &reservation), @"vmnet_network_configuration_add_dhcp_reservation", errorOut);
+    }
+#endif
+}
+
+void vz_addVmnetPortForwarding(void *configuration, bool udp, bool ipv6, uint16_t externalPort, uint16_t internalPort, const void *address, void **errorOut)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *)) {
+        union {
+            struct in_addr ipv4;
+            struct in6_addr ipv6;
+        } destination;
+        memcpy(&destination, address, ipv6 ? sizeof(destination.ipv6) : sizeof(destination.ipv4));
+        vmnet_return_t status = vmnet_network_configuration_add_port_forwarding_rule(
+            configuration, udp ? IPPROTO_UDP : IPPROTO_TCP, ipv6 ? AF_INET6 : AF_INET,
+            internalPort, externalPort, &destination);
+        vmnetError(status, @"vmnet_network_configuration_add_port_forwarding_rule", errorOut);
     }
 #endif
 }

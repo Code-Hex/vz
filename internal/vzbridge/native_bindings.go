@@ -613,6 +613,22 @@ func DisableVmnetRouterAdvertisement(configuration objc.NSObject) {
 	runtime.KeepAlive(configuration)
 }
 
+var callSetVmnetExternalInterface lazyBinding[func(unsafe.Pointer, string, *unsafe.Pointer)]
+
+func SetVmnetExternalInterface(configuration objc.NSObject, name string, errorOut *unsafe.Pointer) {
+	call := callSetVmnetExternalInterface.get(func() func(unsafe.Pointer, string, *unsafe.Pointer) {
+		var call func(unsafe.Pointer, string, *unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_setVmnetExternalInterface))
+		return call
+	})
+	onQueue(func() {
+		call(objc.Ptr(configuration), name, errorOut)
+	})
+	runtime.KeepAlive(configuration)
+	runtime.KeepAlive(name)
+	runtime.KeepAlive(errorOut)
+}
+
 var callSetVmnetMTU lazyBinding[func(unsafe.Pointer, uint32, *unsafe.Pointer)]
 
 func SetVmnetMTU(configuration objc.NSObject, mtu uint32, errorOut *unsafe.Pointer) {
@@ -672,6 +688,22 @@ func AddVmnetDHCPReservation(configuration objc.NSObject, mac unsafe.Pointer, ad
 	})
 	runtime.KeepAlive(configuration)
 	runtime.KeepAlive(mac)
+	runtime.KeepAlive(errorOut)
+}
+
+var callAddVmnetPortForwarding lazyBinding[func(unsafe.Pointer, bool, bool, uint16, uint16, unsafe.Pointer, *unsafe.Pointer)]
+
+func AddVmnetPortForwarding(configuration objc.NSObject, udp bool, ipv6 bool, externalPort uint16, internalPort uint16, address unsafe.Pointer, errorOut *unsafe.Pointer) {
+	call := callAddVmnetPortForwarding.get(func() func(unsafe.Pointer, bool, bool, uint16, uint16, unsafe.Pointer, *unsafe.Pointer) {
+		var call func(unsafe.Pointer, bool, bool, uint16, uint16, unsafe.Pointer, *unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_addVmnetPortForwarding))
+		return call
+	})
+	onQueue(func() {
+		call(objc.Ptr(configuration), udp, ipv6, externalPort, internalPort, address, errorOut)
+	})
+	runtime.KeepAlive(configuration)
+	runtime.KeepAlive(address)
 	runtime.KeepAlive(errorOut)
 }
 

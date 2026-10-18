@@ -7,7 +7,37 @@ restores a network from that object. The serialization is not a byte encoding
 and cannot be written to a file.
 
 Use `ShareNetwork` and `ReceiveNetwork` to share a network through a launchd
-Mach service. The server publishes one network:
+Mach service.
+
+```mermaid
+flowchart LR
+    subgraph A["Process A"]
+        direction TB
+        source["Source Network"]
+        share["ShareNetwork"]
+        vmA["VM A"]
+        source --> share
+        source -->|"Attach"| vmA
+    end
+
+    subgraph B["Process B"]
+        direction TB
+        receive["ReceiveNetwork"]
+        imported["Received Network"]
+        vmB["VM B"]
+        receive --> imported
+        imported -->|"Attach"| vmB
+    end
+
+    share -.->|"Network reference over XPC"| receive
+    vmA <-->|"Packets through the same vmnet network"| vmB
+```
+
+XPC transfers the network reference. VM packets flow through the shared vmnet
+network. Keep the sharing service and its process running while clients use
+the network.
+
+The server publishes one network:
 
 ```go
 service, err := vmnet.ShareNetwork("com.example.vmnetwork", network, clientRequirement)

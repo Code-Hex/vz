@@ -48,3 +48,7 @@ install/stringer:
 .PHONY: clean
 clean:
 	@rm testdata/{Image,initramfs.cpio.gz,*.tar.gz}
+
+.PHONY: test/vmnet
+test/vmnet:
+	go test -exec "go run $(PWD)/cmd/codesign" ./vmnet/... -timeout 2m -v

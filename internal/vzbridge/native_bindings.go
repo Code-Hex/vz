@@ -789,3 +789,87 @@ func ReleaseXPCObject(object unsafe.Pointer) {
 	call(object)
 	runtime.KeepAlive(object)
 }
+
+var callListenVmnetNetwork lazyBinding[func(string, unsafe.Pointer, string, *unsafe.Pointer) unsafe.Pointer]
+
+func ListenVmnetNetwork(name string, serialization objc.NSObject, requirement string, errorOut *unsafe.Pointer) unsafe.Pointer {
+	call := callListenVmnetNetwork.get(func() func(string, unsafe.Pointer, string, *unsafe.Pointer) unsafe.Pointer {
+		var call func(string, unsafe.Pointer, string, *unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_listenVmnetNetwork))
+		return call
+	})
+	var result unsafe.Pointer
+	result = call(name, objc.Ptr(serialization), requirement, errorOut)
+	runtime.KeepAlive(name)
+	runtime.KeepAlive(serialization)
+	runtime.KeepAlive(requirement)
+	runtime.KeepAlive(errorOut)
+	return result
+}
+
+var callCloseVmnetNetworkService lazyBinding[func(unsafe.Pointer)]
+
+func CloseVmnetNetworkService(service unsafe.Pointer) {
+	call := callCloseVmnetNetworkService.get(func() func(unsafe.Pointer) {
+		var call func(unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_closeVmnetNetworkService))
+		return call
+	})
+	call(service)
+	runtime.KeepAlive(service)
+}
+
+var callRequestVmnetNetwork lazyBinding[func(string, string, *unsafe.Pointer) unsafe.Pointer]
+
+func RequestVmnetNetwork(name string, requirement string, errorOut *unsafe.Pointer) unsafe.Pointer {
+	call := callRequestVmnetNetwork.get(func() func(string, string, *unsafe.Pointer) unsafe.Pointer {
+		var call func(string, string, *unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_requestVmnetNetwork))
+		return call
+	})
+	var result unsafe.Pointer
+	result = call(name, requirement, errorOut)
+	runtime.KeepAlive(name)
+	runtime.KeepAlive(requirement)
+	runtime.KeepAlive(errorOut)
+	return result
+}
+
+var callCancelVmnetNetworkRequest lazyBinding[func(unsafe.Pointer)]
+
+func CancelVmnetNetworkRequest(request unsafe.Pointer) {
+	call := callCancelVmnetNetworkRequest.get(func() func(unsafe.Pointer) {
+		var call func(unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_cancelVmnetNetworkRequest))
+		return call
+	})
+	call(request)
+	runtime.KeepAlive(request)
+}
+
+var callWaitVmnetNetworkRequest lazyBinding[func(unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer]
+
+func WaitVmnetNetworkRequest(request unsafe.Pointer, errorOut *unsafe.Pointer) unsafe.Pointer {
+	call := callWaitVmnetNetworkRequest.get(func() func(unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer {
+		var call func(unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_waitVmnetNetworkRequest))
+		return call
+	})
+	var result unsafe.Pointer
+	result = call(request, errorOut)
+	runtime.KeepAlive(request)
+	runtime.KeepAlive(errorOut)
+	return result
+}
+
+var callReleaseVmnetNetworkRequest lazyBinding[func(unsafe.Pointer)]
+
+func ReleaseVmnetNetworkRequest(request unsafe.Pointer) {
+	call := callReleaseVmnetNetworkRequest.get(func() func(unsafe.Pointer) {
+		var call func(unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_releaseVmnetNetworkRequest))
+		return call
+	})
+	call(request)
+	runtime.KeepAlive(request)
+}

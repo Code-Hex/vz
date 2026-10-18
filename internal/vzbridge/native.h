@@ -61,3 +61,9 @@ void vz_writeVmnetPacket(void *session, const void *buffer, uint64_t size, VZBri
 void *vz_copyVmnetNetworkSerialization(VZBridgeObject network, VZBridgeErrorOut errorOut);
 void *vz_newVmnetNetworkWithSerialization(VZBridgeObject serialization, VZBridgeErrorOut errorOut);
 void vz_releaseXPCObject(void *object) __attribute__((annotate("vzbridge:noqueue")));
+void *vz_listenVmnetNetwork(const char *name, VZBridgeObject serialization, const char *requirement, VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:noqueue")));
+void vz_closeVmnetNetworkService(void *service) __attribute__((annotate("vzbridge:noqueue")));
+void *vz_requestVmnetNetwork(const char *name, const char *requirement, VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:noqueue")));
+void vz_cancelVmnetNetworkRequest(void *request) __attribute__((annotate("vzbridge:noqueue")));
+void *vz_waitVmnetNetworkRequest(void *request, VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:noqueue")));
+void vz_releaseVmnetNetworkRequest(void *request) __attribute__((annotate("vzbridge:noqueue")));

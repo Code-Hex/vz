@@ -543,6 +543,76 @@ func NewVmnetNetwork(configuration objc.NSObject, errorOut *unsafe.Pointer) unsa
 	return result
 }
 
+var callDisableVmnetDHCP lazyBinding[func(unsafe.Pointer)]
+
+func DisableVmnetDHCP(configuration objc.NSObject) {
+	call := callDisableVmnetDHCP.get(func() func(unsafe.Pointer) {
+		var call func(unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_disableVmnetDHCP))
+		return call
+	})
+	onQueue(func() {
+		call(objc.Ptr(configuration))
+	})
+	runtime.KeepAlive(configuration)
+}
+
+var callDisableVmnetDNSProxy lazyBinding[func(unsafe.Pointer)]
+
+func DisableVmnetDNSProxy(configuration objc.NSObject) {
+	call := callDisableVmnetDNSProxy.get(func() func(unsafe.Pointer) {
+		var call func(unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_disableVmnetDNSProxy))
+		return call
+	})
+	onQueue(func() {
+		call(objc.Ptr(configuration))
+	})
+	runtime.KeepAlive(configuration)
+}
+
+var callDisableVmnetNAT44 lazyBinding[func(unsafe.Pointer)]
+
+func DisableVmnetNAT44(configuration objc.NSObject) {
+	call := callDisableVmnetNAT44.get(func() func(unsafe.Pointer) {
+		var call func(unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_disableVmnetNAT44))
+		return call
+	})
+	onQueue(func() {
+		call(objc.Ptr(configuration))
+	})
+	runtime.KeepAlive(configuration)
+}
+
+var callDisableVmnetNAT66 lazyBinding[func(unsafe.Pointer)]
+
+func DisableVmnetNAT66(configuration objc.NSObject) {
+	call := callDisableVmnetNAT66.get(func() func(unsafe.Pointer) {
+		var call func(unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_disableVmnetNAT66))
+		return call
+	})
+	onQueue(func() {
+		call(objc.Ptr(configuration))
+	})
+	runtime.KeepAlive(configuration)
+}
+
+var callDisableVmnetRouterAdvertisement lazyBinding[func(unsafe.Pointer)]
+
+func DisableVmnetRouterAdvertisement(configuration objc.NSObject) {
+	call := callDisableVmnetRouterAdvertisement.get(func() func(unsafe.Pointer) {
+		var call func(unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_disableVmnetRouterAdvertisement))
+		return call
+	})
+	onQueue(func() {
+		call(objc.Ptr(configuration))
+	})
+	runtime.KeepAlive(configuration)
+}
+
 var callSetVmnetMTU lazyBinding[func(unsafe.Pointer, uint32, *unsafe.Pointer)]
 
 func SetVmnetMTU(configuration objc.NSObject, mtu uint32, errorOut *unsafe.Pointer) {

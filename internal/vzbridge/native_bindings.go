@@ -675,6 +675,22 @@ func AddVmnetDHCPReservation(configuration objc.NSObject, mac unsafe.Pointer, ad
 	runtime.KeepAlive(errorOut)
 }
 
+var callAddVmnetPortForwarding lazyBinding[func(unsafe.Pointer, bool, bool, uint16, uint16, unsafe.Pointer, *unsafe.Pointer)]
+
+func AddVmnetPortForwarding(configuration objc.NSObject, udp bool, ipv6 bool, externalPort uint16, internalPort uint16, address unsafe.Pointer, errorOut *unsafe.Pointer) {
+	call := callAddVmnetPortForwarding.get(func() func(unsafe.Pointer, bool, bool, uint16, uint16, unsafe.Pointer, *unsafe.Pointer) {
+		var call func(unsafe.Pointer, bool, bool, uint16, uint16, unsafe.Pointer, *unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_addVmnetPortForwarding))
+		return call
+	})
+	onQueue(func() {
+		call(objc.Ptr(configuration), udp, ipv6, externalPort, internalPort, address, errorOut)
+	})
+	runtime.KeepAlive(configuration)
+	runtime.KeepAlive(address)
+	runtime.KeepAlive(errorOut)
+}
+
 var callVmnetIPv4Subnet lazyBinding[func(unsafe.Pointer) uint64]
 
 func VmnetIPv4Subnet(network objc.NSObject) uint64 {

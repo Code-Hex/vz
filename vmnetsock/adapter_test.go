@@ -1,4 +1,4 @@
-package fileadapter_test
+package vmnetsock_test
 
 import (
 	"bytes"
@@ -15,7 +15,7 @@ import (
 	"github.com/Code-Hex/vz/v4/internal/macos"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 	"github.com/Code-Hex/vz/v4/vmnet"
-	"github.com/Code-Hex/vz/v4/vmnet/fileadapter"
+	"github.com/Code-Hex/vz/v4/vmnetsock"
 )
 
 func newInterface(t *testing.T, n *vmnet.Network) *vmnet.Interface {
@@ -36,7 +36,7 @@ func TestAdapterFramesAndLifetime(t *testing.T) {
 	if macos.Available(26, vzbridge.SDKVersion) != nil {
 		t.Skip("requires macOS 26 SDK")
 	}
-	for _, transport := range []fileadapter.Transport{fileadapter.Stream, fileadapter.Datagram} {
+	for _, transport := range []vmnetsock.Transport{vmnetsock.Stream, vmnetsock.Datagram} {
 		t.Run(string(rune('0'+transport)), func(t *testing.T) {
 			c, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
 			if err != nil {
@@ -49,7 +49,7 @@ func TestAdapterFramesAndLifetime(t *testing.T) {
 			a, b := newInterface(t, n), newInterface(t, n)
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
-			adapter, err := fileadapter.New(ctx, a, transport)
+			adapter, err := vmnetsock.New(ctx, a, transport)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -70,7 +70,7 @@ func TestAdapterFramesAndLifetime(t *testing.T) {
 				t.Fatal(err)
 			}
 			frame, _ := hex.DecodeString("ffffffffffff02000000000108060001080006040001020000000001c0a8ff02000000000000c0a8ff03000000000000000000000000000000000000")
-			if transport == fileadapter.Stream {
+			if transport == vmnetsock.Stream {
 				var header [4]byte
 				binary.BigEndian.PutUint32(header[:], uint32(len(frame)))
 				_, err = peer.Write(append(header[:], frame...))
@@ -95,7 +95,7 @@ func TestAdapterFramesAndLifetime(t *testing.T) {
 			}
 			for {
 				var count int
-				if transport == fileadapter.Stream {
+				if transport == vmnetsock.Stream {
 					var header [4]byte
 					if _, err = io.ReadFull(peer, header[:]); err == nil {
 						count = int(binary.BigEndian.Uint32(header[:]))
@@ -135,7 +135,7 @@ func TestAdapterInvalidInputs(t *testing.T) {
 		nil,
 		{},
 	} {
-		if _, err := fileadapter.New(context.Background(), i, fileadapter.Stream); err == nil {
+		if _, err := vmnetsock.New(context.Background(), i, vmnetsock.Stream); err == nil {
 			t.Fatal("invalid interface accepted")
 		}
 	}
@@ -150,10 +150,10 @@ func TestAdapterCancellation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, transport := range []fileadapter.Transport{fileadapter.Stream, fileadapter.Datagram} {
+	for _, transport := range []vmnetsock.Transport{vmnetsock.Stream, vmnetsock.Datagram} {
 		i := newInterface(t, n)
 		ctx, cancel := context.WithCancel(context.Background())
-		a, err := fileadapter.New(ctx, i, transport)
+		a, err := vmnetsock.New(ctx, i, transport)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -212,7 +212,7 @@ func TestAdapterStreamTermination(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			i := newInterface(t, n)
-			a, err := fileadapter.New(context.Background(), i, fileadapter.Stream)
+			a, err := vmnetsock.New(context.Background(), i, vmnetsock.Stream)
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -1,4 +1,4 @@
-package fileadapter_test
+package vmnetsock_test
 
 import (
 	"context"
@@ -12,11 +12,11 @@ import (
 	"github.com/Code-Hex/vz/v4/internal/macos"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 	"github.com/Code-Hex/vz/v4/vmnet"
-	"github.com/Code-Hex/vz/v4/vmnet/fileadapter"
+	"github.com/Code-Hex/vz/v4/vmnetsock"
 	"golang.org/x/sys/unix"
 )
 
-func duplicate(t *testing.T, adapter *fileadapter.Adapter) *os.File {
+func duplicate(t *testing.T, adapter *vmnetsock.Adapter) *os.File {
 	t.Helper()
 	file, err := adapter.Dup()
 	if err != nil {
@@ -30,7 +30,7 @@ func TestAdapterDuplicateOwnership(t *testing.T) {
 	if macos.Available(26, vzbridge.SDKVersion) != nil {
 		t.Skip("requires macOS 26 SDK")
 	}
-	for _, transport := range []fileadapter.Transport{fileadapter.Stream, fileadapter.Datagram} {
+	for _, transport := range []vmnetsock.Transport{vmnetsock.Stream, vmnetsock.Datagram} {
 		t.Run(fmt.Sprint(transport), func(t *testing.T) {
 			configuration, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
 			if err != nil {
@@ -40,7 +40,7 @@ func TestAdapterDuplicateOwnership(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			adapter, err := fileadapter.New(context.Background(), newInterface(t, network), transport)
+			adapter, err := vmnetsock.New(context.Background(), newInterface(t, network), transport)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -78,7 +78,7 @@ func TestAdapterDuplicateOwnership(t *testing.T) {
 			if _, err := second.Stat(); err != nil {
 				t.Fatalf("Adapter.Close closed caller-owned descriptor: %v", err)
 			}
-			for _, a := range []*fileadapter.Adapter{adapter, &adapterCopy} {
+			for _, a := range []*vmnetsock.Adapter{adapter, &adapterCopy} {
 				if file, err := a.Dup(); file != nil || !errors.Is(err, os.ErrClosed) {
 					t.Fatalf("Dup after Close = %v, %v", file, err)
 				}
@@ -99,8 +99,8 @@ func TestAdapterConcurrentDupAndClose(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, transport := range []fileadapter.Transport{fileadapter.Stream, fileadapter.Datagram} {
-		adapter, err := fileadapter.New(context.Background(), newInterface(t, network), transport)
+	for _, transport := range []vmnetsock.Transport{vmnetsock.Stream, vmnetsock.Datagram} {
+		adapter, err := vmnetsock.New(context.Background(), newInterface(t, network), transport)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -168,7 +168,7 @@ func TestAdapterConcurrentDupAndClose(t *testing.T) {
 }
 
 func TestAdapterZeroValue(t *testing.T) {
-	for _, adapter := range []*fileadapter.Adapter{nil, {}} {
+	for _, adapter := range []*vmnetsock.Adapter{nil, {}} {
 		if file, err := adapter.Dup(); file != nil || !errors.Is(err, os.ErrClosed) {
 			t.Fatalf("uninitialized Dup = %v, %v", file, err)
 		}

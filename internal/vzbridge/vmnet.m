@@ -42,6 +42,51 @@ void *vz_newVmnetNetwork(void *configuration, void **errorOut)
     return NULL;
 }
 
+void vz_disableVmnetDHCP(void *configuration)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *)) {
+        vmnet_network_configuration_disable_dhcp(configuration);
+    }
+#endif
+}
+
+void vz_disableVmnetDNSProxy(void *configuration)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *)) {
+        vmnet_network_configuration_disable_dns_proxy(configuration);
+    }
+#endif
+}
+
+void vz_disableVmnetNAT44(void *configuration)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *)) {
+        vmnet_network_configuration_disable_nat44(configuration);
+    }
+#endif
+}
+
+void vz_disableVmnetNAT66(void *configuration)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *)) {
+        vmnet_network_configuration_disable_nat66(configuration);
+    }
+#endif
+}
+
+void vz_disableVmnetRouterAdvertisement(void *configuration)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *)) {
+        vmnet_network_configuration_disable_router_advertisement(configuration);
+    }
+#endif
+}
+
 void vz_setVmnetMTU(void *configuration, uint32_t mtu, void **errorOut)
 {
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000

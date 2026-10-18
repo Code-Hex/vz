@@ -46,10 +46,15 @@ type configurationState struct {
 type NetworkConfigurationOption func(*networkConfigurationOptions) error
 
 type networkConfigurationOptions struct {
-	mtu          int
-	ipv4Subnet   netip.Prefix
-	ipv6Prefix   netip.Prefix
-	reservations map[[6]byte]netip.Addr
+	mtu                         int
+	ipv4Subnet                  netip.Prefix
+	ipv6Prefix                  netip.Prefix
+	reservations                map[[6]byte]netip.Addr
+	dhcpDisabled                bool
+	dnsProxyDisabled            bool
+	nat44Disabled               bool
+	nat66Disabled               bool
+	routerAdvertisementDisabled bool
 }
 
 // WithIPv4Subnet sets the network's IPv4 subnet. Host bits are ignored.
@@ -120,9 +125,57 @@ func WithMTU(mtu int) NetworkConfigurationOption {
 	}
 }
 
+// WithDHCPDisabled disables vmnet's DHCP server.
+// Guests need static IPv4 configuration or another DHCP server.
+func WithDHCPDisabled() NetworkConfigurationOption {
+	return func(options *networkConfigurationOptions) error {
+		options.dhcpDisabled = true
+		return nil
+	}
+}
+
+// WithDNSProxyDisabled requests that vmnet disable its DNS proxy.
+// Configure guests to use another DNS resolver. This option does not filter DNS
+// traffic or guarantee that queries to the host receive no response.
+func WithDNSProxyDisabled() NetworkConfigurationOption {
+	return func(options *networkConfigurationOptions) error {
+		options.dnsProxyDisabled = true
+		return nil
+	}
+}
+
+// WithNAT44Disabled disables IPv4 network address translation.
+// Guests need another route for external IPv4 traffic.
+func WithNAT44Disabled() NetworkConfigurationOption {
+	return func(options *networkConfigurationOptions) error {
+		options.nat44Disabled = true
+		return nil
+	}
+}
+
+// WithNAT66Disabled disables IPv6 network address translation.
+// Guests need another route for external IPv6 traffic.
+func WithNAT66Disabled() NetworkConfigurationOption {
+	return func(options *networkConfigurationOptions) error {
+		options.nat66Disabled = true
+		return nil
+	}
+}
+
+// WithRouterAdvertisementDisabled disables IPv6 router advertisements.
+// Guests need static IPv6 addresses and routes or another advertising router.
+func WithRouterAdvertisementDisabled() NetworkConfigurationOption {
+	return func(options *networkConfigurationOptions) error {
+		options.routerAdvertisementDisabled = true
+		return nil
+	}
+}
+
 // NewNetworkConfiguration creates a configuration with DHCP and IPv6 router
 // advertisements enabled, an automatically selected IPv4 subnet, and a random
-// IPv6 ULA prefix. Options are applied in order before native allocation.
+// IPv6 ULA prefix, unless overridden by options. Omitted service options preserve
+// vmnet defaults for the selected mode. Options are applied in order before
+// native allocation.
 // A nil or invalid option returns an error. Repeated options use the last
 // value for each setting or MAC address, but an invalid option always returns
 // an error. DHCP reservations are validated against the final IPv4 subnet.
@@ -173,6 +226,21 @@ func NewNetworkConfiguration(mode Mode, opts ...NetworkConfigurationOption) (*Ne
 }
 
 func (options networkConfigurationOptions) apply(configuration *NetworkConfiguration) error {
+	if options.dhcpDisabled {
+		vzbridge.DisableVmnetDHCP(configuration)
+	}
+	if options.dnsProxyDisabled {
+		vzbridge.DisableVmnetDNSProxy(configuration)
+	}
+	if options.nat44Disabled {
+		vzbridge.DisableVmnetNAT44(configuration)
+	}
+	if options.nat66Disabled {
+		vzbridge.DisableVmnetNAT66(configuration)
+	}
+	if options.routerAdvertisementDisabled {
+		vzbridge.DisableVmnetRouterAdvertisement(configuration)
+	}
 	var errorPtr unsafe.Pointer
 	if options.mtu != 0 {
 		vzbridge.SetVmnetMTU(configuration, uint32(options.mtu), &errorPtr)

@@ -42,6 +42,38 @@ address when the option is created, so options can be reused independently.
 `WithMTU` accepts 1280 through 65535 bytes. This range enforces the IPv6 minimum
 and Darwin interface maximum; vmnet can still reject a value within the range.
 
+### Disable network services
+
+These options apply vmnet's service-disable settings. Omit an option to
+preserve vmnet's default for the selected mode. The options can be combined,
+repeated, and reused across configurations.
+
+| Option | Effect |
+| --- | --- |
+| `WithDHCPDisabled()` | Disables the DHCP server. Configure guest IPv4 addresses manually or provide another DHCP server. |
+| `WithDNSProxyDisabled()` | Requests that vmnet disable the DNS proxy. Configure guests to use another DNS resolver. |
+| `WithNAT44Disabled()` | Disables IPv4 NAT. External IPv4 traffic needs another route. |
+| `WithNAT66Disabled()` | Disables IPv6 NAT. External IPv6 traffic needs another route. |
+| `WithRouterAdvertisementDisabled()` | Disables IPv6 router advertisements. Configure guest IPv6 addresses and routes manually or provide another advertising router. |
+
+For example, to use static guest addresses without vmnet's DHCP server or IPv6
+router advertisements:
+
+```go
+config, err := vmnet.NewNetworkConfiguration(
+	vmnet.ModeShared,
+	vmnet.WithDHCPDisabled(),
+	vmnet.WithRouterAdvertisementDisabled(),
+)
+if err != nil {
+	return err
+}
+```
+
+These options do not configure guest addresses, routes, or DNS resolvers.
+`WithDNSProxyDisabled` does not filter DNS traffic or guarantee that queries to
+the host receive no response.
+
 ## Share a network between processes
 
 `CopySerialization` returns an opaque XPC object. `NewNetworkWithSerialization`

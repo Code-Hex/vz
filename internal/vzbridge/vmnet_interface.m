@@ -13,8 +13,13 @@ static void interfaceError(vmnet_return_t status, NSString *operation, void **ou
     if (status != VMNET_SUCCESS && output)
         *output = [[NSError errorWithDomain:@"com.apple.vmnet" code:status userInfo:@ { NSLocalizedDescriptionKey : [operation stringByAppendingString:@" failed"] }] retain];
 }
-static void *startVmnetInterface(void *network, const char *name, uint32_t options, uint64_t callback, uint64_t context, void *maxPacketSize, void *mac, void **errorOut)
+#endif
+
+void *vz_startVmnetInterface(void *network, const char *name, uint32_t options, uint64_t callback, uint64_t context, void *maxPacketSize, void *mac, void **errorOut)
 {
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (name && !name[0])
+        name = NULL;
     if (@available(macOS 26, *)) {
         struct VmnetSession *session = calloc(1, sizeof(*session));
         if (!session) {
@@ -77,26 +82,8 @@ static void *startVmnetInterface(void *network, const char *name, uint32_t optio
         }
         return session;
     }
-    return NULL;
-}
 #endif
-
-void *vz_startVmnetInterface(void *network, uint32_t options, uint64_t callback, uint64_t context, void *maxPacketSize, void *mac, void **errorOut)
-{
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
-    return startVmnetInterface(network, NULL, options, callback, context, maxPacketSize, mac, errorOut);
-#else
     return NULL;
-#endif
-}
-
-void *vz_startVmnetBridgedInterface(const char *name, uint32_t options, uint64_t callback, uint64_t context, void *maxPacketSize, void *mac, void **errorOut)
-{
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
-    return startVmnetInterface(NULL, name, options, callback, context, maxPacketSize, mac, errorOut);
-#else
-    return NULL;
-#endif
 }
 
 void *vz_copyVmnetBridgedInterfaces(void **errorOut)

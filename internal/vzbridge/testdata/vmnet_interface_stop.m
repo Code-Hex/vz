@@ -98,8 +98,8 @@ static void checkStop(vmnet_return_t unregisterResult, vmnet_return_t stopResult
     uint8_t mac[6] = { 0 };
     void *error = NULL;
     struct VmnetSession *session = bridged
-        ? vz_startVmnetBridgedInterface("en0", expectedOptions, (uint64_t)wake, 1, &size, mac, &error)
-        : vz_startVmnetInterface(NULL, 0, (uint64_t)wake, 1, &size, mac, &error);
+        ? vz_startVmnetInterface(NULL, "en0", expectedOptions, (uint64_t)wake, 1, &size, mac, &error)
+        : vz_startVmnetInterface(NULL, "", 0, (uint64_t)wake, 1, &size, mac, &error);
     assert(session && !error);
     if (bridged) {
         assert(size == 1514);
@@ -135,9 +135,12 @@ static void checkStartupFailure(vmnet_return_t startResult, vmnet_return_t regis
     uint8_t mac[6] = { 0 };
     void *error = NULL;
     struct VmnetSession *session = bridged
-        ? vz_startVmnetBridgedInterface("en0", expectedOptions, (uint64_t)wake, 1, &size, mac, &error)
-        : vz_startVmnetInterface(NULL, 0, (uint64_t)wake, 1, &size, mac, &error);
+        ? vz_startVmnetInterface(NULL, "en0", expectedOptions, (uint64_t)wake, 1, &size, mac, &error)
+        : vz_startVmnetInterface(NULL, "", 0, (uint64_t)wake, 1, &size, mac, &error);
     assert(session && error);
+    NSString *operation = startResult == VMNET_SUCCESS ? @"vmnet_interface_set_event_callback"
+                                                       : (bridged ? @"vmnet_start_interface" : @"vmnet_interface_start_with_network");
+    assert([[(NSError *)error localizedDescription] isEqualToString:[operation stringByAppendingString:@" failed"]]);
     [(NSError *)error release];
     error = NULL;
     dispatch_queue_t events = session->events;
@@ -179,7 +182,7 @@ int main(void)
             uint64_t size = 0;
             uint8_t mac[6] = { 0 };
             void *error = NULL;
-            assert(vz_startVmnetBridgedInterface("en0", 0, (uint64_t)wake, 1, &size, mac, &error) == NULL);
+            assert(vz_startVmnetInterface(NULL, "en0", 0, (uint64_t)wake, 1, &size, mac, &error) == NULL);
             assert(error && [(NSError *)error code] == VMNET_FAILURE && frees == 1);
             [(NSError *)error release];
             error = NULL;

@@ -148,21 +148,13 @@ func startInterface(n *Network, name string, opts ...InterfaceOption) (*Interfac
 	pinned.Pin(&size)
 	pinned.Pin(&r.mac[0])
 	defer pinned.Unpin()
-	if n == nil {
-		r.session = vzbridge.StartVmnetBridgedInterface(name, c.nativeFlags(), uint64(interfaceWake), uint64(r.handle), unsafe.Pointer(&size), unsafe.Pointer(&r.mac[0]), &errorPtr)
-	} else {
-		r.session = vzbridge.StartVmnetInterface((*objc.Pointer)(n), c.nativeFlags(), uint64(interfaceWake), uint64(r.handle), unsafe.Pointer(&size), unsafe.Pointer(&r.mac[0]), &errorPtr)
-	}
+	r.session = vzbridge.StartVmnetInterface(
+		(*objc.Pointer)(n), name, c.nativeFlags(),
+		uint64(interfaceWake), uint64(r.handle),
+		unsafe.Pointer(&size), unsafe.Pointer(&r.mac[0]), &errorPtr,
+	)
 	runtime.KeepAlive(n)
-	startErr := vmnetError(errorPtr)
-	if r.session == nil {
-		r.handle.Delete()
-		if startErr != nil {
-			return nil, startErr
-		}
-		return nil, fmt.Errorf("vmnet returned no interface")
-	}
-	return completeInterfaceStart(r, size, startErr)
+	return completeInterfaceStart(r, size, vmnetError(errorPtr))
 }
 
 func (c interfaceConfiguration) nativeFlags() uint32 {
@@ -183,6 +175,13 @@ func (c interfaceConfiguration) nativeFlags() uint32 {
 }
 
 func completeInterfaceStart(r *interfaceResource, size uint64, startErr error) (*Interface, error) {
+	if r.session == nil {
+		r.handle.Delete()
+		if startErr == nil {
+			startErr = fmt.Errorf("vmnet returned no interface")
+		}
+		return nil, startErr
+	}
 	if startErr == nil && (size == 0 || size > uint64(^uint32(0)>>1)) {
 		startErr = fmt.Errorf("vmnet returned invalid maximum packet size %d", size)
 	}

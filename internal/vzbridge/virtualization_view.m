@@ -346,11 +346,10 @@ static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRati
 
 - (void)run
 {
-    @autoreleasepool {
-        [self finishLaunching];
-
-        shouldKeepRunning = YES;
-        do {
+    shouldKeepRunning = YES;
+    [self finishLaunching];
+    while (shouldKeepRunning) {
+        @autoreleasepool {
             NSEvent *event = [self
                 nextEventMatchingMask:NSEventMaskAny
                             untilDate:[NSDate distantFuture]
@@ -359,24 +358,37 @@ static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRati
             // NSLog(@"event: %@", event);
             [self sendEvent:event];
             [self updateWindows];
-        } while (shouldKeepRunning);
+        }
     }
 }
 
 - (void)terminate:(id)sender
 {
-    shouldKeepRunning = NO;
-
-    // We should call this method if we want to use `applicationWillTerminate` method.
-    //
-    // [[NSNotificationCenter defaultCenter]
-    //     postNotificationName:NSApplicationWillTerminateNotification
-    //                   object:NSApp];
-
-    // This method is used to end up the event loop.
-    // If no events are coming, the event loop will always be in a waiting state.
-    [self postEvent:self.currentEvent atStart:NO];
+    if ([self.delegate respondsToSelector:@selector(applicationShouldTerminate:)] &&
+        [self.delegate applicationShouldTerminate:self] != NSTerminateNow) {
+        return;
+    }
+    for (NSWindow *window in [[self.windows copy] autorelease]) {
+        [window close];
+    }
+    [self stop:sender];
 }
+
+- (void)stop:(id)sender
+{
+    shouldKeepRunning = NO;
+    NSEvent *event = [NSEvent otherEventWithType:NSEventTypeApplicationDefined
+                                      location:NSZeroPoint
+                                 modifierFlags:0
+                                     timestamp:0
+                                  windowNumber:0
+                                       context:nil
+                                       subtype:0
+                                         data1:0
+                                         data2:0];
+    [self postEvent:event atStart:NO];
+}
+
 @end
 
 @implementation AboutViewController
@@ -501,7 +513,7 @@ static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRati
 
 @end
 
-@implementation AppDelegate {
+@implementation VZGraphicWindowController {
     VZVirtualMachine *_virtualMachine;
     dispatch_queue_t _queue;
     VZVirtualMachineView *_virtualMachineView;
@@ -509,6 +521,7 @@ static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRati
     NSWindow *_window;
     NSToolbar *_toolbar;
     BOOL _enableController;
+    BOOL _closed;
     // Overlay for pause mode.
     NSVisualEffectView *_pauseOverlayView;
     // Zoom function properties.
@@ -527,8 +540,11 @@ static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRati
                       enableController:(BOOL)enableController
 {
     self = [super init];
-    _virtualMachine = virtualMachine;
-    [_virtualMachine setDelegate:self];
+    _queue = queue;
+    dispatch_sync(_queue, ^{
+        _virtualMachine = [virtualMachine retain];
+        [_virtualMachine setDelegate:self];
+    });
 
     // Setup virtual machine view configs
     VZVirtualMachineView *view = [[[VZVirtualMachineView alloc] init] autorelease];
@@ -540,19 +556,17 @@ static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRati
         view.automaticallyReconfiguresDisplay = YES;
     }
 #endif
-    _virtualMachineView = view;
-    _queue = queue;
+    _virtualMachineView = [view retain];
 
     // Setup some window configs
-    _window = [self createMainWindowWithTitle:windowTitle width:windowWidth height:windowHeight];
+    _window = [[self createMainWindowWithTitle:windowTitle width:windowWidth height:windowHeight] retain];
     if (![_window isKindOfClass:[VZGraphicsWindow class]]) {
-        _toolbar = [self createCustomToolbar];
+        _toolbar = [[self createCustomToolbar] retain];
     }
     _enableController = enableController;
-    [_virtualMachine addObserver:self
-                      forKeyPath:@"state"
-                         options:NSKeyValueObservingOptionNew
-                         context:nil];
+    dispatch_sync(_queue, ^{
+        [_virtualMachine addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:nil];
+    });
     _pauseOverlayView = [self createPauseOverlayEffectView:_virtualMachineView];
     [_virtualMachineView addSubview:_pauseOverlayView];
     _isZoomEnabled = NO;
@@ -561,6 +575,20 @@ static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRati
 
 - (void)dealloc
 {
+    [self close];
+    [_didClose release];
+    [_window release];
+    [_virtualMachineView release];
+    [_toolbar release];
+    [super dealloc];
+}
+
+- (void)close
+{
+    if (_closed) {
+        return;
+    }
+    _closed = YES;
     if (_mouseMovedMonitor) {
         [NSEvent removeMonitor:_mouseMovedMonitor];
         _mouseMovedMonitor = nil;
@@ -570,17 +598,20 @@ static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRati
         _scrollWheelMonitor = nil;
     }
     [self stopScrollTimer];
-    if (_virtualMachine) {
-        [_virtualMachine removeObserver:self forKeyPath:@"state"];
-    }
-    _scrollView = nil;
-    _virtualMachineView = nil;
+    [_window setDelegate:nil];
+    [_window close];
+    _virtualMachineView.virtualMachine = nil;
+    VZVirtualMachine *machine = _virtualMachine;
+    dispatch_sync(_queue, ^{
+        [machine removeObserver:self forKeyPath:@"state"];
+        [machine release];
+    });
     _virtualMachine = nil;
-    _queue = nil;
-    _toolbar = nil;
-    _window = nil;
-    _pauseOverlayView = nil;
-    [super dealloc];
+    if (_didClose) {
+        void (^didClose)(VZGraphicWindowController *) = [_didClose copy];
+        didClose(self);
+        [didClose release];
+    }
 }
 
 - (BOOL)canStopVirtualMachine
@@ -624,16 +655,17 @@ static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRati
     if ([keyPath isEqualToString:@"state"]) {
         VZVirtualMachineState newState = (VZVirtualMachineState)[change[NSKeyValueChangeNewKey] integerValue];
         dispatch_async(dispatch_get_main_queue(), ^{
+            if (_closed) {
+                return;
+            }
             [self updateToolbarItems];
             if (newState == VZVirtualMachineStatePaused) {
                 [self showOverlay];
             } else {
                 [self hideOverlay];
             }
-            // Terminating GUI Application from Guest and Host.
-            // See: https://github.com/Code-Hex/vz/issues/150
             if (newState == VZVirtualMachineStateStopped) {
-                [NSApp terminate:nil];
+                [self close];
             }
         });
     }
@@ -723,33 +755,23 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     }
 }
 
-/* IMPORTANT: delegate methods are called from VM's queue */
-- (void)guestDidStopVirtualMachine:(VZVirtualMachine *)virtualMachine
-{
-    // [NSApp performSelectorOnMainThread:@selector(terminate:) withObject:self waitUntilDone:NO];
-}
-
 - (void)virtualMachine:(VZVirtualMachine *)virtualMachine didStopWithError:(NSError *)error
 {
-    NSLog(@"VM %@ didStopWithError: %@", virtualMachine, error);
-    [NSApp performSelectorOnMainThread:@selector(terminate:) withObject:self waitUntilDone:NO];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self close];
+    });
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)notification
+- (void)showWindow
 {
-    [self setupMenuBar];
     [self setupGraphicWindow];
-
-    // These methods are required to call here. Because the menubar will be not active even if
-    // application is running.
-    // See: https://stackoverflow.com/questions/62739862/why-doesnt-activateignoringotherapps-enable-the-menu-bar
-    [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-    [NSApp activateIgnoringOtherApps:YES];
+    static NSPoint cascadePoint;
+    cascadePoint = [_window cascadeTopLeftFromPoint:cascadePoint];
 }
 
 - (void)windowWillClose:(NSNotification *)notification
 {
-    [NSApp performSelectorOnMainThread:@selector(terminate:) withObject:self waitUntilDone:NO];
+    [self close];
 }
 
 - (NSRect)windowWillUseStandardFrame:(NSWindow *)sender defaultFrame:(NSRect)frame
@@ -802,6 +824,9 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     // within the virtual machine window when zoom mode is enabled.
     _mouseMovedMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskMouseMoved
                                                                handler:^NSEvent *(NSEvent *event) {
+                                                                   if (_closed || event.window != _window) {
+                                                                       return event;
+                                                                   }
                                                                    [self handleMouseMovement:event];
                                                                    return event;
                                                                }];
@@ -809,6 +834,9 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     // Add scroll wheel event monitor for zoom functionality
     _scrollWheelMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskScrollWheel
                                                                 handler:^NSEvent *(NSEvent *event) {
+                                                                   if (_closed || event.window != _window) {
+                                                                       return event;
+                                                                   }
                                                                     [self handleScrollWheel:event];
                                                                     return event;
                                                                 }];
@@ -985,6 +1013,9 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 - (void)pauseButtonClicked:(id)sender
 {
     dispatch_async(dispatch_get_main_queue(), ^{
+        if (_closed) {
+            return;
+        }
         dispatch_sync(_queue, ^{
             [_virtualMachine pauseWithCompletionHandler:^(NSError *err) {
                 if (err)
@@ -997,6 +1028,9 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 - (void)powerButtonClicked:(id)sender
 {
     dispatch_async(dispatch_get_main_queue(), ^{
+        if (_closed) {
+            return;
+        }
         if ([self canStartVirtualMachine]) {
             dispatch_sync(_queue, ^{
                 [_virtualMachine startWithCompletionHandler:^(NSError *err) {
@@ -1033,6 +1067,9 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 - (void)playButtonClicked:(id)sender
 {
     dispatch_async(dispatch_get_main_queue(), ^{
+        if (_closed) {
+            return;
+        }
         dispatch_sync(_queue, ^{
             [_virtualMachine resumeWithCompletionHandler:^(NSError *err) {
                 if (err)
@@ -1045,6 +1082,9 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
 - (void)showErrorAlertWithMessage:(NSString *)message error:(NSError *)error
 {
     dispatch_async(dispatch_get_main_queue(), ^{
+        if (_closed) {
+            return;
+        }
         NSAlert *alert = [[[NSAlert alloc] init] autorelease];
         [alert setMessageText:message];
         [alert setInformativeText:[NSString stringWithFormat:@"Error: %@\nCode: %ld", [error localizedDescription], (long)[error code]]];
@@ -1355,6 +1395,14 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     }
     [NSApp setHelpMenu:helpMenu];
     return helpMenu;
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)item
+{
+    if (item.action == @selector(toggleCapturesSystemKeys:)) {
+        item.state = [self capturesSystemKeysState];
+    }
+    return !_closed;
 }
 
 - (void)toggleCapturesSystemKeys:(id)sender

@@ -36,6 +36,26 @@ const (
 	CallbackMacOSInstallProgress        = C.VZBridgeCallbackMacOSInstallProgress
 )
 
+type GraphicApplicationResult int32
+
+const (
+	GraphicApplicationSuccess          GraphicApplicationResult = C.VZGraphicApplicationSuccess
+	GraphicApplicationNotMainThread    GraphicApplicationResult = C.VZGraphicApplicationNotMainThread
+	GraphicApplicationDuplicateMachine GraphicApplicationResult = C.VZGraphicApplicationDuplicateMachine
+	GraphicApplicationStopping         GraphicApplicationResult = C.VZGraphicApplicationStopping
+)
+
+var callRunGraphicApplication lazyBinding[func(unsafe.Pointer) GraphicApplicationResult]
+
+func RunGraphicApplication(application unsafe.Pointer) GraphicApplicationResult {
+	call := callRunGraphicApplication.get(func() func(unsafe.Pointer) GraphicApplicationResult {
+		var call func(unsafe.Pointer) GraphicApplicationResult
+		purego.RegisterFunc(&call, uintptr(C.vz_runGraphicApplication))
+		return call
+	})
+	return call(application)
+}
+
 var dispatchSyncOnObject func(unsafe.Pointer, uintptr, uintptr)
 var queueCallback uintptr
 

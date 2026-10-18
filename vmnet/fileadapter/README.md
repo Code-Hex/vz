@@ -114,7 +114,10 @@ If you enable TSO, the peer must handle large Ethernet frames. The `Adapter` for
 
 Datagram send errors with `ENOBUFS` and vmnet send errors with `VMNET_BUFFER_EXHAUSTED` indicate temporary queue congestion. The `Adapter` drops that frame and keeps the connection open. Other forwarding errors stop the `Adapter` and are returned by `Adapter.Close`.
 
-This package does not support virtio headers or packet batching. Serialization, XPC sharing, port forwarding, and additional network configuration options remain separate work.
+This package does not support virtio headers or packet batching.
+
+The [vmnet package](../README.md) provides network serialization, XPC sharing,
+port forwarding, and network configuration options.
 
 Protocol reference material:
 

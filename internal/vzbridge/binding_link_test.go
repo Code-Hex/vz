@@ -61,7 +61,8 @@ func main() { fmt.Println(vz.VirtualMachineConfigurationMinimumAllowedCPUCount()
 			continue
 		}
 		// The dispatcher and Objective-C listener/installer methods need these helpers.
-		if symbol == "_vz_dispatchSyncOnObject" || symbol == "_vz_inheritObjectQueue" {
+		switch symbol {
+		case "_vz_dispatchSyncOnObject", "_vz_inheritObjectQueue", "_vz_objectQueue":
 			continue
 		}
 		if strings.HasPrefix(symbol, bridge+"sdkCall") ||

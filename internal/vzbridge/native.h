@@ -57,7 +57,12 @@ void vz_setCallback(uint64_t p0);
 int32_t vz_socketConnectionDuplicatedFileDescriptor(VZBridgeObject p0, VZBridgeErrorOut p1) __attribute__((annotate("vzbridge:objectqueue")));
 void *vz_newGraphicApplication(void) __attribute__((annotate("vzbridge:noqueue")));
 void vz_addGraphicWindow(void *application, VZBridgeObject machine, double width, double height, const char *title, bool enableController) __attribute__((annotate("vzbridge:noqueue")));
-int32_t vz_runGraphicApplication(void *application) __attribute__((annotate("vzbridge:noqueue")));
+typedef enum : int32_t {
+    VZGraphicApplicationSuccess = 0,
+    VZGraphicApplicationNotMainThread = 1,
+    VZGraphicApplicationAlreadyRunning = 2,
+} VZGraphicApplicationResult;
+VZGraphicApplicationResult vz_runGraphicApplication(void *application) __attribute__((annotate("vzbridge:manual")));
 void vz_freeGraphicApplication(void *application) __attribute__((annotate("vzbridge:noqueue")));
 void vz_startWithCompletionHandler(VZBridgeObject p0, uint64_t p1) __attribute__((annotate("vzbridge:objectqueue")));
 void vz_startWithOptionsCompletionHandler(VZBridgeObject p0, VZBridgeObject p1, uint64_t p2) __attribute__((annotate("vzbridge:objectqueue")));

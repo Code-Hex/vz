@@ -117,6 +117,9 @@ func discoverBindings(path string) ([]binding, error) {
 		if metadata != "" && metadata != "noqueue" && metadata != "manual" && metadata != "objectqueue" {
 			return nil, fmt.Errorf("%s: unknown annotation %q for function", node.Name, metadata)
 		}
+		if metadata == "manual" {
+			continue
+		}
 		if node.Variadic {
 			return nil, fmt.Errorf("%s: variadic native ABI is unsupported", node.Name)
 		}
@@ -161,9 +164,7 @@ func discoverBindings(path string) ([]binding, error) {
 		if b.ObjectQueue && (len(b.Parameters) == 0 || b.Parameters[0].Type != "objc.NSObject") {
 			return nil, fmt.Errorf("%s: objectqueue requires an object as its first parameter", node.Name)
 		}
-		if metadata != "manual" {
-			bindings = append(bindings, b)
-		}
+		bindings = append(bindings, b)
 	}
 	if len(bindings) == 0 {
 		return nil, fmt.Errorf("no native bindings found in %s", path)

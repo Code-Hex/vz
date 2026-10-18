@@ -163,7 +163,7 @@ static void runScenario(Scenario scenario, VZVirtualMachine *first, VZVirtualMac
             }
             if (scenario == CloseFirst) {
                 checkWindowMenuState(firstWindow, secondWindow);
-                require(vz_runGraphicApplication(application) == 2, @"Nested application run was accepted");
+                require(vz_runGraphicApplication(application) == VZGraphicApplicationAlreadyRunning, @"Nested application run was accepted");
             }
             if (scenario == Quit) {
                 completed = YES;
@@ -202,7 +202,7 @@ static void runScenario(Scenario scenario, VZVirtualMachine *first, VZVirtualMac
                 [windowNamed(remainingTitle) performClose:nil];
             });
         });
-        require(vz_runGraphicApplication(application) == 0, @"Application run failed");
+        require(vz_runGraphicApplication(application) == VZGraphicApplicationSuccess, @"Application run failed");
         require(completed, @"Event loop returned before the remaining window closed");
         require(!windowNamed(@"First VM").visible && !windowNamed(@"Second VM").visible,
             @"Application left a VM window visible after returning");
@@ -240,7 +240,7 @@ int main(void)
             vz_addGraphicWindow(offMainApplication, first, 640, 480, "Off main", false);
             dispatch_semaphore_t checkedThread = dispatch_semaphore_create(0);
             dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
-                require(vz_runGraphicApplication(offMainApplication) == 1, @"Off-main application run was accepted");
+                require(vz_runGraphicApplication(offMainApplication) == VZGraphicApplicationNotMainThread, @"Off-main application run was accepted");
                 dispatch_semaphore_signal(checkedThread);
             });
             require(dispatch_semaphore_wait(checkedThread, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC)) == 0,

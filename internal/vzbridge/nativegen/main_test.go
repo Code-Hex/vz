@@ -115,7 +115,7 @@ func TestHeaderRejectsIncludedAnnotations(t *testing.T) {
 }
 
 func TestHeaderRejectsEmptyInventory(t *testing.T) {
-	for _, source := range []string{"typedef int Sample;", `void vz_dispatch(void) __attribute__((annotate("vzbridge:manual")));`} {
+	for _, source := range []string{"typedef int Sample;", `enum Result { OK }; enum Result vz_dispatch(void) __attribute__((annotate("vzbridge:manual")));`} {
 		if _, err := fixtureBindings(t, source); err == nil || !strings.Contains(err.Error(), "no native bindings") {
 			t.Fatalf("empty inventory was not rejected: %v", err)
 		}

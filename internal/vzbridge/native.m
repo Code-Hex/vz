@@ -48,10 +48,12 @@ static dispatch_queue_t commonQueue(void)
 void *vz_objectQueue(void *object)
 {
     @autoreleasepool {
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
         if (@available(macOS 26.0, *)) {
             if ([(id)object isKindOfClass:[VZVirtualMachine class]])
                 return [(VZVirtualMachine *)object queue];
         }
+#endif
         VZBridgeQueue *owner = objc_getAssociatedObject((id)object, &objectQueueKey);
         return owner ? owner->queue : commonQueue();
     }

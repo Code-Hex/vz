@@ -76,14 +76,14 @@ void vz_addGraphicWindow(void *application, void *machine, double width, double 
     [description release];
 }
 
-int32_t vz_runGraphicApplication(void *application)
+VZGraphicApplicationResult vz_runGraphicApplication(void *application)
 {
     static BOOL running;
     if (![NSThread isMainThread]) {
-        return 1;
+        return VZGraphicApplicationNotMainThread;
     }
     if (running) {
-        return 2;
+        return VZGraphicApplicationAlreadyRunning;
     }
     running = YES;
     if (@available(macOS 12, *)) {
@@ -120,7 +120,7 @@ int32_t vz_runGraphicApplication(void *application)
         }
     }
     running = NO;
-    return 0;
+    return VZGraphicApplicationSuccess;
 }
 
 void vz_freeGraphicApplication(void *application)

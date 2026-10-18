@@ -494,20 +494,6 @@ func AddGraphicWindow(application unsafe.Pointer, machine objc.NSObject, width f
 	runtime.KeepAlive(title)
 }
 
-var callRunGraphicApplication lazyBinding[func(unsafe.Pointer) int32]
-
-func RunGraphicApplication(application unsafe.Pointer) int32 {
-	call := callRunGraphicApplication.get(func() func(unsafe.Pointer) int32 {
-		var call func(unsafe.Pointer) int32
-		purego.RegisterFunc(&call, uintptr(C.vz_runGraphicApplication))
-		return call
-	})
-	var result int32
-	result = call(application)
-	runtime.KeepAlive(application)
-	return result
-}
-
 var callFreeGraphicApplication lazyBinding[func(unsafe.Pointer)]
 
 func FreeGraphicApplication(application unsafe.Pointer) {

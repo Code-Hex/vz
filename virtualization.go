@@ -392,9 +392,9 @@ func StartGraphicApplication(windows ...*GraphicWindow) error {
 	status := vzbridge.RunGraphicApplication(application)
 	runtime.KeepAlive(windows)
 	switch status {
-	case 1:
+	case vzbridge.GraphicApplicationNotMainThread:
 		return fmt.Errorf("graphic application must run on the main thread")
-	case 2:
+	case vzbridge.GraphicApplicationAlreadyRunning:
 		return fmt.Errorf("a graphic application is already running")
 	}
 	return nil
@@ -406,6 +406,9 @@ func StartGraphicApplication(windows ...*GraphicWindow) error {
 // in init. Use the package-level StartGraphicApplication to display multiple VMs.
 // This is supported on macOS 12 and newer.
 func (v *VirtualMachine) StartGraphicApplication(width, height float64, opts ...StartGraphicApplicationOption) error {
+	if err := macOSAvailable(12); err != nil {
+		return err
+	}
 	window, err := NewGraphicWindow(v, width, height, opts...)
 	if err != nil {
 		return err

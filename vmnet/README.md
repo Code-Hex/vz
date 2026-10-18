@@ -1,6 +1,48 @@
-# Share a network between processes
+# Configure and share a network
 
 These APIs require macOS 26 or later.
+
+## Configure a network
+
+Pass functional options to `NewNetworkConfiguration`. The returned
+configuration is immutable and can be passed to `NewNetwork`:
+
+```go
+config, err := vmnet.NewNetworkConfiguration(
+    vmnet.ModeShared,
+    vmnet.WithIPv4Subnet(netip.MustParsePrefix("192.168.120.0/24")),
+    vmnet.WithIPv6Prefix(netip.MustParsePrefix("fd42:1234:120::/64")),
+    vmnet.WithDHCPReservation(
+        net.HardwareAddr{0x02, 0, 0, 0, 0, 1},
+        netip.MustParseAddr("192.168.120.10"),
+    ),
+    vmnet.WithMTU(1500),
+)
+if err != nil {
+    return err
+}
+network, err := vmnet.NewNetwork(config)
+if err != nil {
+    return err
+}
+```
+
+Import `net` and `net/netip` for the address types in this example.
+
+Options are validated before native configuration is created. The last IPv4
+subnet, IPv6 prefix, or MTU wins. DHCP reservations accumulate by MAC address;
+repeating a MAC replaces its address. Invalid options return an error even if
+a later option would replace them.
+
+Reservations are checked against the final IPv4 subnet, regardless of option
+order. When the subnet is selected automatically, `NewNetwork` checks
+reservations against the actual subnet. `WithDHCPReservation` copies the MAC
+address when the option is created, so options can be reused independently.
+
+`WithMTU` accepts 1280 through 65535 bytes. This range enforces the IPv6 minimum
+and Darwin interface maximum; vmnet can still reject a value within the range.
+
+## Share a network between processes
 
 `CopySerialization` returns an opaque XPC object. `NewNetworkWithSerialization`
 restores a network from that object. The serialization is not a byte encoding

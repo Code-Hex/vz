@@ -14,14 +14,12 @@ func TestNetworkSerialization(t *testing.T) {
 	if vmnet.Available(26) {
 		t.Skip("vmnet networks require macOS 26 and its SDK")
 	}
-	config, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
+	want := netip.MustParsePrefix("192.168.249.0/24")
+	config, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost, vmnet.WithIPv4Subnet(want))
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := netip.MustParsePrefix("192.168.249.0/24")
-	if err := config.SetIPv4Subnet(want); err != nil {
-		t.Fatal(err)
-	}
+
 	network, err := vmnet.NewNetwork(config)
 	if err != nil {
 		t.Fatal(err)

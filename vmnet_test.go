@@ -26,17 +26,16 @@ func TestVMNetNetworkDeviceAttachment(t *testing.T) {
 		{"Shared explicit", vmnet.ModeShared, netip.MustParsePrefix("192.168.246.0/24"), netip.MustParsePrefix("fd42:1234:246::99/64")},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			config, err := vmnet.NewNetworkConfiguration(test.mode)
+			var options []vmnet.NetworkConfigurationOption
+			if test.prefix.IsValid() {
+				options = append(options,
+					vmnet.WithIPv4Subnet(test.prefix),
+					vmnet.WithIPv6Prefix(test.ipv6),
+				)
+			}
+			config, err := vmnet.NewNetworkConfiguration(test.mode, options...)
 			if err != nil {
 				t.Fatal(err)
-			}
-			if test.prefix.IsValid() {
-				if err := config.SetIPv4Subnet(test.prefix); err != nil {
-					t.Fatal(err)
-				}
-				if err := config.SetIPv6Prefix(test.ipv6); err != nil {
-					t.Fatal(err)
-				}
 			}
 			network, err := vmnet.NewNetwork(config)
 			if err != nil {
@@ -91,19 +90,17 @@ func TestVMNetDHCPReservationAndGuestCommunication(t *testing.T) {
 	if vz.Available(26) {
 		t.Skip("vmnet networks require macOS 26 and its SDK")
 	}
-	config, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := config.SetIPv4Subnet(netip.MustParsePrefix("192.168.247.0/24")); err != nil {
-		t.Fatal(err)
-	}
 	addresses := []string{"192.168.247.10", "192.168.247.11"}
 	macs := []net.HardwareAddr{{2, 0, 0, 0, 0, 10}, {2, 0, 0, 0, 0, 11}}
+	options := []vmnet.NetworkConfigurationOption{
+		vmnet.WithIPv4Subnet(netip.MustParsePrefix("192.168.247.0/24")),
+	}
 	for i, mac := range macs {
-		if err := config.AddDHCPReservation(mac, netip.MustParseAddr(addresses[i])); err != nil {
-			t.Fatal(err)
-		}
+		options = append(options, vmnet.WithDHCPReservation(mac, netip.MustParseAddr(addresses[i])))
+	}
+	config, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost, options...)
+	if err != nil {
+		t.Fatal(err)
 	}
 	network, err := vmnet.NewNetwork(config)
 	if err != nil {

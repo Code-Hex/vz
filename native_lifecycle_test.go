@@ -14,7 +14,16 @@ import (
 )
 
 func TestNativeLateCallbackReleasesPayloads(t *testing.T) {
-	for _, kind := range []uint32{1, 3, 5, 6, 7, 9, 10, 11} {
+	for _, kind := range []uint32{
+		vzbridge.CallbackCompletion,
+		vzbridge.CallbackNetworkDisconnected,
+		vzbridge.CallbackSocketConnected,
+		vzbridge.CallbackSocketAccepted,
+		vzbridge.CallbackNetworkBlockDeviceError,
+		vzbridge.CallbackRosettaInstallCompleted,
+		vzbridge.CallbackRestoreImageLoaded,
+		vzbridge.CallbackMacOSInstallCompleted,
+	} {
 		t.Run(fmt.Sprint(kind), func(t *testing.T) {
 			runtime.LockOSThread()
 			defer runtime.UnlockOSThread()
@@ -26,13 +35,23 @@ func TestNativeLateCallbackReleasesPayloads(t *testing.T) {
 			first := pureobjc.Send[unsafe.Pointer](pureobjc.ID(pureobjc.GetClass("NSObject")), pureobjc.RegisterName("new"))
 			weak.Send(pureobjc.RegisterName("addObject:"), first)
 			var second unsafe.Pointer
-			if kind == 5 || kind == 10 {
+			if kind == vzbridge.CallbackSocketConnected || kind == vzbridge.CallbackRestoreImageLoaded || kind == vzbridge.CallbackSocketAccepted {
 				second = pureobjc.Send[unsafe.Pointer](pureobjc.ID(pureobjc.GetClass("NSObject")), pureobjc.RegisterName("new"))
 				weak.Send(pureobjc.RegisterName("addObject:"), second)
 			}
 			pool.Send(pureobjc.RegisterName("release"))
 			dispatchNativeCallback(kind, 0, first, second, 0)
 			vzbridge.Drain()
+			if kind == vzbridge.CallbackSocketAccepted {
+				pool := pureobjc.ID(pureobjc.GetClass("NSAutoreleasePool")).Send(pureobjc.RegisterName("new"))
+				alive := pureobjc.Send[bool](weak, pureobjc.RegisterName("containsObject:"), second)
+				pool.Send(pureobjc.RegisterName("release"))
+				if !alive {
+					t.Fatal("late socket callback released its borrowed device")
+				}
+				vzbridge.ReleaseObject(second)
+				vzbridge.Drain()
+			}
 			if got := weak.Send(pureobjc.RegisterName("anyObject")); got != 0 {
 				t.Fatalf("late callback kind %d retained a payload", kind)
 			}

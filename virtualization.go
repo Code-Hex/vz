@@ -105,7 +105,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 	}
 	state := &machineState{stateNotify: infinity.NewChannel[VirtualMachineState]()}
 	stateHandle := registerNativeCallback(func(kind uint32, _, _ unsafe.Pointer, value uint64) uint64 {
-		if kind == 4 {
+		if kind == vzbridge.CallbackContextReleased {
 			state.stateNotify.Close()
 			return 0
 		}
@@ -117,7 +117,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 	})
 	disconnectedIn := infinity.NewChannel[*disconnected]()
 	disconnectedHandle := registerNativeCallback(func(kind uint32, errorPointer, _ unsafe.Pointer, value uint64) uint64 {
-		if kind == 4 {
+		if kind == vzbridge.CallbackContextReleased {
 			disconnectedIn.Close()
 			return 0
 		}

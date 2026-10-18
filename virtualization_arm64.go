@@ -518,7 +518,7 @@ func (m *MacOSInstaller) Install(ctx context.Context) error {
 			return 0
 		})
 		fractionCompletedHandler := registerNativeCallback(func(kind uint32, first, second unsafe.Pointer, value uint64) uint64 {
-			if kind == 12 {
+			if kind == vzbridge.CallbackMacOSInstallProgress {
 				m.setFractionCompleted(math.Float64frombits(value))
 			}
 			return 0

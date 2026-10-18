@@ -111,7 +111,7 @@ func TestNativeListenerInvalidationAndRelease(t *testing.T) {
 	var events []uint64
 	var unexpected uint32
 	callback := purego.NewCallback(func(kind uint32, context uint64, first, second unsafe.Pointer, value uint64) uint64 {
-		if kind != 4 {
+		if kind != CallbackContextReleased {
 			unexpected = kind
 		}
 		events = append(events, context)
@@ -159,7 +159,7 @@ func TestNativeDiskModeFailureReturnsOwnedError(t *testing.T) {
 func TestNativeMachinePreservesNetworkDelegate(t *testing.T) {
 	var disconnected int
 	callback := purego.NewCallback(func(kind uint32, context uint64, first, second unsafe.Pointer, value uint64) uint64 {
-		if kind == 3 && context == 702 && value == 0 {
+		if kind == CallbackNetworkDisconnected && context == 702 && value == 0 {
 			disconnected++
 		}
 		if first != nil {

@@ -3,6 +3,21 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+enum {
+    VZBridgeCallbackCompletion = 1,
+    VZBridgeCallbackMachineStateChanged = 2,
+    VZBridgeCallbackNetworkDisconnected = 3,
+    VZBridgeCallbackContextReleased = 4,
+    VZBridgeCallbackSocketConnected = 5,
+    VZBridgeCallbackSocketAccepted = 6,
+    VZBridgeCallbackNetworkBlockDeviceError = 7,
+    VZBridgeCallbackNetworkBlockDeviceConnected = 8,
+    VZBridgeCallbackRosettaInstallCompleted = 9,
+    VZBridgeCallbackRestoreImageLoaded = 10,
+    VZBridgeCallbackMacOSInstallCompleted = 11,
+    VZBridgeCallbackMacOSInstallProgress = 12,
+};
+
 // Object inputs are borrowed; owned results transfer one retain to Go.
 typedef void *VZBridgeObject __attribute__((annotate("vzbridge:object")));
 typedef void *VZBridgeOwnedObject __attribute__((annotate("vzbridge:owned")));

@@ -75,7 +75,7 @@ func (v *VirtioSocketDevice) Listen(port uint32) (*VirtioSocketListener, error) 
 	}
 	state := &socketAcceptState{wake: make(chan struct{}, 1)}
 	handle := registerNativeCallback(func(kind uint32, first, second unsafe.Pointer, value uint64) uint64 {
-		if kind == 4 {
+		if kind == vzbridge.CallbackContextReleased {
 			state.close()
 			return 0
 		}

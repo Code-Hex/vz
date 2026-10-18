@@ -21,6 +21,21 @@ import (
 
 const SDKVersion = C.__MAC_OS_X_VERSION_MAX_ALLOWED
 
+const (
+	CallbackCompletion                  = C.VZBridgeCallbackCompletion
+	CallbackMachineStateChanged         = C.VZBridgeCallbackMachineStateChanged
+	CallbackNetworkDisconnected         = C.VZBridgeCallbackNetworkDisconnected
+	CallbackContextReleased             = C.VZBridgeCallbackContextReleased
+	CallbackSocketConnected             = C.VZBridgeCallbackSocketConnected
+	CallbackSocketAccepted              = C.VZBridgeCallbackSocketAccepted
+	CallbackNetworkBlockDeviceError     = C.VZBridgeCallbackNetworkBlockDeviceError
+	CallbackNetworkBlockDeviceConnected = C.VZBridgeCallbackNetworkBlockDeviceConnected
+	CallbackRosettaInstallCompleted     = C.VZBridgeCallbackRosettaInstallCompleted
+	CallbackRestoreImageLoaded          = C.VZBridgeCallbackRestoreImageLoaded
+	CallbackMacOSInstallCompleted       = C.VZBridgeCallbackMacOSInstallCompleted
+	CallbackMacOSInstallProgress        = C.VZBridgeCallbackMacOSInstallProgress
+)
+
 var dispatchSyncOnObject func(unsafe.Pointer, uintptr, uintptr)
 var queueCallback uintptr
 

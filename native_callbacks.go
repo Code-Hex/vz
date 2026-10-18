@@ -79,17 +79,20 @@ func unregisterNativeCallback(id uint64) { nativeCallbacks.remove(id) }
 func dispatchNativeCallback(kind uint32, context uint64, first, second unsafe.Pointer, value uint64) uint64 {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if callback, ok := nativeCallbacks.take(context, kind == 4); ok {
+	if callback, ok := nativeCallbacks.take(context, kind == vzbridge.CallbackContextReleased); ok {
 		return callback(kind, first, second, value)
 	}
 	switch kind {
-	case 1, 3, 5, 6, 7, 9, 10, 11:
-		if first != nil {
-			vzbridge.ReleaseObject(first)
-		}
-	}
-	if (kind == 5 || kind == 10) && second != nil {
+	case vzbridge.CallbackSocketConnected, vzbridge.CallbackRestoreImageLoaded:
+		vzbridge.ReleaseObject(first)
 		vzbridge.ReleaseObject(second)
+	case vzbridge.CallbackCompletion,
+		vzbridge.CallbackNetworkDisconnected,
+		vzbridge.CallbackSocketAccepted,
+		vzbridge.CallbackNetworkBlockDeviceError,
+		vzbridge.CallbackRosettaInstallCompleted,
+		vzbridge.CallbackMacOSInstallCompleted:
+		vzbridge.ReleaseObject(first)
 	}
 	return 0
 }

@@ -57,7 +57,7 @@ Pass this interface to `fileadapter.New` as in the example above. `StartBridgedI
 
 Bridged mode connects the guest to the physical network. DHCP, DNS, and routing depend on the physical network configuration. No vmnet `NetworkConfiguration` is created. The selected interface must still be available when the interface starts.
 
-Bridged mode uses `vmnet_start_interface`. Access depends on the process's privileges and entitlements. Sandboxed applications require the `com.apple.vm.networking` entitlement.
+Bridged mode uses `vmnet_start_interface`. Access depends on the process's privileges and entitlements. Apple documents [`com.apple.vm.networking`](https://developer.apple.com/documentation/vmnet) as required for sandboxed processes that use vmnet. This restricted entitlement must be authorized by a provisioning profile, as explained in [Apple's signing guidance](https://developer.apple.com/forums/thread/850614).
 
 ## Pass the descriptor to the VM
 

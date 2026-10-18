@@ -13,10 +13,8 @@ static void interfaceError(vmnet_return_t status, NSString *operation, void **ou
     if (status != VMNET_SUCCESS && output)
         *output = [[NSError errorWithDomain:@"com.apple.vmnet" code:status userInfo:@ { NSLocalizedDescriptionKey : [operation stringByAppendingString:@" failed"] }] retain];
 }
-#endif
-void *vz_startVmnetInterface(void *network, uint32_t options, uint64_t callback, uint64_t context, void *maxPacketSize, void *mac, void **errorOut)
+static void *startVmnetInterface(void *network, const char *name, uint32_t options, uint64_t callback, uint64_t context, void *maxPacketSize, void *mac, void **errorOut)
 {
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
     if (@available(macOS 26, *)) {
         struct VmnetSession *session = calloc(1, sizeof(*session));
         if (!session) {
@@ -30,8 +28,13 @@ void *vz_startVmnetInterface(void *network, uint32_t options, uint64_t callback,
         xpc_dictionary_set_bool(desc, vmnet_enable_checksum_offload_key, options & 2);
         xpc_dictionary_set_bool(desc, vmnet_enable_tso_key, options & 4);
         xpc_dictionary_set_bool(desc, vmnet_enable_isolation_key, options & 8);
+        if (name) {
+            xpc_dictionary_set_uint64(desc, vmnet_operation_mode_key, VMNET_BRIDGED_MODE);
+            xpc_dictionary_set_string(desc, vmnet_shared_interface_name_key, name);
+        }
+        NSString *operation = name ? @"vmnet_start_interface" : @"vmnet_interface_start_with_network";
         __block vmnet_return_t result = VMNET_FAILURE;
-        session->interface = vmnet_interface_start_with_network(network, desc, completion, ^(vmnet_return_t status, xpc_object_t parameters) {
+        vmnet_start_interface_completion_handler_t handler = ^(vmnet_return_t status, xpc_object_t parameters) {
             result = status;
             if (status == VMNET_SUCCESS && parameters) {
                 *(uint64_t *)maxPacketSize = xpc_dictionary_get_uint64(parameters, vmnet_max_packet_size_key);
@@ -42,7 +45,9 @@ void *vz_startVmnetInterface(void *network, uint32_t options, uint64_t callback,
                         ((uint8_t *)mac)[i] = bytes[i];
             }
             dispatch_semaphore_signal(done);
-        });
+        };
+        session->interface = name ? vmnet_start_interface(desc, completion, handler)
+                                  : vmnet_interface_start_with_network(network, desc, completion, handler);
         xpc_release(desc);
         if (session->interface) {
             dispatch_semaphore_wait(done, DISPATCH_TIME_FOREVER);
@@ -51,7 +56,7 @@ void *vz_startVmnetInterface(void *network, uint32_t options, uint64_t callback,
         dispatch_release(done);
         dispatch_release(completion);
         if (!session->interface) {
-            interfaceError(result == VMNET_SUCCESS ? VMNET_FAILURE : result, @"vmnet_interface_start_with_network", errorOut);
+            interfaceError(result == VMNET_SUCCESS ? VMNET_FAILURE : result, operation, errorOut);
             free(session);
             return NULL;
         }
@@ -59,7 +64,7 @@ void *vz_startVmnetInterface(void *network, uint32_t options, uint64_t callback,
         __block bool active = true;
         session->disableCallback = [^{ active = false; } copy];
         if (result != VMNET_SUCCESS) {
-            interfaceError(result, @"vmnet_interface_start_with_network", errorOut);
+            interfaceError(result, operation, errorOut);
             return session;
         }
         result = vmnet_interface_set_event_callback(session->interface, VMNET_INTERFACE_PACKETS_AVAILABLE, session->events, ^(interface_event_t mask, xpc_object_t event) {
@@ -72,9 +77,50 @@ void *vz_startVmnetInterface(void *network, uint32_t options, uint64_t callback,
         }
         return session;
     }
+    return NULL;
+}
+#endif
+
+void *vz_startVmnetInterface(void *network, uint32_t options, uint64_t callback, uint64_t context, void *maxPacketSize, void *mac, void **errorOut)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    return startVmnetInterface(network, NULL, options, callback, context, maxPacketSize, mac, errorOut);
+#else
+    return NULL;
+#endif
+}
+
+void *vz_startVmnetBridgedInterface(const char *name, uint32_t options, uint64_t callback, uint64_t context, void *maxPacketSize, void *mac, void **errorOut)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    return startVmnetInterface(NULL, name, options, callback, context, maxPacketSize, mac, errorOut);
+#else
+    return NULL;
+#endif
+}
+
+void *vz_copyVmnetBridgedInterfaces(void **errorOut)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *)) {
+        xpc_object_t interfaces = vmnet_copy_shared_interface_list();
+        if (!interfaces) {
+            interfaceError(VMNET_FAILURE, @"vmnet_copy_shared_interface_list", errorOut);
+            return NULL;
+        }
+        NSMutableArray *names = [[NSMutableArray alloc] init];
+        for (size_t i = 0; i < xpc_array_get_count(interfaces); i++) {
+            NSString *name = [[NSString alloc] initWithUTF8String:xpc_array_get_string(interfaces, i)];
+            [names addObject:name];
+            [name release];
+        }
+        xpc_release(interfaces);
+        return names;
+    }
 #endif
     return NULL;
 }
+
 void vz_stopVmnetInterface(void *pointer, void **errorOut)
 {
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000

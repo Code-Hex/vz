@@ -686,6 +686,37 @@ func StartVmnetInterface(network objc.NSObject, options uint32, callback uint64,
 	return result
 }
 
+var callStartVmnetBridgedInterface lazyBinding[func(string, uint32, uint64, uint64, unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer]
+
+func StartVmnetBridgedInterface(name string, options uint32, callback uint64, context uint64, maxPacketSize unsafe.Pointer, mac unsafe.Pointer, errorOut *unsafe.Pointer) unsafe.Pointer {
+	call := callStartVmnetBridgedInterface.get(func() func(string, uint32, uint64, uint64, unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer {
+		var call func(string, uint32, uint64, uint64, unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_startVmnetBridgedInterface))
+		return call
+	})
+	var result unsafe.Pointer
+	result = call(name, options, callback, context, maxPacketSize, mac, errorOut)
+	runtime.KeepAlive(name)
+	runtime.KeepAlive(maxPacketSize)
+	runtime.KeepAlive(mac)
+	runtime.KeepAlive(errorOut)
+	return result
+}
+
+var callCopyVmnetBridgedInterfaces lazyBinding[func(*unsafe.Pointer) unsafe.Pointer]
+
+func CopyVmnetBridgedInterfaces(errorOut *unsafe.Pointer) *objc.Pointer {
+	call := callCopyVmnetBridgedInterfaces.get(func() func(*unsafe.Pointer) unsafe.Pointer {
+		var call func(*unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_copyVmnetBridgedInterfaces))
+		return call
+	})
+	var result unsafe.Pointer
+	result = call(errorOut)
+	runtime.KeepAlive(errorOut)
+	return objc.NewManagedPointer(result, ReleaseObject)
+}
+
 var callStopVmnetInterface lazyBinding[func(unsafe.Pointer, *unsafe.Pointer)]
 
 func StopVmnetInterface(session unsafe.Pointer, errorOut *unsafe.Pointer) {

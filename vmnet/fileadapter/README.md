@@ -1,6 +1,6 @@
 # Connect vmnet to a file descriptor
 
-`vmnet.Interface` exchanges Ethernet frames on an existing `vmnet.Network`. It requires macOS 26 or newer and a compatible SDK. `fileadapter.New` creates a UNIX socket pair and starts forwarding packets in both directions.
+`vmnet.Interface` exchanges Ethernet frames on a `vmnet.Network` or a bridged physical interface. It requires macOS 26 or newer and a compatible SDK. `fileadapter.New` creates a UNIX socket pair and starts forwarding packets in both directions.
 
 `fileadapter.New` supports two socket protocols:
 
@@ -41,6 +41,24 @@ runErr := cmd.Run()
 return errors.Join(runErr, adapter.Close())
 ```
 
+## Bridge to a physical interface
+
+`vmnet.BridgedInterfaces()` lists the physical interfaces eligible for bridged mode. Use a name from that list instead of creating a `Network`:
+
+```go
+iface, err := vmnet.StartBridgedInterface("en0")
+if err != nil {
+	return err
+}
+defer iface.Stop()
+```
+
+Pass this interface to `fileadapter.New` as in the example above. `StartBridgedInterface` accepts the same `InterfaceOption` values as `StartInterfaceWithNetwork`.
+
+Bridged mode connects the guest to the physical network. DHCP, DNS, and routing depend on the physical network configuration. No vmnet `NetworkConfiguration` is created. The selected interface must still be available when the interface starts.
+
+Bridged mode uses `vmnet_start_interface`. Access depends on the process's privileges and entitlements. Sandboxed applications require the `com.apple.vm.networking` entitlement.
+
 ## Pass the descriptor to the VM
 
 Add the network and device flags to your existing virtual machine configuration. The first file passed to `exec.Cmd.ExtraFiles` maps to file descriptor 3 in the child process.
@@ -71,9 +89,9 @@ All copies of an `Interface` share a single lifetime. Calling `Stop` invalidates
 
 The SDK reference from an `Interface` to its `Network` is independent of your application's `Network` reference. Calling `Stop` on an `Interface` does not terminate the underlying `Network`, and you can start a new `Interface` on that same `Network` afterward.
 
-On a startup error, `StartInterfaceWithNetwork` returns a nil `Interface` after attempting cleanup. The returned error includes any cleanup failure. `Stop` releases local resources even if the native stop fails. Repeated calls return the original result without retrying.
+On a startup error, both constructors return a nil `Interface` after attempting cleanup. The returned error includes any cleanup failure. `Stop` releases local resources even if the native stop fails. Repeated calls return the original result without retrying.
 
-With no options, `StartInterfaceWithNetwork` enables MAC allocation and disables offloading and isolation. Use functional options to change these settings:
+With no options, both constructors enable MAC allocation and disable offloading and isolation. Use functional options to change these settings:
 
 ```go
 iface, err := vmnet.StartInterfaceWithNetwork(network,

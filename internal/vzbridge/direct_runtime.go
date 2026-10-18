@@ -133,7 +133,9 @@ func directOwned(body func() unsafe.Pointer) *objc.Pointer {
 
 // RetainObject returns a pointer with independent ownership of the object.
 func RetainObject(p0 objc.NSObject) *objc.Pointer {
-	value := directOwned(func() unsafe.Pointer { return directRetain(objc.Ptr(p0)) })
+	var result unsafe.Pointer
+	onObjectQueue(objc.Ptr(p0), func() { result = directRetain(objc.Ptr(p0)) })
+	value := objc.NewManagedPointer(result, ReleaseObject)
 	runtime.KeepAlive(p0)
 	return value
 }

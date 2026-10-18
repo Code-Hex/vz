@@ -27,96 +27,105 @@ func generateSDK(target sdkTarget) ([]byte, error) {
 			return nil, fmt.Errorf("duplicate generated name %s", m.GoName)
 		}
 		names[m.GoName] = true
-		if !validSDKType(m.Result, true) {
-			return nil, fmt.Errorf("unknown ABI in %s", m.ID)
+		if err := generateSDKMethod(&b, m); err != nil {
+			return nil, err
 		}
-		var native, parameters, args, alive []string
-		native = append(native, "unsafe.Pointer", "runtimeobjc.SEL")
-		if m.Instance && !m.Factory {
-			parameters = append(parameters, "receiver objc.NSObject")
-			alive = append(alive, "receiver")
-		}
-		for i, p := range m.Parameters {
-			name := fmt.Sprintf("p%d", i)
-			if !validSDKType(p.Type, false) {
-				return nil, fmt.Errorf("unknown parameter ABI in %s", m.ID)
-			}
-			parameters = append(parameters, name+" "+p.Type.Go)
-			native = append(native, p.Type.ABI)
-			arg := name
-			if p.Type.Kind == "object" {
-				arg = "objc.Ptr(" + name + ")"
-			}
-			args = append(args, arg)
-			if p.Type.Kind != "scalar" && p.Type.Kind != "enum" {
-				alive = append(alive, name)
-			}
-		}
-		signature := fmt.Sprintf("func(%s) %s", strings.Join(native, ", "), m.Result.ABI)
-		fmt.Fprintf(&b, "var sdkCall%s lazyBinding[directBinding[%s]]\n", m.GoName, signature)
-		fmt.Fprintf(&b, "func %s(%s) %s {\n", m.GoName, strings.Join(parameters, ", "), m.Result.Go)
-		fmt.Fprintf(&b, "binding := sdkCall%s.get(func() directBinding[%s] { return bindDirect[%s](%q) })\n", m.GoName, signature, signature, m.Selector)
-		if m.Result.Go != "" {
-			fmt.Fprintf(&b, "var result %s\n", m.Result.ABI)
-		}
-		fmt.Fprintln(&b, "onQueue(func(){")
-		recv := "directClass(" + fmt.Sprintf("%q", m.Owner) + ")"
-		if m.Instance && !m.Factory {
-			recv = "objc.Ptr(receiver)"
-		}
-		if m.Factory {
-			recv = "directAllocate(" + recv + ")"
-		}
-		if m.Factory {
-			fmt.Fprintf(&b, "sdkRequireVersion(%q,%q,%q)\n", m.GoName, m.Introduced, m.Obsoleted)
-			fmt.Fprintf(&b, "allocated := %s\n", recv)
-			recv = "allocated"
-		}
-		if m.Factory {
-			fmt.Fprintf(&b, "sdkRequireInitializer(%q,%q,%q,%q,%s)\n", m.Owner, m.Selector, m.Introduced, m.Obsoleted, recv)
-		} else if m.Instance {
-			fmt.Fprintf(&b, "sdkRequire(%q,%q,%q,%q,true,%s)\n", m.Owner, m.Selector, m.Introduced, m.Obsoleted, recv)
-		} else {
-			fmt.Fprintf(&b, "sdkRequire(%q,%q,%q,%q,false)\n", m.Owner, m.Selector, m.Introduced, m.Obsoleted)
-		}
-		for i, p := range m.Parameters {
-			if p.Type.Kind == "error-out" {
-				fmt.Fprintf(&b, "if p%d != nil {*p%d = nil}\n", i, i)
-			}
-		}
-		if m.Result.Go != "" {
-			fmt.Fprint(&b, "result = ")
-		}
-		fmt.Fprintf(&b, "binding.call(%s, binding.selector", recv)
-		for _, arg := range args {
-			fmt.Fprintf(&b, ", %s", arg)
-		}
-		fmt.Fprintln(&b, ")")
-		if m.Result.Kind == "object" && m.Ownership == "borrowed" {
-			fmt.Fprintln(&b, "result = directRetain(result)")
-		}
-		for i, p := range m.Parameters {
-			if p.Type.Kind == "error-out" {
-				fmt.Fprintf(&b, "if p%d != nil {*p%d = directRetain(*p%d)}\n", i, i, i)
-			}
-		}
-		fmt.Fprintln(&b, "})")
-		for _, arg := range alive {
-			fmt.Fprintf(&b, "runtime.KeepAlive(%s)\n", arg)
-		}
-		if m.Result.Kind == "object" {
-			fmt.Fprintln(&b, "return objc.NewManagedPointer(result, ReleaseObject)")
-		} else if m.Result.Go != "" {
-			fmt.Fprintln(&b, "return result")
-		}
-		fmt.Fprintln(&b, "}")
 	}
+
 	for _, m := range target.Methods {
 		if len(m.Unsupported) > 0 {
 			fmt.Fprintf(&b, "// Unsupported %s: %s\n", m.ID, strings.Join(m.Unsupported, "; "))
 		}
 	}
 	return format.Source(b.Bytes())
+}
+
+func generateSDKMethod(b *bytes.Buffer, m sdkMethod) error {
+	if !validSDKType(m.Result, true) {
+		return fmt.Errorf("unknown ABI in %s", m.ID)
+	}
+	arguments, err := sdkMethodArguments(m)
+	if err != nil {
+		return err
+	}
+
+	signature := fmt.Sprintf("func(%s) %s", strings.Join(arguments.native, ", "), m.Result.ABI)
+	fmt.Fprintf(b, "var sdkCall%s lazyBinding[directBinding[%s]]\n", m.GoName, signature)
+	fmt.Fprintf(b, "func %s(%s) %s {\n", m.GoName, strings.Join(arguments.parameters, ", "), m.Result.Go)
+	fmt.Fprintf(b, "binding := sdkCall%s.get(func() directBinding[%s] { return bindDirect[%s](%q) })\n", m.GoName, signature, signature, m.Selector)
+	if m.Result.Go != "" {
+		fmt.Fprintf(b, "var result %s\n", m.Result.ABI)
+	}
+	queueOwner := ""
+	if m.Instance && !m.Factory {
+		queueOwner = "objc.Ptr(receiver)"
+	} else if m.Factory {
+		for i, p := range m.Parameters {
+			if p.Type.Class == "VZVirtualMachine" {
+				queueOwner = fmt.Sprintf("objc.Ptr(p%d)", i)
+				break
+			}
+		}
+	}
+	if queueOwner != "" {
+		fmt.Fprintf(b, "onObjectQueue(%s, func(){\n", queueOwner)
+	} else {
+		fmt.Fprintln(b, "onQueue(func(){")
+	}
+	recv := "directClass(" + fmt.Sprintf("%q", m.Owner) + ")"
+	if m.Instance && !m.Factory {
+		recv = "objc.Ptr(receiver)"
+	}
+	if m.Factory {
+		recv = "directAllocate(" + recv + ")"
+	}
+	if m.Factory {
+		fmt.Fprintf(b, "sdkRequireVersion(%q,%q,%q)\n", m.GoName, m.Introduced, m.Obsoleted)
+		fmt.Fprintf(b, "allocated := %s\n", recv)
+		recv = "allocated"
+	}
+	if m.Factory {
+		fmt.Fprintf(b, "sdkRequireInitializer(%q,%q,%q,%q,%s)\n", m.Owner, m.Selector, m.Introduced, m.Obsoleted, recv)
+	} else if m.Instance {
+		fmt.Fprintf(b, "sdkRequire(%q,%q,%q,%q,true,%s)\n", m.Owner, m.Selector, m.Introduced, m.Obsoleted, recv)
+	} else {
+		fmt.Fprintf(b, "sdkRequire(%q,%q,%q,%q,false)\n", m.Owner, m.Selector, m.Introduced, m.Obsoleted)
+	}
+	for i, p := range m.Parameters {
+		if p.Type.Kind == "error-out" {
+			fmt.Fprintf(b, "if p%d != nil {*p%d = nil}\n", i, i)
+		}
+	}
+	if m.Result.Go != "" {
+		fmt.Fprint(b, "result = ")
+	}
+	fmt.Fprintf(b, "binding.call(%s, binding.selector", recv)
+	for _, arg := range arguments.args {
+		fmt.Fprintf(b, ", %s", arg)
+	}
+	fmt.Fprintln(b, ")")
+	if m.Result.Kind == "object" && queueOwner != "" && inheritsMachineQueue(m.Owner, m.Selector) {
+		fmt.Fprintf(b, "InheritObjectQueue(result, %s)\n", queueOwner)
+	}
+	if m.Result.Kind == "object" && m.Ownership == "borrowed" {
+		fmt.Fprintln(b, "result = directRetain(result)")
+	}
+	for i, p := range m.Parameters {
+		if p.Type.Kind == "error-out" {
+			fmt.Fprintf(b, "if p%d != nil {*p%d = directRetain(*p%d)}\n", i, i, i)
+		}
+	}
+	fmt.Fprintln(b, "})")
+	for _, arg := range arguments.alive {
+		fmt.Fprintf(b, "runtime.KeepAlive(%s)\n", arg)
+	}
+	if m.Result.Kind == "object" {
+		fmt.Fprintln(b, "return objc.NewManagedPointer(result, ReleaseObject)")
+	} else if m.Result.Go != "" {
+		fmt.Fprintln(b, "return result")
+	}
+	fmt.Fprintln(b, "}")
+	return nil
 }
 
 func validSDKType(t sdkType, result bool) bool {
@@ -149,4 +158,37 @@ func validSDKType(t sdkType, result bool) bool {
 		return !result && t.ABI == "*unsafe.Pointer" && t.Go == t.ABI
 	}
 	return false
+}
+
+type sdkArguments struct {
+	native     []string
+	parameters []string
+	args       []string
+	alive      []string
+}
+
+func sdkMethodArguments(m sdkMethod) (sdkArguments, error) {
+	var arguments sdkArguments
+	arguments.native = append(arguments.native, "unsafe.Pointer", "runtimeobjc.SEL")
+	if m.Instance && !m.Factory {
+		arguments.parameters = append(arguments.parameters, "receiver objc.NSObject")
+		arguments.alive = append(arguments.alive, "receiver")
+	}
+	for i, p := range m.Parameters {
+		name := fmt.Sprintf("p%d", i)
+		if !validSDKType(p.Type, false) {
+			return sdkArguments{}, fmt.Errorf("unknown parameter ABI in %s", m.ID)
+		}
+		arguments.parameters = append(arguments.parameters, name+" "+p.Type.Go)
+		arguments.native = append(arguments.native, p.Type.ABI)
+		arg := name
+		if p.Type.Kind == "object" {
+			arg = "objc.Ptr(" + name + ")"
+		}
+		arguments.args = append(arguments.args, arg)
+		if p.Type.Kind != "scalar" && p.Type.Kind != "enum" {
+			arguments.alive = append(arguments.alive, name)
+		}
+	}
+	return arguments, nil
 }

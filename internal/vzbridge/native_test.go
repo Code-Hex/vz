@@ -120,7 +120,7 @@ func TestNativeListenerInvalidationAndRelease(t *testing.T) {
 	})
 	SetCallback(uint64(callback))
 	defer SetCallback(0)
-	listener := NewVZVirtioSocketListener(101)
+	listener := NewVZVirtioSocketListener(nil, 101)
 	if listener == nil {
 		t.Fatal("listener construction failed")
 	}
@@ -128,7 +128,7 @@ func TestNativeListenerInvalidationAndRelease(t *testing.T) {
 	InvalidateVZVirtioSocketListener(listener)
 	objc.Release(listener)
 	Drain()
-	listener = NewVZVirtioSocketListener(102)
+	listener = NewVZVirtioSocketListener(nil, 102)
 	objc.Release(listener)
 	Drain()
 	if unexpected != 0 {
@@ -195,7 +195,7 @@ func TestNativeMachinePreservesNetworkDelegate(t *testing.T) {
 		Drain()
 	}()
 	var handlesDisconnection bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(machine), func() {
 		receiver := pureobjc.ID(uintptr(objc.Ptr(machine)))
 		receiver.Send(pureobjc.RegisterName("setDelegate:"), objc.Ptr(external))
 		delegate := receiver.Send(pureobjc.RegisterName("delegate"))

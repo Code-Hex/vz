@@ -165,3 +165,23 @@ func TestSDKTargetValidation(t *testing.T) {
 		t.Fatal("unknown result kind accepted")
 	}
 }
+
+func TestSDKInstallerUsesMachineQueue(t *testing.T) {
+	target := compileFixture(t, fixture+`
+@interface VZVirtualMachine : NSObject
+@end
+@interface VZMacOSInstaller : NSObject
+- (instancetype)initWithVirtualMachine:(VZVirtualMachine *)machine restoreImageURL:(NSObject *)url;
+@end
+`)
+	method := findMethod(t, target, "VZMacOSInstaller_InitWithVirtualMachine_RestoreImageURL")
+	code, err := generateSDK(sdkTarget{Architecture: "arm64", Methods: []sdkMethod{method}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{"onObjectQueue(objc.Ptr(p0), func() {", "InheritObjectQueue(result, objc.Ptr(p0))"} {
+		if !strings.Contains(string(code), want) {
+			t.Errorf("installer code is missing %q", want)
+		}
+	}
+}

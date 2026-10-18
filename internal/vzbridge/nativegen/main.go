@@ -63,7 +63,9 @@ func generate(bindings []binding) ([]byte, error) {
 		if b.Result != "" {
 			fmt.Fprintf(&out, "var result %s\n", nativeResult)
 		}
-		if b.Queue {
+		if b.ObjectQueue {
+			fmt.Fprintf(&out, "onObjectQueue(objc.Ptr(%s), func() {\n", b.Parameters[0].Name)
+		} else if b.Queue {
 			fmt.Fprintln(&out, "onQueue(func() {")
 		}
 		if b.Result != "" {

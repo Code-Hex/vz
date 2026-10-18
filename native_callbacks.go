@@ -3,6 +3,7 @@
 package vz
 
 import (
+	"runtime"
 	"sync"
 	"sync/atomic"
 	"unsafe"
@@ -76,6 +77,8 @@ func registerNativeRequest(callback nativeCallback) uint64 {
 func unregisterNativeCallback(id uint64) { nativeCallbacks.remove(id) }
 
 func dispatchNativeCallback(kind uint32, context uint64, first, second unsafe.Pointer, value uint64) uint64 {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	if callback, ok := nativeCallbacks.take(context, kind == 4); ok {
 		return callback(kind, first, second, value)
 	}

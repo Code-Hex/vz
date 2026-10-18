@@ -199,7 +199,7 @@ func NSArray_AddObserver_ForKeyPath_Options_Context(receiver objc.NSObject, p0 o
 	binding := sdkCallNSArray_AddObserver_ForKeyPath_Options_Context.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, uint64, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, uint64, unsafe.Pointer)]("addObserver:forKeyPath:options:context:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "addObserver:forKeyPath:options:context:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1), p2, p3)
 	})
@@ -215,7 +215,7 @@ func NSArray_AddObserver_ToObjectsAtIndexes_ForKeyPath_Options_Context(receiver 
 	binding := sdkCallNSArray_AddObserver_ToObjectsAtIndexes_ForKeyPath_Options_Context.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, uint64, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, uint64, unsafe.Pointer)]("addObserver:toObjectsAtIndexes:forKeyPath:options:context:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "addObserver:toObjectsAtIndexes:forKeyPath:options:context:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1), objc.Ptr(p2), p3, p4)
 	})
@@ -233,7 +233,7 @@ func NSArray_ArrayByAddingObject(receiver objc.NSObject, p0 objc.NSObject) *objc
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("arrayByAddingObject:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "arrayByAddingObject:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -250,7 +250,7 @@ func NSArray_ArrayByAddingObjectsFromArray(receiver objc.NSObject, p0 objc.NSObj
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("arrayByAddingObjectsFromArray:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "arrayByAddingObjectsFromArray:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -267,7 +267,7 @@ func NSArray_ArrayByApplyingDifference(receiver objc.NSObject, p0 objc.NSObject)
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("arrayByApplyingDifference:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "arrayByApplyingDifference:", "10.15", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -284,7 +284,7 @@ func NSArray_ComponentsJoinedByString(receiver objc.NSObject, p0 objc.NSObject) 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("componentsJoinedByString:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "componentsJoinedByString:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -301,7 +301,7 @@ func NSArray_ContainsObject(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("containsObject:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "containsObject:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -317,7 +317,7 @@ func NSArray_Count(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("count")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "count", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -332,7 +332,7 @@ func NSArray_Description(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("description")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "description", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -348,7 +348,7 @@ func NSArray_DescriptionWithLocale(receiver objc.NSObject, p0 objc.NSObject) *ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("descriptionWithLocale:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "descriptionWithLocale:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -365,7 +365,7 @@ func NSArray_DescriptionWithLocale_Indent(receiver objc.NSObject, p0 objc.NSObje
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64) unsafe.Pointer]("descriptionWithLocale:indent:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "descriptionWithLocale:indent:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 		result = directRetain(result)
@@ -382,7 +382,7 @@ func NSArray_DifferenceFromArray(receiver objc.NSObject, p0 objc.NSObject) *objc
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("differenceFromArray:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "differenceFromArray:", "10.15", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -399,7 +399,7 @@ func NSArray_DifferenceFromArray_WithOptions(receiver objc.NSObject, p0 objc.NSO
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64) unsafe.Pointer]("differenceFromArray:withOptions:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "differenceFromArray:withOptions:", "10.15", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 		result = directRetain(result)
@@ -415,7 +415,7 @@ func NSArray_EncodeWithCoder(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSArray_EncodeWithCoder.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("encodeWithCoder:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "encodeWithCoder:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -430,7 +430,7 @@ func NSArray_FilteredArrayUsingPredicate(receiver objc.NSObject, p0 objc.NSObjec
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("filteredArrayUsingPredicate:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "filteredArrayUsingPredicate:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -447,7 +447,7 @@ func NSArray_FirstObject(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("firstObject")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "firstObject", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -463,7 +463,7 @@ func NSArray_FirstObjectCommonWithArray(receiver objc.NSObject, p0 objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("firstObjectCommonWithArray:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "firstObjectCommonWithArray:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -480,7 +480,7 @@ func NSArray_IndexOfObject(receiver objc.NSObject, p0 objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) uint64]("indexOfObject:")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "indexOfObject:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -496,7 +496,7 @@ func NSArray_IndexOfObjectIdenticalTo(receiver objc.NSObject, p0 objc.NSObject) 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) uint64]("indexOfObjectIdenticalTo:")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "indexOfObjectIdenticalTo:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -637,7 +637,7 @@ func NSArray_IsEqualToArray(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqualToArray:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "isEqualToArray:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -653,7 +653,7 @@ func NSArray_LastObject(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("lastObject")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "lastObject", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -669,7 +669,7 @@ func NSArray_ObjectAtIndex(receiver objc.NSObject, p0 uint64) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) unsafe.Pointer]("objectAtIndex:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "objectAtIndex:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 		result = directRetain(result)
@@ -685,7 +685,7 @@ func NSArray_ObjectAtIndexedSubscript(receiver objc.NSObject, p0 uint64) *objc.P
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) unsafe.Pointer]("objectAtIndexedSubscript:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "objectAtIndexedSubscript:", "10.8", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 		result = directRetain(result)
@@ -701,7 +701,7 @@ func NSArray_ObjectEnumerator(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("objectEnumerator")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "objectEnumerator", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -717,7 +717,7 @@ func NSArray_ObjectsAtIndexes(receiver objc.NSObject, p0 objc.NSObject) *objc.Po
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("objectsAtIndexes:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "objectsAtIndexes:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -734,7 +734,7 @@ func NSArray_PathsMatchingExtensions(receiver objc.NSObject, p0 objc.NSObject) *
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("pathsMatchingExtensions:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "pathsMatchingExtensions:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -750,7 +750,7 @@ func NSArray_RemoveObserver_ForKeyPath(receiver objc.NSObject, p0 objc.NSObject,
 	binding := sdkCallNSArray_RemoveObserver_ForKeyPath.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("removeObserver:forKeyPath:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "removeObserver:forKeyPath:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -765,7 +765,7 @@ func NSArray_RemoveObserver_ForKeyPath_Context(receiver objc.NSObject, p0 objc.N
 	binding := sdkCallNSArray_RemoveObserver_ForKeyPath_Context.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]("removeObserver:forKeyPath:context:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "removeObserver:forKeyPath:context:", "10.7", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1), p2)
 	})
@@ -781,7 +781,7 @@ func NSArray_RemoveObserver_FromObjectsAtIndexes_ForKeyPath(receiver objc.NSObje
 	binding := sdkCallNSArray_RemoveObserver_FromObjectsAtIndexes_ForKeyPath.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]("removeObserver:fromObjectsAtIndexes:forKeyPath:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "removeObserver:fromObjectsAtIndexes:forKeyPath:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1), objc.Ptr(p2))
 	})
@@ -797,7 +797,7 @@ func NSArray_RemoveObserver_FromObjectsAtIndexes_ForKeyPath_Context(receiver obj
 	binding := sdkCallNSArray_RemoveObserver_FromObjectsAtIndexes_ForKeyPath_Context.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]("removeObserver:fromObjectsAtIndexes:forKeyPath:context:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "removeObserver:fromObjectsAtIndexes:forKeyPath:context:", "10.7", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1), objc.Ptr(p2), p3)
 	})
@@ -815,7 +815,7 @@ func NSArray_ReverseObjectEnumerator(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("reverseObjectEnumerator")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "reverseObjectEnumerator", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -830,7 +830,7 @@ func NSArray_SetValue_ForKey(receiver objc.NSObject, p0 objc.NSObject, p1 objc.N
 	binding := sdkCallNSArray_SetValue_ForKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("setValue:forKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "setValue:forKey:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -846,7 +846,7 @@ func NSArray_SortedArrayHint(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("sortedArrayHint")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "sortedArrayHint", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -862,7 +862,7 @@ func NSArray_SortedArrayUsingDescriptors(receiver objc.NSObject, p0 objc.NSObjec
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("sortedArrayUsingDescriptors:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "sortedArrayUsingDescriptors:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -879,7 +879,7 @@ func NSArray_ValueForKey(receiver objc.NSObject, p0 objc.NSObject) *objc.Pointer
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("valueForKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "valueForKey:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -896,7 +896,7 @@ func NSArray_WriteToFile_Atomically(receiver objc.NSObject, p0 objc.NSObject, p1
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, bool) bool]("writeToFile:atomically:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "writeToFile:atomically:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 	})
@@ -912,7 +912,7 @@ func NSArray_WriteToURL_Atomically(receiver objc.NSObject, p0 objc.NSObject, p1 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, bool) bool]("writeToURL:atomically:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "writeToURL:atomically:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 	})
@@ -928,7 +928,7 @@ func NSArray_WriteToURL_Error(receiver objc.NSObject, p0 objc.NSObject, p1 *unsa
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, *unsafe.Pointer) bool]("writeToURL:error:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSArray", "writeToURL:error:", "10.13", "", true, objc.Ptr(receiver))
 		if p1 != nil {
 			*p1 = nil
@@ -1152,7 +1152,7 @@ func NSData_Base64EncodedDataWithOptions(receiver objc.NSObject, p0 uint64) *obj
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) unsafe.Pointer]("base64EncodedDataWithOptions:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "base64EncodedDataWithOptions:", "10.9", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 		result = directRetain(result)
@@ -1168,7 +1168,7 @@ func NSData_Base64EncodedStringWithOptions(receiver objc.NSObject, p0 uint64) *o
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) unsafe.Pointer]("base64EncodedStringWithOptions:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "base64EncodedStringWithOptions:", "10.9", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 		result = directRetain(result)
@@ -1184,7 +1184,7 @@ func NSData_Base64Encoding(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("base64Encoding")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "base64Encoding", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -1200,7 +1200,7 @@ func NSData_Bytes(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("bytes")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "bytes", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -1215,7 +1215,7 @@ func NSData_CompressedDataUsingAlgorithm_Error(receiver objc.NSObject, p0 int64,
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64, *unsafe.Pointer) unsafe.Pointer]("compressedDataUsingAlgorithm:error:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "compressedDataUsingAlgorithm:error:", "10.15", "", true, objc.Ptr(receiver))
 		if p1 != nil {
 			*p1 = nil
@@ -1238,7 +1238,7 @@ func NSData_DecompressedDataUsingAlgorithm_Error(receiver objc.NSObject, p0 int6
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64, *unsafe.Pointer) unsafe.Pointer]("decompressedDataUsingAlgorithm:error:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "decompressedDataUsingAlgorithm:error:", "10.15", "", true, objc.Ptr(receiver))
 		if p1 != nil {
 			*p1 = nil
@@ -1261,7 +1261,7 @@ func NSData_Description(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("description")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "description", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -1276,7 +1276,7 @@ func NSData_EncodeWithCoder(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSData_EncodeWithCoder.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("encodeWithCoder:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "encodeWithCoder:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -1290,7 +1290,7 @@ func NSData_GetBytes(receiver objc.NSObject, p0 unsafe.Pointer) {
 	binding := sdkCallNSData_GetBytes.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("getBytes:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "getBytes:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -1304,7 +1304,7 @@ func NSData_GetBytes_Length(receiver objc.NSObject, p0 unsafe.Pointer, p1 uint64
 	binding := sdkCallNSData_GetBytes_Length.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64)]("getBytes:length:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "getBytes:length:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0, p1)
 	})
@@ -1554,7 +1554,7 @@ func NSData_IsEqualToData(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqualToData:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "isEqualToData:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -1570,7 +1570,7 @@ func NSData_Length(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("length")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "length", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -1585,7 +1585,7 @@ func NSData_WriteToFile_Atomically(receiver objc.NSObject, p0 objc.NSObject, p1 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, bool) bool]("writeToFile:atomically:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "writeToFile:atomically:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 	})
@@ -1601,7 +1601,7 @@ func NSData_WriteToFile_Options_Error(receiver objc.NSObject, p0 objc.NSObject, 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, *unsafe.Pointer) bool]("writeToFile:options:error:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "writeToFile:options:error:", "", "", true, objc.Ptr(receiver))
 		if p2 != nil {
 			*p2 = nil
@@ -1624,7 +1624,7 @@ func NSData_WriteToURL_Atomically(receiver objc.NSObject, p0 objc.NSObject, p1 b
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, bool) bool]("writeToURL:atomically:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "writeToURL:atomically:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 	})
@@ -1640,7 +1640,7 @@ func NSData_WriteToURL_Options_Error(receiver objc.NSObject, p0 objc.NSObject, p
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, *unsafe.Pointer) bool]("writeToURL:options:error:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSData", "writeToURL:options:error:", "", "", true, objc.Ptr(receiver))
 		if p2 != nil {
 			*p2 = nil
@@ -1827,7 +1827,7 @@ func NSDictionary_AllKeys(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("allKeys")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "allKeys", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -1843,7 +1843,7 @@ func NSDictionary_AllKeysForObject(receiver objc.NSObject, p0 objc.NSObject) *ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("allKeysForObject:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "allKeysForObject:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -1860,7 +1860,7 @@ func NSDictionary_AllValues(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("allValues")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "allValues", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -1876,7 +1876,7 @@ func NSDictionary_Count(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("count")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "count", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -1891,7 +1891,7 @@ func NSDictionary_Description(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("description")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "description", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -1907,7 +1907,7 @@ func NSDictionary_DescriptionInStringsFileFormat(receiver objc.NSObject) *objc.P
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("descriptionInStringsFileFormat")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "descriptionInStringsFileFormat", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -1923,7 +1923,7 @@ func NSDictionary_DescriptionWithLocale(receiver objc.NSObject, p0 objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("descriptionWithLocale:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "descriptionWithLocale:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -1940,7 +1940,7 @@ func NSDictionary_DescriptionWithLocale_Indent(receiver objc.NSObject, p0 objc.N
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64) unsafe.Pointer]("descriptionWithLocale:indent:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "descriptionWithLocale:indent:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 		result = directRetain(result)
@@ -1956,7 +1956,7 @@ func NSDictionary_EncodeWithCoder(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSDictionary_EncodeWithCoder.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("encodeWithCoder:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "encodeWithCoder:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -1971,7 +1971,7 @@ func NSDictionary_FileCreationDate(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("fileCreationDate")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "fileCreationDate", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -1987,7 +1987,7 @@ func NSDictionary_FileExtensionHidden(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("fileExtensionHidden")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "fileExtensionHidden", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -2002,7 +2002,7 @@ func NSDictionary_FileGroupOwnerAccountID(receiver objc.NSObject) *objc.Pointer 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("fileGroupOwnerAccountID")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "fileGroupOwnerAccountID", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2018,7 +2018,7 @@ func NSDictionary_FileGroupOwnerAccountName(receiver objc.NSObject) *objc.Pointe
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("fileGroupOwnerAccountName")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "fileGroupOwnerAccountName", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2034,7 +2034,7 @@ func NSDictionary_FileHFSCreatorCode(receiver objc.NSObject) uint32 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("fileHFSCreatorCode")
 	})
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "fileHFSCreatorCode", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -2049,7 +2049,7 @@ func NSDictionary_FileHFSTypeCode(receiver objc.NSObject) uint32 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("fileHFSTypeCode")
 	})
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "fileHFSTypeCode", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -2064,7 +2064,7 @@ func NSDictionary_FileIsAppendOnly(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("fileIsAppendOnly")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "fileIsAppendOnly", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -2079,7 +2079,7 @@ func NSDictionary_FileIsImmutable(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("fileIsImmutable")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "fileIsImmutable", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -2094,7 +2094,7 @@ func NSDictionary_FileModificationDate(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("fileModificationDate")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "fileModificationDate", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2110,7 +2110,7 @@ func NSDictionary_FileOwnerAccountID(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("fileOwnerAccountID")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "fileOwnerAccountID", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2126,7 +2126,7 @@ func NSDictionary_FileOwnerAccountName(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("fileOwnerAccountName")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "fileOwnerAccountName", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2142,7 +2142,7 @@ func NSDictionary_FilePosixPermissions(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("filePosixPermissions")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "filePosixPermissions", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -2157,7 +2157,7 @@ func NSDictionary_FileSize(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("fileSize")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "fileSize", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -2172,7 +2172,7 @@ func NSDictionary_FileSystemFileNumber(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("fileSystemFileNumber")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "fileSystemFileNumber", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -2187,7 +2187,7 @@ func NSDictionary_FileSystemNumber(receiver objc.NSObject) int64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("fileSystemNumber")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "fileSystemNumber", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -2202,7 +2202,7 @@ func NSDictionary_FileType(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("fileType")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "fileType", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2361,7 +2361,7 @@ func NSDictionary_IsEqualToDictionary(receiver objc.NSObject, p0 objc.NSObject) 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqualToDictionary:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "isEqualToDictionary:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -2377,7 +2377,7 @@ func NSDictionary_KeyEnumerator(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("keyEnumerator")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "keyEnumerator", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2393,7 +2393,7 @@ func NSDictionary_ObjectEnumerator(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("objectEnumerator")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "objectEnumerator", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2409,7 +2409,7 @@ func NSDictionary_ObjectForKey(receiver objc.NSObject, p0 objc.NSObject) *objc.P
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("objectForKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "objectForKey:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -2426,7 +2426,7 @@ func NSDictionary_ObjectForKeyedSubscript(receiver objc.NSObject, p0 objc.NSObje
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("objectForKeyedSubscript:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "objectForKeyedSubscript:", "10.8", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -2443,7 +2443,7 @@ func NSDictionary_ObjectsForKeys_NotFoundMarker(receiver objc.NSObject, p0 objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) unsafe.Pointer]("objectsForKeys:notFoundMarker:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "objectsForKeys:notFoundMarker:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 		result = directRetain(result)
@@ -2461,7 +2461,7 @@ func NSDictionary_ValueForKey(receiver objc.NSObject, p0 objc.NSObject) *objc.Po
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("valueForKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "valueForKey:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -2478,7 +2478,7 @@ func NSDictionary_WriteToFile_Atomically(receiver objc.NSObject, p0 objc.NSObjec
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, bool) bool]("writeToFile:atomically:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "writeToFile:atomically:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 	})
@@ -2494,7 +2494,7 @@ func NSDictionary_WriteToURL_Atomically(receiver objc.NSObject, p0 objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, bool) bool]("writeToURL:atomically:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "writeToURL:atomically:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 	})
@@ -2510,7 +2510,7 @@ func NSDictionary_WriteToURL_Error(receiver objc.NSObject, p0 objc.NSObject, p1 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, *unsafe.Pointer) bool]("writeToURL:error:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSDictionary", "writeToURL:error:", "10.13", "", true, objc.Ptr(receiver))
 		if p1 != nil {
 			*p1 = nil
@@ -2578,7 +2578,7 @@ func NSError_Code(receiver objc.NSObject) int64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("code")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSError", "code", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -2593,7 +2593,7 @@ func NSError_Domain(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("domain")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSError", "domain", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2608,7 +2608,7 @@ func NSError_EncodeWithCoder(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSError_EncodeWithCoder.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("encodeWithCoder:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSError", "encodeWithCoder:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -2623,7 +2623,7 @@ func NSError_HelpAnchor(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("helpAnchor")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSError", "helpAnchor", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2690,7 +2690,7 @@ func NSError_LocalizedDescription(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("localizedDescription")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSError", "localizedDescription", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2706,7 +2706,7 @@ func NSError_LocalizedFailureReason(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("localizedFailureReason")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSError", "localizedFailureReason", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2722,7 +2722,7 @@ func NSError_LocalizedRecoveryOptions(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("localizedRecoveryOptions")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSError", "localizedRecoveryOptions", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2738,7 +2738,7 @@ func NSError_LocalizedRecoverySuggestion(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("localizedRecoverySuggestion")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSError", "localizedRecoverySuggestion", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2754,7 +2754,7 @@ func NSError_RecoveryAttempter(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("recoveryAttempter")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSError", "recoveryAttempter", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2770,7 +2770,7 @@ func NSError_UnderlyingErrors(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("underlyingErrors")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSError", "underlyingErrors", "11.3", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2786,7 +2786,7 @@ func NSError_UserInfo(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("userInfo")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSError", "userInfo", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -2862,7 +2862,7 @@ func NSMutableArray_AddObject(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSMutableArray_AddObject.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("addObject:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "addObject:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -2876,7 +2876,7 @@ func NSMutableArray_AddObjectsFromArray(receiver objc.NSObject, p0 objc.NSObject
 	binding := sdkCallNSMutableArray_AddObjectsFromArray.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("addObjectsFromArray:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "addObjectsFromArray:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -2890,7 +2890,7 @@ func NSMutableArray_ApplyDifference(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSMutableArray_ApplyDifference.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("applyDifference:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "applyDifference:", "10.15", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -2904,7 +2904,7 @@ func NSMutableArray_ExchangeObjectAtIndex_WithObjectAtIndex(receiver objc.NSObje
 	binding := sdkCallNSMutableArray_ExchangeObjectAtIndex_WithObjectAtIndex.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64, uint64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64, uint64)]("exchangeObjectAtIndex:withObjectAtIndex:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "exchangeObjectAtIndex:withObjectAtIndex:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0, p1)
 	})
@@ -2917,7 +2917,7 @@ func NSMutableArray_FilterUsingPredicate(receiver objc.NSObject, p0 objc.NSObjec
 	binding := sdkCallNSMutableArray_FilterUsingPredicate.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("filterUsingPredicate:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "filterUsingPredicate:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -3014,7 +3014,7 @@ func NSMutableArray_InsertObject_AtIndex(receiver objc.NSObject, p0 objc.NSObjec
 	binding := sdkCallNSMutableArray_InsertObject_AtIndex.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64)]("insertObject:atIndex:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "insertObject:atIndex:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 	})
@@ -3028,7 +3028,7 @@ func NSMutableArray_InsertObjects_AtIndexes(receiver objc.NSObject, p0 objc.NSOb
 	binding := sdkCallNSMutableArray_InsertObjects_AtIndexes.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("insertObjects:atIndexes:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "insertObjects:atIndexes:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -3043,7 +3043,7 @@ func NSMutableArray_RemoveAllObjects(receiver objc.NSObject) {
 	binding := sdkCallNSMutableArray_RemoveAllObjects.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("removeAllObjects")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "removeAllObjects", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -3056,7 +3056,7 @@ func NSMutableArray_RemoveLastObject(receiver objc.NSObject) {
 	binding := sdkCallNSMutableArray_RemoveLastObject.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("removeLastObject")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "removeLastObject", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -3069,7 +3069,7 @@ func NSMutableArray_RemoveObject(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSMutableArray_RemoveObject.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("removeObject:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "removeObject:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -3083,7 +3083,7 @@ func NSMutableArray_RemoveObjectAtIndex(receiver objc.NSObject, p0 uint64) {
 	binding := sdkCallNSMutableArray_RemoveObjectAtIndex.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]("removeObjectAtIndex:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "removeObjectAtIndex:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -3096,7 +3096,7 @@ func NSMutableArray_RemoveObjectIdenticalTo(receiver objc.NSObject, p0 objc.NSOb
 	binding := sdkCallNSMutableArray_RemoveObjectIdenticalTo.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("removeObjectIdenticalTo:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "removeObjectIdenticalTo:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -3110,7 +3110,7 @@ func NSMutableArray_RemoveObjectsAtIndexes(receiver objc.NSObject, p0 objc.NSObj
 	binding := sdkCallNSMutableArray_RemoveObjectsAtIndexes.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("removeObjectsAtIndexes:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "removeObjectsAtIndexes:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -3124,7 +3124,7 @@ func NSMutableArray_RemoveObjectsFromIndices_NumIndices(receiver objc.NSObject, 
 	binding := sdkCallNSMutableArray_RemoveObjectsFromIndices_NumIndices.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, *uint64, uint64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *uint64, uint64)]("removeObjectsFromIndices:numIndices:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "removeObjectsFromIndices:numIndices:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0, p1)
 	})
@@ -3138,7 +3138,7 @@ func NSMutableArray_RemoveObjectsInArray(receiver objc.NSObject, p0 objc.NSObjec
 	binding := sdkCallNSMutableArray_RemoveObjectsInArray.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("removeObjectsInArray:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "removeObjectsInArray:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -3152,7 +3152,7 @@ func NSMutableArray_ReplaceObjectAtIndex_WithObject(receiver objc.NSObject, p0 u
 	binding := sdkCallNSMutableArray_ReplaceObjectAtIndex_WithObject.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64, unsafe.Pointer)]("replaceObjectAtIndex:withObject:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "replaceObjectAtIndex:withObject:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0, objc.Ptr(p1))
 	})
@@ -3166,7 +3166,7 @@ func NSMutableArray_ReplaceObjectsAtIndexes_WithObjects(receiver objc.NSObject, 
 	binding := sdkCallNSMutableArray_ReplaceObjectsAtIndexes_WithObjects.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("replaceObjectsAtIndexes:withObjects:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "replaceObjectsAtIndexes:withObjects:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -3181,7 +3181,7 @@ func NSMutableArray_SetArray(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSMutableArray_SetArray.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setArray:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "setArray:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -3195,7 +3195,7 @@ func NSMutableArray_SetObject_AtIndexedSubscript(receiver objc.NSObject, p0 objc
 	binding := sdkCallNSMutableArray_SetObject_AtIndexedSubscript.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64)]("setObject:atIndexedSubscript:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "setObject:atIndexedSubscript:", "10.8", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 	})
@@ -3209,7 +3209,7 @@ func NSMutableArray_SortUsingDescriptors(receiver objc.NSObject, p0 objc.NSObjec
 	binding := sdkCallNSMutableArray_SortUsingDescriptors.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("sortUsingDescriptors:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableArray", "sortUsingDescriptors:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -3300,7 +3300,7 @@ func NSMutableDictionary_AddEntriesFromDictionary(receiver objc.NSObject, p0 obj
 	binding := sdkCallNSMutableDictionary_AddEntriesFromDictionary.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("addEntriesFromDictionary:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableDictionary", "addEntriesFromDictionary:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -3397,7 +3397,7 @@ func NSMutableDictionary_RemoveAllObjects(receiver objc.NSObject) {
 	binding := sdkCallNSMutableDictionary_RemoveAllObjects.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("removeAllObjects")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableDictionary", "removeAllObjects", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -3410,7 +3410,7 @@ func NSMutableDictionary_RemoveObjectForKey(receiver objc.NSObject, p0 objc.NSOb
 	binding := sdkCallNSMutableDictionary_RemoveObjectForKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("removeObjectForKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableDictionary", "removeObjectForKey:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -3424,7 +3424,7 @@ func NSMutableDictionary_RemoveObjectsForKeys(receiver objc.NSObject, p0 objc.NS
 	binding := sdkCallNSMutableDictionary_RemoveObjectsForKeys.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("removeObjectsForKeys:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableDictionary", "removeObjectsForKeys:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -3438,7 +3438,7 @@ func NSMutableDictionary_SetDictionary(receiver objc.NSObject, p0 objc.NSObject)
 	binding := sdkCallNSMutableDictionary_SetDictionary.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDictionary:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableDictionary", "setDictionary:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -3452,7 +3452,7 @@ func NSMutableDictionary_SetObject_ForKey(receiver objc.NSObject, p0 objc.NSObje
 	binding := sdkCallNSMutableDictionary_SetObject_ForKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("setObject:forKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableDictionary", "setObject:forKey:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -3467,7 +3467,7 @@ func NSMutableDictionary_SetObject_ForKeyedSubscript(receiver objc.NSObject, p0 
 	binding := sdkCallNSMutableDictionary_SetObject_ForKeyedSubscript.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("setObject:forKeyedSubscript:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableDictionary", "setObject:forKeyedSubscript:", "10.8", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -3482,7 +3482,7 @@ func NSMutableDictionary_SetValue_ForKey(receiver objc.NSObject, p0 objc.NSObjec
 	binding := sdkCallNSMutableDictionary_SetValue_ForKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("setValue:forKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSMutableDictionary", "setValue:forKey:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -3837,7 +3837,7 @@ func NSObject_URL_ResourceDataDidBecomeAvailable(receiver objc.NSObject, p0 objc
 	binding := sdkCallNSObject_URL_ResourceDataDidBecomeAvailable.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("URL:resourceDataDidBecomeAvailable:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "URL:resourceDataDidBecomeAvailable:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -3852,7 +3852,7 @@ func NSObject_URL_ResourceDidFailLoadingWithReason(receiver objc.NSObject, p0 ob
 	binding := sdkCallNSObject_URL_ResourceDidFailLoadingWithReason.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("URL:resourceDidFailLoadingWithReason:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "URL:resourceDidFailLoadingWithReason:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -3867,7 +3867,7 @@ func NSObject_URLResourceDidCancelLoading(receiver objc.NSObject, p0 objc.NSObje
 	binding := sdkCallNSObject_URLResourceDidCancelLoading.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("URLResourceDidCancelLoading:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "URLResourceDidCancelLoading:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -3881,7 +3881,7 @@ func NSObject_URLResourceDidFinishLoading(receiver objc.NSObject, p0 objc.NSObje
 	binding := sdkCallNSObject_URLResourceDidFinishLoading.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("URLResourceDidFinishLoading:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "URLResourceDidFinishLoading:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -3896,7 +3896,7 @@ func NSObject_AccessibilityActionDescription(receiver objc.NSObject, p0 objc.NSO
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("accessibilityActionDescription:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilityActionDescription:", "10.1", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -3913,7 +3913,7 @@ func NSObject_AccessibilityActionNames(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("accessibilityActionNames")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilityActionNames", "10.1", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -3929,7 +3929,7 @@ func NSObject_AccessibilityArrayAttributeCount(receiver objc.NSObject, p0 objc.N
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) uint64]("accessibilityArrayAttributeCount:")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilityArrayAttributeCount:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -3945,7 +3945,7 @@ func NSObject_AccessibilityArrayAttributeValues_Index_MaxCount(receiver objc.NSO
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, uint64) unsafe.Pointer]("accessibilityArrayAttributeValues:index:maxCount:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilityArrayAttributeValues:index:maxCount:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1, p2)
 		result = directRetain(result)
@@ -3962,7 +3962,7 @@ func NSObject_AccessibilityAttributeNames(receiver objc.NSObject) *objc.Pointer 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("accessibilityAttributeNames")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilityAttributeNames", "10.1", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -3978,7 +3978,7 @@ func NSObject_AccessibilityAttributeValue(receiver objc.NSObject, p0 objc.NSObje
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("accessibilityAttributeValue:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilityAttributeValue:", "10.1", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -3995,7 +3995,7 @@ func NSObject_AccessibilityAttributeValue_ForParameter(receiver objc.NSObject, p
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) unsafe.Pointer]("accessibilityAttributeValue:forParameter:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilityAttributeValue:forParameter:", "10.1", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 		result = directRetain(result)
@@ -4013,7 +4013,7 @@ func NSObject_AccessibilityFocusedUIElement(receiver objc.NSObject) *objc.Pointe
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("accessibilityFocusedUIElement")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilityFocusedUIElement", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -4029,7 +4029,7 @@ func NSObject_AccessibilityIndexOfChild(receiver objc.NSObject, p0 objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) uint64]("accessibilityIndexOfChild:")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilityIndexOfChild:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4045,7 +4045,7 @@ func NSObject_AccessibilityIsAttributeSettable(receiver objc.NSObject, p0 objc.N
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("accessibilityIsAttributeSettable:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilityIsAttributeSettable:", "10.1", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4061,7 +4061,7 @@ func NSObject_AccessibilityIsIgnored(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("accessibilityIsIgnored")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilityIsIgnored", "10.1", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -4076,7 +4076,7 @@ func NSObject_AccessibilityNotifiesWhenDestroyed(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("accessibilityNotifiesWhenDestroyed")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilityNotifiesWhenDestroyed", "10.9", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -4091,7 +4091,7 @@ func NSObject_AccessibilityParameterizedAttributeNames(receiver objc.NSObject) *
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("accessibilityParameterizedAttributeNames")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilityParameterizedAttributeNames", "10.1", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -4106,7 +4106,7 @@ func NSObject_AccessibilityPerformAction(receiver objc.NSObject, p0 objc.NSObjec
 	binding := sdkCallNSObject_AccessibilityPerformAction.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("accessibilityPerformAction:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilityPerformAction:", "10.1", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4121,7 +4121,7 @@ func NSObject_AccessibilitySetOverrideValue_ForAttribute(receiver objc.NSObject,
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("accessibilitySetOverrideValue:forAttribute:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilitySetOverrideValue:forAttribute:", "10.1", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -4137,7 +4137,7 @@ func NSObject_AccessibilitySetValue_ForAttribute(receiver objc.NSObject, p0 objc
 	binding := sdkCallNSObject_AccessibilitySetValue_ForAttribute.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("accessibilitySetValue:forAttribute:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "accessibilitySetValue:forAttribute:", "10.1", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -4152,7 +4152,7 @@ func NSObject_AddObserver_ForKeyPath_Options_Context(receiver objc.NSObject, p0 
 	binding := sdkCallNSObject_AddObserver_ForKeyPath_Options_Context.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, uint64, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, uint64, unsafe.Pointer)]("addObserver:forKeyPath:options:context:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "addObserver:forKeyPath:options:context:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1), p2, p3)
 	})
@@ -4169,7 +4169,7 @@ func NSObject_Application_DelegateHandlesKey(receiver objc.NSObject, p0 objc.NSO
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("application:delegateHandlesKey:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "application:delegateHandlesKey:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -4186,7 +4186,7 @@ func NSObject_AttemptRecoveryFromError_OptionIndex(receiver objc.NSObject, p0 ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64) bool]("attemptRecoveryFromError:optionIndex:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "attemptRecoveryFromError:optionIndex:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 	})
@@ -4202,7 +4202,7 @@ func NSObject_AttributeKeys(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("attributeKeys")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "attributeKeys", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -4218,7 +4218,7 @@ func NSObject_AutoContentAccessingProxy(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("autoContentAccessingProxy")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "autoContentAccessingProxy", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -4233,7 +4233,7 @@ func NSObject_AwakeFromNib(receiver objc.NSObject) {
 	binding := sdkCallNSObject_AwakeFromNib.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("awakeFromNib")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "awakeFromNib", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -4246,7 +4246,7 @@ func NSObject_Bind_ToObject_WithKeyPath_Options(receiver objc.NSObject, p0 objc.
 	binding := sdkCallNSObject_Bind_ToObject_WithKeyPath_Options.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]("bind:toObject:withKeyPath:options:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "bind:toObject:withKeyPath:options:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1), objc.Ptr(p2), objc.Ptr(p3))
 	})
@@ -4263,7 +4263,7 @@ func NSObject_ChangeColor(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSObject_ChangeColor.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("changeColor:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "changeColor:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4277,7 +4277,7 @@ func NSObject_ChangeFont(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSObject_ChangeFont.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("changeFont:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "changeFont:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4292,7 +4292,7 @@ func NSObject_Class(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("class")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "class", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -4307,7 +4307,7 @@ func NSObject_ClassCode(receiver objc.NSObject) uint32 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("classCode")
 	})
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "classCode", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -4322,7 +4322,7 @@ func NSObject_ClassDescription(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("classDescription")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "classDescription", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -4338,7 +4338,7 @@ func NSObject_ClassForArchiver(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("classForArchiver")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "classForArchiver", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -4353,7 +4353,7 @@ func NSObject_ClassForCoder(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("classForCoder")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "classForCoder", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -4368,7 +4368,7 @@ func NSObject_ClassForKeyedArchiver(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("classForKeyedArchiver")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "classForKeyedArchiver", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -4383,7 +4383,7 @@ func NSObject_ClassForPortCoder(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("classForPortCoder")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "classForPortCoder", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -4398,7 +4398,7 @@ func NSObject_ClassName(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("className")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "className", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -4414,7 +4414,7 @@ func NSObject_CoerceValue_ForKey(receiver objc.NSObject, p0 objc.NSObject, p1 ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) unsafe.Pointer]("coerceValue:forKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "coerceValue:forKey:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 		result = directRetain(result)
@@ -4432,7 +4432,7 @@ func NSObject_CommitEditing(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("commitEditing")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "commitEditing", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -4447,7 +4447,7 @@ func NSObject_CommitEditingAndReturnError(receiver objc.NSObject, p0 *unsafe.Poi
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *unsafe.Pointer) bool]("commitEditingAndReturnError:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "commitEditingAndReturnError:", "10.7", "", true, objc.Ptr(receiver))
 		if p0 != nil {
 			*p0 = nil
@@ -4469,7 +4469,7 @@ func NSObject_ConformsToProtocol(receiver objc.NSObject, p0 objc.NSObject) bool 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("conformsToProtocol:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "conformsToProtocol:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4484,7 +4484,7 @@ func NSObject_ControlTextDidBeginEditing(receiver objc.NSObject, p0 objc.NSObjec
 	binding := sdkCallNSObject_ControlTextDidBeginEditing.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("controlTextDidBeginEditing:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "controlTextDidBeginEditing:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4498,7 +4498,7 @@ func NSObject_ControlTextDidChange(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSObject_ControlTextDidChange.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("controlTextDidChange:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "controlTextDidChange:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4512,7 +4512,7 @@ func NSObject_ControlTextDidEndEditing(receiver objc.NSObject, p0 objc.NSObject)
 	binding := sdkCallNSObject_ControlTextDidEndEditing.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("controlTextDidEndEditing:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "controlTextDidEndEditing:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4527,7 +4527,7 @@ func NSObject_Copy(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("copy")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "copy", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -4542,7 +4542,7 @@ func NSObject_CopyScriptingValue_ForKey_WithProperties(receiver objc.NSObject, p
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) unsafe.Pointer]("copyScriptingValue:forKey:withProperties:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "copyScriptingValue:forKey:withProperties:", "10.5", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1), objc.Ptr(p2))
 	})
@@ -4560,7 +4560,7 @@ func NSObject_DebugDescription(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("debugDescription")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "debugDescription", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -4576,7 +4576,7 @@ func NSObject_Description(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("description")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "description", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -4592,7 +4592,7 @@ func NSObject_DictionaryWithValuesForKeys(receiver objc.NSObject, p0 objc.NSObje
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("dictionaryWithValuesForKeys:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "dictionaryWithValuesForKeys:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -4608,7 +4608,7 @@ func NSObject_DidChange_ValuesAtIndexes_ForKey(receiver objc.NSObject, p0 uint64
 	binding := sdkCallNSObject_DidChange_ValuesAtIndexes_ForKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64, unsafe.Pointer, unsafe.Pointer)]("didChange:valuesAtIndexes:forKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "didChange:valuesAtIndexes:forKey:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0, objc.Ptr(p1), objc.Ptr(p2))
 	})
@@ -4623,7 +4623,7 @@ func NSObject_DidChangeValueForKey(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSObject_DidChangeValueForKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("didChangeValueForKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "didChangeValueForKey:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4637,7 +4637,7 @@ func NSObject_DidChangeValueForKey_WithSetMutation_UsingObjects(receiver objc.NS
 	binding := sdkCallNSObject_DidChangeValueForKey_WithSetMutation_UsingObjects.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer)]("didChangeValueForKey:withSetMutation:usingObjects:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "didChangeValueForKey:withSetMutation:usingObjects:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1, objc.Ptr(p2))
 	})
@@ -4652,7 +4652,7 @@ func NSObject_DiscardEditing(receiver objc.NSObject) {
 	binding := sdkCallNSObject_DiscardEditing.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("discardEditing")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "discardEditing", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -4666,7 +4666,7 @@ func NSObject_DoesContain(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("doesContain:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "doesContain:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4682,7 +4682,7 @@ func NSObject_DraggingSourceOperationMaskForLocal(receiver objc.NSObject, p0 boo
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool) uint64]("draggingSourceOperationMaskForLocal:")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "draggingSourceOperationMaskForLocal:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -4697,7 +4697,7 @@ func NSObject_ExposedBindings(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("exposedBindings")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "exposedBindings", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -4713,7 +4713,7 @@ func NSObject_FileManager_ShouldProceedAfterError(receiver objc.NSObject, p0 obj
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("fileManager:shouldProceedAfterError:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "fileManager:shouldProceedAfterError:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -4729,7 +4729,7 @@ func NSObject_FileManager_WillProcessPath(receiver objc.NSObject, p0 objc.NSObje
 	binding := sdkCallNSObject_FileManager_WillProcessPath.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("fileManager:willProcessPath:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "fileManager:willProcessPath:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -4745,7 +4745,7 @@ func NSObject_FontManager_WillIncludeFont(receiver objc.NSObject, p0 objc.NSObje
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("fontManager:willIncludeFont:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "fontManager:willIncludeFont:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -4761,7 +4761,7 @@ func NSObject_ForwardInvocation(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSObject_ForwardInvocation.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("forwardInvocation:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "forwardInvocation:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4776,7 +4776,7 @@ func NSObject_HandleQueryWithUnboundKey(receiver objc.NSObject, p0 objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("handleQueryWithUnboundKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "handleQueryWithUnboundKey:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -4792,7 +4792,7 @@ func NSObject_HandleTakeValue_ForUnboundKey(receiver objc.NSObject, p0 objc.NSOb
 	binding := sdkCallNSObject_HandleTakeValue_ForUnboundKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("handleTakeValue:forUnboundKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "handleTakeValue:forUnboundKey:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -4808,7 +4808,7 @@ func NSObject_Hash(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "hash", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -4823,7 +4823,7 @@ func NSObject_IgnoreModifierKeysWhileDragging(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("ignoreModifierKeysWhileDragging")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "ignoreModifierKeysWhileDragging", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -4838,7 +4838,7 @@ func NSObject_IndicesOfObjectsByEvaluatingObjectSpecifier(receiver objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("indicesOfObjectsByEvaluatingObjectSpecifier:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "indicesOfObjectsByEvaluatingObjectSpecifier:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -4855,7 +4855,7 @@ func NSObject_InfoForBinding(receiver objc.NSObject, p0 objc.NSObject) *objc.Poi
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("infoForBinding:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "infoForBinding:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -4887,7 +4887,7 @@ func NSObject_InsertValue_AtIndex_InPropertyWithKey(receiver objc.NSObject, p0 o
 	binding := sdkCallNSObject_InsertValue_AtIndex_InPropertyWithKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer)]("insertValue:atIndex:inPropertyWithKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "insertValue:atIndex:inPropertyWithKey:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1, objc.Ptr(p2))
 	})
@@ -4902,7 +4902,7 @@ func NSObject_InsertValue_InPropertyWithKey(receiver objc.NSObject, p0 objc.NSOb
 	binding := sdkCallNSObject_InsertValue_InPropertyWithKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("insertValue:inPropertyWithKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "insertValue:inPropertyWithKey:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -4918,7 +4918,7 @@ func NSObject_InverseForRelationshipKey(receiver objc.NSObject, p0 objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("inverseForRelationshipKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "inverseForRelationshipKey:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -4935,7 +4935,7 @@ func NSObject_IsCaseInsensitiveLike(receiver objc.NSObject, p0 objc.NSObject) bo
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isCaseInsensitiveLike:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "isCaseInsensitiveLike:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4951,7 +4951,7 @@ func NSObject_IsEqual(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "isEqual:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4967,7 +4967,7 @@ func NSObject_IsEqualTo(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqualTo:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "isEqualTo:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4983,7 +4983,7 @@ func NSObject_IsGreaterThan(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isGreaterThan:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "isGreaterThan:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -4999,7 +4999,7 @@ func NSObject_IsGreaterThanOrEqualTo(receiver objc.NSObject, p0 objc.NSObject) b
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isGreaterThanOrEqualTo:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "isGreaterThanOrEqualTo:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5015,7 +5015,7 @@ func NSObject_IsKindOfClass(receiver objc.NSObject, p0 unsafe.Pointer) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isKindOfClass:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "isKindOfClass:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -5031,7 +5031,7 @@ func NSObject_IsLessThan(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isLessThan:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "isLessThan:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5047,7 +5047,7 @@ func NSObject_IsLessThanOrEqualTo(receiver objc.NSObject, p0 objc.NSObject) bool
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isLessThanOrEqualTo:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "isLessThanOrEqualTo:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5063,7 +5063,7 @@ func NSObject_IsLike(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isLike:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "isLike:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5079,7 +5079,7 @@ func NSObject_IsMemberOfClass(receiver objc.NSObject, p0 unsafe.Pointer) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isMemberOfClass:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "isMemberOfClass:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -5095,7 +5095,7 @@ func NSObject_IsNotEqualTo(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isNotEqualTo:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "isNotEqualTo:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5111,7 +5111,7 @@ func NSObject_IsProxy(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isProxy")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "isProxy", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -5126,7 +5126,7 @@ func NSObject_Layer_ShouldInheritContentsScale_FromWindow(receiver objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, float64, unsafe.Pointer) bool]("layer:shouldInheritContentsScale:fromWindow:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "layer:shouldInheritContentsScale:fromWindow:", "10.7", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1, objc.Ptr(p2))
 	})
@@ -5143,7 +5143,7 @@ func NSObject_MutableArrayValueForKey(receiver objc.NSObject, p0 objc.NSObject) 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("mutableArrayValueForKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "mutableArrayValueForKey:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -5160,7 +5160,7 @@ func NSObject_MutableArrayValueForKeyPath(receiver objc.NSObject, p0 objc.NSObje
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("mutableArrayValueForKeyPath:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "mutableArrayValueForKeyPath:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -5177,7 +5177,7 @@ func NSObject_MutableCopy(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("mutableCopy")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "mutableCopy", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -5192,7 +5192,7 @@ func NSObject_MutableOrderedSetValueForKey(receiver objc.NSObject, p0 objc.NSObj
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("mutableOrderedSetValueForKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "mutableOrderedSetValueForKey:", "10.7", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -5209,7 +5209,7 @@ func NSObject_MutableOrderedSetValueForKeyPath(receiver objc.NSObject, p0 objc.N
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("mutableOrderedSetValueForKeyPath:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "mutableOrderedSetValueForKeyPath:", "10.7", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -5226,7 +5226,7 @@ func NSObject_MutableSetValueForKey(receiver objc.NSObject, p0 objc.NSObject) *o
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("mutableSetValueForKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "mutableSetValueForKey:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -5243,7 +5243,7 @@ func NSObject_MutableSetValueForKeyPath(receiver objc.NSObject, p0 objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("mutableSetValueForKeyPath:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "mutableSetValueForKeyPath:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -5260,7 +5260,7 @@ func NSObject_NamesOfPromisedFilesDroppedAtDestination(receiver objc.NSObject, p
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("namesOfPromisedFilesDroppedAtDestination:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "namesOfPromisedFilesDroppedAtDestination:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -5277,7 +5277,7 @@ func NSObject_NewScriptingObjectOfClass_ForValueForKey_WithContentsValue_Propert
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) unsafe.Pointer]("newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "newScriptingObjectOfClass:forValueForKey:withContentsValue:properties:", "10.5", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0, objc.Ptr(p1), objc.Ptr(p2), objc.Ptr(p3))
 	})
@@ -5295,7 +5295,7 @@ func NSObject_ObjectDidBeginEditing(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSObject_ObjectDidBeginEditing.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("objectDidBeginEditing:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "objectDidBeginEditing:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5309,7 +5309,7 @@ func NSObject_ObjectDidEndEditing(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSObject_ObjectDidEndEditing.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("objectDidEndEditing:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "objectDidEndEditing:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5324,7 +5324,7 @@ func NSObject_ObjectSpecifier(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("objectSpecifier")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "objectSpecifier", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -5340,7 +5340,7 @@ func NSObject_ObservationInfo(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("observationInfo")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "observationInfo", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -5354,7 +5354,7 @@ func NSObject_ObserveValueForKeyPath_OfObject_Change_Context(receiver objc.NSObj
 	binding := sdkCallNSObject_ObserveValueForKeyPath_OfObject_Change_Context.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]("observeValueForKeyPath:ofObject:change:context:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "observeValueForKeyPath:ofObject:change:context:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1), objc.Ptr(p2), p3)
 	})
@@ -5372,7 +5372,7 @@ func NSObject_OptionDescriptionsForBinding(receiver objc.NSObject, p0 objc.NSObj
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("optionDescriptionsForBinding:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "optionDescriptionsForBinding:", "10.5", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -5389,7 +5389,7 @@ func NSObject_Panel_CompareFilename_With_CaseSensitive(receiver objc.NSObject, p
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, bool) int64]("panel:compareFilename:with:caseSensitive:")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "panel:compareFilename:with:caseSensitive:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1), objc.Ptr(p2), p3)
 	})
@@ -5406,7 +5406,7 @@ func NSObject_Panel_DirectoryDidChange(receiver objc.NSObject, p0 objc.NSObject,
 	binding := sdkCallNSObject_Panel_DirectoryDidChange.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("panel:directoryDidChange:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "panel:directoryDidChange:", "10.3", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -5422,7 +5422,7 @@ func NSObject_Panel_IsValidFilename(receiver objc.NSObject, p0 objc.NSObject, p1
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("panel:isValidFilename:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "panel:isValidFilename:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -5439,7 +5439,7 @@ func NSObject_Panel_ShouldShowFilename(receiver objc.NSObject, p0 objc.NSObject,
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("panel:shouldShowFilename:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "panel:shouldShowFilename:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -5455,7 +5455,7 @@ func NSObject_Pasteboard_ProvideDataForType(receiver objc.NSObject, p0 objc.NSOb
 	binding := sdkCallNSObject_Pasteboard_ProvideDataForType.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("pasteboard:provideDataForType:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "pasteboard:provideDataForType:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -5470,7 +5470,7 @@ func NSObject_PasteboardChangedOwner(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSObject_PasteboardChangedOwner.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("pasteboardChangedOwner:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "pasteboardChangedOwner:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5484,7 +5484,7 @@ func NSObject_PrepareForInterfaceBuilder(receiver objc.NSObject) {
 	binding := sdkCallNSObject_PrepareForInterfaceBuilder.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("prepareForInterfaceBuilder")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "prepareForInterfaceBuilder", "10.10", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -5497,7 +5497,7 @@ func NSObject_RemoveObserver_ForKeyPath(receiver objc.NSObject, p0 objc.NSObject
 	binding := sdkCallNSObject_RemoveObserver_ForKeyPath.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("removeObserver:forKeyPath:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "removeObserver:forKeyPath:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -5512,7 +5512,7 @@ func NSObject_RemoveObserver_ForKeyPath_Context(receiver objc.NSObject, p0 objc.
 	binding := sdkCallNSObject_RemoveObserver_ForKeyPath_Context.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer)]("removeObserver:forKeyPath:context:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "removeObserver:forKeyPath:context:", "10.7", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1), p2)
 	})
@@ -5528,7 +5528,7 @@ func NSObject_RemoveValueAtIndex_FromPropertyWithKey(receiver objc.NSObject, p0 
 	binding := sdkCallNSObject_RemoveValueAtIndex_FromPropertyWithKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64, unsafe.Pointer)]("removeValueAtIndex:fromPropertyWithKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "removeValueAtIndex:fromPropertyWithKey:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0, objc.Ptr(p1))
 	})
@@ -5542,7 +5542,7 @@ func NSObject_ReplaceValueAtIndex_InPropertyWithKey_WithValue(receiver objc.NSOb
 	binding := sdkCallNSObject_ReplaceValueAtIndex_InPropertyWithKey_WithValue.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64, unsafe.Pointer, unsafe.Pointer)]("replaceValueAtIndex:inPropertyWithKey:withValue:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "replaceValueAtIndex:inPropertyWithKey:withValue:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0, objc.Ptr(p1), objc.Ptr(p2))
 	})
@@ -5558,7 +5558,7 @@ func NSObject_ReplacementObjectForArchiver(receiver objc.NSObject, p0 objc.NSObj
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("replacementObjectForArchiver:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "replacementObjectForArchiver:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -5575,7 +5575,7 @@ func NSObject_ReplacementObjectForCoder(receiver objc.NSObject, p0 objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("replacementObjectForCoder:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "replacementObjectForCoder:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -5592,7 +5592,7 @@ func NSObject_ReplacementObjectForKeyedArchiver(receiver objc.NSObject, p0 objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("replacementObjectForKeyedArchiver:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "replacementObjectForKeyedArchiver:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -5609,7 +5609,7 @@ func NSObject_ReplacementObjectForPortCoder(receiver objc.NSObject, p0 objc.NSOb
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("replacementObjectForPortCoder:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "replacementObjectForPortCoder:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -5626,7 +5626,7 @@ func NSObject_ScriptingBeginsWith(receiver objc.NSObject, p0 objc.NSObject) bool
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("scriptingBeginsWith:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "scriptingBeginsWith:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5642,7 +5642,7 @@ func NSObject_ScriptingContains(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("scriptingContains:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "scriptingContains:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5658,7 +5658,7 @@ func NSObject_ScriptingEndsWith(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("scriptingEndsWith:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "scriptingEndsWith:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5674,7 +5674,7 @@ func NSObject_ScriptingIsEqualTo(receiver objc.NSObject, p0 objc.NSObject) bool 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("scriptingIsEqualTo:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "scriptingIsEqualTo:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5690,7 +5690,7 @@ func NSObject_ScriptingIsGreaterThan(receiver objc.NSObject, p0 objc.NSObject) b
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("scriptingIsGreaterThan:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "scriptingIsGreaterThan:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5706,7 +5706,7 @@ func NSObject_ScriptingIsGreaterThanOrEqualTo(receiver objc.NSObject, p0 objc.NS
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("scriptingIsGreaterThanOrEqualTo:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "scriptingIsGreaterThanOrEqualTo:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5722,7 +5722,7 @@ func NSObject_ScriptingIsLessThan(receiver objc.NSObject, p0 objc.NSObject) bool
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("scriptingIsLessThan:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "scriptingIsLessThan:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5738,7 +5738,7 @@ func NSObject_ScriptingIsLessThanOrEqualTo(receiver objc.NSObject, p0 objc.NSObj
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("scriptingIsLessThanOrEqualTo:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "scriptingIsLessThanOrEqualTo:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5754,7 +5754,7 @@ func NSObject_ScriptingProperties(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("scriptingProperties")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "scriptingProperties", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -5770,7 +5770,7 @@ func NSObject_ScriptingValueForSpecifier(receiver objc.NSObject, p0 objc.NSObjec
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("scriptingValueForSpecifier:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "scriptingValueForSpecifier:", "10.5", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -5787,7 +5787,7 @@ func NSObject_Self(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("self")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "self", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -5802,7 +5802,7 @@ func NSObject_SetNilValueForKey(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSObject_SetNilValueForKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setNilValueForKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "setNilValueForKey:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5816,7 +5816,7 @@ func NSObject_SetObservationInfo(receiver objc.NSObject, p0 unsafe.Pointer) {
 	binding := sdkCallNSObject_SetObservationInfo.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setObservationInfo:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "setObservationInfo:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -5830,7 +5830,7 @@ func NSObject_SetScriptingProperties(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSObject_SetScriptingProperties.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setScriptingProperties:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "setScriptingProperties:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5844,7 +5844,7 @@ func NSObject_SetSharedObservers(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSObject_SetSharedObservers.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setSharedObservers:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "setSharedObservers:", "15.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5858,7 +5858,7 @@ func NSObject_SetValue_ForKey(receiver objc.NSObject, p0 objc.NSObject, p1 objc.
 	binding := sdkCallNSObject_SetValue_ForKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("setValue:forKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "setValue:forKey:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -5873,7 +5873,7 @@ func NSObject_SetValue_ForKeyPath(receiver objc.NSObject, p0 objc.NSObject, p1 o
 	binding := sdkCallNSObject_SetValue_ForKeyPath.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("setValue:forKeyPath:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "setValue:forKeyPath:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -5888,7 +5888,7 @@ func NSObject_SetValue_ForUndefinedKey(receiver objc.NSObject, p0 objc.NSObject,
 	binding := sdkCallNSObject_SetValue_ForUndefinedKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("setValue:forUndefinedKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "setValue:forUndefinedKey:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -5903,7 +5903,7 @@ func NSObject_SetValuesForKeysWithDictionary(receiver objc.NSObject, p0 objc.NSO
 	binding := sdkCallNSObject_SetValuesForKeysWithDictionary.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setValuesForKeysWithDictionary:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "setValuesForKeysWithDictionary:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -5918,7 +5918,7 @@ func NSObject_StoredValueForKey(receiver objc.NSObject, p0 objc.NSObject) *objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("storedValueForKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "storedValueForKey:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -5935,7 +5935,7 @@ func NSObject_Superclass(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("superclass")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "superclass", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -5950,7 +5950,7 @@ func NSObject_TableView_WriteRows_ToPasteboard(receiver objc.NSObject, p0 objc.N
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, unsafe.Pointer) bool]("tableView:writeRows:toPasteboard:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "tableView:writeRows:toPasteboard:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1), objc.Ptr(p2))
 	})
@@ -5967,7 +5967,7 @@ func NSObject_TakeStoredValue_ForKey(receiver objc.NSObject, p0 objc.NSObject, p
 	binding := sdkCallNSObject_TakeStoredValue_ForKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("takeStoredValue:forKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "takeStoredValue:forKey:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -5982,7 +5982,7 @@ func NSObject_TakeValue_ForKey(receiver objc.NSObject, p0 objc.NSObject, p1 objc
 	binding := sdkCallNSObject_TakeValue_ForKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("takeValue:forKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "takeValue:forKey:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -5997,7 +5997,7 @@ func NSObject_TakeValue_ForKeyPath(receiver objc.NSObject, p0 objc.NSObject, p1 
 	binding := sdkCallNSObject_TakeValue_ForKeyPath.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("takeValue:forKeyPath:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "takeValue:forKeyPath:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -6012,7 +6012,7 @@ func NSObject_TakeValuesFromDictionary(receiver objc.NSObject, p0 objc.NSObject)
 	binding := sdkCallNSObject_TakeValuesFromDictionary.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("takeValuesFromDictionary:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "takeValuesFromDictionary:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -6026,7 +6026,7 @@ func NSObject_TextStorageDidProcessEditing(receiver objc.NSObject, p0 objc.NSObj
 	binding := sdkCallNSObject_TextStorageDidProcessEditing.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("textStorageDidProcessEditing:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "textStorageDidProcessEditing:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -6040,7 +6040,7 @@ func NSObject_TextStorageWillProcessEditing(receiver objc.NSObject, p0 objc.NSOb
 	binding := sdkCallNSObject_TextStorageWillProcessEditing.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("textStorageWillProcessEditing:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "textStorageWillProcessEditing:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -6055,7 +6055,7 @@ func NSObject_ToManyRelationshipKeys(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("toManyRelationshipKeys")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "toManyRelationshipKeys", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -6071,7 +6071,7 @@ func NSObject_ToOneRelationshipKeys(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("toOneRelationshipKeys")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "toOneRelationshipKeys", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -6086,7 +6086,7 @@ func NSObject_UnableToSetNilForKey(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSObject_UnableToSetNilForKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("unableToSetNilForKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "unableToSetNilForKey:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -6100,7 +6100,7 @@ func NSObject_Unbind(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSObject_Unbind.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("unbind:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "unbind:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -6115,7 +6115,7 @@ func NSObject_ValidModesForFontPanel(receiver objc.NSObject, p0 objc.NSObject) u
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) uint64]("validModesForFontPanel:")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "validModesForFontPanel:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -6131,7 +6131,7 @@ func NSObject_ValidateMenuItem(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateMenuItem:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "validateMenuItem:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -6147,7 +6147,7 @@ func NSObject_ValidateToolbarItem(receiver objc.NSObject, p0 objc.NSObject) bool
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("validateToolbarItem:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "validateToolbarItem:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -6163,7 +6163,7 @@ func NSObject_ValueAtIndex_InPropertyWithKey(receiver objc.NSObject, p0 uint64, 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64, unsafe.Pointer) unsafe.Pointer]("valueAtIndex:inPropertyWithKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "valueAtIndex:inPropertyWithKey:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0, objc.Ptr(p1))
 		result = directRetain(result)
@@ -6180,7 +6180,7 @@ func NSObject_ValueClassForBinding(receiver objc.NSObject, p0 objc.NSObject) uns
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("valueClassForBinding:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "valueClassForBinding:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -6196,7 +6196,7 @@ func NSObject_ValueForKey(receiver objc.NSObject, p0 objc.NSObject) *objc.Pointe
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("valueForKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "valueForKey:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -6213,7 +6213,7 @@ func NSObject_ValueForKeyPath(receiver objc.NSObject, p0 objc.NSObject) *objc.Po
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("valueForKeyPath:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "valueForKeyPath:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -6230,7 +6230,7 @@ func NSObject_ValueForUndefinedKey(receiver objc.NSObject, p0 objc.NSObject) *ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("valueForUndefinedKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "valueForUndefinedKey:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -6247,7 +6247,7 @@ func NSObject_ValueWithName_InPropertyWithKey(receiver objc.NSObject, p0 objc.NS
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) unsafe.Pointer]("valueWithName:inPropertyWithKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "valueWithName:inPropertyWithKey:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 		result = directRetain(result)
@@ -6265,7 +6265,7 @@ func NSObject_ValueWithUniqueID_InPropertyWithKey(receiver objc.NSObject, p0 obj
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) unsafe.Pointer]("valueWithUniqueID:inPropertyWithKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "valueWithUniqueID:inPropertyWithKey:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 		result = directRetain(result)
@@ -6283,7 +6283,7 @@ func NSObject_ValuesForKeys(receiver objc.NSObject, p0 objc.NSObject) *objc.Poin
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("valuesForKeys:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "valuesForKeys:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -6299,7 +6299,7 @@ func NSObject_WillChange_ValuesAtIndexes_ForKey(receiver objc.NSObject, p0 uint6
 	binding := sdkCallNSObject_WillChange_ValuesAtIndexes_ForKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64, unsafe.Pointer, unsafe.Pointer)]("willChange:valuesAtIndexes:forKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "willChange:valuesAtIndexes:forKey:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0, objc.Ptr(p1), objc.Ptr(p2))
 	})
@@ -6314,7 +6314,7 @@ func NSObject_WillChangeValueForKey(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSObject_WillChangeValueForKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("willChangeValueForKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "willChangeValueForKey:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -6328,7 +6328,7 @@ func NSObject_WillChangeValueForKey_WithSetMutation_UsingObjects(receiver objc.N
 	binding := sdkCallNSObject_WillChangeValueForKey_WithSetMutation_UsingObjects.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, unsafe.Pointer)]("willChangeValueForKey:withSetMutation:usingObjects:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSObject", "willChangeValueForKey:withSetMutation:usingObjects:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1, objc.Ptr(p2))
 	})
@@ -6769,7 +6769,7 @@ func NSString_UTF8String(receiver objc.NSObject) string {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) string]("UTF8String")
 	})
 	var result string
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "UTF8String", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -6784,7 +6784,7 @@ func NSString_BoolValue(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("boolValue")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "boolValue", "10.5", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -6799,7 +6799,7 @@ func NSString_CString(receiver objc.NSObject) string {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) string]("cString")
 	})
 	var result string
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "cString", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -6814,7 +6814,7 @@ func NSString_CStringLength(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("cStringLength")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "cStringLength", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -6829,7 +6829,7 @@ func NSString_CStringUsingEncoding(receiver objc.NSObject, p0 uint64) string {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) string]("cStringUsingEncoding:")
 	})
 	var result string
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "cStringUsingEncoding:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -6844,7 +6844,7 @@ func NSString_CanBeConvertedToEncoding(receiver objc.NSObject, p0 uint64) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) bool]("canBeConvertedToEncoding:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "canBeConvertedToEncoding:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -6859,7 +6859,7 @@ func NSString_CapitalizedString(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("capitalizedString")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "capitalizedString", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -6875,7 +6875,7 @@ func NSString_CapitalizedStringWithLocale(receiver objc.NSObject, p0 objc.NSObje
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("capitalizedStringWithLocale:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "capitalizedStringWithLocale:", "10.8", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -6892,7 +6892,7 @@ func NSString_CaseInsensitiveCompare(receiver objc.NSObject, p0 objc.NSObject) i
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) int64]("caseInsensitiveCompare:")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "caseInsensitiveCompare:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -6908,7 +6908,7 @@ func NSString_CharacterAtIndex(receiver objc.NSObject, p0 uint64) uint16 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) uint16]("characterAtIndex:")
 	})
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "characterAtIndex:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -6923,7 +6923,7 @@ func NSString_Class(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("class")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "class", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -6938,7 +6938,7 @@ func NSString_CommonPrefixWithString_Options(receiver objc.NSObject, p0 objc.NSO
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64) unsafe.Pointer]("commonPrefixWithString:options:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "commonPrefixWithString:options:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 		result = directRetain(result)
@@ -6955,7 +6955,7 @@ func NSString_Compare(receiver objc.NSObject, p0 objc.NSObject) int64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) int64]("compare:")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "compare:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -6971,7 +6971,7 @@ func NSString_Compare_Options(receiver objc.NSObject, p0 objc.NSObject, p1 uint6
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64) int64]("compare:options:")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "compare:options:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 	})
@@ -6987,7 +6987,7 @@ func NSString_ComponentsSeparatedByCharactersInSet(receiver objc.NSObject, p0 ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("componentsSeparatedByCharactersInSet:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "componentsSeparatedByCharactersInSet:", "10.5", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -7004,7 +7004,7 @@ func NSString_ComponentsSeparatedByString(receiver objc.NSObject, p0 objc.NSObje
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("componentsSeparatedByString:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "componentsSeparatedByString:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -7021,7 +7021,7 @@ func NSString_ConformsToProtocol(receiver objc.NSObject, p0 objc.NSObject) bool 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("conformsToProtocol:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "conformsToProtocol:", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -7037,7 +7037,7 @@ func NSString_ContainsString(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("containsString:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "containsString:", "10.10", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -7053,7 +7053,7 @@ func NSString_DataUsingEncoding(receiver objc.NSObject, p0 uint64) *objc.Pointer
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) unsafe.Pointer]("dataUsingEncoding:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "dataUsingEncoding:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 		result = directRetain(result)
@@ -7069,7 +7069,7 @@ func NSString_DataUsingEncoding_AllowLossyConversion(receiver objc.NSObject, p0 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64, bool) unsafe.Pointer]("dataUsingEncoding:allowLossyConversion:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "dataUsingEncoding:allowLossyConversion:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0, p1)
 		result = directRetain(result)
@@ -7085,7 +7085,7 @@ func NSString_DebugDescription(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("debugDescription")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "debugDescription", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -7101,7 +7101,7 @@ func NSString_DecomposedStringWithCanonicalMapping(receiver objc.NSObject) *objc
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("decomposedStringWithCanonicalMapping")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "decomposedStringWithCanonicalMapping", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -7117,7 +7117,7 @@ func NSString_DecomposedStringWithCompatibilityMapping(receiver objc.NSObject) *
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("decomposedStringWithCompatibilityMapping")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "decomposedStringWithCompatibilityMapping", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -7133,7 +7133,7 @@ func NSString_Description(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("description")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "description", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -7149,7 +7149,7 @@ func NSString_DoubleValue(receiver objc.NSObject) float64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) float64]("doubleValue")
 	})
 	var result float64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "doubleValue", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -7163,7 +7163,7 @@ func NSString_EncodeWithCoder(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSString_EncodeWithCoder.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("encodeWithCoder:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "encodeWithCoder:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -7178,7 +7178,7 @@ func NSString_FastestEncoding(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("fastestEncoding")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "fastestEncoding", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -7193,7 +7193,7 @@ func NSString_FileSystemRepresentation(receiver objc.NSObject) string {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) string]("fileSystemRepresentation")
 	})
 	var result string
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "fileSystemRepresentation", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -7208,7 +7208,7 @@ func NSString_FloatValue(receiver objc.NSObject) float32 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) float32]("floatValue")
 	})
 	var result float32
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "floatValue", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -7222,7 +7222,7 @@ func NSString_GetCString(receiver objc.NSObject, p0 *int8) {
 	binding := sdkCallNSString_GetCString.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, *int8)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *int8)]("getCString:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "getCString:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -7236,7 +7236,7 @@ func NSString_GetCString_MaxLength(receiver objc.NSObject, p0 *int8, p1 uint64) 
 	binding := sdkCallNSString_GetCString_MaxLength.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, *int8, uint64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *int8, uint64)]("getCString:maxLength:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "getCString:maxLength:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0, p1)
 	})
@@ -7251,7 +7251,7 @@ func NSString_GetCString_MaxLength_Encoding(receiver objc.NSObject, p0 *int8, p1
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *int8, uint64, uint64) bool]("getCString:maxLength:encoding:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "getCString:maxLength:encoding:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0, p1, p2)
 	})
@@ -7266,7 +7266,7 @@ func NSString_GetCharacters(receiver objc.NSObject, p0 *uint16) {
 	binding := sdkCallNSString_GetCharacters.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, *uint16)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *uint16)]("getCharacters:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "getCharacters:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -7281,7 +7281,7 @@ func NSString_GetFileSystemRepresentation_MaxLength(receiver objc.NSObject, p0 *
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *int8, uint64) bool]("getFileSystemRepresentation:maxLength:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "getFileSystemRepresentation:maxLength:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0, p1)
 	})
@@ -7297,7 +7297,7 @@ func NSString_HasPrefix(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("hasPrefix:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "hasPrefix:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -7313,7 +7313,7 @@ func NSString_HasSuffix(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("hasSuffix:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "hasSuffix:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -7329,7 +7329,7 @@ func NSString_Hash(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "hash", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -7714,7 +7714,7 @@ func NSString_IntValue(receiver objc.NSObject) int32 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int32]("intValue")
 	})
 	var result int32
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "intValue", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -7729,7 +7729,7 @@ func NSString_IntegerValue(receiver objc.NSObject) int64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("integerValue")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "integerValue", "10.5", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -7744,7 +7744,7 @@ func NSString_IsAbsolutePath(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isAbsolutePath")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "isAbsolutePath", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -7759,7 +7759,7 @@ func NSString_IsEqual(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "isEqual:", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -7775,7 +7775,7 @@ func NSString_IsEqualToString(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqualToString:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "isEqualToString:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -7791,7 +7791,7 @@ func NSString_IsKindOfClass(receiver objc.NSObject, p0 unsafe.Pointer) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isKindOfClass:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "isKindOfClass:", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -7807,7 +7807,7 @@ func NSString_IsMemberOfClass(receiver objc.NSObject, p0 unsafe.Pointer) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isMemberOfClass:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "isMemberOfClass:", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -7823,7 +7823,7 @@ func NSString_IsProxy(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isProxy")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "isProxy", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -7838,7 +7838,7 @@ func NSString_ItemProviderVisibilityForRepresentationWithTypeIdentifier(receiver
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) int64]("itemProviderVisibilityForRepresentationWithTypeIdentifier:")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "itemProviderVisibilityForRepresentationWithTypeIdentifier:", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -7854,7 +7854,7 @@ func NSString_LastPathComponent(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("lastPathComponent")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "lastPathComponent", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -7870,7 +7870,7 @@ func NSString_Length(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("length")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "length", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -7885,7 +7885,7 @@ func NSString_LengthOfBytesUsingEncoding(receiver objc.NSObject, p0 uint64) uint
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) uint64]("lengthOfBytesUsingEncoding:")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "lengthOfBytesUsingEncoding:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -7900,7 +7900,7 @@ func NSString_LocalizedCapitalizedString(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("localizedCapitalizedString")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "localizedCapitalizedString", "10.11", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -7916,7 +7916,7 @@ func NSString_LocalizedCaseInsensitiveCompare(receiver objc.NSObject, p0 objc.NS
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) int64]("localizedCaseInsensitiveCompare:")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "localizedCaseInsensitiveCompare:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -7932,7 +7932,7 @@ func NSString_LocalizedCaseInsensitiveContainsString(receiver objc.NSObject, p0 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("localizedCaseInsensitiveContainsString:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "localizedCaseInsensitiveContainsString:", "10.10", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -7948,7 +7948,7 @@ func NSString_LocalizedCompare(receiver objc.NSObject, p0 objc.NSObject) int64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) int64]("localizedCompare:")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "localizedCompare:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -7964,7 +7964,7 @@ func NSString_LocalizedLowercaseString(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("localizedLowercaseString")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "localizedLowercaseString", "10.11", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -7980,7 +7980,7 @@ func NSString_LocalizedStandardCompare(receiver objc.NSObject, p0 objc.NSObject)
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) int64]("localizedStandardCompare:")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "localizedStandardCompare:", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -7996,7 +7996,7 @@ func NSString_LocalizedStandardContainsString(receiver objc.NSObject, p0 objc.NS
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("localizedStandardContainsString:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "localizedStandardContainsString:", "10.11", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -8012,7 +8012,7 @@ func NSString_LocalizedUppercaseString(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("localizedUppercaseString")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "localizedUppercaseString", "10.11", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8028,7 +8028,7 @@ func NSString_LongLongValue(receiver objc.NSObject) int64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("longLongValue")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "longLongValue", "10.5", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -8043,7 +8043,7 @@ func NSString_LossyCString(receiver objc.NSObject) string {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) string]("lossyCString")
 	})
 	var result string
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "lossyCString", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -8058,7 +8058,7 @@ func NSString_LowercaseString(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("lowercaseString")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "lowercaseString", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8074,7 +8074,7 @@ func NSString_LowercaseStringWithLocale(receiver objc.NSObject, p0 objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("lowercaseStringWithLocale:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "lowercaseStringWithLocale:", "10.8", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -8091,7 +8091,7 @@ func NSString_MaximumLengthOfBytesUsingEncoding(receiver objc.NSObject, p0 uint6
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) uint64]("maximumLengthOfBytesUsingEncoding:")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "maximumLengthOfBytesUsingEncoding:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -8106,7 +8106,7 @@ func NSString_PasteboardPropertyListForType(receiver objc.NSObject, p0 objc.NSOb
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("pasteboardPropertyListForType:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "pasteboardPropertyListForType:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -8123,7 +8123,7 @@ func NSString_PathComponents(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("pathComponents")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "pathComponents", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8139,7 +8139,7 @@ func NSString_PathExtension(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("pathExtension")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "pathExtension", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8155,7 +8155,7 @@ func NSString_PrecomposedStringWithCanonicalMapping(receiver objc.NSObject) *obj
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("precomposedStringWithCanonicalMapping")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "precomposedStringWithCanonicalMapping", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8171,7 +8171,7 @@ func NSString_PrecomposedStringWithCompatibilityMapping(receiver objc.NSObject) 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("precomposedStringWithCompatibilityMapping")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "precomposedStringWithCompatibilityMapping", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8187,7 +8187,7 @@ func NSString_PropertyList(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("propertyList")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "propertyList", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8203,7 +8203,7 @@ func NSString_PropertyListFromStringsFileFormat(receiver objc.NSObject) *objc.Po
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("propertyListFromStringsFileFormat")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "propertyListFromStringsFileFormat", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8219,7 +8219,7 @@ func NSString_Self(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("self")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "self", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8235,7 +8235,7 @@ func NSString_SmallestEncoding(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("smallestEncoding")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "smallestEncoding", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -8250,7 +8250,7 @@ func NSString_StringByAbbreviatingWithTildeInPath(receiver objc.NSObject) *objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("stringByAbbreviatingWithTildeInPath")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByAbbreviatingWithTildeInPath", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8266,7 +8266,7 @@ func NSString_StringByAddingPercentEncodingWithAllowedCharacters(receiver objc.N
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("stringByAddingPercentEncodingWithAllowedCharacters:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByAddingPercentEncodingWithAllowedCharacters:", "10.9", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -8283,7 +8283,7 @@ func NSString_StringByAddingPercentEscapesUsingEncoding(receiver objc.NSObject, 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) unsafe.Pointer]("stringByAddingPercentEscapesUsingEncoding:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByAddingPercentEscapesUsingEncoding:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 		result = directRetain(result)
@@ -8299,7 +8299,7 @@ func NSString_StringByAppendingPathComponent(receiver objc.NSObject, p0 objc.NSO
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("stringByAppendingPathComponent:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByAppendingPathComponent:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -8316,7 +8316,7 @@ func NSString_StringByAppendingPathExtension(receiver objc.NSObject, p0 objc.NSO
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("stringByAppendingPathExtension:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByAppendingPathExtension:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -8333,7 +8333,7 @@ func NSString_StringByAppendingString(receiver objc.NSObject, p0 objc.NSObject) 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("stringByAppendingString:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByAppendingString:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -8350,7 +8350,7 @@ func NSString_StringByApplyingTransform_Reverse(receiver objc.NSObject, p0 objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, bool) unsafe.Pointer]("stringByApplyingTransform:reverse:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByApplyingTransform:reverse:", "10.11", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 		result = directRetain(result)
@@ -8367,7 +8367,7 @@ func NSString_StringByDeletingLastPathComponent(receiver objc.NSObject) *objc.Po
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("stringByDeletingLastPathComponent")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByDeletingLastPathComponent", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8383,7 +8383,7 @@ func NSString_StringByDeletingPathExtension(receiver objc.NSObject) *objc.Pointe
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("stringByDeletingPathExtension")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByDeletingPathExtension", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8399,7 +8399,7 @@ func NSString_StringByExpandingTildeInPath(receiver objc.NSObject) *objc.Pointer
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("stringByExpandingTildeInPath")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByExpandingTildeInPath", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8415,7 +8415,7 @@ func NSString_StringByFoldingWithOptions_Locale(receiver objc.NSObject, p0 uint6
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64, unsafe.Pointer) unsafe.Pointer]("stringByFoldingWithOptions:locale:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByFoldingWithOptions:locale:", "10.5", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0, objc.Ptr(p1))
 		result = directRetain(result)
@@ -8432,7 +8432,7 @@ func NSString_StringByPaddingToLength_WithString_StartingAtIndex(receiver objc.N
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64, unsafe.Pointer, uint64) unsafe.Pointer]("stringByPaddingToLength:withString:startingAtIndex:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByPaddingToLength:withString:startingAtIndex:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0, objc.Ptr(p1), p2)
 		result = directRetain(result)
@@ -8449,7 +8449,7 @@ func NSString_StringByRemovingPercentEncoding(receiver objc.NSObject) *objc.Poin
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("stringByRemovingPercentEncoding")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByRemovingPercentEncoding", "10.9", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8465,7 +8465,7 @@ func NSString_StringByReplacingOccurrencesOfString_WithString(receiver objc.NSOb
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) unsafe.Pointer]("stringByReplacingOccurrencesOfString:withString:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByReplacingOccurrencesOfString:withString:", "10.5", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 		result = directRetain(result)
@@ -8483,7 +8483,7 @@ func NSString_StringByReplacingPercentEscapesUsingEncoding(receiver objc.NSObjec
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) unsafe.Pointer]("stringByReplacingPercentEscapesUsingEncoding:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByReplacingPercentEscapesUsingEncoding:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 		result = directRetain(result)
@@ -8499,7 +8499,7 @@ func NSString_StringByResolvingSymlinksInPath(receiver objc.NSObject) *objc.Poin
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("stringByResolvingSymlinksInPath")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByResolvingSymlinksInPath", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8515,7 +8515,7 @@ func NSString_StringByStandardizingPath(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("stringByStandardizingPath")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByStandardizingPath", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8531,7 +8531,7 @@ func NSString_StringByTrimmingCharactersInSet(receiver objc.NSObject, p0 objc.NS
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("stringByTrimmingCharactersInSet:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringByTrimmingCharactersInSet:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -8548,7 +8548,7 @@ func NSString_StringsByAppendingPaths(receiver objc.NSObject, p0 objc.NSObject) 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("stringsByAppendingPaths:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "stringsByAppendingPaths:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -8565,7 +8565,7 @@ func NSString_SubstringFromIndex(receiver objc.NSObject, p0 uint64) *objc.Pointe
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) unsafe.Pointer]("substringFromIndex:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "substringFromIndex:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 		result = directRetain(result)
@@ -8581,7 +8581,7 @@ func NSString_SubstringToIndex(receiver objc.NSObject, p0 uint64) *objc.Pointer 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) unsafe.Pointer]("substringToIndex:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "substringToIndex:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 		result = directRetain(result)
@@ -8597,7 +8597,7 @@ func NSString_Superclass(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("superclass")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "superclass", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -8612,7 +8612,7 @@ func NSString_UppercaseString(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("uppercaseString")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "uppercaseString", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8628,7 +8628,7 @@ func NSString_UppercaseStringWithLocale(receiver objc.NSObject, p0 objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("uppercaseStringWithLocale:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "uppercaseStringWithLocale:", "10.8", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -8645,7 +8645,7 @@ func NSString_VariantFittingPresentationWidth(receiver objc.NSObject, p0 int64) 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64) unsafe.Pointer]("variantFittingPresentationWidth:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "variantFittingPresentationWidth:", "10.11", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 		result = directRetain(result)
@@ -8661,7 +8661,7 @@ func NSString_WritableTypeIdentifiersForItemProvider(receiver objc.NSObject) *ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("writableTypeIdentifiersForItemProvider")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "writableTypeIdentifiersForItemProvider", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -8677,7 +8677,7 @@ func NSString_WritableTypesForPasteboard(receiver objc.NSObject, p0 objc.NSObjec
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("writableTypesForPasteboard:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "writableTypesForPasteboard:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -8694,7 +8694,7 @@ func NSString_WriteToFile_Atomically(receiver objc.NSObject, p0 objc.NSObject, p
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, bool) bool]("writeToFile:atomically:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "writeToFile:atomically:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 	})
@@ -8710,7 +8710,7 @@ func NSString_WriteToFile_Atomically_Encoding_Error(receiver objc.NSObject, p0 o
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, bool, uint64, *unsafe.Pointer) bool]("writeToFile:atomically:encoding:error:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "writeToFile:atomically:encoding:error:", "", "", true, objc.Ptr(receiver))
 		if p3 != nil {
 			*p3 = nil
@@ -8733,7 +8733,7 @@ func NSString_WriteToURL_Atomically(receiver objc.NSObject, p0 objc.NSObject, p1
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, bool) bool]("writeToURL:atomically:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "writeToURL:atomically:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 	})
@@ -8749,7 +8749,7 @@ func NSString_WriteToURL_Atomically_Encoding_Error(receiver objc.NSObject, p0 ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, bool, uint64, *unsafe.Pointer) bool]("writeToURL:atomically:encoding:error:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "writeToURL:atomically:encoding:error:", "", "", true, objc.Ptr(receiver))
 		if p3 != nil {
 			*p3 = nil
@@ -8772,7 +8772,7 @@ func NSString_WritingOptionsForType_Pasteboard(receiver objc.NSObject, p0 objc.N
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) uint64]("writingOptionsForType:pasteboard:")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSString", "writingOptionsForType:pasteboard:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -9227,7 +9227,7 @@ func NSURL_URLByAppendingPathComponent(receiver objc.NSObject, p0 objc.NSObject)
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("URLByAppendingPathComponent:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "URLByAppendingPathComponent:", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -9244,7 +9244,7 @@ func NSURL_URLByAppendingPathComponent_IsDirectory(receiver objc.NSObject, p0 ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, bool) unsafe.Pointer]("URLByAppendingPathComponent:isDirectory:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "URLByAppendingPathComponent:isDirectory:", "10.7", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 		result = directRetain(result)
@@ -9261,7 +9261,7 @@ func NSURL_URLByAppendingPathExtension(receiver objc.NSObject, p0 objc.NSObject)
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("URLByAppendingPathExtension:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "URLByAppendingPathExtension:", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -9278,7 +9278,7 @@ func NSURL_URLByDeletingLastPathComponent(receiver objc.NSObject) *objc.Pointer 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("URLByDeletingLastPathComponent")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "URLByDeletingLastPathComponent", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -9294,7 +9294,7 @@ func NSURL_URLByDeletingPathExtension(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("URLByDeletingPathExtension")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "URLByDeletingPathExtension", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -9310,7 +9310,7 @@ func NSURL_URLByResolvingSymlinksInPath(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("URLByResolvingSymlinksInPath")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "URLByResolvingSymlinksInPath", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -9326,7 +9326,7 @@ func NSURL_URLByStandardizingPath(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("URLByStandardizingPath")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "URLByStandardizingPath", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -9342,7 +9342,7 @@ func NSURL_URLHandleUsingCache(receiver objc.NSObject, p0 bool) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool) unsafe.Pointer]("URLHandleUsingCache:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "URLHandleUsingCache:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 		result = directRetain(result)
@@ -9358,7 +9358,7 @@ func NSURL_AbsoluteString(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("absoluteString")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "absoluteString", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -9374,7 +9374,7 @@ func NSURL_AbsoluteURL(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("absoluteURL")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "absoluteURL", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -9390,7 +9390,7 @@ func NSURL_BaseURL(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("baseURL")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "baseURL", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -9406,7 +9406,7 @@ func NSURL_BookmarkDataWithOptions_IncludingResourceValuesForKeys_RelativeToURL_
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64, unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer]("bookmarkDataWithOptions:includingResourceValuesForKeys:relativeToURL:error:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "bookmarkDataWithOptions:includingResourceValuesForKeys:relativeToURL:error:", "10.6", "", true, objc.Ptr(receiver))
 		if p3 != nil {
 			*p3 = nil
@@ -9431,7 +9431,7 @@ func NSURL_CheckPromisedItemIsReachableAndReturnError(receiver objc.NSObject, p0
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *unsafe.Pointer) bool]("checkPromisedItemIsReachableAndReturnError:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "checkPromisedItemIsReachableAndReturnError:", "10.10", "", true, objc.Ptr(receiver))
 		if p0 != nil {
 			*p0 = nil
@@ -9453,7 +9453,7 @@ func NSURL_CheckResourceIsReachableAndReturnError(receiver objc.NSObject, p0 *un
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *unsafe.Pointer) bool]("checkResourceIsReachableAndReturnError:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "checkResourceIsReachableAndReturnError:", "10.6", "", true, objc.Ptr(receiver))
 		if p0 != nil {
 			*p0 = nil
@@ -9475,7 +9475,7 @@ func NSURL_Class(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("class")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "class", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -9490,7 +9490,7 @@ func NSURL_ConformsToProtocol(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("conformsToProtocol:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "conformsToProtocol:", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -9506,7 +9506,7 @@ func NSURL_DataRepresentation(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("dataRepresentation")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "dataRepresentation", "10.11", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -9522,7 +9522,7 @@ func NSURL_DebugDescription(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("debugDescription")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "debugDescription", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -9538,7 +9538,7 @@ func NSURL_Description(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("description")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "description", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -9553,7 +9553,7 @@ func NSURL_EncodeWithCoder(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSURL_EncodeWithCoder.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("encodeWithCoder:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "encodeWithCoder:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -9568,7 +9568,7 @@ func NSURL_FilePathURL(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("filePathURL")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "filePathURL", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -9584,7 +9584,7 @@ func NSURL_FileReferenceURL(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("fileReferenceURL")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "fileReferenceURL", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -9600,7 +9600,7 @@ func NSURL_FileSystemRepresentation(receiver objc.NSObject) string {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) string]("fileSystemRepresentation")
 	})
 	var result string
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "fileSystemRepresentation", "10.9", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -9615,7 +9615,7 @@ func NSURL_Fragment(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("fragment")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "fragment", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -9631,7 +9631,7 @@ func NSURL_GetFileSystemRepresentation_MaxLength(receiver objc.NSObject, p0 *int
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *int8, uint64) bool]("getFileSystemRepresentation:maxLength:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "getFileSystemRepresentation:maxLength:", "10.9", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0, p1)
 	})
@@ -9647,7 +9647,7 @@ func NSURL_HasDirectoryPath(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("hasDirectoryPath")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "hasDirectoryPath", "10.11", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -9662,7 +9662,7 @@ func NSURL_Hash(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "hash", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -9677,7 +9677,7 @@ func NSURL_Host(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("host")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "host", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -9949,7 +9949,7 @@ func NSURL_IsEqual(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "isEqual:", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -9965,7 +9965,7 @@ func NSURL_IsFileReferenceURL(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isFileReferenceURL")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "isFileReferenceURL", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -9980,7 +9980,7 @@ func NSURL_IsFileURL(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isFileURL")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "isFileURL", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -9995,7 +9995,7 @@ func NSURL_IsKindOfClass(receiver objc.NSObject, p0 unsafe.Pointer) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isKindOfClass:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "isKindOfClass:", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -10011,7 +10011,7 @@ func NSURL_IsMemberOfClass(receiver objc.NSObject, p0 unsafe.Pointer) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isMemberOfClass:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "isMemberOfClass:", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -10027,7 +10027,7 @@ func NSURL_IsProxy(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isProxy")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "isProxy", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -10042,7 +10042,7 @@ func NSURL_ItemProviderVisibilityForRepresentationWithTypeIdentifier(receiver ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) int64]("itemProviderVisibilityForRepresentationWithTypeIdentifier:")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "itemProviderVisibilityForRepresentationWithTypeIdentifier:", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -10058,7 +10058,7 @@ func NSURL_LastPathComponent(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("lastPathComponent")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "lastPathComponent", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10073,7 +10073,7 @@ func NSURL_LoadResourceDataNotifyingClient_UsingCache(receiver objc.NSObject, p0
 	binding := sdkCallNSURL_LoadResourceDataNotifyingClient_UsingCache.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, bool)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, bool)]("loadResourceDataNotifyingClient:usingCache:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "loadResourceDataNotifyingClient:usingCache:", "10.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 	})
@@ -10088,7 +10088,7 @@ func NSURL_ParameterString(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("parameterString")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "parameterString", "10.2", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10104,7 +10104,7 @@ func NSURL_Password(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("password")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "password", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10120,7 +10120,7 @@ func NSURL_PasteboardPropertyListForType(receiver objc.NSObject, p0 objc.NSObjec
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("pasteboardPropertyListForType:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "pasteboardPropertyListForType:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -10137,7 +10137,7 @@ func NSURL_Path(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("path")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "path", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10153,7 +10153,7 @@ func NSURL_PathComponents(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("pathComponents")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "pathComponents", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10169,7 +10169,7 @@ func NSURL_PathExtension(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("pathExtension")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "pathExtension", "10.6", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10185,7 +10185,7 @@ func NSURL_Port(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("port")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "port", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10201,7 +10201,7 @@ func NSURL_PromisedItemResourceValuesForKeys_Error(receiver objc.NSObject, p0 ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer]("promisedItemResourceValuesForKeys:error:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "promisedItemResourceValuesForKeys:error:", "10.10", "", true, objc.Ptr(receiver))
 		if p1 != nil {
 			*p1 = nil
@@ -10225,7 +10225,7 @@ func NSURL_PropertyForKey(receiver objc.NSObject, p0 objc.NSObject) *objc.Pointe
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("propertyForKey:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "propertyForKey:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -10242,7 +10242,7 @@ func NSURL_Query(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("query")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "query", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10258,7 +10258,7 @@ func NSURL_RelativePath(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("relativePath")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "relativePath", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10274,7 +10274,7 @@ func NSURL_RelativeString(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("relativeString")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "relativeString", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10289,7 +10289,7 @@ func NSURL_RemoveAllCachedResourceValues(receiver objc.NSObject) {
 	binding := sdkCallNSURL_RemoveAllCachedResourceValues.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("removeAllCachedResourceValues")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "removeAllCachedResourceValues", "10.9", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -10302,7 +10302,7 @@ func NSURL_RemoveCachedResourceValueForKey(receiver objc.NSObject, p0 objc.NSObj
 	binding := sdkCallNSURL_RemoveCachedResourceValueForKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("removeCachedResourceValueForKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "removeCachedResourceValueForKey:", "10.9", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -10317,7 +10317,7 @@ func NSURL_ResourceDataUsingCache(receiver objc.NSObject, p0 bool) *objc.Pointer
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool) unsafe.Pointer]("resourceDataUsingCache:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "resourceDataUsingCache:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 		result = directRetain(result)
@@ -10333,7 +10333,7 @@ func NSURL_ResourceSpecifier(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("resourceSpecifier")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "resourceSpecifier", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10349,7 +10349,7 @@ func NSURL_ResourceValuesForKeys_Error(receiver objc.NSObject, p0 objc.NSObject,
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer]("resourceValuesForKeys:error:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "resourceValuesForKeys:error:", "10.6", "", true, objc.Ptr(receiver))
 		if p1 != nil {
 			*p1 = nil
@@ -10373,7 +10373,7 @@ func NSURL_Scheme(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("scheme")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "scheme", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10389,7 +10389,7 @@ func NSURL_Self(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("self")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "self", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10405,7 +10405,7 @@ func NSURL_SetProperty_ForKey(receiver objc.NSObject, p0 objc.NSObject, p1 objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) bool]("setProperty:forKey:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "setProperty:forKey:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -10422,7 +10422,7 @@ func NSURL_SetResourceData(receiver objc.NSObject, p0 objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("setResourceData:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "setResourceData:", "10.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -10438,7 +10438,7 @@ func NSURL_SetResourceValue_ForKey_Error(receiver objc.NSObject, p0 objc.NSObjec
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer) bool]("setResourceValue:forKey:error:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "setResourceValue:forKey:error:", "10.6", "", true, objc.Ptr(receiver))
 		if p2 != nil {
 			*p2 = nil
@@ -10462,7 +10462,7 @@ func NSURL_SetResourceValues_Error(receiver objc.NSObject, p0 objc.NSObject, p1 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, *unsafe.Pointer) bool]("setResourceValues:error:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "setResourceValues:error:", "10.6", "", true, objc.Ptr(receiver))
 		if p1 != nil {
 			*p1 = nil
@@ -10484,7 +10484,7 @@ func NSURL_SetTemporaryResourceValue_ForKey(receiver objc.NSObject, p0 objc.NSOb
 	binding := sdkCallNSURL_SetTemporaryResourceValue_ForKey.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer)]("setTemporaryResourceValue:forKey:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "setTemporaryResourceValue:forKey:", "10.9", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -10500,7 +10500,7 @@ func NSURL_StandardizedURL(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("standardizedURL")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "standardizedURL", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10516,7 +10516,7 @@ func NSURL_StartAccessingSecurityScopedResource(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("startAccessingSecurityScopedResource")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "startAccessingSecurityScopedResource", "10.7", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -10530,7 +10530,7 @@ func NSURL_StopAccessingSecurityScopedResource(receiver objc.NSObject) {
 	binding := sdkCallNSURL_StopAccessingSecurityScopedResource.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("stopAccessingSecurityScopedResource")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "stopAccessingSecurityScopedResource", "10.7", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -10544,7 +10544,7 @@ func NSURL_Superclass(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("superclass")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "superclass", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -10559,7 +10559,7 @@ func NSURL_User(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("user")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "user", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10575,7 +10575,7 @@ func NSURL_WritableTypeIdentifiersForItemProvider(receiver objc.NSObject) *objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("writableTypeIdentifiersForItemProvider")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "writableTypeIdentifiersForItemProvider", "10.13", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10591,7 +10591,7 @@ func NSURL_WritableTypesForPasteboard(receiver objc.NSObject, p0 objc.NSObject) 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) unsafe.Pointer]("writableTypesForPasteboard:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "writableTypesForPasteboard:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 		result = directRetain(result)
@@ -10607,7 +10607,7 @@ func NSURL_WriteToPasteboard(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSURL_WriteToPasteboard.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("writeToPasteboard:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "writeToPasteboard:", "", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -10622,7 +10622,7 @@ func NSURL_WritingOptionsForType_Pasteboard(receiver objc.NSObject, p0 objc.NSOb
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, unsafe.Pointer) uint64]("writingOptionsForType:pasteboard:")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSURL", "writingOptionsForType:pasteboard:", "", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), objc.Ptr(p1))
 	})
@@ -10682,7 +10682,7 @@ func NSUUID_UUIDString(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("UUIDString")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSUUID", "UUIDString", "10.8", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10698,7 +10698,7 @@ func NSUUID_Compare(receiver objc.NSObject, p0 objc.NSObject) int64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) int64]("compare:")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSUUID", "compare:", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -10713,7 +10713,7 @@ func NSUUID_EncodeWithCoder(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallNSUUID_EncodeWithCoder.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("encodeWithCoder:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSUUID", "encodeWithCoder:", "10.8", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -10727,7 +10727,7 @@ func NSUUID_GetUUIDBytes(receiver objc.NSObject, p0 *uint8) {
 	binding := sdkCallNSUUID_GetUUIDBytes.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, *uint8)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *uint8)]("getUUIDBytes:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("NSUUID", "getUUIDBytes:", "10.8", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -10826,7 +10826,7 @@ func VZBridgedNetworkDeviceAttachment_Interface(receiver objc.NSObject) *objc.Po
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("interface")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZBridgedNetworkDeviceAttachment", "interface", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10857,7 +10857,7 @@ func VZBridgedNetworkInterface_Identifier(receiver objc.NSObject) *objc.Pointer 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("identifier")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZBridgedNetworkInterface", "identifier", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10873,7 +10873,7 @@ func VZBridgedNetworkInterface_LocalizedDisplayName(receiver objc.NSObject) *obj
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("localizedDisplayName")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZBridgedNetworkInterface", "localizedDisplayName", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10889,7 +10889,7 @@ func VZConsolePortConfiguration_Attachment(receiver objc.NSObject) *objc.Pointer
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("attachment")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZConsolePortConfiguration", "attachment", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10904,7 +10904,7 @@ func VZConsolePortConfiguration_SetAttachment(receiver objc.NSObject, p0 objc.NS
 	binding := sdkCallVZConsolePortConfiguration_SetAttachment.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAttachment:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZConsolePortConfiguration", "setAttachment:", "13.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -10919,7 +10919,7 @@ func VZCustomVirtioDevice_Delegate(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("delegate")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDevice", "delegate", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10935,7 +10935,7 @@ func VZCustomVirtioDevice_DeviceQueue(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("deviceQueue")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDevice", "deviceQueue", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10951,9 +10951,10 @@ func VZCustomVirtioDevice_GuestMemoryMappingAtPhysicalAddress_Length(receiver ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64, uint64) unsafe.Pointer]("guestMemoryMappingAtPhysicalAddress:length:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDevice", "guestMemoryMappingAtPhysicalAddress:length:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0, p1)
+		InheritObjectQueue(result, objc.Ptr(receiver))
 		result = directRetain(result)
 	})
 	runtime.KeepAlive(receiver)
@@ -10967,7 +10968,7 @@ func VZCustomVirtioDevice_NegotiatedFeatures(receiver objc.NSObject) *objc.Point
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("negotiatedFeatures")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDevice", "negotiatedFeatures", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -10983,9 +10984,10 @@ func VZCustomVirtioDevice_QueueAtIndex(receiver objc.NSObject, p0 uint16) *objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint16) unsafe.Pointer]("queueAtIndex:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDevice", "queueAtIndex:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
+		InheritObjectQueue(result, objc.Ptr(receiver))
 		result = directRetain(result)
 	})
 	runtime.KeepAlive(receiver)
@@ -10998,7 +11000,7 @@ func VZCustomVirtioDevice_RequestDeviceReset(receiver objc.NSObject) {
 	binding := sdkCallVZCustomVirtioDevice_RequestDeviceReset.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("requestDeviceReset")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDevice", "requestDeviceReset", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -11011,7 +11013,7 @@ func VZCustomVirtioDevice_SetDelegate(receiver objc.NSObject, p0 objc.NSObject) 
 	binding := sdkCallVZCustomVirtioDevice_SetDelegate.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDevice", "setDelegate:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -11026,9 +11028,10 @@ func VZCustomVirtioDevice_SharedMemoryRegions(receiver objc.NSObject) *objc.Poin
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("sharedMemoryRegions")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDevice", "sharedMemoryRegions", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
+		InheritObjectQueue(result, objc.Ptr(receiver))
 		result = directRetain(result)
 	})
 	runtime.KeepAlive(receiver)
@@ -11070,7 +11073,7 @@ func VZCustomVirtioDeviceConfiguration_PCIClassID(receiver objc.NSObject) uint8 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint8]("PCIClassID")
 	})
 	var result uint8
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "PCIClassID", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -11085,7 +11088,7 @@ func VZCustomVirtioDeviceConfiguration_PCISubclassID(receiver objc.NSObject) uin
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint8]("PCISubclassID")
 	})
 	var result uint8
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "PCISubclassID", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -11100,7 +11103,7 @@ func VZCustomVirtioDeviceConfiguration_DeviceID(receiver objc.NSObject) uint16 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("deviceID")
 	})
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "deviceID", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -11115,7 +11118,7 @@ func VZCustomVirtioDeviceConfiguration_DeviceSpecificConfiguration(receiver objc
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("deviceSpecificConfiguration")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "deviceSpecificConfiguration", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11131,7 +11134,7 @@ func VZCustomVirtioDeviceConfiguration_MandatoryFeatures(receiver objc.NSObject)
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("mandatoryFeatures")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "mandatoryFeatures", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11147,7 +11150,7 @@ func VZCustomVirtioDeviceConfiguration_OptionalFeatures(receiver objc.NSObject) 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("optionalFeatures")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "optionalFeatures", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11163,7 +11166,7 @@ func VZCustomVirtioDeviceConfiguration_Provider(receiver objc.NSObject) *objc.Po
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("provider")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "provider", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11178,7 +11181,7 @@ func VZCustomVirtioDeviceConfiguration_SetDeviceID(receiver objc.NSObject, p0 ui
 	binding := sdkCallVZCustomVirtioDeviceConfiguration_SetDeviceID.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]("setDeviceID:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "setDeviceID:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -11191,7 +11194,7 @@ func VZCustomVirtioDeviceConfiguration_SetDeviceSpecificConfiguration(receiver o
 	binding := sdkCallVZCustomVirtioDeviceConfiguration_SetDeviceSpecificConfiguration.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDeviceSpecificConfiguration:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "setDeviceSpecificConfiguration:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -11205,7 +11208,7 @@ func VZCustomVirtioDeviceConfiguration_SetPCIClassID(receiver objc.NSObject, p0 
 	binding := sdkCallVZCustomVirtioDeviceConfiguration_SetPCIClassID.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint8)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint8)]("setPCIClassID:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "setPCIClassID:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -11218,7 +11221,7 @@ func VZCustomVirtioDeviceConfiguration_SetPCISubclassID(receiver objc.NSObject, 
 	binding := sdkCallVZCustomVirtioDeviceConfiguration_SetPCISubclassID.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint8)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint8)]("setPCISubclassID:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "setPCISubclassID:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -11231,7 +11234,7 @@ func VZCustomVirtioDeviceConfiguration_SetProvider(receiver objc.NSObject, p0 ob
 	binding := sdkCallVZCustomVirtioDeviceConfiguration_SetProvider.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setProvider:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "setProvider:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -11245,7 +11248,7 @@ func VZCustomVirtioDeviceConfiguration_SetSharedMemoryRegions(receiver objc.NSOb
 	binding := sdkCallVZCustomVirtioDeviceConfiguration_SetSharedMemoryRegions.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setSharedMemoryRegions:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "setSharedMemoryRegions:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -11259,7 +11262,7 @@ func VZCustomVirtioDeviceConfiguration_SetSupportsSaveRestore(receiver objc.NSOb
 	binding := sdkCallVZCustomVirtioDeviceConfiguration_SetSupportsSaveRestore.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setSupportsSaveRestore:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "setSupportsSaveRestore:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -11272,7 +11275,7 @@ func VZCustomVirtioDeviceConfiguration_SetVirtioQueueCount(receiver objc.NSObjec
 	binding := sdkCallVZCustomVirtioDeviceConfiguration_SetVirtioQueueCount.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint16)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint16)]("setVirtioQueueCount:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "setVirtioQueueCount:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -11286,7 +11289,7 @@ func VZCustomVirtioDeviceConfiguration_SharedMemoryRegions(receiver objc.NSObjec
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("sharedMemoryRegions")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "sharedMemoryRegions", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11302,7 +11305,7 @@ func VZCustomVirtioDeviceConfiguration_SupportsSaveRestore(receiver objc.NSObjec
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("supportsSaveRestore")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "supportsSaveRestore", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -11317,7 +11320,7 @@ func VZCustomVirtioDeviceConfiguration_VirtioQueueCount(receiver objc.NSObject) 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("virtioQueueCount")
 	})
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceConfiguration", "virtioQueueCount", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -11332,7 +11335,7 @@ func VZCustomVirtioDeviceDelegateProvider_Delegate(receiver objc.NSObject) *objc
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("delegate")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceDelegateProvider", "delegate", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11348,7 +11351,7 @@ func VZCustomVirtioDeviceDelegateProvider_DeviceQueue(receiver objc.NSObject) *o
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("deviceQueue")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZCustomVirtioDeviceDelegateProvider", "deviceQueue", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11382,7 +11385,7 @@ func VZDiskBlockDeviceStorageDeviceAttachment_FileHandle(receiver objc.NSObject)
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("fileHandle")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZDiskBlockDeviceStorageDeviceAttachment", "fileHandle", "14.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11422,7 +11425,7 @@ func VZDiskBlockDeviceStorageDeviceAttachment_IsReadOnly(receiver objc.NSObject)
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isReadOnly")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZDiskBlockDeviceStorageDeviceAttachment", "isReadOnly", "14.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -11437,7 +11440,7 @@ func VZDiskBlockDeviceStorageDeviceAttachment_SynchronizationMode(receiver objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("synchronizationMode")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZDiskBlockDeviceStorageDeviceAttachment", "synchronizationMode", "14.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -11452,7 +11455,7 @@ func VZDiskImageStorageDeviceAttachment_URL(receiver objc.NSObject) *objc.Pointe
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("URL")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZDiskImageStorageDeviceAttachment", "URL", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11468,7 +11471,7 @@ func VZDiskImageStorageDeviceAttachment_CachingMode(receiver objc.NSObject) int6
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("cachingMode")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZDiskImageStorageDeviceAttachment", "cachingMode", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -11531,7 +11534,7 @@ func VZDiskImageStorageDeviceAttachment_IsReadOnly(receiver objc.NSObject) bool 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isReadOnly")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZDiskImageStorageDeviceAttachment", "isReadOnly", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -11546,7 +11549,7 @@ func VZDiskImageStorageDeviceAttachment_SynchronizationMode(receiver objc.NSObje
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("synchronizationMode")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZDiskImageStorageDeviceAttachment", "synchronizationMode", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -11576,7 +11579,7 @@ func VZEFIBootLoader_SetVariableStore(receiver objc.NSObject, p0 objc.NSObject) 
 	binding := sdkCallVZEFIBootLoader_SetVariableStore.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setVariableStore:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZEFIBootLoader", "setVariableStore:", "13.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -11591,7 +11594,7 @@ func VZEFIBootLoader_VariableStore(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("variableStore")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZEFIBootLoader", "variableStore", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11607,7 +11610,7 @@ func VZEFISignatureDatabaseConfiguration_DbSignatures(receiver objc.NSObject) *o
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("dbSignatures")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZEFISignatureDatabaseConfiguration", "dbSignatures", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11623,7 +11626,7 @@ func VZEFISignatureDatabaseConfiguration_DbxSignatures(receiver objc.NSObject) *
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("dbxSignatures")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZEFISignatureDatabaseConfiguration", "dbxSignatures", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11658,7 +11661,7 @@ func VZEFISignatureDatabaseConfiguration_KeyExchangeKeys(receiver objc.NSObject)
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("keyExchangeKeys")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZEFISignatureDatabaseConfiguration", "keyExchangeKeys", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11715,7 +11718,7 @@ func VZEFISignatureList_Signatures(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("signatures")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZEFISignatureList", "signatures", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11731,7 +11734,7 @@ func VZEFISignatureSHA256Hash_Data(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("data")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZEFISignatureSHA256Hash", "data", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11764,7 +11767,7 @@ func VZEFIVariableStore_URL(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("URL")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZEFIVariableStore", "URL", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -11780,7 +11783,7 @@ func VZEFIVariableStore_DisableSecureBootWithError(receiver objc.NSObject, p0 *u
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *unsafe.Pointer) bool]("disableSecureBootWithError:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZEFIVariableStore", "disableSecureBootWithError:", "27.0", "", true, objc.Ptr(receiver))
 		if p0 != nil {
 			*p0 = nil
@@ -11802,7 +11805,7 @@ func VZEFIVariableStore_EnableSecureBootUsingDefaultPlatformKeyWithError(receive
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *unsafe.Pointer) bool]("enableSecureBootUsingDefaultPlatformKeyWithError:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZEFIVariableStore", "enableSecureBootUsingDefaultPlatformKeyWithError:", "27.0", "", true, objc.Ptr(receiver))
 		if p0 != nil {
 			*p0 = nil
@@ -11824,7 +11827,7 @@ func VZEFIVariableStore_EnrollDefaultSecureBootSignaturesWithError(receiver objc
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *unsafe.Pointer) bool]("enrollDefaultSecureBootSignaturesWithError:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZEFIVariableStore", "enrollDefaultSecureBootSignaturesWithError:", "27.0", "", true, objc.Ptr(receiver))
 		if p0 != nil {
 			*p0 = nil
@@ -11846,7 +11849,7 @@ func VZEFIVariableStore_EnrollSecureBootSignatures_Error(receiver objc.NSObject,
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, *unsafe.Pointer) bool]("enrollSecureBootSignatures:error:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZEFIVariableStore", "enrollSecureBootSignatures:error:", "27.0", "", true, objc.Ptr(receiver))
 		if p1 != nil {
 			*p1 = nil
@@ -11869,7 +11872,7 @@ func VZEFIVariableStore_GetEnrolledSecureBootSignaturesWithError(receiver objc.N
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *unsafe.Pointer) unsafe.Pointer]("getEnrolledSecureBootSignaturesWithError:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZEFIVariableStore", "getEnrolledSecureBootSignaturesWithError:", "27.0", "", true, objc.Ptr(receiver))
 		if p0 != nil {
 			*p0 = nil
@@ -11892,7 +11895,7 @@ func VZEFIVariableStore_GetSecureBootEnabled_Error(receiver objc.NSObject, p0 *i
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *int8, *unsafe.Pointer) bool]("getSecureBootEnabled:error:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZEFIVariableStore", "getSecureBootEnabled:error:", "27.0", "", true, objc.Ptr(receiver))
 		if p1 != nil {
 			*p1 = nil
@@ -11956,7 +11959,7 @@ func VZEFIVariableStore_ResetSecureBootWithError(receiver objc.NSObject, p0 *uns
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *unsafe.Pointer) bool]("resetSecureBootWithError:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZEFIVariableStore", "resetSecureBootWithError:", "27.0", "", true, objc.Ptr(receiver))
 		if p0 != nil {
 			*p0 = nil
@@ -11978,7 +11981,7 @@ func VZFileHandleNetworkDeviceAttachment_FileHandle(receiver objc.NSObject) *obj
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("fileHandle")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZFileHandleNetworkDeviceAttachment", "fileHandle", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -12011,7 +12014,7 @@ func VZFileHandleNetworkDeviceAttachment_MaximumTransmissionUnit(receiver objc.N
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("maximumTransmissionUnit")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZFileHandleNetworkDeviceAttachment", "maximumTransmissionUnit", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12025,7 +12028,7 @@ func VZFileHandleNetworkDeviceAttachment_SetMaximumTransmissionUnit(receiver obj
 	binding := sdkCallVZFileHandleNetworkDeviceAttachment_SetMaximumTransmissionUnit.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setMaximumTransmissionUnit:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZFileHandleNetworkDeviceAttachment", "setMaximumTransmissionUnit:", "13.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -12039,7 +12042,7 @@ func VZFileHandleSerialPortAttachment_FileHandleForReading(receiver objc.NSObjec
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("fileHandleForReading")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZFileHandleSerialPortAttachment", "fileHandleForReading", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -12055,7 +12058,7 @@ func VZFileHandleSerialPortAttachment_FileHandleForWriting(receiver objc.NSObjec
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("fileHandleForWriting")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZFileHandleSerialPortAttachment", "fileHandleForWriting", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -12089,7 +12092,7 @@ func VZFileSerialPortAttachment_URL(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("URL")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZFileSerialPortAttachment", "URL", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -12105,7 +12108,7 @@ func VZFileSerialPortAttachment_Append(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("append")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZFileSerialPortAttachment", "append", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12158,7 +12161,7 @@ func VZGenericMachineIdentifier_DataRepresentation(receiver objc.NSObject) *objc
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("dataRepresentation")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZGenericMachineIdentifier", "dataRepresentation", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -12237,7 +12240,7 @@ func VZGenericPlatformConfiguration_IsNestedVirtualizationEnabled(receiver objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isNestedVirtualizationEnabled")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZGenericPlatformConfiguration", "isNestedVirtualizationEnabled", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12252,7 +12255,7 @@ func VZGenericPlatformConfiguration_MachineIdentifier(receiver objc.NSObject) *o
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("machineIdentifier")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZGenericPlatformConfiguration", "machineIdentifier", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -12267,7 +12270,7 @@ func VZGenericPlatformConfiguration_SetMachineIdentifier(receiver objc.NSObject,
 	binding := sdkCallVZGenericPlatformConfiguration_SetMachineIdentifier.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setMachineIdentifier:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZGenericPlatformConfiguration", "setMachineIdentifier:", "13.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -12281,7 +12284,7 @@ func VZGenericPlatformConfiguration_SetNestedVirtualizationEnabled(receiver objc
 	binding := sdkCallVZGenericPlatformConfiguration_SetNestedVirtualizationEnabled.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setNestedVirtualizationEnabled:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZGenericPlatformConfiguration", "setNestedVirtualizationEnabled:", "15.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -12295,9 +12298,10 @@ func VZGraphicsDevice_Displays(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("displays")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZGraphicsDevice", "displays", "14.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
+		InheritObjectQueue(result, objc.Ptr(receiver))
 		result = directRetain(result)
 	})
 	runtime.KeepAlive(receiver)
@@ -12310,7 +12314,7 @@ func VZGraphicsDisplay_AddObserver(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallVZGraphicsDisplay_AddObserver.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("addObserver:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZGraphicsDisplay", "addObserver:", "14.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -12325,7 +12329,7 @@ func VZGraphicsDisplay_ReconfigureWithConfiguration_Error(receiver objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, *unsafe.Pointer) bool]("reconfigureWithConfiguration:error:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZGraphicsDisplay", "reconfigureWithConfiguration:error:", "14.0", "", true, objc.Ptr(receiver))
 		if p1 != nil {
 			*p1 = nil
@@ -12347,7 +12351,7 @@ func VZGraphicsDisplay_RemoveObserver(receiver objc.NSObject, p0 objc.NSObject) 
 	binding := sdkCallVZGraphicsDisplay_RemoveObserver.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("removeObserver:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZGraphicsDisplay", "removeObserver:", "14.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -12362,7 +12366,7 @@ func VZGuestMemoryMapping_Length(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("length")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZGuestMemoryMapping", "length", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12377,7 +12381,7 @@ func VZGuestMemoryMapping_MutableBytes(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("mutableBytes")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZGuestMemoryMapping", "mutableBytes", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12392,7 +12396,7 @@ func VZGuestMemoryMapping_PhysicalAddress(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("physicalAddress")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZGuestMemoryMapping", "physicalAddress", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12407,7 +12411,7 @@ func VZGuestProvisioningOptions_ValidateWithError(receiver objc.NSObject, p0 *un
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *unsafe.Pointer) bool]("validateWithError:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZGuestProvisioningOptions", "validateWithError:", "27.0", "", true, objc.Ptr(receiver))
 		if p0 != nil {
 			*p0 = nil
@@ -12461,7 +12465,7 @@ func VZLinuxBootLoader_CommandLine(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("commandLine")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZLinuxBootLoader", "commandLine", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -12494,7 +12498,7 @@ func VZLinuxBootLoader_InitialRamdiskURL(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("initialRamdiskURL")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZLinuxBootLoader", "initialRamdiskURL", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -12510,7 +12514,7 @@ func VZLinuxBootLoader_KernelURL(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("kernelURL")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZLinuxBootLoader", "kernelURL", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -12525,7 +12529,7 @@ func VZLinuxBootLoader_SetCommandLine(receiver objc.NSObject, p0 objc.NSObject) 
 	binding := sdkCallVZLinuxBootLoader_SetCommandLine.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setCommandLine:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZLinuxBootLoader", "setCommandLine:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -12539,7 +12543,7 @@ func VZLinuxBootLoader_SetInitialRamdiskURL(receiver objc.NSObject, p0 objc.NSOb
 	binding := sdkCallVZLinuxBootLoader_SetInitialRamdiskURL.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setInitialRamdiskURL:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZLinuxBootLoader", "setInitialRamdiskURL:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -12553,7 +12557,7 @@ func VZLinuxBootLoader_SetKernelURL(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallVZLinuxBootLoader_SetKernelURL.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setKernelURL:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZLinuxBootLoader", "setKernelURL:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -12600,7 +12604,7 @@ func VZMACAddress_IsBroadcastAddress(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isBroadcastAddress")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMACAddress", "isBroadcastAddress", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12615,7 +12619,7 @@ func VZMACAddress_IsLocallyAdministeredAddress(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isLocallyAdministeredAddress")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMACAddress", "isLocallyAdministeredAddress", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12630,7 +12634,7 @@ func VZMACAddress_IsMulticastAddress(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isMulticastAddress")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMACAddress", "isMulticastAddress", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12645,7 +12649,7 @@ func VZMACAddress_IsUnicastAddress(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isUnicastAddress")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMACAddress", "isUnicastAddress", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12660,7 +12664,7 @@ func VZMACAddress_IsUniversallyAdministeredAddress(receiver objc.NSObject) bool 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isUniversallyAdministeredAddress")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMACAddress", "isUniversallyAdministeredAddress", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12675,7 +12679,7 @@ func VZMACAddress_String(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("string")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMACAddress", "string", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -12691,7 +12695,7 @@ func VZMacGraphicsDeviceConfiguration_Displays(receiver objc.NSObject) *objc.Poi
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("displays")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMacGraphicsDeviceConfiguration", "displays", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -12722,7 +12726,7 @@ func VZMacGraphicsDeviceConfiguration_SetDisplays(receiver objc.NSObject, p0 obj
 	binding := sdkCallVZMacGraphicsDeviceConfiguration_SetDisplays.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDisplays:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMacGraphicsDeviceConfiguration", "setDisplays:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -12737,7 +12741,7 @@ func VZMacGraphicsDisplay_PixelsPerInch(receiver objc.NSObject) int64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("pixelsPerInch")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMacGraphicsDisplay", "pixelsPerInch", "14.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12752,7 +12756,7 @@ func VZMacGraphicsDisplayConfiguration_HeightInPixels(receiver objc.NSObject) in
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("heightInPixels")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMacGraphicsDisplayConfiguration", "heightInPixels", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12783,7 +12787,7 @@ func VZMacGraphicsDisplayConfiguration_PixelsPerInch(receiver objc.NSObject) int
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("pixelsPerInch")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMacGraphicsDisplayConfiguration", "pixelsPerInch", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12797,7 +12801,7 @@ func VZMacGraphicsDisplayConfiguration_SetHeightInPixels(receiver objc.NSObject,
 	binding := sdkCallVZMacGraphicsDisplayConfiguration_SetHeightInPixels.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setHeightInPixels:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMacGraphicsDisplayConfiguration", "setHeightInPixels:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -12810,7 +12814,7 @@ func VZMacGraphicsDisplayConfiguration_SetPixelsPerInch(receiver objc.NSObject, 
 	binding := sdkCallVZMacGraphicsDisplayConfiguration_SetPixelsPerInch.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setPixelsPerInch:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMacGraphicsDisplayConfiguration", "setPixelsPerInch:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -12823,7 +12827,7 @@ func VZMacGraphicsDisplayConfiguration_SetWidthInPixels(receiver objc.NSObject, 
 	binding := sdkCallVZMacGraphicsDisplayConfiguration_SetWidthInPixels.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setWidthInPixels:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMacGraphicsDisplayConfiguration", "setWidthInPixels:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -12837,7 +12841,7 @@ func VZMacGraphicsDisplayConfiguration_WidthInPixels(receiver objc.NSObject) int
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("widthInPixels")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMacGraphicsDisplayConfiguration", "widthInPixels", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12890,7 +12894,7 @@ func VZMultipleDirectoryShare_Directories(receiver objc.NSObject) *objc.Pointer 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("directories")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZMultipleDirectoryShare", "directories", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -12972,7 +12976,7 @@ func VZNegotiatedVirtioFeatureSet_Subset0(receiver objc.NSObject) uint32 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("subset0")
 	})
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZNegotiatedVirtioFeatureSet", "subset0", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -12987,7 +12991,7 @@ func VZNegotiatedVirtioFeatureSet_Subset1(receiver objc.NSObject) uint32 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("subset1")
 	})
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZNegotiatedVirtioFeatureSet", "subset1", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -13024,7 +13028,7 @@ func VZNetworkBlockDeviceStorageDeviceAttachment_URL(receiver objc.NSObject) *ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("URL")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZNetworkBlockDeviceStorageDeviceAttachment", "URL", "14.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13040,7 +13044,7 @@ func VZNetworkBlockDeviceStorageDeviceAttachment_Delegate(receiver objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("delegate")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZNetworkBlockDeviceStorageDeviceAttachment", "delegate", "14.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13104,7 +13108,7 @@ func VZNetworkBlockDeviceStorageDeviceAttachment_IsForcedReadOnly(receiver objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isForcedReadOnly")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZNetworkBlockDeviceStorageDeviceAttachment", "isForcedReadOnly", "14.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -13118,7 +13122,7 @@ func VZNetworkBlockDeviceStorageDeviceAttachment_SetDelegate(receiver objc.NSObj
 	binding := sdkCallVZNetworkBlockDeviceStorageDeviceAttachment_SetDelegate.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZNetworkBlockDeviceStorageDeviceAttachment", "setDelegate:", "14.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -13133,7 +13137,7 @@ func VZNetworkBlockDeviceStorageDeviceAttachment_SynchronizationMode(receiver ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("synchronizationMode")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZNetworkBlockDeviceStorageDeviceAttachment", "synchronizationMode", "14.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -13148,7 +13152,7 @@ func VZNetworkBlockDeviceStorageDeviceAttachment_Timeout(receiver objc.NSObject)
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) float64]("timeout")
 	})
 	var result float64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZNetworkBlockDeviceStorageDeviceAttachment", "timeout", "14.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -13163,7 +13167,7 @@ func VZNetworkDevice_Attachment(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("attachment")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZNetworkDevice", "attachment", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13178,7 +13182,7 @@ func VZNetworkDevice_SetAttachment(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallVZNetworkDevice_SetAttachment.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAttachment:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZNetworkDevice", "setAttachment:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -13193,7 +13197,7 @@ func VZNetworkDeviceConfiguration_MACAddress(receiver objc.NSObject) *objc.Point
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("MACAddress")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZNetworkDeviceConfiguration", "MACAddress", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13209,7 +13213,7 @@ func VZNetworkDeviceConfiguration_Attachment(receiver objc.NSObject) *objc.Point
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("attachment")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZNetworkDeviceConfiguration", "attachment", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13224,7 +13228,7 @@ func VZNetworkDeviceConfiguration_SetAttachment(receiver objc.NSObject, p0 objc.
 	binding := sdkCallVZNetworkDeviceConfiguration_SetAttachment.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAttachment:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZNetworkDeviceConfiguration", "setAttachment:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -13238,7 +13242,7 @@ func VZNetworkDeviceConfiguration_SetMACAddress(receiver objc.NSObject, p0 objc.
 	binding := sdkCallVZNetworkDeviceConfiguration_SetMACAddress.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setMACAddress:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZNetworkDeviceConfiguration", "setMACAddress:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -13253,7 +13257,7 @@ func VZSerialPortConfiguration_Attachment(receiver objc.NSObject) *objc.Pointer 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("attachment")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZSerialPortConfiguration", "attachment", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13268,7 +13272,7 @@ func VZSerialPortConfiguration_SetAttachment(receiver objc.NSObject, p0 objc.NSO
 	binding := sdkCallVZSerialPortConfiguration_SetAttachment.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAttachment:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZSerialPortConfiguration", "setAttachment:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -13283,7 +13287,7 @@ func VZSharedDirectory_URL(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("URL")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZSharedDirectory", "URL", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13316,7 +13320,7 @@ func VZSharedDirectory_IsReadOnly(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isReadOnly")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZSharedDirectory", "isReadOnly", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -13331,7 +13335,7 @@ func VZSingleDirectoryShare_Directory(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("directory")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZSingleDirectoryShare", "directory", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13394,7 +13398,7 @@ func VZSpiceAgentPortAttachment_SetSharesClipboard(receiver objc.NSObject, p0 bo
 	binding := sdkCallVZSpiceAgentPortAttachment_SetSharesClipboard.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setSharesClipboard:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZSpiceAgentPortAttachment", "setSharesClipboard:", "13.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -13408,7 +13412,7 @@ func VZSpiceAgentPortAttachment_SharesClipboard(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("sharesClipboard")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZSpiceAgentPortAttachment", "sharesClipboard", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -13423,7 +13427,7 @@ func VZStorageDeviceConfiguration_Attachment(receiver objc.NSObject) *objc.Point
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("attachment")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZStorageDeviceConfiguration", "attachment", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13439,7 +13443,7 @@ func VZUSBController_Delegate(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("delegate")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBController", "delegate", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13454,7 +13458,7 @@ func VZUSBController_SetDelegate(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallVZUSBController_SetDelegate.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBController", "setDelegate:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -13469,9 +13473,10 @@ func VZUSBController_UsbDevices(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("usbDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBController", "usbDevices", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
+		InheritObjectQueue(result, objc.Ptr(receiver))
 		result = directRetain(result)
 	})
 	runtime.KeepAlive(receiver)
@@ -13484,7 +13489,7 @@ func VZUSBControllerConfiguration_SetUsbDevices(receiver objc.NSObject, p0 objc.
 	binding := sdkCallVZUSBControllerConfiguration_SetUsbDevices.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUsbDevices:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBControllerConfiguration", "setUsbDevices:", "15.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -13499,7 +13504,7 @@ func VZUSBControllerConfiguration_UsbDevices(receiver objc.NSObject) *objc.Point
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("usbDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBControllerConfiguration", "usbDevices", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13531,7 +13536,7 @@ func VZUSBMassStorageDevice_Class(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("class")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDevice", "class", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -13546,7 +13551,7 @@ func VZUSBMassStorageDevice_ConformsToProtocol(receiver objc.NSObject, p0 objc.N
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("conformsToProtocol:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDevice", "conformsToProtocol:", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -13562,7 +13567,7 @@ func VZUSBMassStorageDevice_DebugDescription(receiver objc.NSObject) *objc.Point
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("debugDescription")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDevice", "debugDescription", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13578,7 +13583,7 @@ func VZUSBMassStorageDevice_Description(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("description")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDevice", "description", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13594,7 +13599,7 @@ func VZUSBMassStorageDevice_Hash(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDevice", "hash", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -13626,7 +13631,7 @@ func VZUSBMassStorageDevice_IsEqual(receiver objc.NSObject, p0 objc.NSObject) bo
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDevice", "isEqual:", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -13642,7 +13647,7 @@ func VZUSBMassStorageDevice_IsKindOfClass(receiver objc.NSObject, p0 unsafe.Poin
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isKindOfClass:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDevice", "isKindOfClass:", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -13658,7 +13663,7 @@ func VZUSBMassStorageDevice_IsMemberOfClass(receiver objc.NSObject, p0 unsafe.Po
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isMemberOfClass:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDevice", "isMemberOfClass:", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -13674,7 +13679,7 @@ func VZUSBMassStorageDevice_IsProxy(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isProxy")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDevice", "isProxy", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -13689,7 +13694,7 @@ func VZUSBMassStorageDevice_Self(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("self")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDevice", "self", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13705,7 +13710,7 @@ func VZUSBMassStorageDevice_Superclass(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("superclass")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDevice", "superclass", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -13720,7 +13725,7 @@ func VZUSBMassStorageDevice_UsbController(receiver objc.NSObject) *objc.Pointer 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("usbController")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDevice", "usbController", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13736,7 +13741,7 @@ func VZUSBMassStorageDevice_Uuid(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("uuid")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDevice", "uuid", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13752,7 +13757,7 @@ func VZUSBMassStorageDeviceConfiguration_Class(receiver objc.NSObject) unsafe.Po
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("class")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDeviceConfiguration", "class", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -13767,7 +13772,7 @@ func VZUSBMassStorageDeviceConfiguration_ConformsToProtocol(receiver objc.NSObje
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("conformsToProtocol:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDeviceConfiguration", "conformsToProtocol:", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -13783,7 +13788,7 @@ func VZUSBMassStorageDeviceConfiguration_DebugDescription(receiver objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("debugDescription")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDeviceConfiguration", "debugDescription", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13799,7 +13804,7 @@ func VZUSBMassStorageDeviceConfiguration_Description(receiver objc.NSObject) *ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("description")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDeviceConfiguration", "description", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13815,7 +13820,7 @@ func VZUSBMassStorageDeviceConfiguration_Hash(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDeviceConfiguration", "hash", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -13847,7 +13852,7 @@ func VZUSBMassStorageDeviceConfiguration_IsEqual(receiver objc.NSObject, p0 objc
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDeviceConfiguration", "isEqual:", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -13863,7 +13868,7 @@ func VZUSBMassStorageDeviceConfiguration_IsKindOfClass(receiver objc.NSObject, p
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isKindOfClass:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDeviceConfiguration", "isKindOfClass:", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -13879,7 +13884,7 @@ func VZUSBMassStorageDeviceConfiguration_IsMemberOfClass(receiver objc.NSObject,
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isMemberOfClass:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDeviceConfiguration", "isMemberOfClass:", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -13895,7 +13900,7 @@ func VZUSBMassStorageDeviceConfiguration_IsProxy(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isProxy")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDeviceConfiguration", "isProxy", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -13910,7 +13915,7 @@ func VZUSBMassStorageDeviceConfiguration_Self(receiver objc.NSObject) *objc.Poin
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("self")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDeviceConfiguration", "self", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13925,7 +13930,7 @@ func VZUSBMassStorageDeviceConfiguration_SetUuid(receiver objc.NSObject, p0 objc
 	binding := sdkCallVZUSBMassStorageDeviceConfiguration_SetUuid.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUuid:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDeviceConfiguration", "setUuid:", "15.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -13940,7 +13945,7 @@ func VZUSBMassStorageDeviceConfiguration_Superclass(receiver objc.NSObject) unsa
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("superclass")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDeviceConfiguration", "superclass", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -13955,7 +13960,7 @@ func VZUSBMassStorageDeviceConfiguration_Uuid(receiver objc.NSObject) *objc.Poin
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("uuid")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBMassStorageDeviceConfiguration", "uuid", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -13971,7 +13976,7 @@ func VZUSBPassthroughDevice_Class(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("class")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDevice", "class", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -13986,7 +13991,7 @@ func VZUSBPassthroughDevice_ConformsToProtocol(receiver objc.NSObject, p0 objc.N
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("conformsToProtocol:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDevice", "conformsToProtocol:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -14002,7 +14007,7 @@ func VZUSBPassthroughDevice_DebugDescription(receiver objc.NSObject) *objc.Point
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("debugDescription")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDevice", "debugDescription", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14018,7 +14023,7 @@ func VZUSBPassthroughDevice_Description(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("description")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDevice", "description", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14034,7 +14039,7 @@ func VZUSBPassthroughDevice_Hash(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDevice", "hash", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -14073,7 +14078,7 @@ func VZUSBPassthroughDevice_IsEqual(receiver objc.NSObject, p0 objc.NSObject) bo
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDevice", "isEqual:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -14089,7 +14094,7 @@ func VZUSBPassthroughDevice_IsKindOfClass(receiver objc.NSObject, p0 unsafe.Poin
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isKindOfClass:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDevice", "isKindOfClass:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -14105,7 +14110,7 @@ func VZUSBPassthroughDevice_IsMemberOfClass(receiver objc.NSObject, p0 unsafe.Po
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isMemberOfClass:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDevice", "isMemberOfClass:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -14121,7 +14126,7 @@ func VZUSBPassthroughDevice_IsProxy(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isProxy")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDevice", "isProxy", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -14136,7 +14141,7 @@ func VZUSBPassthroughDevice_Self(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("self")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDevice", "self", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14152,7 +14157,7 @@ func VZUSBPassthroughDevice_Superclass(receiver objc.NSObject) unsafe.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("superclass")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDevice", "superclass", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -14167,7 +14172,7 @@ func VZUSBPassthroughDevice_UsbController(receiver objc.NSObject) *objc.Pointer 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("usbController")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDevice", "usbController", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14183,7 +14188,7 @@ func VZUSBPassthroughDevice_Uuid(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("uuid")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDevice", "uuid", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14199,7 +14204,7 @@ func VZUSBPassthroughDeviceConfiguration_Class(receiver objc.NSObject) unsafe.Po
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("class")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDeviceConfiguration", "class", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -14214,7 +14219,7 @@ func VZUSBPassthroughDeviceConfiguration_ConformsToProtocol(receiver objc.NSObje
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("conformsToProtocol:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDeviceConfiguration", "conformsToProtocol:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -14230,7 +14235,7 @@ func VZUSBPassthroughDeviceConfiguration_DebugDescription(receiver objc.NSObject
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("debugDescription")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDeviceConfiguration", "debugDescription", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14246,7 +14251,7 @@ func VZUSBPassthroughDeviceConfiguration_Description(receiver objc.NSObject) *ob
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("description")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDeviceConfiguration", "description", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14262,7 +14267,7 @@ func VZUSBPassthroughDeviceConfiguration_Hash(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("hash")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDeviceConfiguration", "hash", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -14294,7 +14299,7 @@ func VZUSBPassthroughDeviceConfiguration_IsEqual(receiver objc.NSObject, p0 objc
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isEqual:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDeviceConfiguration", "isEqual:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -14310,7 +14315,7 @@ func VZUSBPassthroughDeviceConfiguration_IsKindOfClass(receiver objc.NSObject, p
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isKindOfClass:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDeviceConfiguration", "isKindOfClass:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -14326,7 +14331,7 @@ func VZUSBPassthroughDeviceConfiguration_IsMemberOfClass(receiver objc.NSObject,
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer) bool]("isMemberOfClass:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDeviceConfiguration", "isMemberOfClass:", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -14342,7 +14347,7 @@ func VZUSBPassthroughDeviceConfiguration_IsProxy(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isProxy")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDeviceConfiguration", "isProxy", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -14357,7 +14362,7 @@ func VZUSBPassthroughDeviceConfiguration_Self(receiver objc.NSObject) *objc.Poin
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("self")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDeviceConfiguration", "self", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14372,7 +14377,7 @@ func VZUSBPassthroughDeviceConfiguration_SetUuid(receiver objc.NSObject, p0 objc
 	binding := sdkCallVZUSBPassthroughDeviceConfiguration_SetUuid.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUuid:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDeviceConfiguration", "setUuid:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -14387,7 +14392,7 @@ func VZUSBPassthroughDeviceConfiguration_Superclass(receiver objc.NSObject) unsa
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("superclass")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDeviceConfiguration", "superclass", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -14402,7 +14407,7 @@ func VZUSBPassthroughDeviceConfiguration_Uuid(receiver objc.NSObject) *objc.Poin
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("uuid")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZUSBPassthroughDeviceConfiguration", "uuid", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14456,7 +14461,7 @@ func VZVirtioBlockDeviceConfiguration_BlockDeviceIdentifier(receiver objc.NSObje
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("blockDeviceIdentifier")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioBlockDeviceConfiguration", "blockDeviceIdentifier", "12.3", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14488,7 +14493,7 @@ func VZVirtioBlockDeviceConfiguration_SetBlockDeviceIdentifier(receiver objc.NSO
 	binding := sdkCallVZVirtioBlockDeviceConfiguration_SetBlockDeviceIdentifier.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setBlockDeviceIdentifier:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioBlockDeviceConfiguration", "setBlockDeviceIdentifier:", "12.3", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -14503,7 +14508,7 @@ func VZVirtioConsoleDevice_Delegate(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("delegate")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsoleDevice", "delegate", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14519,9 +14524,10 @@ func VZVirtioConsoleDevice_Ports(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("ports")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsoleDevice", "ports", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
+		InheritObjectQueue(result, objc.Ptr(receiver))
 		result = directRetain(result)
 	})
 	runtime.KeepAlive(receiver)
@@ -14534,7 +14540,7 @@ func VZVirtioConsoleDevice_SetDelegate(receiver objc.NSObject, p0 objc.NSObject)
 	binding := sdkCallVZVirtioConsoleDevice_SetDelegate.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsoleDevice", "setDelegate:", "13.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -14565,7 +14571,7 @@ func VZVirtioConsoleDeviceConfiguration_Ports(receiver objc.NSObject) *objc.Poin
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("ports")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsoleDeviceConfiguration", "ports", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14597,7 +14603,7 @@ func VZVirtioConsolePort_Attachment(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("attachment")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsolePort", "attachment", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14613,7 +14619,7 @@ func VZVirtioConsolePort_Name(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("name")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsolePort", "name", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14628,7 +14634,7 @@ func VZVirtioConsolePort_SetAttachment(receiver objc.NSObject, p0 objc.NSObject)
 	binding := sdkCallVZVirtioConsolePort_SetAttachment.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAttachment:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsolePort", "setAttachment:", "13.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -14643,7 +14649,7 @@ func VZVirtioConsolePortArray_MaximumPortCount(receiver objc.NSObject) uint32 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("maximumPortCount")
 	})
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsolePortArray", "maximumPortCount", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -14658,9 +14664,10 @@ func VZVirtioConsolePortArray_ObjectAtIndexedSubscript(receiver objc.NSObject, p
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) unsafe.Pointer]("objectAtIndexedSubscript:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsolePortArray", "objectAtIndexedSubscript:", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
+		InheritObjectQueue(result, objc.Ptr(receiver))
 		result = directRetain(result)
 	})
 	runtime.KeepAlive(receiver)
@@ -14690,7 +14697,7 @@ func VZVirtioConsolePortConfiguration_IsConsole(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("isConsole")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsolePortConfiguration", "isConsole", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -14705,7 +14712,7 @@ func VZVirtioConsolePortConfiguration_Name(receiver objc.NSObject) *objc.Pointer
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("name")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsolePortConfiguration", "name", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14720,7 +14727,7 @@ func VZVirtioConsolePortConfiguration_SetIsConsole(receiver objc.NSObject, p0 bo
 	binding := sdkCallVZVirtioConsolePortConfiguration_SetIsConsole.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setIsConsole:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsolePortConfiguration", "setIsConsole:", "13.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -14733,7 +14740,7 @@ func VZVirtioConsolePortConfiguration_SetName(receiver objc.NSObject, p0 objc.NS
 	binding := sdkCallVZVirtioConsolePortConfiguration_SetName.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setName:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsolePortConfiguration", "setName:", "13.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -14748,7 +14755,7 @@ func VZVirtioConsolePortConfigurationArray_MaximumPortCount(receiver objc.NSObje
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("maximumPortCount")
 	})
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsolePortConfigurationArray", "maximumPortCount", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -14763,7 +14770,7 @@ func VZVirtioConsolePortConfigurationArray_ObjectAtIndexedSubscript(receiver obj
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64) unsafe.Pointer]("objectAtIndexedSubscript:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsolePortConfigurationArray", "objectAtIndexedSubscript:", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector, p0)
 		result = directRetain(result)
@@ -14778,7 +14785,7 @@ func VZVirtioConsolePortConfigurationArray_SetMaximumPortCount(receiver objc.NSO
 	binding := sdkCallVZVirtioConsolePortConfigurationArray_SetMaximumPortCount.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]("setMaximumPortCount:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsolePortConfigurationArray", "setMaximumPortCount:", "13.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -14791,7 +14798,7 @@ func VZVirtioConsolePortConfigurationArray_SetObject_AtIndexedSubscript(receiver
 	binding := sdkCallVZVirtioConsolePortConfigurationArray_SetObject_AtIndexedSubscript.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64)]("setObject:atIndexedSubscript:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioConsolePortConfigurationArray", "setObject:atIndexedSubscript:", "13.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 	})
@@ -14806,7 +14813,7 @@ func VZVirtioDeviceSpecificConfiguration_ConfigurationData(receiver objc.NSObjec
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("configurationData")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioDeviceSpecificConfiguration", "configurationData", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14854,7 +14861,7 @@ func VZVirtioFeatureSet_SetSubset0(receiver objc.NSObject, p0 uint32) {
 	binding := sdkCallVZVirtioFeatureSet_SetSubset0.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]("setSubset0:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioFeatureSet", "setSubset0:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -14867,7 +14874,7 @@ func VZVirtioFeatureSet_SetSubset1(receiver objc.NSObject, p0 uint32) {
 	binding := sdkCallVZVirtioFeatureSet_SetSubset1.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]("setSubset1:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioFeatureSet", "setSubset1:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -14881,7 +14888,7 @@ func VZVirtioFeatureSet_Subset0(receiver objc.NSObject) uint32 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("subset0")
 	})
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioFeatureSet", "subset0", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -14896,7 +14903,7 @@ func VZVirtioFeatureSet_Subset1(receiver objc.NSObject) uint32 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("subset1")
 	})
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioFeatureSet", "subset1", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -14910,7 +14917,7 @@ func VZVirtioFileSystemDevice_SetShare(receiver objc.NSObject, p0 objc.NSObject)
 	binding := sdkCallVZVirtioFileSystemDevice_SetShare.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setShare:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioFileSystemDevice", "setShare:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -14925,7 +14932,7 @@ func VZVirtioFileSystemDevice_Share(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("share")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioFileSystemDevice", "share", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -14941,7 +14948,7 @@ func VZVirtioFileSystemDevice_Tag(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("tag")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioFileSystemDevice", "tag", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -15010,7 +15017,7 @@ func VZVirtioFileSystemDeviceConfiguration_SetShare(receiver objc.NSObject, p0 o
 	binding := sdkCallVZVirtioFileSystemDeviceConfiguration_SetShare.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setShare:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioFileSystemDeviceConfiguration", "setShare:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -15024,7 +15031,7 @@ func VZVirtioFileSystemDeviceConfiguration_SetTag(receiver objc.NSObject, p0 obj
 	binding := sdkCallVZVirtioFileSystemDeviceConfiguration_SetTag.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setTag:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioFileSystemDeviceConfiguration", "setTag:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -15039,7 +15046,7 @@ func VZVirtioFileSystemDeviceConfiguration_Share(receiver objc.NSObject) *objc.P
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("share")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioFileSystemDeviceConfiguration", "share", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -15055,7 +15062,7 @@ func VZVirtioFileSystemDeviceConfiguration_Tag(receiver objc.NSObject) *objc.Poi
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("tag")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioFileSystemDeviceConfiguration", "tag", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -15087,7 +15094,7 @@ func VZVirtioGraphicsDeviceConfiguration_Scanouts(receiver objc.NSObject) *objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("scanouts")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioGraphicsDeviceConfiguration", "scanouts", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -15102,7 +15109,7 @@ func VZVirtioGraphicsDeviceConfiguration_SetScanouts(receiver objc.NSObject, p0 
 	binding := sdkCallVZVirtioGraphicsDeviceConfiguration_SetScanouts.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setScanouts:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioGraphicsDeviceConfiguration", "setScanouts:", "13.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -15117,7 +15124,7 @@ func VZVirtioGraphicsScanoutConfiguration_HeightInPixels(receiver objc.NSObject)
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("heightInPixels")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioGraphicsScanoutConfiguration", "heightInPixels", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15147,7 +15154,7 @@ func VZVirtioGraphicsScanoutConfiguration_SetHeightInPixels(receiver objc.NSObje
 	binding := sdkCallVZVirtioGraphicsScanoutConfiguration_SetHeightInPixels.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setHeightInPixels:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioGraphicsScanoutConfiguration", "setHeightInPixels:", "13.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -15160,7 +15167,7 @@ func VZVirtioGraphicsScanoutConfiguration_SetWidthInPixels(receiver objc.NSObjec
 	binding := sdkCallVZVirtioGraphicsScanoutConfiguration_SetWidthInPixels.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, int64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, int64)]("setWidthInPixels:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioGraphicsScanoutConfiguration", "setWidthInPixels:", "13.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -15174,7 +15181,7 @@ func VZVirtioGraphicsScanoutConfiguration_WidthInPixels(receiver objc.NSObject) 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("widthInPixels")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioGraphicsScanoutConfiguration", "widthInPixels", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15205,9 +15212,10 @@ func VZVirtioQueue_NextElement(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("nextElement")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioQueue", "nextElement", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
+		InheritObjectQueue(result, objc.Ptr(receiver))
 		result = directRetain(result)
 	})
 	runtime.KeepAlive(receiver)
@@ -15221,7 +15229,7 @@ func VZVirtioQueue_QueueIndex(receiver objc.NSObject) uint16 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("queueIndex")
 	})
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioQueue", "queueIndex", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15236,7 +15244,7 @@ func VZVirtioQueue_QueueSize(receiver objc.NSObject) uint16 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint16]("queueSize")
 	})
 	var result uint16
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioQueue", "queueSize", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15251,7 +15259,7 @@ func VZVirtioQueueElement_PeekIntoReadBuffersWithExactLength_Error(receiver objc
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64, *unsafe.Pointer) unsafe.Pointer]("peekIntoReadBuffersWithExactLength:error:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioQueueElement", "peekIntoReadBuffersWithExactLength:error:", "27.0", "", true, objc.Ptr(receiver))
 		if p1 != nil {
 			*p1 = nil
@@ -15274,7 +15282,7 @@ func VZVirtioQueueElement_ReadBuffers(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("readBuffers")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioQueueElement", "readBuffers", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -15290,7 +15298,7 @@ func VZVirtioQueueElement_ReadBuffersAvailableByteCount(receiver objc.NSObject) 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("readBuffersAvailableByteCount")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioQueueElement", "readBuffersAvailableByteCount", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15305,7 +15313,7 @@ func VZVirtioQueueElement_ReadBuffersByteCount(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("readBuffersByteCount")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioQueueElement", "readBuffersByteCount", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15320,7 +15328,7 @@ func VZVirtioQueueElement_ReadBytesIntoBuffer_ExactLength_Error(receiver objc.NS
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, *unsafe.Pointer) bool]("readBytesIntoBuffer:exactLength:error:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioQueueElement", "readBytesIntoBuffer:exactLength:error:", "27.0", "", true, objc.Ptr(receiver))
 		if p2 != nil {
 			*p2 = nil
@@ -15343,7 +15351,7 @@ func VZVirtioQueueElement_ReadBytesWithExactLength_Error(receiver objc.NSObject,
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64, *unsafe.Pointer) unsafe.Pointer]("readBytesWithExactLength:error:")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioQueueElement", "readBytesWithExactLength:error:", "27.0", "", true, objc.Ptr(receiver))
 		if p1 != nil {
 			*p1 = nil
@@ -15365,7 +15373,7 @@ func VZVirtioQueueElement_ReturnToQueue(receiver objc.NSObject) {
 	binding := sdkCallVZVirtioQueueElement_ReturnToQueue.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("returnToQueue")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioQueueElement", "returnToQueue", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15379,7 +15387,7 @@ func VZVirtioQueueElement_WriteBuffer_ExactLength_Error(receiver objc.NSObject, 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint64, *unsafe.Pointer) bool]("writeBuffer:exactLength:error:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioQueueElement", "writeBuffer:exactLength:error:", "27.0", "", true, objc.Ptr(receiver))
 		if p2 != nil {
 			*p2 = nil
@@ -15402,7 +15410,7 @@ func VZVirtioQueueElement_WriteBuffersAvailableByteCount(receiver objc.NSObject)
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("writeBuffersAvailableByteCount")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioQueueElement", "writeBuffersAvailableByteCount", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15417,7 +15425,7 @@ func VZVirtioQueueElement_WriteBuffersByteCount(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("writeBuffersByteCount")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioQueueElement", "writeBuffersByteCount", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15432,7 +15440,7 @@ func VZVirtioQueueElement_WriteData_Error(receiver objc.NSObject, p0 objc.NSObje
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, *unsafe.Pointer) bool]("writeData:error:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioQueueElement", "writeData:error:", "27.0", "", true, objc.Ptr(receiver))
 		if p1 != nil {
 			*p1 = nil
@@ -15455,7 +15463,7 @@ func VZVirtioQueueElement_WrittenByteCount(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("writtenByteCount")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioQueueElement", "writtenByteCount", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15470,7 +15478,7 @@ func VZVirtioSharedMemoryRegion_RegionID(receiver objc.NSObject) uint8 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint8]("regionID")
 	})
 	var result uint8
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSharedMemoryRegion", "regionID", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15485,7 +15493,7 @@ func VZVirtioSharedMemoryRegion_Size(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("size")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSharedMemoryRegion", "size", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15516,7 +15524,7 @@ func VZVirtioSharedMemoryRegionConfiguration_RegionID(receiver objc.NSObject) ui
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint8]("regionID")
 	})
 	var result uint8
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSharedMemoryRegionConfiguration", "regionID", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15531,7 +15539,7 @@ func VZVirtioSharedMemoryRegionConfiguration_Size(receiver objc.NSObject) uint64
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("size")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSharedMemoryRegionConfiguration", "size", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15545,7 +15553,7 @@ func VZVirtioSocketConnection_Close(receiver objc.NSObject) {
 	binding := sdkCallVZVirtioSocketConnection_Close.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL)]("close")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSocketConnection", "close", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15559,7 +15567,7 @@ func VZVirtioSocketConnection_DestinationPort(receiver objc.NSObject) uint32 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("destinationPort")
 	})
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSocketConnection", "destinationPort", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15574,7 +15582,7 @@ func VZVirtioSocketConnection_FileDescriptor(receiver objc.NSObject) int32 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int32]("fileDescriptor")
 	})
 	var result int32
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSocketConnection", "fileDescriptor", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15589,7 +15597,7 @@ func VZVirtioSocketConnection_SourcePort(receiver objc.NSObject) uint32 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint32]("sourcePort")
 	})
 	var result uint32
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSocketConnection", "sourcePort", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15603,7 +15611,7 @@ func VZVirtioSocketDevice_RemoveSocketListenerForPort(receiver objc.NSObject, p0
 	binding := sdkCallVZVirtioSocketDevice_RemoveSocketListenerForPort.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint32)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint32)]("removeSocketListenerForPort:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSocketDevice", "removeSocketListenerForPort:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -15616,7 +15624,7 @@ func VZVirtioSocketDevice_SetSocketListener_ForPort(receiver objc.NSObject, p0 o
 	binding := sdkCallVZVirtioSocketDevice_SetSocketListener_ForPort.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer, uint32)]("setSocketListener:forPort:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSocketDevice", "setSocketListener:forPort:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0), p1)
 	})
@@ -15661,7 +15669,7 @@ func VZVirtioSocketListener_Delegate(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("delegate")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSocketListener", "delegate", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -15676,7 +15684,7 @@ func VZVirtioSocketListener_SetDelegate(receiver objc.NSObject, p0 objc.NSObject
 	binding := sdkCallVZVirtioSocketListener_SetDelegate.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSocketListener", "setDelegate:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -15706,7 +15714,7 @@ func VZVirtioSoundDeviceConfiguration_SetStreams(receiver objc.NSObject, p0 objc
 	binding := sdkCallVZVirtioSoundDeviceConfiguration_SetStreams.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setStreams:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSoundDeviceConfiguration", "setStreams:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -15721,7 +15729,7 @@ func VZVirtioSoundDeviceConfiguration_Streams(receiver objc.NSObject) *objc.Poin
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("streams")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSoundDeviceConfiguration", "streams", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -15752,7 +15760,7 @@ func VZVirtioSoundDeviceInputStreamConfiguration_SetSource(receiver objc.NSObjec
 	binding := sdkCallVZVirtioSoundDeviceInputStreamConfiguration_SetSource.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setSource:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSoundDeviceInputStreamConfiguration", "setSource:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -15767,7 +15775,7 @@ func VZVirtioSoundDeviceInputStreamConfiguration_Source(receiver objc.NSObject) 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("source")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSoundDeviceInputStreamConfiguration", "source", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -15798,7 +15806,7 @@ func VZVirtioSoundDeviceOutputStreamConfiguration_SetSink(receiver objc.NSObject
 	binding := sdkCallVZVirtioSoundDeviceOutputStreamConfiguration_SetSink.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setSink:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSoundDeviceOutputStreamConfiguration", "setSink:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -15813,7 +15821,7 @@ func VZVirtioSoundDeviceOutputStreamConfiguration_Sink(receiver objc.NSObject) *
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("sink")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioSoundDeviceOutputStreamConfiguration", "sink", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -15828,7 +15836,7 @@ func VZVirtioTraditionalMemoryBalloonDevice_SetTargetVirtualMachineMemorySize(re
 	binding := sdkCallVZVirtioTraditionalMemoryBalloonDevice_SetTargetVirtualMachineMemorySize.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]("setTargetVirtualMachineMemorySize:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioTraditionalMemoryBalloonDevice", "setTargetVirtualMachineMemorySize:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -15842,7 +15850,7 @@ func VZVirtioTraditionalMemoryBalloonDevice_TargetVirtualMachineMemorySize(recei
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("targetVirtualMachineMemorySize")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtioTraditionalMemoryBalloonDevice", "targetVirtualMachineMemorySize", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15887,7 +15895,7 @@ func VZVirtualMachine_CanPause(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("canPause")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "canPause", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15902,7 +15910,7 @@ func VZVirtualMachine_CanRequestStop(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("canRequestStop")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "canRequestStop", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15917,7 +15925,7 @@ func VZVirtualMachine_CanResume(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("canResume")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "canResume", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15932,7 +15940,7 @@ func VZVirtualMachine_CanStart(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("canStart")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "canStart", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15947,7 +15955,7 @@ func VZVirtualMachine_CanStop(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("canStop")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "canStop", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -15962,9 +15970,10 @@ func VZVirtualMachine_ConsoleDevices(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("consoleDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "consoleDevices", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
+		InheritObjectQueue(result, objc.Ptr(receiver))
 		result = directRetain(result)
 	})
 	runtime.KeepAlive(receiver)
@@ -15978,7 +15987,7 @@ func VZVirtualMachine_Delegate(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("delegate")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "delegate", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -15994,9 +16003,10 @@ func VZVirtualMachine_DirectorySharingDevices(receiver objc.NSObject) *objc.Poin
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("directorySharingDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "directorySharingDevices", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
+		InheritObjectQueue(result, objc.Ptr(receiver))
 		result = directRetain(result)
 	})
 	runtime.KeepAlive(receiver)
@@ -16010,9 +16020,10 @@ func VZVirtualMachine_GraphicsDevices(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("graphicsDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "graphicsDevices", "14.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
+		InheritObjectQueue(result, objc.Ptr(receiver))
 		result = directRetain(result)
 	})
 	runtime.KeepAlive(receiver)
@@ -16061,9 +16072,10 @@ func VZVirtualMachine_MemoryBalloonDevices(receiver objc.NSObject) *objc.Pointer
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("memoryBalloonDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "memoryBalloonDevices", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
+		InheritObjectQueue(result, objc.Ptr(receiver))
 		result = directRetain(result)
 	})
 	runtime.KeepAlive(receiver)
@@ -16077,9 +16089,10 @@ func VZVirtualMachine_NetworkDevices(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("networkDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "networkDevices", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
+		InheritObjectQueue(result, objc.Ptr(receiver))
 		result = directRetain(result)
 	})
 	runtime.KeepAlive(receiver)
@@ -16093,7 +16106,7 @@ func VZVirtualMachine_Queue(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("queue")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "queue", "26.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16109,7 +16122,7 @@ func VZVirtualMachine_RequestStopWithError(receiver objc.NSObject, p0 *unsafe.Po
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *unsafe.Pointer) bool]("requestStopWithError:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "requestStopWithError:", "11.0", "", true, objc.Ptr(receiver))
 		if p0 != nil {
 			*p0 = nil
@@ -16130,7 +16143,7 @@ func VZVirtualMachine_SetDelegate(receiver objc.NSObject, p0 objc.NSObject) {
 	binding := sdkCallVZVirtualMachine_SetDelegate.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDelegate:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "setDelegate:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16145,9 +16158,10 @@ func VZVirtualMachine_SocketDevices(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("socketDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "socketDevices", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
+		InheritObjectQueue(result, objc.Ptr(receiver))
 		result = directRetain(result)
 	})
 	runtime.KeepAlive(receiver)
@@ -16161,7 +16175,7 @@ func VZVirtualMachine_State(receiver objc.NSObject) int64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) int64]("state")
 	})
 	var result int64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "state", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -16176,9 +16190,10 @@ func VZVirtualMachine_UsbControllers(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("usbControllers")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachine", "usbControllers", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
+		InheritObjectQueue(result, objc.Ptr(receiver))
 		result = directRetain(result)
 	})
 	runtime.KeepAlive(receiver)
@@ -16262,7 +16277,7 @@ func VZVirtualMachineConfiguration_CPUCount(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("CPUCount")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "CPUCount", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -16277,7 +16292,7 @@ func VZVirtualMachineConfiguration_AudioDevices(receiver objc.NSObject) *objc.Po
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("audioDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "audioDevices", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16293,7 +16308,7 @@ func VZVirtualMachineConfiguration_BootLoader(receiver objc.NSObject) *objc.Poin
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("bootLoader")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "bootLoader", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16309,7 +16324,7 @@ func VZVirtualMachineConfiguration_ConsoleDevices(receiver objc.NSObject) *objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("consoleDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "consoleDevices", "13.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16325,7 +16340,7 @@ func VZVirtualMachineConfiguration_CustomVirtioDevices(receiver objc.NSObject) *
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("customVirtioDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "customVirtioDevices", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16341,7 +16356,7 @@ func VZVirtualMachineConfiguration_DirectorySharingDevices(receiver objc.NSObjec
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("directorySharingDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "directorySharingDevices", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16357,7 +16372,7 @@ func VZVirtualMachineConfiguration_EntropyDevices(receiver objc.NSObject) *objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("entropyDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "entropyDevices", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16373,7 +16388,7 @@ func VZVirtualMachineConfiguration_GraphicsDevices(receiver objc.NSObject) *objc
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("graphicsDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "graphicsDevices", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16389,7 +16404,7 @@ func VZVirtualMachineConfiguration_Keyboards(receiver objc.NSObject) *objc.Point
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("keyboards")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "keyboards", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16405,7 +16420,7 @@ func VZVirtualMachineConfiguration_Label(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("label")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "label", "27.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16421,7 +16436,7 @@ func VZVirtualMachineConfiguration_MemoryBalloonDevices(receiver objc.NSObject) 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("memoryBalloonDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "memoryBalloonDevices", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16437,7 +16452,7 @@ func VZVirtualMachineConfiguration_MemorySize(receiver objc.NSObject) uint64 {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) uint64]("memorySize")
 	})
 	var result uint64
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "memorySize", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -16452,7 +16467,7 @@ func VZVirtualMachineConfiguration_NetworkDevices(receiver objc.NSObject) *objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("networkDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "networkDevices", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16468,7 +16483,7 @@ func VZVirtualMachineConfiguration_Platform(receiver objc.NSObject) *objc.Pointe
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("platform")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "platform", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16484,7 +16499,7 @@ func VZVirtualMachineConfiguration_PointingDevices(receiver objc.NSObject) *objc
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("pointingDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "pointingDevices", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16500,7 +16515,7 @@ func VZVirtualMachineConfiguration_SerialPorts(receiver objc.NSObject) *objc.Poi
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("serialPorts")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "serialPorts", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16515,7 +16530,7 @@ func VZVirtualMachineConfiguration_SetAudioDevices(receiver objc.NSObject, p0 ob
 	binding := sdkCallVZVirtualMachineConfiguration_SetAudioDevices.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setAudioDevices:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setAudioDevices:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16529,7 +16544,7 @@ func VZVirtualMachineConfiguration_SetBootLoader(receiver objc.NSObject, p0 objc
 	binding := sdkCallVZVirtualMachineConfiguration_SetBootLoader.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setBootLoader:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setBootLoader:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16543,7 +16558,7 @@ func VZVirtualMachineConfiguration_SetCPUCount(receiver objc.NSObject, p0 uint64
 	binding := sdkCallVZVirtualMachineConfiguration_SetCPUCount.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]("setCPUCount:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setCPUCount:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -16556,7 +16571,7 @@ func VZVirtualMachineConfiguration_SetConsoleDevices(receiver objc.NSObject, p0 
 	binding := sdkCallVZVirtualMachineConfiguration_SetConsoleDevices.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setConsoleDevices:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setConsoleDevices:", "13.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16570,7 +16585,7 @@ func VZVirtualMachineConfiguration_SetCustomVirtioDevices(receiver objc.NSObject
 	binding := sdkCallVZVirtualMachineConfiguration_SetCustomVirtioDevices.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setCustomVirtioDevices:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setCustomVirtioDevices:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16584,7 +16599,7 @@ func VZVirtualMachineConfiguration_SetDirectorySharingDevices(receiver objc.NSOb
 	binding := sdkCallVZVirtualMachineConfiguration_SetDirectorySharingDevices.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setDirectorySharingDevices:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setDirectorySharingDevices:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16598,7 +16613,7 @@ func VZVirtualMachineConfiguration_SetEntropyDevices(receiver objc.NSObject, p0 
 	binding := sdkCallVZVirtualMachineConfiguration_SetEntropyDevices.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setEntropyDevices:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setEntropyDevices:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16612,7 +16627,7 @@ func VZVirtualMachineConfiguration_SetGraphicsDevices(receiver objc.NSObject, p0
 	binding := sdkCallVZVirtualMachineConfiguration_SetGraphicsDevices.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setGraphicsDevices:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setGraphicsDevices:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16626,7 +16641,7 @@ func VZVirtualMachineConfiguration_SetKeyboards(receiver objc.NSObject, p0 objc.
 	binding := sdkCallVZVirtualMachineConfiguration_SetKeyboards.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setKeyboards:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setKeyboards:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16640,7 +16655,7 @@ func VZVirtualMachineConfiguration_SetLabel(receiver objc.NSObject, p0 objc.NSOb
 	binding := sdkCallVZVirtualMachineConfiguration_SetLabel.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setLabel:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setLabel:", "27.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16654,7 +16669,7 @@ func VZVirtualMachineConfiguration_SetMemoryBalloonDevices(receiver objc.NSObjec
 	binding := sdkCallVZVirtualMachineConfiguration_SetMemoryBalloonDevices.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setMemoryBalloonDevices:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setMemoryBalloonDevices:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16668,7 +16683,7 @@ func VZVirtualMachineConfiguration_SetMemorySize(receiver objc.NSObject, p0 uint
 	binding := sdkCallVZVirtualMachineConfiguration_SetMemorySize.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, uint64)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, uint64)]("setMemorySize:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setMemorySize:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -16681,7 +16696,7 @@ func VZVirtualMachineConfiguration_SetNetworkDevices(receiver objc.NSObject, p0 
 	binding := sdkCallVZVirtualMachineConfiguration_SetNetworkDevices.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setNetworkDevices:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setNetworkDevices:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16695,7 +16710,7 @@ func VZVirtualMachineConfiguration_SetPlatform(receiver objc.NSObject, p0 objc.N
 	binding := sdkCallVZVirtualMachineConfiguration_SetPlatform.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setPlatform:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setPlatform:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16709,7 +16724,7 @@ func VZVirtualMachineConfiguration_SetPointingDevices(receiver objc.NSObject, p0
 	binding := sdkCallVZVirtualMachineConfiguration_SetPointingDevices.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setPointingDevices:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setPointingDevices:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16723,7 +16738,7 @@ func VZVirtualMachineConfiguration_SetSerialPorts(receiver objc.NSObject, p0 obj
 	binding := sdkCallVZVirtualMachineConfiguration_SetSerialPorts.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setSerialPorts:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setSerialPorts:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16737,7 +16752,7 @@ func VZVirtualMachineConfiguration_SetSocketDevices(receiver objc.NSObject, p0 o
 	binding := sdkCallVZVirtualMachineConfiguration_SetSocketDevices.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setSocketDevices:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setSocketDevices:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16751,7 +16766,7 @@ func VZVirtualMachineConfiguration_SetStorageDevices(receiver objc.NSObject, p0 
 	binding := sdkCallVZVirtualMachineConfiguration_SetStorageDevices.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setStorageDevices:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setStorageDevices:", "11.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16765,7 +16780,7 @@ func VZVirtualMachineConfiguration_SetUsbControllers(receiver objc.NSObject, p0 
 	binding := sdkCallVZVirtualMachineConfiguration_SetUsbControllers.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setUsbControllers:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "setUsbControllers:", "15.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16780,7 +16795,7 @@ func VZVirtualMachineConfiguration_SocketDevices(receiver objc.NSObject) *objc.P
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("socketDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "socketDevices", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16796,7 +16811,7 @@ func VZVirtualMachineConfiguration_StorageDevices(receiver objc.NSObject) *objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("storageDevices")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "storageDevices", "11.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16812,7 +16827,7 @@ func VZVirtualMachineConfiguration_UsbControllers(receiver objc.NSObject) *objc.
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("usbControllers")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "usbControllers", "15.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)
@@ -16828,7 +16843,7 @@ func VZVirtualMachineConfiguration_ValidateWithError(receiver objc.NSObject, p0 
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, *unsafe.Pointer) bool]("validateWithError:")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineConfiguration", "validateWithError:", "11.0", "", true, objc.Ptr(receiver))
 		if p0 != nil {
 			*p0 = nil
@@ -16878,7 +16893,7 @@ func VZVirtualMachineView_AutomaticallyReconfiguresDisplay(receiver objc.NSObjec
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("automaticallyReconfiguresDisplay")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineView", "automaticallyReconfiguresDisplay", "14.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -16893,7 +16908,7 @@ func VZVirtualMachineView_CapturesSystemKeys(receiver objc.NSObject) bool {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) bool]("capturesSystemKeys")
 	})
 	var result bool
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineView", "capturesSystemKeys", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 	})
@@ -16907,7 +16922,7 @@ func VZVirtualMachineView_SetAutomaticallyReconfiguresDisplay(receiver objc.NSOb
 	binding := sdkCallVZVirtualMachineView_SetAutomaticallyReconfiguresDisplay.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setAutomaticallyReconfiguresDisplay:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineView", "setAutomaticallyReconfiguresDisplay:", "14.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -16920,7 +16935,7 @@ func VZVirtualMachineView_SetCapturesSystemKeys(receiver objc.NSObject, p0 bool)
 	binding := sdkCallVZVirtualMachineView_SetCapturesSystemKeys.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, bool)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, bool)]("setCapturesSystemKeys:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineView", "setCapturesSystemKeys:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, p0)
 	})
@@ -16933,7 +16948,7 @@ func VZVirtualMachineView_SetVirtualMachine(receiver objc.NSObject, p0 objc.NSOb
 	binding := sdkCallVZVirtualMachineView_SetVirtualMachine.get(func() directBinding[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)] {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL, unsafe.Pointer)]("setVirtualMachine:")
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineView", "setVirtualMachine:", "12.0", "", true, objc.Ptr(receiver))
 		binding.call(objc.Ptr(receiver), binding.selector, objc.Ptr(p0))
 	})
@@ -16948,7 +16963,7 @@ func VZVirtualMachineView_VirtualMachine(receiver objc.NSObject) *objc.Pointer {
 		return bindDirect[func(unsafe.Pointer, runtimeobjc.SEL) unsafe.Pointer]("virtualMachine")
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(receiver), func() {
 		sdkRequire("VZVirtualMachineView", "virtualMachine", "12.0", "", true, objc.Ptr(receiver))
 		result = binding.call(objc.Ptr(receiver), binding.selector)
 		result = directRetain(result)

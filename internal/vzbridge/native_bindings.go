@@ -16,6 +16,33 @@ import (
 	"github.com/ebitengine/purego"
 )
 
+var callObjectQueue lazyBinding[func(unsafe.Pointer) unsafe.Pointer]
+
+func ObjectQueue(object objc.NSObject) unsafe.Pointer {
+	call := callObjectQueue.get(func() func(unsafe.Pointer) unsafe.Pointer {
+		var call func(unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_objectQueue))
+		return call
+	})
+	var result unsafe.Pointer
+	result = call(objc.Ptr(object))
+	runtime.KeepAlive(object)
+	return result
+}
+
+var callInheritObjectQueue lazyBinding[func(unsafe.Pointer, unsafe.Pointer)]
+
+func InheritObjectQueue(object unsafe.Pointer, source unsafe.Pointer) {
+	call := callInheritObjectQueue.get(func() func(unsafe.Pointer, unsafe.Pointer) {
+		var call func(unsafe.Pointer, unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_inheritObjectQueue))
+		return call
+	})
+	call(object, source)
+	runtime.KeepAlive(object)
+	runtime.KeepAlive(source)
+}
+
 var callAttachDeviceVZUSBController lazyBinding[func(unsafe.Pointer, unsafe.Pointer, uint64)]
 
 func AttachDeviceVZUSBController(p0 objc.NSObject, p1 objc.NSObject, p2 uint64) {
@@ -24,7 +51,7 @@ func AttachDeviceVZUSBController(p0 objc.NSObject, p1 objc.NSObject, p2 uint64) 
 		purego.RegisterFunc(&call, uintptr(C.vz_attachDeviceVZUSBController))
 		return call
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		call(objc.Ptr(p0), objc.Ptr(p1), p2)
 	})
 	runtime.KeepAlive(p0)
@@ -39,7 +66,7 @@ func CancelInstallVZMacOSInstaller(p0 objc.NSObject) {
 		purego.RegisterFunc(&call, uintptr(C.vz_cancelInstallVZMacOSInstaller))
 		return call
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		call(objc.Ptr(p0))
 	})
 	runtime.KeepAlive(p0)
@@ -53,7 +80,7 @@ func DetachDeviceVZUSBController(p0 objc.NSObject, p1 objc.NSObject, p2 uint64) 
 		purego.RegisterFunc(&call, uintptr(C.vz_detachDeviceVZUSBController))
 		return call
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		call(objc.Ptr(p0), objc.Ptr(p1), p2)
 	})
 	runtime.KeepAlive(p0)
@@ -102,7 +129,7 @@ func GetUUIDUSBDevice(p0 objc.NSObject) *objc.Pointer {
 		return call
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		result = call(objc.Ptr(p0))
 	})
 	runtime.KeepAlive(p0)
@@ -117,7 +144,7 @@ func InstallByVZMacOSInstaller(p0 objc.NSObject, p1 uint64, p2 uint64) {
 		purego.RegisterFunc(&call, uintptr(C.vz_installByVZMacOSInstaller))
 		return call
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		call(objc.Ptr(p0), p1, p2)
 	})
 	runtime.KeepAlive(p0)
@@ -131,7 +158,7 @@ func InvalidateVZVirtioSocketListener(p0 objc.NSObject) {
 		purego.RegisterFunc(&call, uintptr(C.vz_invalidateVZVirtioSocketListener))
 		return call
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		call(objc.Ptr(p0))
 	})
 	runtime.KeepAlive(p0)
@@ -283,7 +310,7 @@ func NewVZMacOSInstaller(p0 objc.NSObject, p1 string) *objc.Pointer {
 		return call
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		result = call(objc.Ptr(p0), p1)
 	})
 	runtime.KeepAlive(p0)
@@ -308,18 +335,19 @@ func NewVZNetworkBlockDeviceStorageDeviceAttachment(p0 string, p1 float64, p2 bo
 	return objc.NewManagedPointer(result, ReleaseObject)
 }
 
-var callNewVZVirtioSocketListener lazyBinding[func(uint64) unsafe.Pointer]
+var callNewVZVirtioSocketListener lazyBinding[func(unsafe.Pointer, uint64) unsafe.Pointer]
 
-func NewVZVirtioSocketListener(p0 uint64) *objc.Pointer {
-	call := callNewVZVirtioSocketListener.get(func() func(uint64) unsafe.Pointer {
-		var call func(uint64) unsafe.Pointer
+func NewVZVirtioSocketListener(device objc.NSObject, context uint64) *objc.Pointer {
+	call := callNewVZVirtioSocketListener.get(func() func(unsafe.Pointer, uint64) unsafe.Pointer {
+		var call func(unsafe.Pointer, uint64) unsafe.Pointer
 		purego.RegisterFunc(&call, uintptr(C.vz_newVZVirtioSocketListener))
 		return call
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
-		result = call(p0)
+	onObjectQueue(objc.Ptr(device), func() {
+		result = call(objc.Ptr(device), context)
 	})
+	runtime.KeepAlive(device)
 	return objc.NewManagedPointer(result, ReleaseObject)
 }
 
@@ -347,7 +375,7 @@ func PauseWithCompletionHandler(p0 objc.NSObject, p1 uint64) {
 		purego.RegisterFunc(&call, uintptr(C.vz_pauseWithCompletionHandler))
 		return call
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		call(objc.Ptr(p0), p1)
 	})
 	runtime.KeepAlive(p0)
@@ -373,7 +401,7 @@ func RestoreMachineStateFromURLWithCompletionHandler(p0 objc.NSObject, p1 uint64
 		purego.RegisterFunc(&call, uintptr(C.vz_restoreMachineStateFromURLWithCompletionHandler))
 		return call
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		call(objc.Ptr(p0), p1, p2)
 	})
 	runtime.KeepAlive(p0)
@@ -388,7 +416,7 @@ func ResumeWithCompletionHandler(p0 objc.NSObject, p1 uint64) {
 		purego.RegisterFunc(&call, uintptr(C.vz_resumeWithCompletionHandler))
 		return call
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		call(objc.Ptr(p0), p1)
 	})
 	runtime.KeepAlive(p0)
@@ -402,7 +430,7 @@ func SaveMachineStateToURLWithCompletionHandler(p0 objc.NSObject, p1 uint64, p2 
 		purego.RegisterFunc(&call, uintptr(C.vz_saveMachineStateToURLWithCompletionHandler))
 		return call
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		call(objc.Ptr(p0), p1, p2)
 	})
 	runtime.KeepAlive(p0)
@@ -431,7 +459,7 @@ func SocketConnectionDuplicatedFileDescriptor(p0 objc.NSObject, p1 *unsafe.Point
 		return call
 	})
 	var result int32
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		result = call(objc.Ptr(p0), p1)
 	})
 	runtime.KeepAlive(p0)
@@ -439,18 +467,17 @@ func SocketConnectionDuplicatedFileDescriptor(p0 objc.NSObject, p1 *unsafe.Point
 	return result
 }
 
-var callStartVirtualMachineWindow lazyBinding[func(unsafe.Pointer, unsafe.Pointer, float64, float64, string, bool)]
+var callStartVirtualMachineWindow lazyBinding[func(unsafe.Pointer, float64, float64, string, bool)]
 
-func StartVirtualMachineWindow(p0 objc.NSObject, p1 unsafe.Pointer, p2 float64, p3 float64, p4 string, p5 bool) {
-	call := callStartVirtualMachineWindow.get(func() func(unsafe.Pointer, unsafe.Pointer, float64, float64, string, bool) {
-		var call func(unsafe.Pointer, unsafe.Pointer, float64, float64, string, bool)
+func StartVirtualMachineWindow(p0 objc.NSObject, p1 float64, p2 float64, p3 string, p4 bool) {
+	call := callStartVirtualMachineWindow.get(func() func(unsafe.Pointer, float64, float64, string, bool) {
+		var call func(unsafe.Pointer, float64, float64, string, bool)
 		purego.RegisterFunc(&call, uintptr(C.vz_startVirtualMachineWindow))
 		return call
 	})
-	call(objc.Ptr(p0), p1, p2, p3, p4, p5)
+	call(objc.Ptr(p0), p1, p2, p3, p4)
 	runtime.KeepAlive(p0)
-	runtime.KeepAlive(p1)
-	runtime.KeepAlive(p4)
+	runtime.KeepAlive(p3)
 }
 
 var callStartWithCompletionHandler lazyBinding[func(unsafe.Pointer, uint64)]
@@ -461,7 +488,7 @@ func StartWithCompletionHandler(p0 objc.NSObject, p1 uint64) {
 		purego.RegisterFunc(&call, uintptr(C.vz_startWithCompletionHandler))
 		return call
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		call(objc.Ptr(p0), p1)
 	})
 	runtime.KeepAlive(p0)
@@ -475,7 +502,7 @@ func StartWithOptionsCompletionHandler(p0 objc.NSObject, p1 objc.NSObject, p2 ui
 		purego.RegisterFunc(&call, uintptr(C.vz_startWithOptionsCompletionHandler))
 		return call
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		call(objc.Ptr(p0), objc.Ptr(p1), p2)
 	})
 	runtime.KeepAlive(p0)
@@ -490,7 +517,7 @@ func StopWithCompletionHandler(p0 objc.NSObject, p1 uint64) {
 		purego.RegisterFunc(&call, uintptr(C.vz_stopWithCompletionHandler))
 		return call
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		call(objc.Ptr(p0), p1)
 	})
 	runtime.KeepAlive(p0)
@@ -504,7 +531,7 @@ func VZVirtioSocketDevice_connectToPort(p0 objc.NSObject, p1 uint32, p2 uint64) 
 		purego.RegisterFunc(&call, uintptr(C.vz_VZVirtioSocketDevice_connectToPort))
 		return call
 	})
-	onQueue(func() {
+	onObjectQueue(objc.Ptr(p0), func() {
 		call(objc.Ptr(p0), p1, p2)
 	})
 	runtime.KeepAlive(p0)

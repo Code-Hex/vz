@@ -85,7 +85,7 @@ func (v *VirtioSocketDevice) Listen(port uint32) (*VirtioSocketListener, error) 
 		}
 		return 0
 	})
-	pointer := vzbridge.NewVZVirtioSocketListener(handle)
+	pointer := vzbridge.NewVZVirtioSocketListener(v, handle)
 	cleanup := &socketListenerCleanup{listener: pointer, device: v, port: port, accepts: state, handle: handle}
 	owner := &socketListenerOwner{cleanup: cleanup}
 	listener := &VirtioSocketListener{pointer: pointer, port: port, owner: owner}

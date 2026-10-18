@@ -73,8 +73,7 @@ const (
 // see: https://developer.apple.com/documentation/virtualization/vzvirtualmachine?language=objc
 type VirtualMachine struct {
 	*pointer
-	dispatchQueue unsafe.Pointer
-	machineState  *machineState
+	machineState *machineState
 
 	disconnectedIn        *infinity.Channel[*disconnected]
 	disconnectedOut       *infinity.Channel[*DisconnectedError]
@@ -95,13 +94,15 @@ type machineState struct {
 // The configuration must be valid. Validation can be performed at runtime with (*VirtualMachineConfiguration).Validate() method.
 // The configuration is copied by the initializer.
 //
+// Each virtual machine has its own serial dispatch queue.
+// vz dispatches VM operations to that queue internally.
+//
 // This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, error) {
 	if err := macOSAvailable(11); err != nil {
 		return nil, err
 	}
-	queue := vzbridge.DispatchQueuePointer()
 	state := &machineState{stateNotify: infinity.NewChannel[VirtualMachineState]()}
 	stateHandle := registerNativeCallback(func(kind uint32, _, _ unsafe.Pointer, value uint64) uint64 {
 		if kind == 4 {
@@ -131,8 +132,12 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 		disconnectedIn.Close()
 		return nil, fmt.Errorf("could not create virtual machine")
 	}
-	return &VirtualMachine{pointer: object, dispatchQueue: queue, machineState: state,
-		disconnectedIn: disconnectedIn, config: config}, nil
+	return &VirtualMachine{
+		pointer:        object,
+		machineState:   state,
+		disconnectedIn: disconnectedIn,
+		config:         config,
+	}, nil
 }
 
 // SocketDevices return the list of socket devices configured on this virtual machine.
@@ -339,7 +344,6 @@ func (v *VirtualMachine) StartGraphicApplication(width, height float64, opts ...
 	}
 	vzbridge.StartVirtualMachineWindow(
 		v,
-		v.dispatchQueue,
 		width,
 		height,
 		defaultOpts.title,

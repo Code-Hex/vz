@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/netip"
 	"runtime"
+	"strings"
 	"sync"
 	"unsafe"
 
@@ -46,6 +47,7 @@ type configurationState struct {
 type NetworkConfigurationOption func(*networkConfigurationOptions) error
 
 type networkConfigurationOptions struct {
+	externalInterface           string
 	mtu                         int
 	ipv4Subnet                  netip.Prefix
 	ipv6Prefix                  netip.Prefix
@@ -56,6 +58,20 @@ type networkConfigurationOptions struct {
 	nat44Disabled               bool
 	nat66Disabled               bool
 	routerAdvertisementDisabled bool
+}
+
+// WithExternalInterface selects the host interface used to reach external
+// networks, such as "en0". It requires ModeShared. If omitted, vmnet selects
+// the external interface automatically. Empty names and names containing NUL
+// are rejected; vmnet checks whether the interface can be used.
+func WithExternalInterface(name string) NetworkConfigurationOption {
+	return func(options *networkConfigurationOptions) error {
+		if name == "" || strings.ContainsRune(name, '\x00') {
+			return fmt.Errorf("invalid vmnet external interface %q", name)
+		}
+		options.externalInterface = name
+		return nil
+	}
 }
 
 // WithIPv4Subnet sets the network's IPv4 subnet. Host bits are ignored.
@@ -197,6 +213,9 @@ func NewNetworkConfiguration(mode Mode, opts ...NetworkConfigurationOption) (*Ne
 			return nil, err
 		}
 	}
+	if options.externalInterface != "" && mode == ModeHost {
+		return nil, fmt.Errorf("vmnet external interface requires ModeShared")
+	}
 	if err := macos.Available(26, vzbridge.SDKVersion); err != nil {
 		return nil, err
 	}
@@ -244,6 +263,12 @@ func (options networkConfigurationOptions) apply(configuration *NetworkConfigura
 		vzbridge.DisableVmnetRouterAdvertisement(configuration)
 	}
 	var errorPtr unsafe.Pointer
+	if options.externalInterface != "" {
+		vzbridge.SetVmnetExternalInterface(configuration, options.externalInterface, &errorPtr)
+		if err := vmnetError(errorPtr); err != nil {
+			return err
+		}
+	}
 	if options.mtu != 0 {
 		vzbridge.SetVmnetMTU(configuration, uint32(options.mtu), &errorPtr)
 		if err := vmnetError(errorPtr); err != nil {

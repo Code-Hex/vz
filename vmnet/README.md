@@ -42,6 +42,25 @@ address when the option is created, so options can be reused independently.
 `WithMTU` accepts 1280 through 65535 bytes. This range enforces the IPv6 minimum
 and Darwin interface maximum; vmnet can still reject a value within the range.
 
+### Select an external interface
+
+Use `WithExternalInterface` to select the host interface that a shared network
+uses to reach external networks:
+
+```go
+config, err := vmnet.NewNetworkConfiguration(
+    vmnet.ModeShared,
+    vmnet.WithExternalInterface("en0"),
+)
+if err != nil {
+    return err
+}
+```
+
+This option requires `ModeShared`. Omit it to let vmnet select the interface
+automatically. Empty names and names containing NUL are rejected. vmnet checks
+whether the named interface can be used.
+
 ### Disable network services
 
 These options apply vmnet's service-disable settings. Omit an option to
@@ -104,6 +123,10 @@ These rules take effect when the network starts. The destination service must
 be listening in the guest. Each rule uses `"tcp"` or `"udp"` and nonzero host
 and guest ports. Repeating the same protocol, IP family, and host port replaces
 the destination. Rules for different protocols or IP families remain separate.
+
+Use `WithExternalInterface` to select the external interface for a shared
+network's forwarded traffic. For IPv6, that interface needs a reachable IPv6
+address, and the guest needs a return route to the client.
 
 vmnet does not offer a host bind address for these rules. A forwarded port is
 not limited to `127.0.0.1` or `::1`; account for access from other hosts when

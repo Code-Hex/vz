@@ -743,3 +743,49 @@ func WriteVmnetPacket(session unsafe.Pointer, buffer unsafe.Pointer, size uint64
 	runtime.KeepAlive(buffer)
 	runtime.KeepAlive(errorOut)
 }
+
+var callCopyVmnetNetworkSerialization lazyBinding[func(unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer]
+
+func CopyVmnetNetworkSerialization(network objc.NSObject, errorOut *unsafe.Pointer) unsafe.Pointer {
+	call := callCopyVmnetNetworkSerialization.get(func() func(unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer {
+		var call func(unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_copyVmnetNetworkSerialization))
+		return call
+	})
+	var result unsafe.Pointer
+	onQueue(func() {
+		result = call(objc.Ptr(network), errorOut)
+	})
+	runtime.KeepAlive(network)
+	runtime.KeepAlive(errorOut)
+	return result
+}
+
+var callNewVmnetNetworkWithSerialization lazyBinding[func(unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer]
+
+func NewVmnetNetworkWithSerialization(serialization objc.NSObject, errorOut *unsafe.Pointer) unsafe.Pointer {
+	call := callNewVmnetNetworkWithSerialization.get(func() func(unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer {
+		var call func(unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_newVmnetNetworkWithSerialization))
+		return call
+	})
+	var result unsafe.Pointer
+	onQueue(func() {
+		result = call(objc.Ptr(serialization), errorOut)
+	})
+	runtime.KeepAlive(serialization)
+	runtime.KeepAlive(errorOut)
+	return result
+}
+
+var callReleaseXPCObject lazyBinding[func(unsafe.Pointer)]
+
+func ReleaseXPCObject(object unsafe.Pointer) {
+	call := callReleaseXPCObject.get(func() func(unsafe.Pointer) {
+		var call func(unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_releaseXPCObject))
+		return call
+	})
+	call(object)
+	runtime.KeepAlive(object)
+}

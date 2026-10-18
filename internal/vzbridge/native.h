@@ -58,3 +58,6 @@ VZBridgeOwnedObject vz_copyVmnetBridgedInterfaces(VZBridgeErrorOut errorOut) __a
 void vz_stopVmnetInterface(void *session, VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:noqueue")));
 int32_t vz_readVmnetPacket(void *session, void *buffer, uint64_t size, VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:noqueue")));
 void vz_writeVmnetPacket(void *session, const void *buffer, uint64_t size, VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:noqueue")));
+void *vz_copyVmnetNetworkSerialization(VZBridgeObject network, VZBridgeErrorOut errorOut);
+void *vz_newVmnetNetworkWithSerialization(VZBridgeObject serialization, VZBridgeErrorOut errorOut);
+void vz_releaseXPCObject(void *object) __attribute__((annotate("vzbridge:noqueue")));

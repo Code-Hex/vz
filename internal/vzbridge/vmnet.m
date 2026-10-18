@@ -125,3 +125,35 @@ void vz_releaseCFObject(void *object)
     if (object)
         CFRelease(object);
 }
+
+void *vz_copyVmnetNetworkSerialization(void *network, void **errorOut)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *)) {
+        vmnet_return_t status;
+        xpc_object_t serialization = vmnet_network_copy_serialization(network, &status);
+        vmnetError(status, @"vmnet_network_copy_serialization", errorOut);
+        return serialization;
+    }
+#endif
+    return NULL;
+}
+
+void *vz_newVmnetNetworkWithSerialization(void *serialization, void **errorOut)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *)) {
+        vmnet_return_t status;
+        vmnet_network_ref network = vmnet_network_create_with_serialization(serialization, &status);
+        vmnetError(status, @"vmnet_network_create_with_serialization", errorOut);
+        return network;
+    }
+#endif
+    return NULL;
+}
+
+void vz_releaseXPCObject(void *object)
+{
+    if (object)
+        xpc_release(object);
+}

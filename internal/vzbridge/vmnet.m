@@ -87,6 +87,15 @@ void vz_disableVmnetRouterAdvertisement(void *configuration)
 #endif
 }
 
+void vz_setVmnetExternalInterface(void *configuration, const char *name, void **errorOut)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *)) {
+        vmnetError(vmnet_network_configuration_set_external_interface(configuration, name), @"vmnet_network_configuration_set_external_interface", errorOut);
+    }
+#endif
+}
+
 void vz_setVmnetMTU(void *configuration, uint32_t mtu, void **errorOut)
 {
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000

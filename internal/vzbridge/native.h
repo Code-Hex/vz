@@ -50,6 +50,7 @@ void vz_disableVmnetDNSProxy(VZBridgeObject configuration);
 void vz_disableVmnetNAT44(VZBridgeObject configuration);
 void vz_disableVmnetNAT66(VZBridgeObject configuration);
 void vz_disableVmnetRouterAdvertisement(VZBridgeObject configuration);
+void vz_setVmnetExternalInterface(VZBridgeObject configuration, const char *name, VZBridgeErrorOut errorOut);
 void vz_setVmnetMTU(VZBridgeObject configuration, uint32_t mtu, VZBridgeErrorOut errorOut);
 void vz_setVmnetIPv4Subnet(VZBridgeObject configuration, uint32_t address, uint32_t mask, VZBridgeErrorOut errorOut);
 void vz_setVmnetIPv6Prefix(VZBridgeObject configuration, const void *address, uint8_t prefixLength, VZBridgeErrorOut errorOut);

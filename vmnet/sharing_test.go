@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/xml"
 	"errors"
+	"flag"
 	"fmt"
 	"net/netip"
 	"os"
@@ -26,7 +27,15 @@ func TestNetworkSharingInvalidInputs(t *testing.T) {
 	if vmnet.Available(26) {
 		t.Skip("vmnet networks require macOS 26 and its SDK")
 	}
-	for _, input := range []struct{ name, requirement string }{{"", "true"}, {"test\x00name", "true"}, {"test", ""}, {"test", "true\x00false"}} {
+	for _, input := range []struct {
+		name        string
+		requirement string
+	}{
+		{name: "", requirement: "true"},
+		{name: "test\x00name", requirement: "true"},
+		{name: "test", requirement: ""},
+		{name: "test", requirement: "true\x00false"},
+	} {
 		if _, err := vmnet.ReceiveNetwork(context.Background(), input.name, input.requirement); err == nil {
 			t.Fatal("invalid service arguments accepted")
 		}
@@ -39,9 +48,14 @@ func TestNetworkSharingInvalidInputs(t *testing.T) {
 }
 
 func TestNetworkServiceProcess(t *testing.T) {
-	if os.Getenv("VZ_NETWORK_SERVICE_TEST") == "" {
+	args := flag.Args()
+	if len(args) == 0 || args[0] != "vmnet-network-service" {
 		return
 	}
+	if len(args) != 4 {
+		t.Fatal("network service helper requires a name, signing requirement, and ready path")
+	}
+	name, requirement, ready := args[1], args[2], args[3]
 	stopped := make(chan os.Signal, 1)
 	signal.Notify(stopped, syscall.SIGTERM)
 	defer signal.Stop(stopped)
@@ -51,8 +65,8 @@ func TestNetworkServiceProcess(t *testing.T) {
 		case <-time.After(30 * time.Second):
 		}
 	}
-	if os.Getenv("VZ_NETWORK_REQUIREMENT") == "stall" {
-		if err := writeNetworkServiceReady(); err != nil {
+	if requirement == "stall" {
+		if err := writeNetworkServiceReady(ready); err != nil {
 			t.Fatal(err)
 		}
 		wait()
@@ -69,7 +83,7 @@ func TestNetworkServiceProcess(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	service, err := vmnet.ListenNetwork(os.Getenv("VZ_NETWORK_SERVICE_TEST"), network, os.Getenv("VZ_NETWORK_REQUIREMENT"))
+	service, err := vmnet.ListenNetwork(name, network, requirement)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -81,7 +95,7 @@ func TestNetworkServiceProcess(t *testing.T) {
 	}
 	alias := *service
 	defer service.Close()
-	if err := writeNetworkServiceReady(); err != nil {
+	if err := writeNetworkServiceReady(ready); err != nil {
 		t.Fatal(err)
 	}
 	wait()
@@ -97,14 +111,13 @@ func TestNetworkServiceProcess(t *testing.T) {
 	}
 	closeGroup.Wait()
 	if !t.Failed() {
-		if err := os.WriteFile(os.Getenv("VZ_NETWORK_READY")+".closed", nil, 0600); err != nil {
+		if err := os.WriteFile(ready+".closed", nil, 0600); err != nil {
 			t.Fatal(err)
 		}
 	}
 }
 
-func writeNetworkServiceReady() error {
-	path := os.Getenv("VZ_NETWORK_READY")
+func writeNetworkServiceReady(path string) error {
 	if err := os.WriteFile(path+".tmp", []byte(strconv.Itoa(os.Getpid())), 0600); err != nil {
 		return err
 	}
@@ -117,12 +130,27 @@ func TestNetworkSharingProcesses(t *testing.T) {
 	}
 	requirement := networkTestRequirement(t)
 	for _, test := range []struct {
-		name, serverRequirement, clientRequirement string
-		success                                    bool
+		name              string
+		serverRequirement string
+		clientRequirement string
+		success           bool
 	}{
-		{"roundtrip", requirement, requirement, true},
-		{"rejectServer", requirement, "false", false},
-		{"rejectClient", "false", requirement, false},
+		{
+			name:              "roundtrip",
+			serverRequirement: requirement,
+			clientRequirement: requirement,
+			success:           true,
+		},
+		{
+			name:              "rejectServer",
+			serverRequirement: requirement,
+			clientRequirement: "false",
+		},
+		{
+			name:              "rejectClient",
+			serverRequirement: "false",
+			clientRequirement: requirement,
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			service := startNetworkService(t, test.serverRequirement)
@@ -197,14 +225,19 @@ func startNetworkService(t *testing.T, requirement string) *networkServiceProces
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
 <key>Label</key><string>%s</string>
-<key>ProgramArguments</key><array><string>%s</string><string>-test.run=^TestNetworkServiceProcess$</string></array>
+<key>ProgramArguments</key>
+<array>
+<string>%s</string>
+<string>-test.run=^TestNetworkServiceProcess$</string>
+<string>--</string>
+<string>vmnet-network-service</string>
+<string>%s</string>
+<string>%s</string>
+<string>%s</string>
+</array>
 <key>MachServices</key><dict><key>%s</key><true/></dict>
 <key>RunAtLoad</key><true/>
-<key>EnvironmentVariables</key><dict>
-<key>VZ_NETWORK_SERVICE_TEST</key><string>%s</string>
-<key>VZ_NETWORK_REQUIREMENT</key><string>%s</string>
-<key>VZ_NETWORK_READY</key><string>%s</string>
-</dict></dict></plist>`, name, escape(executable), name, name, escape(requirement), escape(ready))
+</dict></plist>`, name, escape(executable), name, escape(requirement), escape(ready), name)
 	path := filepath.Join(dir, "service.plist")
 	if err := os.WriteFile(path, []byte(plist), 0600); err != nil {
 		t.Fatal(err)

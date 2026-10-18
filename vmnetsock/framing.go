@@ -1,4 +1,4 @@
-package fileadapter
+package vmnetsock
 
 import (
 	"encoding/binary"

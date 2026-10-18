@@ -1,4 +1,4 @@
-package fileadapter
+package vmnetsock
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-// Transport selects the frame protocol used by the returned file descriptor.
+// Transport specifies the framing protocol used on the socket descriptor.
 type Transport uint8
 
 const (
@@ -25,7 +25,7 @@ const (
 )
 
 // Adapter forwards packets until Close, context cancellation, or a forwarding error.
-// Copies share one lifetime. It borrows the Interface and never calls Stop.
+// Copies share a single lifetime. Adapter borrows the Interface and never calls Stop.
 type Adapter struct {
 	state *adapterState
 }
@@ -48,7 +48,7 @@ func New(ctx context.Context, iface *vmnet.Interface, transport Transport) (*Ada
 		return nil, fmt.Errorf("vmnet interface is nil or uninitialized")
 	}
 	if transport != Stream && transport != Datagram {
-		return nil, fmt.Errorf("invalid file adapter transport %d", transport)
+		return nil, fmt.Errorf("invalid vmnetsock transport %d", transport)
 	}
 	if err := ctx.Err(); err != nil {
 		return nil, err
@@ -90,9 +90,9 @@ func New(ctx context.Context, iface *vmnet.Interface, transport Transport) (*Ada
 	return &Adapter{state: s}, nil
 }
 
-// Dup returns a new file descriptor for the peer socket.
-// The caller owns the file and must close it, independently of Adapter.Close.
-// Closing a duplicate does not stop forwarding. Dup after Close returns os.ErrClosed.
+// Dup returns a new, caller-owned file descriptor for the peer socket.
+// The caller must close the returned file independently of Adapter.Close.
+// Closing duplicates does not stop forwarding. Calling Dup after Close returns os.ErrClosed.
 func (a *Adapter) Dup() (*os.File, error) {
 	if a == nil || a.state == nil {
 		return nil, os.ErrClosed

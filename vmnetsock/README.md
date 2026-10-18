@@ -1,13 +1,19 @@
-# Connect vmnet to a file descriptor
+# Connect vmnet to a VM through a socket
 
-`vmnet.Interface` exchanges Ethernet frames on a `vmnet.Network` or a bridged physical interface. It requires macOS 26 or newer and a compatible SDK. `fileadapter.New` creates a UNIX socket pair and starts forwarding packets in both directions.
+`vmnetsock` connects a `vmnet.Interface` to a VM through a Unix socket pair. It forwards Ethernet frames between the interface and the socket. `Adapter.Dup` returns a socket descriptor as an `*os.File` for the caller to pass to the VM.
 
-`fileadapter.New` supports two socket protocols:
+The interface can belong to a `vmnet.Network` or bridge directly to a physical interface. Both require macOS 26 or newer and a compatible SDK.
 
-* `fileadapter.Stream` uses QEMU's stream and socket protocol, a four-byte big-endian length followed by an Ethernet frame.
-* `fileadapter.Datagram` uses krunkit's unixgram protocol, with one Ethernet frame per datagram.
+`vmnetsock.New` supports two socket protocols:
+
+* `vmnetsock.Stream` uses QEMU's stream and socket protocol, a four-byte big-endian length followed by an Ethernet frame.
+* `vmnetsock.Datagram` uses krunkit's unixgram protocol, with one Ethernet frame per datagram.
 
 ## Usage example
+
+```go
+import "github.com/Code-Hex/vz/v4/vmnetsock"
+```
 
 ```go
 configuration, err := vmnet.NewNetworkConfiguration(vmnet.ModeShared)
@@ -23,7 +29,7 @@ if err != nil {
 	return err
 }
 defer iface.Stop()
-adapter, err := fileadapter.New(ctx, iface, fileadapter.Stream)
+adapter, err := vmnetsock.New(ctx, iface, vmnetsock.Stream)
 if err != nil {
 	return err
 }
@@ -53,7 +59,7 @@ if err != nil {
 defer iface.Stop()
 ```
 
-Pass this interface to `fileadapter.New` as in the example above. `StartBridgedInterface` accepts the same `InterfaceOption` values as `StartInterfaceWithNetwork`.
+Pass this interface to `vmnetsock.New` as in the example above. `StartBridgedInterface` accepts the same `InterfaceOption` values as `StartInterfaceWithNetwork`.
 
 Bridged mode connects the guest to the physical network. DHCP, DNS, and routing depend on the physical network configuration. No vmnet `NetworkConfiguration` is created. The selected interface must still be available when the interface starts.
 
@@ -63,13 +69,13 @@ Bridged mode uses `vmnet_start_interface`. Access depends on the process's privi
 
 Add the network and device flags to your existing virtual machine configuration. The first file passed to `exec.Cmd.ExtraFiles` maps to file descriptor 3 in the child process.
 
-Stream also supports QEMU's older `-netdev socket,id=net0,fd=3` syntax. For krunkit, select `fileadapter.Datagram` and pass the descriptor and MAC address through `--device virtio-net,type=unixgram,fd=3,mac=...`.
+Stream also supports QEMU's older `-netdev socket,id=net0,fd=3` syntax. For krunkit, select `vmnetsock.Datagram` and pass the descriptor and MAC address through `--device virtio-net,type=unixgram,fd=3,mac=...`.
 
-The `Adapter` owns both ends of the socket pair. `Adapter.Dup` returns a new `*os.File` owned by the caller. Use `defer file.Close()` to close that file when your function returns. The example keeps the parent duplicate open until the VM exits.
+The `Adapter` owns both ends of the socket pair. Each `Adapter.Dup` call returns a caller-owned `*os.File` duplicate of the peer socket, with close-on-exec set. Use `defer file.Close()` to close the duplicate when your function returns. The example keeps it open until the VM exits.
 
 Closing a duplicate does not stop forwarding. When the VM exits, call `Adapter.Close` to stop forwarding and wait for cleanup. The example returns the process error and the forwarding error with `errors.Join`. Deferred calls cover early returns; calling `Adapter.Close` again is safe.
 
-Each `Dup` call returns a distinct descriptor with close-on-exec set. `Dup` returns `os.ErrClosed` after the adapter has closed. `Adapter.Close` never closes caller-owned duplicates or stops the borrowed `Interface`.
+`Dup` returns `os.ErrClosed` after the adapter has closed. `Adapter.Close` never closes caller-owned duplicates or stops the borrowed `Interface`.
 
 ## Stop forwarding
 
@@ -112,11 +118,11 @@ If you enable TSO, the peer must handle large Ethernet frames. The `Adapter` for
 
 ## Limits
 
-Datagram send errors with `ENOBUFS` and vmnet send errors with `VMNET_BUFFER_EXHAUSTED` indicate temporary queue congestion. The `Adapter` drops that frame and keeps the connection open. Other forwarding errors stop the `Adapter` and are returned by `Adapter.Close`.
+Datagram send errors with `ENOBUFS` and vmnet send errors with `VMNET_BUFFER_EXHAUSTED` indicate temporary queue congestion. In both cases, the `Adapter` drops the frame and continues forwarding. Other forwarding errors stop the `Adapter` and are returned by `Adapter.Close`.
 
 This package does not support virtio headers or packet batching.
 
-The [vmnet package](../README.md) provides network serialization, XPC sharing,
+The [vmnet package](../vmnet/README.md) provides network serialization, XPC sharing,
 port forwarding, and network configuration options.
 
 Protocol reference material:

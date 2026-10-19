@@ -145,6 +145,9 @@ func TestAvailableVersion(t *testing.T) {
 				_, err := NewSharedDirectory("", false)
 				return err
 			},
+			"(*VirtioFileSystemDevice).SetDirectoryShare": func() error {
+				return (*VirtioFileSystemDevice)(nil).SetDirectoryShare(nil)
+			},
 			"NewSingleDirectoryShare": func() error {
 				_, err := NewSingleDirectoryShare(nil)
 				return err

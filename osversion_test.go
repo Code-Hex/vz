@@ -145,6 +145,9 @@ func TestAvailableVersion(t *testing.T) {
 				_, err := NewSharedDirectory("", false)
 				return err
 			},
+			"(*NetworkDevice).SetAttachment": func() error {
+				return (*NetworkDevice)(nil).SetAttachment(nil)
+			},
 			"(*VirtioFileSystemDevice).SetDirectoryShare": func() error {
 				return (*VirtioFileSystemDevice)(nil).SetDirectoryShare(nil)
 			},

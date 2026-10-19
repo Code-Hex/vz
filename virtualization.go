@@ -7,7 +7,6 @@ import (
 	"sync"
 	"unsafe"
 
-	infinity "github.com/Code-Hex/go-infinity-channel"
 	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/sliceutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
@@ -77,9 +76,7 @@ type VirtualMachine struct {
 	*pointer
 	machineState *machineState
 
-	disconnectedIn        *infinity.Channel[*disconnected]
-	disconnectedOut       *infinity.Channel[*DisconnectedError]
-	watchDisconnectedOnce sync.Once
+	disconnected *notificationQueue[*DisconnectedError]
 
 	config *VirtualMachineConfiguration
 }
@@ -127,13 +124,17 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 		state.mu.Unlock()
 		return 0
 	})
-	disconnectedIn := infinity.NewChannel[*disconnected]()
+	disconnected := newNotificationQueue[*DisconnectedError]()
+	configs := config.networkDeviceConfiguration
 	disconnectedHandle := registerNativeCallback(func(kind uint32, errorPointer, _ unsafe.Pointer, value uint64) uint64 {
 		if kind == vzbridge.CallbackContextReleased {
-			disconnectedIn.Close()
+			disconnected.close()
 			return 0
 		}
-		disconnectedIn.In() <- &disconnected{err: objcutil.NewNSError(errorPointer), index: int(value)}
+		disconnected.send(&DisconnectedError{
+			Err:    objcutil.NewNSError(errorPointer),
+			Config: sliceutil.FindValueByIndex(configs, int(value)),
+		})
 		return 0
 	})
 	object := vzbridge.NewVZVirtualMachineWithDispatchQueue(config, stateHandle, disconnectedHandle)
@@ -142,14 +143,14 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 		unregisterNativeCallback(disconnectedHandle)
 		state.stateNotify.close()
 		state.stopErrors.close()
-		disconnectedIn.Close()
+		disconnected.close()
 		return nil, fmt.Errorf("could not create virtual machine")
 	}
 	return &VirtualMachine{
-		pointer:        object,
-		machineState:   state,
-		disconnectedIn: disconnectedIn,
-		config:         config,
+		pointer:      object,
+		machineState: state,
+		disconnected: disconnected,
+		config:       config,
 	}, nil
 }
 
@@ -465,33 +466,21 @@ func (e *DisconnectedError) Error() string {
 	return fmt.Sprintf("%s: %v", e.Config.attachment, e.Err)
 }
 
-type disconnected struct {
-	err   error
-	index int
-}
-
 // NetworkDeviceAttachmentWasDisconnected returns a receive channel.
 // The channel emits an error message each time the network attachment is disconnected,
 // typically triggered by events such as failure to start, initial boot, device reset, or reboot.
 // As a result, this method may be invoked multiple times throughout the virtual machine's lifecycle.
+//
+// Notifications are queued until received or the VM is released. Release closes
+// the channel and discards unread notifications. Keep the VM reachable while
+// receiving notifications, for example with runtime.KeepAlive.
 //
 // This is only supported on macOS 12 and newer, error will be returned on older versions.
 func (v *VirtualMachine) NetworkDeviceAttachmentWasDisconnected() (<-chan *DisconnectedError, error) {
 	if err := macOSAvailable(12); err != nil {
 		return nil, err
 	}
-	v.watchDisconnectedOnce.Do(func() {
-		v.disconnectedOut = infinity.NewChannel[*DisconnectedError]()
-		go watchDisconnected(v.config.networkDeviceConfiguration, v.disconnectedIn, v.disconnectedOut)
-	})
-	return v.disconnectedOut.Out(), nil
-}
-
-func watchDisconnected(configs []*VirtioNetworkDeviceConfiguration, input *infinity.Channel[*disconnected], output *infinity.Channel[*DisconnectedError]) {
-	for event := range input.Out() {
-		output.In() <- &DisconnectedError{Err: event.err, Config: sliceutil.FindValueByIndex(configs, event.index)}
-	}
-	output.Close()
+	return v.disconnected.output, nil
 }
 
 func nativeCompletion() (uint64, <-chan error) {

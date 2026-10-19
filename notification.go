@@ -3,7 +3,7 @@
 package vz
 
 // notificationQueue retains notifications until they are read or the owner is released.
-// Its producer must serialize send and close calls.
+// The owner must finish sending before it closes the queue.
 type notificationQueue[T any] struct {
 	input  chan T
 	output chan T

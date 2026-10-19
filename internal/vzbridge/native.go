@@ -24,6 +24,7 @@ const SDKVersion = C.__MAC_OS_X_VERSION_MAX_ALLOWED
 const (
 	CallbackCompletion                  = C.VZBridgeCallbackCompletion
 	CallbackMachineStateChanged         = C.VZBridgeCallbackMachineStateChanged
+	CallbackMachineStoppedWithError     = C.VZBridgeCallbackMachineStoppedWithError
 	CallbackNetworkDisconnected         = C.VZBridgeCallbackNetworkDisconnected
 	CallbackContextReleased             = C.VZBridgeCallbackContextReleased
 	CallbackSocketConnected             = C.VZBridgeCallbackSocketConnected

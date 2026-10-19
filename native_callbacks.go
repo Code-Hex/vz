@@ -86,7 +86,8 @@ func dispatchNativeCallback(kind uint32, context uint64, first, second unsafe.Po
 	case vzbridge.CallbackSocketConnected, vzbridge.CallbackRestoreImageLoaded:
 		vzbridge.ReleaseObject(first)
 		vzbridge.ReleaseObject(second)
-	case vzbridge.CallbackCompletion,
+	case vzbridge.CallbackMachineStoppedWithError,
+		vzbridge.CallbackCompletion,
 		vzbridge.CallbackNetworkDisconnected,
 		vzbridge.CallbackSocketAccepted,
 		vzbridge.CallbackNetworkBlockDeviceError,

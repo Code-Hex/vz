@@ -6,7 +6,6 @@ import (
 	"time"
 	"unsafe"
 
-	infinity "github.com/Code-Hex/go-infinity-channel"
 	"github.com/Code-Hex/vz/v4/internal/objc"
 	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
@@ -369,8 +368,8 @@ type NetworkBlockDeviceStorageDeviceAttachment struct {
 
 	*baseStorageDeviceAttachment
 
-	didEncounterError *infinity.Channel[error]
-	connected         *infinity.Channel[struct{}]
+	didEncounterError *notificationQueue[error]
+	connected         *notificationQueue[struct{}]
 }
 
 var _ StorageDeviceAttachment = (*NetworkBlockDeviceStorageDeviceAttachment)(nil)
@@ -394,18 +393,18 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 		return nil, err
 	}
 
-	didEncounterError := infinity.NewChannel[error]()
-	connected := infinity.NewChannel[struct{}]()
+	didEncounterError := newNotificationQueue[error]()
+	connected := newNotificationQueue[struct{}]()
 
 	handle := registerNativeCallback(func(kind uint32, first, second unsafe.Pointer, value uint64) uint64 {
 		switch kind {
 		case vzbridge.CallbackNetworkBlockDeviceError:
-			didEncounterError.In() <- objcutil.NewNSError(first)
+			didEncounterError.send(objcutil.NewNSError(first))
 		case vzbridge.CallbackNetworkBlockDeviceConnected:
-			connected.In() <- struct{}{}
+			connected.send(struct{}{})
 		case vzbridge.CallbackContextReleased:
-			didEncounterError.Close()
-			connected.Close()
+			didEncounterError.close()
+			connected.close()
 		}
 		return 0
 	})
@@ -425,8 +424,8 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 	}
 	if err := objcutil.NewNSError(nserrPtr); err != nil {
 		unregisterNativeCallback(handle)
-		didEncounterError.Close()
-		connected.Close()
+		didEncounterError.close()
+		connected.close()
 		return nil, err
 	}
 	return attachment, nil
@@ -438,13 +437,15 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 // times out or when the NBD client has encountered a recoverable error, such as an I/O error from the server.
 //
 // Note that the Virtualization framework may call this method multiple times during a VM’s life cycle. Reconnections are transparent to the guest.
+// Notifications are queued until read. Releasing the attachment discards unread notifications and closes the channel.
 func (n *NetworkBlockDeviceStorageDeviceAttachment) Connected() <-chan struct{} {
-	return n.connected.Out()
+	return n.connected.output
 }
 
 // The DidEncounterError is triggered via the channel when the NBD client encounters an error that cannot be resolved on the client side.
 // In this state, the client will continue attempting to reconnect, but recovery depends entirely on the server's availability.
 // If the server resumes operation, the connection will recover automatically; however, until the server is restored, the client will continue to experience errors.
+// Errors are queued until read. Releasing the attachment discards unread errors and closes the channel.
 func (n *NetworkBlockDeviceStorageDeviceAttachment) DidEncounterError() <-chan error {
-	return n.didEncounterError.Out()
+	return n.didEncounterError.output
 }

@@ -16,6 +16,7 @@ enum {
     VZBridgeCallbackRestoreImageLoaded = 10,
     VZBridgeCallbackMacOSInstallCompleted = 11,
     VZBridgeCallbackMacOSInstallProgress = 12,
+    VZBridgeCallbackMachineStoppedWithError = 13,
 };
 
 // Object inputs are borrowed; owned results transfer one retain to Go.

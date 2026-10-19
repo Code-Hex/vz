@@ -87,6 +87,7 @@ type VirtualMachine struct {
 type machineState struct {
 	state       VirtualMachineState
 	stateNotify *infinity.Channel[VirtualMachineState]
+	stopErrors  chan error
 
 	mu sync.RWMutex
 }
@@ -105,9 +106,21 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 	if err := macOSAvailable(11); err != nil {
 		return nil, err
 	}
-	state := &machineState{stateNotify: infinity.NewChannel[VirtualMachineState]()}
-	stateHandle := registerNativeCallback(func(kind uint32, _, _ unsafe.Pointer, value uint64) uint64 {
-		if kind == vzbridge.CallbackContextReleased {
+	state := &machineState{
+		stateNotify: infinity.NewChannel[VirtualMachineState](),
+		stopErrors:  make(chan error, 1),
+	}
+	stateHandle := registerNativeCallback(func(kind uint32, errorPointer, _ unsafe.Pointer, value uint64) uint64 {
+		switch kind {
+		case vzbridge.CallbackMachineStoppedWithError:
+			err := objcutil.NewNSError(errorPointer)
+			select {
+			case state.stopErrors <- err:
+			default:
+			}
+			return 0
+		case vzbridge.CallbackContextReleased:
+			close(state.stopErrors)
 			state.stateNotify.Close()
 			return 0
 		}
@@ -131,6 +144,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 		unregisterNativeCallback(stateHandle)
 		unregisterNativeCallback(disconnectedHandle)
 		state.stateNotify.Close()
+		close(state.stopErrors)
 		disconnectedIn.Close()
 		return nil, fmt.Errorf("could not create virtual machine")
 	}
@@ -179,6 +193,15 @@ func (v *VirtualMachine) State() VirtualMachineState {
 	v.machineState.mu.RLock()
 	defer v.machineState.mu.RUnlock()
 	return v.machineState.state
+}
+
+// StoppedWithErrorNotify reports errors that caused the virtual machine to stop.
+// Normal guest shutdown and Stop do not send an error. The channel remains open
+// across restarts and closes when the virtual machine is released.
+// It buffers one error. Further errors are dropped until that error is received.
+// Errors can be inspected with errors.As and *NSError.
+func (v *VirtualMachine) StoppedWithErrorNotify() <-chan error {
+	return v.machineState.stopErrors
 }
 
 // StateChangedNotify gets notification is changed execution state of the virtual machine.

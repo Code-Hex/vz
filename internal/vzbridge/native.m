@@ -157,6 +157,7 @@ static uint64_t emit(uint32_t kind, uint64_t context, id first, id second, uint6
         [first release];
         [second release];
         break;
+    case VZBridgeCallbackMachineStoppedWithError:
     case VZBridgeCallbackCompletion:
     case VZBridgeCallbackNetworkDisconnected:
     case VZBridgeCallbackSocketAccepted:
@@ -244,6 +245,7 @@ static NSURL *fileURL(const char *value) { return [NSURL fileURLWithPath:text(va
 }
 - (void)virtualMachine:(VZVirtualMachine *)machine didStopWithError:(NSError *)error
 {
+    emit(VZBridgeCallbackMachineStoppedWithError, _stateContext, [error retain], nil, 0);
     for (id<VZVirtualMachineDelegate> delegate in _externalDelegates.allObjects) {
         if ([delegate respondsToSelector:_cmd])
             [delegate virtualMachine:machine didStopWithError:error];

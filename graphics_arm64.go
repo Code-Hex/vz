@@ -58,3 +58,5 @@ func NewMacGraphicsDisplayConfiguration(widthInPixels int64, heightInPixels int6
 	}
 	return graphicsDisplayConfiguration, nil
 }
+
+func (*MacGraphicsDisplayConfiguration) graphicsDisplayConfiguration() {}

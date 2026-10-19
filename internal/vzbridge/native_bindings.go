@@ -1043,3 +1043,33 @@ func ReleaseVmnetNetworkRequest(request unsafe.Pointer) {
 	call(request)
 	runtime.KeepAlive(request)
 }
+
+var callGraphicsDisplaySize lazyBinding[func(unsafe.Pointer, unsafe.Pointer)]
+
+func GraphicsDisplaySize(display objc.NSObject, size unsafe.Pointer) {
+	call := callGraphicsDisplaySize.get(func() func(unsafe.Pointer, unsafe.Pointer) {
+		var call func(unsafe.Pointer, unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_graphicsDisplaySize))
+		return call
+	})
+	onObjectQueue(objc.Ptr(display), func() {
+		call(objc.Ptr(display), size)
+	})
+	runtime.KeepAlive(display)
+	runtime.KeepAlive(size)
+}
+
+var callReconfigureGraphicsDisplaySize lazyBinding[func(unsafe.Pointer, float64, float64, *unsafe.Pointer)]
+
+func ReconfigureGraphicsDisplaySize(display objc.NSObject, width float64, height float64, errorOut *unsafe.Pointer) {
+	call := callReconfigureGraphicsDisplaySize.get(func() func(unsafe.Pointer, float64, float64, *unsafe.Pointer) {
+		var call func(unsafe.Pointer, float64, float64, *unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_reconfigureGraphicsDisplaySize))
+		return call
+	})
+	onObjectQueue(objc.Ptr(display), func() {
+		call(objc.Ptr(display), width, height, errorOut)
+	})
+	runtime.KeepAlive(display)
+	runtime.KeepAlive(errorOut)
+}

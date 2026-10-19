@@ -16,6 +16,7 @@ import (
 func TestNativeLateCallbackReleasesPayloads(t *testing.T) {
 	for _, kind := range []uint32{
 		vzbridge.CallbackCompletion,
+		vzbridge.CallbackMachineStoppedWithError,
 		vzbridge.CallbackNetworkDisconnected,
 		vzbridge.CallbackSocketConnected,
 		vzbridge.CallbackSocketAccepted,

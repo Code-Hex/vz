@@ -33,8 +33,8 @@ func TestVirtualMachineStoppedWithErrorNotify(t *testing.T) {
 	defer objc.Release(info)
 	nativeError := vzbridge.NSError_ErrorWithDomain_Code_UserInfo(domain, 7, info)
 	defer objc.Release(nativeError)
-	droppedError := vzbridge.NSError_ErrorWithDomain_Code_UserInfo(domain, 8, info)
-	defer objc.Release(droppedError)
+	secondError := vzbridge.NSError_ErrorWithDomain_Code_UserInfo(domain, 8, info)
+	defer objc.Release(secondError)
 
 	emitStop := func(failure *objc.Pointer) {
 		receiver := pureobjc.ID(uintptr(objc.Ptr(machine)))
@@ -51,25 +51,27 @@ func TestVirtualMachineStoppedWithErrorNotify(t *testing.T) {
 		t.Fatalf("normal guest shutdown reported an error: %v", err)
 	default:
 	}
-	for i := range 2 {
+	for range 2 {
 		onMachineQueue(t, machine, func() {
-			emitStop(nativeError)
-			emitStop(droppedError)
-		})
-		if i == 1 {
-			objc.Release(machine.pointer)
-			vzbridge.Drain()
-		}
-		select {
-		case err, open := <-failures:
-			var native *NSError
-			if !open || !errors.As(err, &native) || native.Domain != "VZErrorDomain" || native.Code != 7 || native.LocalizedDescription != "Virtual machine stopped unexpectedly" {
-				t.Fatalf("stop error = %#v, open = %v", err, open)
+			for range 50 {
+				emitStop(nativeError)
+				emitStop(secondError)
 			}
-		case <-time.After(5 * time.Second):
-			t.Fatal("native stop error was not delivered")
+		})
+		for i := range 100 {
+			select {
+			case err, open := <-failures:
+				var native *NSError
+				if !open || !errors.As(err, &native) || native.Domain != "VZErrorDomain" || native.Code != 7+i%2 || native.LocalizedDescription != "Virtual machine stopped unexpectedly" {
+					t.Fatalf("stop error %d = %#v, open = %v", i, err, open)
+				}
+			case <-time.After(5 * time.Second):
+				t.Fatalf("native stop error %d was not delivered", i)
+			}
 		}
 	}
+	objc.Release(machine.pointer)
+	vzbridge.Drain()
 
 	select {
 	case err, open := <-failures:
@@ -78,6 +80,38 @@ func TestVirtualMachineStoppedWithErrorNotify(t *testing.T) {
 		}
 	case <-time.After(5 * time.Second):
 		t.Fatal("stop error channel remained open after machine release")
+	}
+}
+
+func TestVirtualMachineReleaseWithUnreadNotifications(t *testing.T) {
+	machine, err := NewVirtualMachine(newTestConfig(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer objc.Release(machine.pointer)
+	states := machine.StateChangedNotify()
+	failures := machine.StoppedWithErrorNotify()
+	for range 100 {
+		machine.machineState.stateNotify.send(VirtualMachineStateRunning)
+		machine.machineState.stopErrors.send(errors.New("unread stop error"))
+	}
+
+	objc.Release(machine.pointer)
+	for _, done := range []<-chan struct{}{
+		machine.machineState.stateNotify.done,
+		machine.machineState.stopErrors.done,
+	} {
+		select {
+		case <-done:
+		case <-time.After(5 * time.Second):
+			t.Fatal("notification worker remained blocked on an unread channel")
+		}
+	}
+	if state, open := <-states; open {
+		t.Fatalf("released machine retained unread state %v", state)
+	}
+	if err, open := <-failures; open {
+		t.Fatalf("released machine retained unread error %v", err)
 	}
 }
 

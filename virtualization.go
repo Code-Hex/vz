@@ -86,8 +86,8 @@ type VirtualMachine struct {
 
 type machineState struct {
 	state       VirtualMachineState
-	stateNotify *infinity.Channel[VirtualMachineState]
-	stopErrors  chan error
+	stateNotify *notificationQueue[VirtualMachineState]
+	stopErrors  *notificationQueue[error]
 
 	mu sync.RWMutex
 }
@@ -107,26 +107,23 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 		return nil, err
 	}
 	state := &machineState{
-		stateNotify: infinity.NewChannel[VirtualMachineState](),
-		stopErrors:  make(chan error, 1),
+		stateNotify: newNotificationQueue[VirtualMachineState](),
+		stopErrors:  newNotificationQueue[error](),
 	}
 	stateHandle := registerNativeCallback(func(kind uint32, errorPointer, _ unsafe.Pointer, value uint64) uint64 {
 		switch kind {
 		case vzbridge.CallbackMachineStoppedWithError:
 			err := objcutil.NewNSError(errorPointer)
-			select {
-			case state.stopErrors <- err:
-			default:
-			}
+			state.stopErrors.send(err)
 			return 0
 		case vzbridge.CallbackContextReleased:
-			close(state.stopErrors)
-			state.stateNotify.Close()
+			state.stopErrors.close()
+			state.stateNotify.close()
 			return 0
 		}
 		state.mu.Lock()
 		state.state = VirtualMachineState(value)
-		state.stateNotify.In() <- state.state
+		state.stateNotify.send(state.state)
 		state.mu.Unlock()
 		return 0
 	})
@@ -143,8 +140,8 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 	if object == nil {
 		unregisterNativeCallback(stateHandle)
 		unregisterNativeCallback(disconnectedHandle)
-		state.stateNotify.Close()
-		close(state.stopErrors)
+		state.stateNotify.close()
+		state.stopErrors.close()
 		disconnectedIn.Close()
 		return nil, fmt.Errorf("could not create virtual machine")
 	}
@@ -198,17 +195,20 @@ func (v *VirtualMachine) State() VirtualMachineState {
 // StoppedWithErrorNotify reports errors that caused the virtual machine to stop.
 // Normal guest shutdown and Stop do not send an error. The channel remains open
 // across restarts and closes when the virtual machine is released.
-// It buffers one error. Further errors are dropped until that error is received.
+// Errors are queued in order while the virtual machine is alive. Releasing it
+// discards unread errors. Keep the virtual machine reachable until you have
+// finished receiving notifications, for example with runtime.KeepAlive.
 // Errors can be inspected with errors.As and *NSError.
 func (v *VirtualMachine) StoppedWithErrorNotify() <-chan error {
-	return v.machineState.stopErrors
+	return v.machineState.stopErrors.output
 }
 
-// StateChangedNotify gets notification is changed execution state of the virtual machine.
+// StateChangedNotify reports execution state changes in order.
+// Changes are queued while the virtual machine is alive. Releasing it closes
+// the channel and discards unread changes. Keep the virtual machine reachable
+// until you have finished receiving notifications, for example with runtime.KeepAlive.
 func (v *VirtualMachine) StateChangedNotify() <-chan VirtualMachineState {
-	v.machineState.mu.RLock()
-	defer v.machineState.mu.RUnlock()
-	return v.machineState.stateNotify.Out()
+	return v.machineState.stateNotify.output
 }
 
 // CanStart returns true if the machine is in a state that can be started.

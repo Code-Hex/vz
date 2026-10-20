@@ -158,6 +158,9 @@ func (u *usbDevice) UUID() string {
 	return objcutil.String(vzbridge.GetUUIDUSBDevice(u))
 }
 
+// USBController returns the controller this device is attached to, or nil if detached.
+// The returned controller does not keep the virtual machine alive.
+// This is only supported on macOS 15 and newer.
 func (u *usbDevice) USBController() *USBController {
 	if macOSAvailable(15) != nil {
 		return nil

@@ -100,3 +100,16 @@ func (d *GraphicsDisplay) ReconfigureWithConfiguration(configuration GraphicsDis
 	}
 	return nil
 }
+
+// PixelsPerInch returns the pixel density of a Mac graphics display.
+// It returns an error for other display types or on macOS versions older than 14.
+func (d *GraphicsDisplay) PixelsPerInch() (int64, error) {
+	if err := macOSAvailable(14); err != nil {
+		return 0, err
+	}
+	value, ok := vzbridge.MacGraphicsDisplayPixelsPerInch(d)
+	if !ok {
+		return 0, errors.New("pixel density is only available for Mac graphics displays")
+	}
+	return value, nil
+}

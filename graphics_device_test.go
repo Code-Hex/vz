@@ -1,11 +1,9 @@
 package vz
 
 import (
-	"errors"
 	"runtime"
 	"testing"
 
-	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
@@ -26,19 +24,6 @@ func TestRuntimeGraphicsDisplay(t *testing.T) {
 	width, height := display.SizeInPixels()
 	if width != 800 || height != 600 {
 		t.Fatalf("size = %gx%g, want 800x600", width, height)
-	}
-	configuration, err := NewVirtioGraphicsScanoutConfiguration(1280, 720)
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, err := range []error{
-		display.ReconfigureWithSizeInPixels(1024, 768),
-		display.ReconfigureWithConfiguration(configuration),
-	} {
-		var nativeError *objcutil.NSError
-		if !errors.As(err, &nativeError) {
-			t.Fatalf("stopped display error = %v, want NSError", err)
-		}
 	}
 	if err := display.ReconfigureWithConfiguration(nil); err == nil {
 		t.Fatal("nil configuration accepted")

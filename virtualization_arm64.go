@@ -219,10 +219,20 @@ func NewMacAuxiliaryStorage(storagePath string, opts ...NewMacAuxiliaryStorageOp
 
 // MacOSRestoreImage is a struct that describes a version of macOS to install on to a virtual machine.
 type MacOSRestoreImage struct {
+	supported                               bool
 	url                                     string
 	buildVersion                            string
 	operatingSystemVersion                  OperatingSystemVersion
 	mostFeaturefulSupportedConfigurationPtr *pointer
+}
+
+// Supported reports whether this restore image is supported on the current host.
+// This requires macOS 13 or newer.
+func (m *MacOSRestoreImage) Supported() (bool, error) {
+	if err := macOSAvailable(13); err != nil {
+		return false, err
+	}
+	return m.supported, nil
 }
 
 // URL returns URL of this restore image.
@@ -335,6 +345,9 @@ func nativeRestoreImageRequest(handler macOSRestoreImageHandler) uint64 {
 				PatchVersion: vzbridge.MacOSRestoreImagePatchVersion(image),
 			},
 			mostFeaturefulSupportedConfigurationPtr: vzbridge.VZMacOSRestoreImage_MostFeaturefulSupportedConfiguration(image),
+		}
+		if macOSAvailable(13) == nil {
+			result.supported = vzbridge.VZMacOSRestoreImage_IsSupported(image)
 		}
 		handler(result, nil)
 		return 0

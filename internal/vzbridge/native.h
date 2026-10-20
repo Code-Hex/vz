@@ -102,3 +102,6 @@ void *vz_requestVmnetNetwork(const char *name, const char *requirement, VZBridge
 void vz_cancelVmnetNetworkRequest(void *request) __attribute__((annotate("vzbridge:noqueue")));
 void *vz_waitVmnetNetworkRequest(void *request, VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:noqueue")));
 void vz_releaseVmnetNetworkRequest(void *request) __attribute__((annotate("vzbridge:noqueue")));
+
+void vz_graphicsDisplaySize(VZBridgeObject display, void *size) __attribute__((annotate("vzbridge:objectqueue")));
+void vz_reconfigureGraphicsDisplaySize(VZBridgeObject display, double width, double height, VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:objectqueue")));

@@ -76,3 +76,5 @@ func NewVirtioGraphicsScanoutConfiguration(widthInPixels int64, heightInPixels i
 	}
 	return graphicsScanoutConfiguration, nil
 }
+
+func (*VirtioGraphicsScanoutConfiguration) graphicsDisplayConfiguration() {}

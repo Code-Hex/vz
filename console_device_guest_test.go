@@ -33,6 +33,9 @@ func TestRuntimeConsoleAttachmentGuest(t *testing.T) {
 			t.Error(err)
 		}
 	}()
+	if err := container.conn.SetDeadline(time.Now().Add(15 * time.Second)); err != nil {
+		t.Fatal(err)
+	}
 	session := container.NewSession(t)
 	output, err := session.Output(`for p in /sys/class/virtio-ports/*; do if [ "$(cat "$p/name")" = control ]; then echo /dev/$(basename "$p"); fi; done`)
 	session.Close()
@@ -64,19 +67,35 @@ func TestRuntimeConsoleAttachmentGuest(t *testing.T) {
 		if err := port.SetAttachment(attachment); err != nil {
 			t.Fatal(err)
 		}
+		defer func() {
+			if err := port.SetAttachment(nil); err != nil {
+				t.Error(err)
+			}
+		}()
 		if got := port.Attachment(); got == nil {
 			t.Fatal("port remained disconnected")
 		} else if _, ok := got.(*vz.FileHandleSerialPortAttachment); !ok {
 			t.Fatalf("attachment = %T, want file handle attachment", got)
 		}
 		session := container.NewSession(t)
-		if err := session.Start(fmt.Sprintf("timeout 5 sh -c 'read line < %s; printf %%s \"$line\" > %s'", path, path)); err != nil {
+		defer session.Close()
+		if err := output.SetReadDeadline(time.Now().Add(10 * time.Second)); err != nil {
+			t.Fatal(err)
+		}
+		if err := session.Start(fmt.Sprintf("timeout 5 sh -c 'exec 3<> %s; printf R >&3; IFS= read -r line <&3 && printf %%s \"$line\" >&3'", path)); err != nil {
+			t.Fatal(err)
+		}
+		var ready [1]byte
+		if _, err := io.ReadFull(output, ready[:]); err != nil {
+			t.Fatal(err)
+		}
+		if ready[0] != 'R' {
+			t.Fatalf("ready = %q, want R", ready)
+		}
+		if err := input.SetWriteDeadline(time.Now().Add(5 * time.Second)); err != nil {
 			t.Fatal(err)
 		}
 		if _, err := fmt.Fprintln(input, message); err != nil {
-			t.Fatal(err)
-		}
-		if err := output.SetReadDeadline(time.Now().Add(10 * time.Second)); err != nil {
 			t.Fatal(err)
 		}
 		data := make([]byte, len(message))

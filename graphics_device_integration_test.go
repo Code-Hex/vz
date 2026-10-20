@@ -3,6 +3,7 @@ package vz_test
 import (
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/Code-Hex/vz/v4"
 )
@@ -55,6 +56,10 @@ func TestRunningGraphicsDisplay(t *testing.T) {
 	if !errors.As(err, &nativeError) {
 		t.Fatalf("invalid size error = %v, want NSError", err)
 	}
+	if err := vm.conn.SetDeadline(time.Now().Add(15 * time.Second)); err != nil {
+		t.Fatal(err)
+	}
+	defer vm.conn.SetDeadline(time.Time{})
 	session := vm.NewSession(t)
 	defer session.Close()
 	if output, err := session.CombinedOutput("echo display-alive"); err != nil || string(output) != "display-alive\n" {

@@ -83,6 +83,10 @@ func TestAvailableVersionArm64(t *testing.T) {
 
 		majorMinorVersion = 12.3
 		cases := map[string]func() error{
+			"MacOSRestoreImage.Supported": func() error {
+				_, err := (&MacOSRestoreImage{}).Supported()
+				return err
+			},
 			"WithStartUpFromMacOSRecovery": func() error {
 				return (*VirtualMachine)(nil).Start(WithStartUpFromMacOSRecovery(true))
 			},

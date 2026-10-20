@@ -12,6 +12,15 @@ import (
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
+// IsSupported reports whether the host supports hardware virtualization.
+// It returns false on macOS versions older than 11.
+func IsSupported() bool {
+	if macOSAvailable(11) != nil {
+		return false
+	}
+	return vzbridge.VZVirtualMachine_IsSupported()
+}
+
 // VirtualMachineState represents execution state of the virtual machine.
 //
 //go:generate stringer -type=VirtualMachineState

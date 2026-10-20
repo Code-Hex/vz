@@ -22,6 +22,9 @@ func TestAvailableVersion(t *testing.T) {
 
 	t.Run("macOS 11", func(t *testing.T) {
 		majorMinorVersion = 10
+		if IsSupported() {
+			t.Fatal("virtualization reported support before macOS 11")
+		}
 		cases := map[string]func() error{
 			"NewLinuxBootLoader": func() error {
 				_, err := NewLinuxBootLoader("")
@@ -319,6 +322,10 @@ func TestAvailableVersion(t *testing.T) {
 
 		majorMinorVersion = 13
 		cases := map[string]func() error{
+			"GraphicsDisplay.PixelsPerInch": func() error {
+				_, err := (&GraphicsDisplay{}).PixelsPerInch()
+				return err
+			},
 			"NewNVMExpressControllerDeviceConfiguration": func() error {
 				_, err := NewNVMExpressControllerDeviceConfiguration(nil)
 				return err

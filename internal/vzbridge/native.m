@@ -682,7 +682,10 @@ void vz_cancelInstallVZMacOSInstaller(void *installer)
         [(VZBridgeInstaller *)installer cancel];
 }
 #else
-void vz_fetchLatestSupportedMacOSRestoreImageWithCompletionHandler(uint64_t context) { unavailable(VZBridgeCallbackRestoreImageLoaded, context); }
+void vz_fetchLatestSupportedMacOSRestoreImageWithCompletionHandler(uint64_t context)
+{
+    unavailable(VZBridgeCallbackRestoreImageLoaded, context);
+}
 void vz_loadMacOSRestoreImageFile(const char *path, uint64_t context) { unavailable(VZBridgeCallbackRestoreImageLoaded, context); }
 int64_t vz_macOSRestoreImageMajorVersion(void *object) { return 0; }
 int64_t vz_macOSRestoreImageMinorVersion(void *object) { return 0; }
@@ -725,4 +728,28 @@ void vz_restoreMachineStateFromURLWithCompletionHandler(void *machine, uint64_t 
     }
 #endif
     unavailable(VZBridgeCallbackCompletion, context);
+}
+
+void vz_graphicsDisplaySize(void *display, void *size)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
+    if (@available(macOS 14.0, *)) {
+        CGSize pixels = [(VZGraphicsDisplay *)display sizeInPixels];
+        ((double *)size)[0] = pixels.width;
+        ((double *)size)[1] = pixels.height;
+    }
+#endif
+}
+
+void vz_reconfigureGraphicsDisplaySize(void *display, double width, double height, void **errorOut)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
+    if (@available(macOS 14.0, *)) {
+        NSError *error = nil;
+        [(VZGraphicsDisplay *)display reconfigureWithSizeInPixels:CGSizeMake(width, height) error:&error];
+        fail(error, errorOut);
+        return;
+    }
+#endif
+    fail(posixError(ENOTSUP), errorOut);
 }

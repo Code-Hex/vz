@@ -23,11 +23,36 @@ type GraphicsDevice struct {
 	vm *VirtualMachine
 }
 
+// GraphicsDisplayEvent reports the beginning or end of display reconfiguration.
+type GraphicsDisplayEvent struct {
+	// DeviceIndex identifies the graphics device in VirtualMachine.GraphicsDevices.
+	DeviceIndex int
+	// DisplayIndex identifies the display in GraphicsDevice.Displays.
+	DisplayIndex int
+	// Reconfiguring is true at the beginning and false when frames arrive
+	// at the most recently requested size and configuration.
+	Reconfiguring bool
+}
+
 // GraphicsDisplay is a display attached to a virtual machine.
 // Obtain it from GraphicsDevice.Displays.
 type GraphicsDisplay struct {
 	*pointer
 	vm *VirtualMachine
+}
+
+// GraphicsDisplayChangedNotify reports display reconfiguration in order.
+// Notifications are queued from VM creation, including before this method is called.
+// A guest that does not produce frames at the requested configuration may never
+// produce an end notification. Releasing the VM closes the channel and discards
+// unread notifications. Keep the VM reachable until you finish receiving,
+// for example with runtime.KeepAlive.
+// It returns nil on macOS versions older than 14.
+func (v *VirtualMachine) GraphicsDisplayChangedNotify() <-chan GraphicsDisplayEvent {
+	if macOSAvailable(14) != nil {
+		return nil
+	}
+	return v.machineState.graphicsDisplays.output
 }
 
 // GraphicsDevices returns the graphics devices configured on the VM.

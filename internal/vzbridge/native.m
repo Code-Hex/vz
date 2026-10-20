@@ -116,7 +116,7 @@ static dispatch_group_t pendingReleases(void)
 
 void vz_drain(void)
 {
-    syncNative(^ {});
+    syncNative(^ { });
     dispatch_group_wait(pendingReleases(), DISPATCH_TIME_FOREVER);
 }
 
@@ -193,10 +193,63 @@ static void unavailable(uint32_t kind, uint64_t context)
 static NSString *text(const char *value) { return value ? [NSString stringWithUTF8String:value] : @""; }
 static NSURL *fileURL(const char *value) { return [NSURL fileURLWithPath:text(value)]; }
 
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 130000
+API_AVAILABLE(macos(13.0))
+@interface VZBridgeConsoleObserver : NSObject <VZVirtioConsoleDeviceDelegate> {
+@public
+    uint64_t context;
+    uint32_t deviceIndex;
+}
+@end
+
+@implementation VZBridgeConsoleObserver
+- (void)notify:(uint32_t)kind device:(VZVirtioConsoleDevice *)device port:(VZVirtioConsolePort *)port
+{
+    for (uint32_t index = 0; index < device.ports.maximumPortCount; index++) {
+        if (device.ports[index] == port) {
+            emit(kind, context, nil, nil, ((uint64_t)deviceIndex << 32) | index);
+            return;
+        }
+    }
+}
+- (void)consoleDevice:(VZVirtioConsoleDevice *)device didOpenPort:(VZVirtioConsolePort *)port
+{
+    [self notify:VZBridgeCallbackConsolePortOpened device:device port:port];
+}
+- (void)consoleDevice:(VZVirtioConsoleDevice *)device didClosePort:(VZVirtioConsolePort *)port
+{
+    [self notify:VZBridgeCallbackConsolePortClosed device:device port:port];
+}
+@end
+#endif
+
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
+API_AVAILABLE(macos(14.0))
+@interface VZBridgeDisplayObserver : NSObject <VZGraphicsDisplayObserver> {
+@public
+    uint64_t context;
+    uint64_t indexes;
+}
+@end
+
+@implementation VZBridgeDisplayObserver
+- (void)displayDidBeginReconfiguration:(VZGraphicsDisplay *)display
+{
+    emit(VZBridgeCallbackDisplayReconfigurationBegan, context, nil, nil, indexes);
+}
+- (void)displayDidEndReconfiguration:(VZGraphicsDisplay *)display
+{
+    emit(VZBridgeCallbackDisplayReconfigurationEnded, context, nil, nil, indexes);
+}
+@end
+#endif
+
 @interface VZBridgeMachine : VZVirtualMachine <VZVirtualMachineDelegate> {
     uint64_t _stateContext;
     uint64_t _networkContext;
     BOOL _observing;
+    NSMutableArray *_consoleObservers;
+    NSMutableArray *_displayObservers;
     NSHashTable<id<VZVirtualMachineDelegate>> *_externalDelegates;
 }
 - (instancetype)initWithConfiguration:(VZVirtualMachineConfiguration *)configuration queueOwner:(VZBridgeQueue *)owner state:(uint64_t)state network:(uint64_t)network;
@@ -214,6 +267,37 @@ static NSURL *fileURL(const char *value) { return [NSURL fileURLWithPath:text(va
         [super setDelegate:self];
         [self addObserver:self forKeyPath:@"state" options:NSKeyValueObservingOptionNew context:&bridgeQueueKey];
         _observing = YES;
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 130000
+        if (@available(macOS 13.0, *)) {
+            _consoleObservers = [[NSMutableArray alloc] init];
+            for (VZVirtioConsoleDevice *device in self.consoleDevices) {
+                VZBridgeConsoleObserver *observer = [[VZBridgeConsoleObserver alloc] init];
+                observer->context = state;
+                observer->deviceIndex = (uint32_t)_consoleObservers.count;
+                [_consoleObservers addObject:observer];
+                device.delegate = observer;
+                [observer release];
+            }
+        }
+#endif
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
+        if (@available(macOS 14.0, *)) {
+            _displayObservers = [[NSMutableArray alloc] init];
+            uint32_t deviceIndex = 0;
+            for (VZGraphicsDevice *device in self.graphicsDevices) {
+                uint32_t displayIndex = 0;
+                for (VZGraphicsDisplay *display in device.displays) {
+                    VZBridgeDisplayObserver *observer = [[VZBridgeDisplayObserver alloc] init];
+                    observer->context = state;
+                    observer->indexes = ((uint64_t)deviceIndex << 32) | displayIndex++;
+                    [_displayObservers addObject:observer];
+                    [display addObserver:observer];
+                    [observer release];
+                }
+                deviceIndex++;
+            }
+        }
+#endif
     }
     return self;
 }
@@ -238,6 +322,7 @@ static NSURL *fileURL(const char *value) { return [NSURL fileURLWithPath:text(va
 }
 - (void)guestDidStopVirtualMachine:(VZVirtualMachine *)machine
 {
+    emit(VZBridgeCallbackGuestStopped, _stateContext, nil, nil, 0);
     for (id<VZVirtualMachineDelegate> delegate in _externalDelegates.allObjects) {
         if ([delegate respondsToSelector:_cmd])
             [delegate guestDidStopVirtualMachine:machine];
@@ -264,6 +349,23 @@ static NSURL *fileURL(const char *value) { return [NSURL fileURLWithPath:text(va
 #endif
 - (void)dealloc
 {
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 130000
+    if (@available(macOS 13.0, *)) {
+        for (VZVirtioConsoleDevice *device in self.consoleDevices)
+            device.delegate = nil;
+    }
+#endif
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
+    if (@available(macOS 14.0, *)) {
+        NSUInteger index = 0;
+        for (VZGraphicsDevice *device in self.graphicsDevices) {
+            for (VZGraphicsDisplay *display in device.displays)
+                [display removeObserver:_displayObservers[index++]];
+        }
+    }
+#endif
+    [_consoleObservers release];
+    [_displayObservers release];
     if (_observing)
         [self removeObserver:self forKeyPath:@"state" context:&bridgeQueueKey];
     [super setDelegate:nil];

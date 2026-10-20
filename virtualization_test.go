@@ -407,6 +407,11 @@ func TestStop(t *testing.T) {
 	if err := waitUntilState(timeout, vm, vz.VirtualMachineStateStopped); err != nil {
 		t.Fatal(err)
 	}
+	select {
+	case <-vm.GuestStoppedNotify():
+		t.Fatal("host Stop reported a guest shutdown")
+	case <-time.After(100 * time.Millisecond):
+	}
 }
 
 func TestVirtualMachineStateString(t *testing.T) {

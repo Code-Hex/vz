@@ -34,9 +34,24 @@ func TestRunningGraphicsDisplay(t *testing.T) {
 	if len(displays) != 1 {
 		t.Fatalf("got %d displays, want 1", len(displays))
 	}
+	events := vm.GraphicsDisplayChangedNotify()
 	display := displays[0]
 	if err := display.ReconfigureWithSizeInPixels(1024, 768); err != nil {
 		t.Fatal(err)
+	}
+	for _, reconfiguring := range []bool{true, false} {
+		select {
+		case event, open := <-events:
+			if !open {
+				t.Fatal("display notification channel closed before notification")
+			}
+			want := vz.GraphicsDisplayEvent{DeviceIndex: 0, DisplayIndex: 0, Reconfiguring: reconfiguring}
+			if event != want {
+				t.Fatalf("reconfiguration event = %+v, want %+v", event, want)
+			}
+		case <-time.After(5 * time.Second):
+			t.Fatalf("missing display reconfiguration notification, reconfiguring = %t", reconfiguring)
+		}
 	}
 	if width, height := display.SizeInPixels(); width != 1024 || height != 768 {
 		t.Fatalf("size = %gx%g, want 1024x768", width, height)

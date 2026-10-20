@@ -99,6 +99,7 @@ func setupConfiguration(bootLoader vz.BootLoader) (*vz.VirtualMachineConfigurati
 type Container struct {
 	*vz.VirtualMachine
 	*ssh.Client
+	conn net.Conn
 }
 
 func (c *Container) NewSession(t *testing.T) *ssh.Session {
@@ -237,54 +238,51 @@ func newVirtualizationMachine(
 	}
 
 	const max = 5
-RETRY:
 	for i := 1; ; i++ {
 		conn, err := socketDevice.Connect(uint32(port))
 		if err != nil {
 			var nserr *vz.NSError
-			if !errors.As(err, &nserr) || i > max {
+			if !errors.As(err, &nserr) || i >= max {
 				t.Fatal(err)
 			}
 			if nserr.Code == int(syscall.ECONNRESET) {
 				t.Logf("retry vsock connect: %d", i)
 				time.Sleep(backOffDelay(i))
-				continue RETRY
+				continue
 			}
 			t.Fatalf("failed to connect vsock: %v", err)
 		}
 
 		log.Println("setup ssh client in container")
 
-		initialized := make(chan struct{})
-		retry := make(chan struct{})
-		go func() {
-			select {
-			case <-initialized:
-			case <-time.After(5 * time.Second):
-				close(retry)
-				t.Log("closed", conn.Close())
-			}
-		}()
+		if err := conn.SetDeadline(time.Now().Add(5 * time.Second)); err != nil {
+			conn.Close()
+			t.Fatal(err)
+		}
 
 		sshClient, err := testhelper.NewSshClient(conn, ":22", sshConfig)
 		if err != nil {
-			select {
-			case <-retry:
-				t.Log("retry because ssh handshake has been failed")
-				continue RETRY
-			default:
-			}
 			conn.Close()
+			if errors.Is(err, os.ErrDeadlineExceeded) && i < max {
+				t.Logf("retry SSH handshake: %d", i)
+				continue
+			}
 			t.Fatalf("failed to create a new ssh client: %v", err)
 		}
 
-		close(initialized)
+		t.Cleanup(func() {
+			sshClient.Close()
+		})
+		if err := conn.SetDeadline(time.Time{}); err != nil {
+			t.Fatal(err)
+		}
 
 		log.Println("container setup done")
 
 		return &Container{
 			VirtualMachine: vm,
 			Client:         sshClient,
+			conn:           conn,
 		}
 	}
 }

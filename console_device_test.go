@@ -59,7 +59,7 @@ func TestRuntimeConsolePort(t *testing.T) {
 			objc.Release(got)
 		}
 	}
-	states := vm.StateChangedNotify()
+	released := nativeMachineReleased(vm)
 	vm = nil
 	devices = nil
 	ports = nil
@@ -67,24 +67,13 @@ func TestRuntimeConsolePort(t *testing.T) {
 		runtime.GC()
 		vzbridge.Drain()
 	}
-	select {
-	case _, open := <-states:
-		if !open {
-			t.Fatal("VM released while port is live")
-		}
-	default:
+	if released() {
+		t.Fatal("VM released while port is live")
 	}
 	if got := port.Name(); got != "control" {
 		t.Fatalf("name after GC = %q", got)
 	}
 	runtime.KeepAlive(port)
 	port = nil
-	awaitNativeBridge(t, func() bool {
-		select {
-		case _, open := <-states:
-			return !open
-		default:
-			return false
-		}
-	})
+	awaitNativeBridge(t, released)
 }

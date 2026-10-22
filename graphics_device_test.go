@@ -11,15 +11,11 @@ func TestRuntimeGraphicsDisplay(t *testing.T) {
 	if macOSAvailable(14) != nil {
 		t.Skip("requires macOS 14")
 	}
-	display, states := retainedGraphicsDisplay(t)
+	display, released := retainedGraphicsDisplay(t)
 	runtime.GC()
 	vzbridge.Drain()
-	select {
-	case _, open := <-states:
-		if !open {
-			t.Fatal("machine released while display remains live")
-		}
-	default:
+	if released() {
+		t.Fatal("machine released while display remains live")
 	}
 	width, height := display.SizeInPixels()
 	if width != 800 || height != 600 {
@@ -30,17 +26,10 @@ func TestRuntimeGraphicsDisplay(t *testing.T) {
 	}
 	runtime.KeepAlive(display)
 	display = nil
-	awaitNativeBridge(t, func() bool {
-		select {
-		case _, open := <-states:
-			return !open
-		default:
-			return false
-		}
-	})
+	awaitNativeBridge(t, released)
 }
 
-func retainedGraphicsDisplay(t *testing.T) (*GraphicsDisplay, <-chan VirtualMachineState) {
+func retainedGraphicsDisplay(t *testing.T) (*GraphicsDisplay, func() bool) {
 	t.Helper()
 	graphics, err := NewVirtioGraphicsDeviceConfiguration()
 	if err != nil {
@@ -65,5 +54,5 @@ func retainedGraphicsDisplay(t *testing.T) (*GraphicsDisplay, <-chan VirtualMach
 	if len(displays) != 1 {
 		t.Fatalf("got %d displays, want 1", len(displays))
 	}
-	return displays[0], machine.StateChangedNotify()
+	return displays[0], nativeMachineReleased(machine)
 }

@@ -2,58 +2,61 @@
 
 package vz
 
-// notificationQueue retains notifications until they are read or the owner is released.
-// The owner must finish sending before it closes the queue.
-type notificationQueue[T any] struct {
-	input  chan T
-	output chan T
-	stop   chan struct{}
-	done   chan struct{}
+import (
+	"errors"
+	"sync"
+)
+
+type notificationRegistration[T any] struct {
+	channel chan<- T
 }
 
-func newNotificationQueue[T any]() *notificationQueue[T] {
-	q := &notificationQueue[T]{
-		input:  make(chan T),
-		output: make(chan T),
-		stop:   make(chan struct{}),
-		done:   make(chan struct{}),
+type notifications[T any] struct {
+	mu       sync.Mutex
+	channels map[chan<- T]*notificationRegistration[T]
+	closed   bool
+}
+
+func (n *notifications[T]) subscribe(channel chan<- T) (func(), error) {
+	if channel == nil {
+		return nil, errors.New("vz: nil notification channel")
 	}
-	go q.run()
-	return q
-}
-
-func (q *notificationQueue[T]) send(value T) {
-	q.input <- value
-}
-
-func (q *notificationQueue[T]) close() {
-	close(q.stop)
-	<-q.done
-}
-
-func (q *notificationQueue[T]) run() {
-	defer close(q.done)
-	defer close(q.output)
-	var pending []T
-	for {
-		var output chan T
-		var next T
-		if len(pending) != 0 {
-			output = q.output
-			next = pending[0]
+	n.mu.Lock()
+	defer n.mu.Unlock()
+	if n.closed {
+		return nil, errors.New("vz: notification source is closed")
+	}
+	if n.channels == nil {
+		n.channels = make(map[chan<- T]*notificationRegistration[T])
+	}
+	registration := n.channels[channel]
+	if registration == nil {
+		registration = &notificationRegistration[T]{channel: channel}
+		n.channels[channel] = registration
+	}
+	return func() {
+		n.mu.Lock()
+		defer n.mu.Unlock()
+		if n.channels[registration.channel] == registration {
+			delete(n.channels, registration.channel)
 		}
+	}, nil
+}
+
+func (n *notifications[T]) send(value T) {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+	for channel := range n.channels {
 		select {
-		case <-q.stop:
-			return
-		case value := <-q.input:
-			pending = append(pending, value)
-		case output <- next:
-			var zero T
-			pending[0] = zero
-			pending = pending[1:]
-			if len(pending) == 0 {
-				pending = nil
-			}
+		case channel <- value:
+		default:
 		}
 	}
+}
+
+func (n *notifications[T]) close() {
+	n.mu.Lock()
+	defer n.mu.Unlock()
+	n.closed = true
+	n.channels = nil
 }

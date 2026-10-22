@@ -74,19 +74,15 @@ func copiedNativeMACAddress(t *testing.T) (MACAddress, <-chan struct{}) {
 	return *original, collected
 }
 
-func TestNativeBridgeVMCollectionClosesSubscriptions(t *testing.T) {
+func TestNativeBridgeVMCollectionReleasesSubscriptions(t *testing.T) {
 	runtime.GC()
 	vzbridge.Drain()
 	before := nativeCallbacks.next.Load()
-	states := abandonedNativeVM(t)
+	stop := abandonedNativeVM(t)
 	awaitNativeBridge(t, func() bool {
-		select {
-		case _, open := <-states:
-			return !open && nativeBridgeCallbackCountAfter(before) == 0
-		default:
-			return false
-		}
+		return nativeBridgeCallbackCountAfter(before) == 0
 	})
+	stop()
 }
 
 func TestNativeBridgeStateEvents(t *testing.T) {
@@ -102,6 +98,12 @@ func TestNativeBridgeStateEvents(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	changed := make(chan VirtualMachineState, 8)
+	stopStateChanged, err := machine.StateChangedNotify(changed)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer stopStateChanged()
 	if err := machine.Start(); err != nil {
 		t.Fatal(err)
 	}
@@ -112,23 +114,22 @@ func TestNativeBridgeStateEvents(t *testing.T) {
 			}
 		}
 	})
-	deadline := time.After(5 * time.Second)
-	for {
-		select {
-		case state := <-machine.StateChangedNotify():
-			if state == VirtualMachineStateRunning {
-				if machine.State() != VirtualMachineStateRunning {
-					t.Fatal("state notification and current state disagree")
-				}
-				return
-			}
-		case <-deadline:
-			t.Fatal("running VM did not emit its running state")
+	foundRunning := false
+	for len(changed) > 0 {
+		if state := <-changed; state == VirtualMachineStateRunning {
+			foundRunning = true
 		}
 	}
+	if !foundRunning {
+		t.Fatal("native state notifications omitted Running")
+	}
+	if machine.State() != VirtualMachineStateRunning {
+		t.Fatalf("state = %s, want running", machine.State())
+	}
+
 }
 
-func abandonedNativeVM(t *testing.T) <-chan VirtualMachineState {
+func abandonedNativeVM(t *testing.T) func() {
 	t.Helper()
 	machine, err := NewVirtualMachine(newTestConfig(t))
 	if err != nil {
@@ -137,7 +138,11 @@ func abandonedNativeVM(t *testing.T) <-chan VirtualMachineState {
 	if !machine.CanStart() {
 		t.Fatal("new virtual machine cannot start")
 	}
-	return machine.StateChangedNotify()
+	stop, err := machine.StateChangedNotify(make(chan VirtualMachineState, 1))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return stop
 }
 
 func TestNativeBridgeNetworkAttachmentFailureReleasesRequest(t *testing.T) {
@@ -160,41 +165,31 @@ func TestNativeBridgeNetworkAttachmentFailureReleasesRequest(t *testing.T) {
 	}
 }
 
-func TestNativeBridgeNetworkAttachmentCollectionClosesSubscriptions(t *testing.T) {
+func TestNativeBridgeNetworkAttachmentCollectionReleasesSubscriptions(t *testing.T) {
 	if macOSAvailable(14) != nil {
-		t.Skip("network block attachments require macOS 14")
+		t.Skip("requires macOS 14")
 	}
 	runtime.GC()
 	vzbridge.Drain()
 	before := nativeCallbacks.next.Load()
-	connected, failures := abandonedNativeNetworkAttachment(t)
-	connectedClosed, failuresClosed := false, false
+	stop := abandonedNativeNetworkAttachment(t)
 	awaitNativeBridge(t, func() bool {
-		if !connectedClosed {
-			select {
-			case _, open := <-connected:
-				connectedClosed = !open
-			default:
-			}
-		}
-		if !failuresClosed {
-			select {
-			case _, open := <-failures:
-				failuresClosed = !open
-			default:
-			}
-		}
-		return connectedClosed && failuresClosed && nativeBridgeCallbackCountAfter(before) == 0
+		return nativeBridgeCallbackCountAfter(before) == 0
 	})
+	stop()
 }
 
-func abandonedNativeNetworkAttachment(t *testing.T) (<-chan struct{}, <-chan error) {
+func abandonedNativeNetworkAttachment(t *testing.T) func() {
 	t.Helper()
 	attachment, err := NewNetworkBlockDeviceStorageDeviceAttachment("nbd://127.0.0.1:10809/export", time.Second, true, DiskSynchronizationModeFull)
 	if err != nil {
 		t.Fatal(err)
 	}
-	return attachment.Connected(), attachment.DidEncounterError()
+	stop, err := attachment.Connected(make(chan struct{}, 1))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return stop
 }
 
 func nativeBridgeCallbackCountAfter(mark uint64) int {
@@ -221,4 +216,13 @@ func awaitNativeBridge(t *testing.T, done func() bool) {
 		time.Sleep(10 * time.Millisecond)
 	}
 	t.Fatal("native cleanup did not complete within 10 seconds")
+}
+
+func nativeMachineReleased(machine *VirtualMachine) func() bool {
+	n := &machine.machineState.stateNotify
+	return func() bool {
+		n.mu.Lock()
+		defer n.mu.Unlock()
+		return n.closed
+	}
 }

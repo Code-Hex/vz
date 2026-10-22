@@ -85,20 +85,27 @@ type VirtualMachine struct {
 	*pointer
 	machineState *machineState
 
-	disconnected *notificationQueue[*DisconnectedError]
+	disconnected *notifications[*DisconnectedError]
 
 	config *VirtualMachineConfiguration
 }
 
 type machineState struct {
+	mu               sync.RWMutex
 	state            VirtualMachineState
-	stateNotify      *notificationQueue[VirtualMachineState]
-	stopErrors       *notificationQueue[error]
-	guestStops       *notificationQueue[struct{}]
-	consolePorts     *notificationQueue[ConsolePortEvent]
-	graphicsDisplays *notificationQueue[GraphicsDisplayEvent]
+	stateNotify      notifications[VirtualMachineState]
+	guestStops       notifications[struct{}]
+	stopErrors       notifications[error]
+	consolePorts     notifications[ConsolePortEvent]
+	graphicsDisplays notifications[GraphicsDisplayEvent]
+}
 
-	mu sync.RWMutex
+func (s *machineState) close() {
+	s.stateNotify.close()
+	s.guestStops.close()
+	s.stopErrors.close()
+	s.consolePorts.close()
+	s.graphicsDisplays.close()
 }
 
 // NewVirtualMachine creates a new VirtualMachine with VirtualMachineConfiguration.
@@ -115,13 +122,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 	if err := macOSAvailable(11); err != nil {
 		return nil, err
 	}
-	state := &machineState{
-		stateNotify:      newNotificationQueue[VirtualMachineState](),
-		stopErrors:       newNotificationQueue[error](),
-		guestStops:       newNotificationQueue[struct{}](),
-		consolePorts:     newNotificationQueue[ConsolePortEvent](),
-		graphicsDisplays: newNotificationQueue[GraphicsDisplayEvent](),
-	}
+	state := &machineState{}
 	stateHandle := registerNativeCallback(func(kind uint32, errorPointer, _ unsafe.Pointer, value uint64) uint64 {
 		switch kind {
 		case vzbridge.CallbackGuestStopped:
@@ -146,11 +147,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 			state.stopErrors.send(err)
 			return 0
 		case vzbridge.CallbackContextReleased:
-			state.stopErrors.close()
-			state.guestStops.close()
-			state.consolePorts.close()
-			state.graphicsDisplays.close()
-			state.stateNotify.close()
+			state.close()
 			return 0
 		}
 		state.mu.Lock()
@@ -159,7 +156,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 		state.mu.Unlock()
 		return 0
 	})
-	disconnected := newNotificationQueue[*DisconnectedError]()
+	disconnected := &notifications[*DisconnectedError]{}
 	configs := config.networkDeviceConfiguration
 	disconnectedHandle := registerNativeCallback(func(kind uint32, errorPointer, _ unsafe.Pointer, value uint64) uint64 {
 		if kind == vzbridge.CallbackContextReleased {
@@ -176,11 +173,7 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 	if object == nil {
 		unregisterNativeCallback(stateHandle)
 		unregisterNativeCallback(disconnectedHandle)
-		state.stateNotify.close()
-		state.stopErrors.close()
-		state.guestStops.close()
-		state.consolePorts.close()
-		state.graphicsDisplays.close()
+		state.close()
 		disconnected.close()
 		return nil, fmt.Errorf("could not create virtual machine")
 	}
@@ -231,32 +224,32 @@ func (v *VirtualMachine) State() VirtualMachineState {
 	return v.machineState.state
 }
 
-// GuestStoppedNotify reports normal guest shutdowns, including shutdowns requested
-// with RequestStop. Host Stop calls and failures do not send a notification.
-// Notifications are queued in order from VM creation. The channel remains open
-// across restarts. Releasing the VM closes it and discards unread notifications.
-// Keep the VM reachable until you finish receiving, for example with runtime.KeepAlive.
-func (v *VirtualMachine) GuestStoppedNotify() <-chan struct{} {
-	return v.machineState.guestStops.output
+// GuestStoppedNotify registers c for normal guest shutdowns, including those
+// requested with RequestStop. Host Stop calls and failures do not notify c.
+// Delivery follows StateChangedNotify. The returned function unregisters c.
+func (v *VirtualMachine) GuestStoppedNotify(c chan<- struct{}) (func(), error) {
+	return v.machineState.guestStops.subscribe(c)
 }
 
-// StoppedWithErrorNotify reports errors that caused the virtual machine to stop.
-// Normal guest shutdown and Stop do not send an error. The channel remains open
-// across restarts and closes when the virtual machine is released.
-// Errors are queued in order while the virtual machine is alive. Releasing it
-// discards unread errors. Keep the virtual machine reachable until you have
-// finished receiving notifications, for example with runtime.KeepAlive.
-// Errors can be inspected with errors.As and *NSError.
-func (v *VirtualMachine) StoppedWithErrorNotify() <-chan error {
-	return v.machineState.stopErrors.output
+// StoppedWithErrorNotify registers c for errors that caused the VM to stop.
+// Normal guest shutdown and host Stop calls do not notify c.
+// Delivery follows StateChangedNotify. The returned function unregisters c.
+func (v *VirtualMachine) StoppedWithErrorNotify(c chan<- error) (func(), error) {
+	return v.machineState.stopErrors.subscribe(c)
 }
 
-// StateChangedNotify reports execution state changes in order.
-// Changes are queued while the virtual machine is alive. Releasing it closes
-// the channel and discards unread changes. Keep the virtual machine reachable
-// until you have finished receiving notifications, for example with runtime.KeepAlive.
-func (v *VirtualMachine) StateChangedNotify() <-chan VirtualMachineState {
-	return v.machineState.stateNotify.output
+// StateChangedNotify registers c for future execution state changes.
+// Delivery never waits: a notification is dropped if c cannot receive it.
+// The caller chooses the channel capacity. No past notifications are replayed.
+//
+// Registering the same channel again does not duplicate delivery. Either returned
+// stop function removes that registration. The stop function is safe to call more than once;
+// after it returns, that registration will not send again. Stop every registration
+// using c before closing it. The library never closes c, including on VM release.
+// A nil channel or a released VM returns an error and a nil stop function.
+// Keep the VM reachable while receiving notifications.
+func (v *VirtualMachine) StateChangedNotify(c chan<- VirtualMachineState) (func(), error) {
+	return v.machineState.stateNotify.subscribe(c)
 }
 
 // CanStart returns true if the machine is in a state that can be started.
@@ -513,21 +506,14 @@ func (e *DisconnectedError) Error() string {
 	return fmt.Sprintf("%s: %v", e.Config.attachment, e.Err)
 }
 
-// NetworkDeviceAttachmentWasDisconnected returns a receive channel.
-// The channel emits an error message each time the network attachment is disconnected,
-// typically triggered by events such as failure to start, initial boot, device reset, or reboot.
-// As a result, this method may be invoked multiple times throughout the virtual machine's lifecycle.
-//
-// Notifications are queued until received or the VM is released. Release closes
-// the channel and discards unread notifications. Keep the VM reachable while
-// receiving notifications, for example with runtime.KeepAlive.
-//
-// This is only supported on macOS 12 and newer, error will be returned on older versions.
-func (v *VirtualMachine) NetworkDeviceAttachmentWasDisconnected() (<-chan *DisconnectedError, error) {
+// NetworkDeviceAttachmentWasDisconnected registers c for future attachment errors.
+// Delivery follows StateChangedNotify. The returned function unregisters c.
+// This requires macOS 12 or newer.
+func (v *VirtualMachine) NetworkDeviceAttachmentWasDisconnected(c chan<- *DisconnectedError) (func(), error) {
 	if err := macOSAvailable(12); err != nil {
 		return nil, err
 	}
-	return v.disconnected.output, nil
+	return v.disconnected.subscribe(c)
 }
 
 func nativeCompletion() (uint64, <-chan error) {

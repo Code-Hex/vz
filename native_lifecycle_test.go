@@ -61,17 +61,13 @@ func TestNativeLateCallbackReleasesPayloads(t *testing.T) {
 }
 
 func TestNativeRuntimeDeviceKeepsMachineAlive(t *testing.T) {
-	device, states := retainedBalloonDevice(t)
+	device, released := retainedBalloonDevice(t)
 	for range 3 {
 		runtime.GC()
 		vzbridge.Drain()
 	}
-	select {
-	case _, open := <-states:
-		if !open {
-			t.Fatal("machine was released while its runtime device remained live")
-		}
-	default:
+	if released() {
+		t.Fatal("machine was released while its runtime device remained live")
 	}
 	device.SetTargetVirtualMachineMemorySize(512 * 1024 * 1024)
 	if got := device.GetTargetVirtualMachineMemorySize(); got != 512*1024*1024 {
@@ -79,17 +75,10 @@ func TestNativeRuntimeDeviceKeepsMachineAlive(t *testing.T) {
 	}
 	runtime.KeepAlive(device)
 	device = nil
-	awaitNativeBridge(t, func() bool {
-		select {
-		case _, open := <-states:
-			return !open
-		default:
-			return false
-		}
-	})
+	awaitNativeBridge(t, released)
 }
 
-func retainedBalloonDevice(t *testing.T) (*VirtioTraditionalMemoryBalloonDevice, <-chan VirtualMachineState) {
+func retainedBalloonDevice(t *testing.T) (*VirtioTraditionalMemoryBalloonDevice, func() bool) {
 	t.Helper()
 	config := newTestConfig(t)
 	balloon, err := NewVirtioTraditionalMemoryBalloonDeviceConfiguration()
@@ -105,7 +94,7 @@ func retainedBalloonDevice(t *testing.T) (*VirtioTraditionalMemoryBalloonDevice,
 	if len(devices) != 1 {
 		t.Fatalf("balloon count = %d", len(devices))
 	}
-	return devices[0].(*VirtioTraditionalMemoryBalloonDevice), machine.StateChangedNotify()
+	return devices[0].(*VirtioTraditionalMemoryBalloonDevice), nativeMachineReleased(machine)
 }
 
 func TestNativeConcurrentMachines(t *testing.T) {

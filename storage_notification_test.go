@@ -15,53 +15,63 @@ import (
 
 func TestNetworkBlockDeviceNotifications(t *testing.T) {
 	attachment, emit := newNetworkBlockDeviceNotificationTest(t)
+	connected := make(chan struct{}, 2)
+	failures := make(chan error, 2)
+	stopConnected, err := attachment.Connected(connected)
+	if err != nil {
+		t.Fatal(err)
+	}
+	stopFailures, err := attachment.DidEncounterError(failures)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer stopConnected()
+	defer stopFailures()
 	for range 100 {
 		emit()
 	}
-	for i := range 100 {
-		select {
-		case _, open := <-attachment.Connected():
-			if !open {
-				t.Fatalf("connection channel closed at notification %d", i)
-			}
-		case <-time.After(5 * time.Second):
-			t.Fatalf("connection notification %d was not delivered", i)
-		}
-		select {
-		case err := <-attachment.DidEncounterError():
-			var native *NSError
-			if !errors.As(err, &native) || native.Domain != "NSPOSIXErrorDomain" || native.Code != 5 {
-				t.Fatalf("error notification %d = %#v", i, err)
-			}
-		case <-time.After(5 * time.Second):
-			t.Fatalf("error notification %d was not delivered", i)
+	for range 2 {
+		<-connected
+		var native *NSError
+		if err := <-failures; !errors.As(err, &native) || native.Domain != "NSPOSIXErrorDomain" || native.Code != 5 {
+			t.Fatalf("error = %#v", err)
 		}
 	}
+	emit()
+	<-connected
+	<-failures
+	stopConnected()
+	stopFailures()
+	close(connected)
+	close(failures)
+	emit()
 }
 
 func TestNetworkBlockDeviceReleaseWithUnreadNotifications(t *testing.T) {
 	attachment, emit := newNetworkBlockDeviceNotificationTest(t)
+	connected := make(chan struct{}, 1)
+	failures := make(chan error, 1)
+	stopConnected, err := attachment.Connected(connected)
+	if err != nil {
+		t.Fatal(err)
+	}
+	stopFailures, err := attachment.DidEncounterError(failures)
+	if err != nil {
+		t.Fatal(err)
+	}
 	for range 100 {
 		emit()
 	}
 	objc.Release(attachment.pointer)
 	vzbridge.Drain()
-	select {
-	case _, open := <-attachment.Connected():
-		if open {
-			t.Fatal("released attachment retained an unread connection notification")
-		}
-	case <-time.After(5 * time.Second):
-		t.Fatal("connection channel remained open after attachment release")
-	}
-	select {
-	case err, open := <-attachment.DidEncounterError():
-		if open {
-			t.Fatalf("released attachment retained an unread error: %v", err)
-		}
-	case <-time.After(5 * time.Second):
-		t.Fatal("error channel remained open after attachment release")
-	}
+	stopConnected()
+	stopFailures()
+	<-connected
+	<-failures
+	connected <- struct{}{}
+	failures <- errors.New("caller owned")
+	close(connected)
+	close(failures)
 }
 
 func newNetworkBlockDeviceNotificationTest(t *testing.T) (*NetworkBlockDeviceStorageDeviceAttachment, func()) {

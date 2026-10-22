@@ -23,18 +23,14 @@ type VirtioConsoleDevice struct {
 	vm *VirtualMachine
 }
 
-// ConsolePortChangedNotify reports guest console port opens and closes in order.
-// Notifications are queued from VM creation, including before this method is called.
-// Process or flush pending attachment data before communicating with a new guest
-// process. Closing a port does not guarantee that its output has been consumed.
-// Releasing the VM closes the channel and discards unread notifications. Keep the
-// VM reachable until you finish receiving, for example with runtime.KeepAlive.
-// It returns nil on macOS versions older than 13.
-func (v *VirtualMachine) ConsolePortChangedNotify() <-chan ConsolePortEvent {
-	if macOSAvailable(13) != nil {
-		return nil
+// ConsolePortChangedNotify registers c for future console port opens and closes.
+// Delivery follows VirtualMachine.StateChangedNotify. The returned function
+// unregisters c. This requires macOS 13 or newer.
+func (v *VirtualMachine) ConsolePortChangedNotify(c chan<- ConsolePortEvent) (func(), error) {
+	if err := macOSAvailable(13); err != nil {
+		return nil, err
 	}
-	return v.machineState.consolePorts.output
+	return v.machineState.consolePorts.subscribe(c)
 }
 
 // ConsoleDevices returns the console devices configured on the VM.

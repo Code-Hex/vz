@@ -91,9 +91,12 @@ type VirtualMachine struct {
 }
 
 type machineState struct {
-	state       VirtualMachineState
-	stateNotify *notificationQueue[VirtualMachineState]
-	stopErrors  *notificationQueue[error]
+	state            VirtualMachineState
+	stateNotify      *notificationQueue[VirtualMachineState]
+	stopErrors       *notificationQueue[error]
+	guestStops       *notificationQueue[struct{}]
+	consolePorts     *notificationQueue[ConsolePortEvent]
+	graphicsDisplays *notificationQueue[GraphicsDisplayEvent]
 
 	mu sync.RWMutex
 }
@@ -113,17 +116,40 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 		return nil, err
 	}
 	state := &machineState{
-		stateNotify: newNotificationQueue[VirtualMachineState](),
-		stopErrors:  newNotificationQueue[error](),
+		stateNotify:      newNotificationQueue[VirtualMachineState](),
+		stopErrors:       newNotificationQueue[error](),
+		guestStops:       newNotificationQueue[struct{}](),
+		consolePorts:     newNotificationQueue[ConsolePortEvent](),
+		graphicsDisplays: newNotificationQueue[GraphicsDisplayEvent](),
 	}
 	stateHandle := registerNativeCallback(func(kind uint32, errorPointer, _ unsafe.Pointer, value uint64) uint64 {
 		switch kind {
+		case vzbridge.CallbackGuestStopped:
+			state.guestStops.send(struct{}{})
+			return 0
+		case vzbridge.CallbackConsolePortOpened, vzbridge.CallbackConsolePortClosed:
+			state.consolePorts.send(ConsolePortEvent{
+				DeviceIndex: int(value >> 32),
+				PortIndex:   uint32(value),
+				Open:        kind == vzbridge.CallbackConsolePortOpened,
+			})
+			return 0
+		case vzbridge.CallbackDisplayReconfigurationBegan, vzbridge.CallbackDisplayReconfigurationEnded:
+			state.graphicsDisplays.send(GraphicsDisplayEvent{
+				DeviceIndex:   int(value >> 32),
+				DisplayIndex:  int(uint32(value)),
+				Reconfiguring: kind == vzbridge.CallbackDisplayReconfigurationBegan,
+			})
+			return 0
 		case vzbridge.CallbackMachineStoppedWithError:
 			err := objcutil.NewNSError(errorPointer)
 			state.stopErrors.send(err)
 			return 0
 		case vzbridge.CallbackContextReleased:
 			state.stopErrors.close()
+			state.guestStops.close()
+			state.consolePorts.close()
+			state.graphicsDisplays.close()
 			state.stateNotify.close()
 			return 0
 		}
@@ -152,6 +178,9 @@ func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, er
 		unregisterNativeCallback(disconnectedHandle)
 		state.stateNotify.close()
 		state.stopErrors.close()
+		state.guestStops.close()
+		state.consolePorts.close()
+		state.graphicsDisplays.close()
 		disconnected.close()
 		return nil, fmt.Errorf("could not create virtual machine")
 	}
@@ -200,6 +229,15 @@ func (v *VirtualMachine) State() VirtualMachineState {
 	v.machineState.mu.RLock()
 	defer v.machineState.mu.RUnlock()
 	return v.machineState.state
+}
+
+// GuestStoppedNotify reports normal guest shutdowns, including shutdowns requested
+// with RequestStop. Host Stop calls and failures do not send a notification.
+// Notifications are queued in order from VM creation. The channel remains open
+// across restarts. Releasing the VM closes it and discards unread notifications.
+// Keep the VM reachable until you finish receiving, for example with runtime.KeepAlive.
+func (v *VirtualMachine) GuestStoppedNotify() <-chan struct{} {
+	return v.machineState.guestStops.output
 }
 
 // StoppedWithErrorNotify reports errors that caused the virtual machine to stop.

@@ -22,6 +22,11 @@ import (
 const SDKVersion = C.__MAC_OS_X_VERSION_MAX_ALLOWED
 
 const (
+	CallbackGuestStopped                = C.VZBridgeCallbackGuestStopped
+	CallbackConsolePortOpened           = C.VZBridgeCallbackConsolePortOpened
+	CallbackConsolePortClosed           = C.VZBridgeCallbackConsolePortClosed
+	CallbackDisplayReconfigurationBegan = C.VZBridgeCallbackDisplayReconfigurationBegan
+	CallbackDisplayReconfigurationEnded = C.VZBridgeCallbackDisplayReconfigurationEnded
 	CallbackCompletion                  = C.VZBridgeCallbackCompletion
 	CallbackMachineStateChanged         = C.VZBridgeCallbackMachineStateChanged
 	CallbackMachineStoppedWithError     = C.VZBridgeCallbackMachineStoppedWithError

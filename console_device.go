@@ -6,11 +6,35 @@ import (
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
+// ConsolePortEvent reports a guest opening or closing a console port.
+type ConsolePortEvent struct {
+	// DeviceIndex identifies the console device in VirtualMachine.ConsoleDevices.
+	DeviceIndex int
+	// PortIndex is the key in VirtioConsoleDevice.Ports.
+	PortIndex uint32
+	// Open reports whether the guest opened or closed the port.
+	Open bool
+}
+
 // VirtioConsoleDevice is a console device attached to a virtual machine.
 // Obtain it from VirtualMachine.ConsoleDevices.
 type VirtioConsoleDevice struct {
 	*pointer
 	vm *VirtualMachine
+}
+
+// ConsolePortChangedNotify reports guest console port opens and closes in order.
+// Notifications are queued from VM creation, including before this method is called.
+// Process or flush pending attachment data before communicating with a new guest
+// process. Closing a port does not guarantee that its output has been consumed.
+// Releasing the VM closes the channel and discards unread notifications. Keep the
+// VM reachable until you finish receiving, for example with runtime.KeepAlive.
+// It returns nil on macOS versions older than 13.
+func (v *VirtualMachine) ConsolePortChangedNotify() <-chan ConsolePortEvent {
+	if macOSAvailable(13) != nil {
+		return nil
+	}
+	return v.machineState.consolePorts.output
 }
 
 // ConsoleDevices returns the console devices configured on the VM.

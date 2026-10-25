@@ -12,7 +12,7 @@ import (
 
 // This example requires macOS 12 or newer. An event reports a framework attachment
 // failure, not a guest network outage or an unreachable remote host.
-func ExampleVirtualMachine_NetworkDeviceAttachmentWasDisconnected() {
+func ExampleVirtualMachine_NetworkDeviceAttachmentWasDisconnectedNotify() {
 	loader, err := vz.NewLinuxBootLoader("testdata/Image", vz.WithInitrd("testdata/initramfs.cpio.gz"))
 	if err != nil {
 		fmt.Println(err)
@@ -48,7 +48,7 @@ func ExampleVirtualMachine_NetworkDeviceAttachmentWasDisconnected() {
 	}()
 
 	events := make(chan *vz.DisconnectedError, 16)
-	stop, err := machine.NetworkDeviceAttachmentWasDisconnected(events)
+	stop, err := machine.NetworkDeviceAttachmentWasDisconnectedNotify(events)
 	if err != nil {
 		fmt.Println(err)
 		return

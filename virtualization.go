@@ -510,13 +510,13 @@ func (e *DisconnectedError) Error() string {
 	return fmt.Sprintf("%s: %v", e.Config.attachment, e.Err)
 }
 
-// NetworkDeviceAttachmentWasDisconnected registers c for network attachment
+// NetworkDeviceAttachmentWasDisconnectedNotify registers c for network attachment
 // disconnections, such as when a network interface fails to start. This can happen
 // during boot, a device reset, or a reboot, and may happen more than once.
 // The framework clears the affected runtime device's attachment when it disconnects.
 // Delivery follows StateChangedNotify. The returned function unregisters c.
 // This requires macOS 12 or newer.
-func (v *VirtualMachine) NetworkDeviceAttachmentWasDisconnected(c chan<- *DisconnectedError) (func(), error) {
+func (v *VirtualMachine) NetworkDeviceAttachmentWasDisconnectedNotify(c chan<- *DisconnectedError) (func(), error) {
 	if err := macOSAvailable(12); err != nil {
 		return nil, err
 	}

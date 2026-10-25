@@ -48,7 +48,7 @@ func TestNetworkDisconnectedNotifications(t *testing.T) {
 		})
 	}
 	notifications := make(chan *DisconnectedError, 40)
-	stop, err := machine.NetworkDeviceAttachmentWasDisconnected(notifications)
+	stop, err := machine.NetworkDeviceAttachmentWasDisconnectedNotify(notifications)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -63,7 +63,7 @@ func (d *NetworkDevice) Attachment() NetworkDeviceAttachment {
 //
 // A nil error does not guarantee that the attachment connected successfully.
 // Connection failures are reported through
-// VirtualMachine.NetworkDeviceAttachmentWasDisconnected and clear the attachment.
+// VirtualMachine.NetworkDeviceAttachmentWasDisconnectedNotify and clear the attachment.
 // DisconnectedError.Config identifies the original device configuration; it does
 // not track attachment changes made through this method.
 // This requires macOS 12 or newer.

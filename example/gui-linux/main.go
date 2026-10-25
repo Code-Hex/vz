@@ -57,21 +57,30 @@ func run(ctx context.Context) error {
 	}
 
 	errCh := make(chan error, 1)
+	done := make(chan struct{})
+	defer close(done)
 
+	changed := make(chan vz.VirtualMachineState, 1)
+	stopStateChanged, err := vm.StateChangedNotify(changed)
+	if err != nil {
+		return err
+	}
+	defer stopStateChanged()
 	go func() {
 		for {
+			state := vm.State()
+			if state == vz.VirtualMachineStateStopped || state == vz.VirtualMachineStateStopping {
+				log.Println("stopped state")
+				errCh <- nil
+				return
+			}
+			if state == vz.VirtualMachineStateError {
+				errCh <- fmt.Errorf("virtual machine entered error state")
+				return
+			}
 			select {
-			case newState := <-vm.StateChangedNotify():
-				if newState == vz.VirtualMachineStateRunning {
-					log.Println("start VM is running")
-				}
-				if newState == vz.VirtualMachineStateStopped || newState == vz.VirtualMachineStateStopping {
-					log.Println("stopped state")
-					errCh <- nil
-					return
-				}
-			case err := <-errCh:
-				errCh <- fmt.Errorf("failed to start vm: %w", err)
+			case <-changed:
+			case <-done:
 				return
 			}
 		}

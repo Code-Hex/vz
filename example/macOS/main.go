@@ -39,6 +39,9 @@ func run(ctx context.Context) error {
 }
 
 func runVM(ctx context.Context) error {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 
@@ -55,45 +58,66 @@ func runVM(ctx context.Context) error {
 		return err
 	}
 
+	nbdAttachment := retrieveNetworkBlockDeviceStorageDeviceAttachment(config.StorageDevices())
+	if nbdAttachment != nil {
+		connected := make(chan struct{}, 1)
+		failures := make(chan error, 16)
+		stopConnected, err := nbdAttachment.WasConnectedNotify(connected)
+		if err != nil {
+			return err
+		}
+		defer stopConnected()
+		stopDidEncounterError, err := nbdAttachment.DidEncounterErrorNotify(failures)
+		if err != nil {
+			return err
+		}
+		defer stopDidEncounterError()
+		go func() {
+			for {
+				select {
+				case err := <-failures:
+					log.Printf("NBD client error: %v", err)
+				case <-connected:
+					log.Println("NBD connected")
+				case <-ctx.Done():
+					return
+				}
+			}
+		}()
+	}
+
 	if err := vm.Start(); err != nil {
 		return err
 	}
 
 	errCh := make(chan error, 1)
 
+	changed := make(chan vz.VirtualMachineState, 1)
+	stopStateChanged, err := vm.StateChangedNotify(changed)
+	if err != nil {
+		return err
+	}
+	defer stopStateChanged()
 	go func() {
 		for {
+			state := vm.State()
+			if state == vz.VirtualMachineStateStopped || state == vz.VirtualMachineStateStopping {
+				log.Println("stopped state")
+				errCh <- nil
+				return
+			}
+			if state == vz.VirtualMachineStateError {
+				errCh <- fmt.Errorf("virtual machine entered error state")
+				return
+			}
 			select {
-			case newState := <-vm.StateChangedNotify():
-				if newState == vz.VirtualMachineStateRunning {
-					log.Println("start VM is running")
-				}
-				if newState == vz.VirtualMachineStateStopped || newState == vz.VirtualMachineStateStopping {
-					log.Println("stopped state")
-					errCh <- nil
-					return
-				}
-			case err := <-errCh:
-				errCh <- fmt.Errorf("failed to start vm: %w", err)
+			case <-changed:
+			case <-ctx.Done():
+				errCh <- ctx.Err()
 				return
 			}
 		}
 	}()
-
-	// it start listening to the NBD server, if any
-	nbdAttachment := retrieveNetworkBlockDeviceStorageDeviceAttachment(config.StorageDevices())
-	if nbdAttachment != nil {
-		go func() {
-			for {
-				select {
-				case err := <-nbdAttachment.DidEncounterError():
-					log.Printf("NBD client has been encountered error: %v\n", err)
-				case <-nbdAttachment.Connected():
-					log.Println("NBD client connected with the server")
-				}
-			}
-		}()
-	}
 
 	// cleanup is this function is useful when finished graphic application.
 	cleanup := func() {

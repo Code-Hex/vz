@@ -335,12 +335,18 @@ func TestIssue119(t *testing.T) {
 	}
 
 	timer := time.After(3 * time.Second)
+	changed := make(chan VirtualMachineState, 1)
+	stopStateChanged, err := vm.StateChangedNotify(changed)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer stopStateChanged()
 	for {
+		if vm.State() == VirtualMachineStateStopped {
+			return
+		}
 		select {
-		case state := <-vm.StateChangedNotify():
-			if VirtualMachineStateStopped == state {
-				return
-			}
+		case <-changed:
 		case <-timer:
 			t.Fatal("failed to shutdown vm")
 		}

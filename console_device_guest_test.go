@@ -46,7 +46,12 @@ func TestRuntimeConsoleAttachmentGuest(t *testing.T) {
 	if !strings.HasPrefix(path, "/dev/vport") {
 		t.Fatalf("guest port path = %q", path)
 	}
-	events := container.ConsolePortChangedNotify()
+	events := make(chan vz.ConsolePortEvent, 16)
+	stopConsolePortChanged, err := container.ConsolePortChangedNotify(events)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer stopConsolePortChanged()
 	port := container.ConsoleDevices()[0].Ports()[1]
 	for _, message := range []string{"first", "second"} {
 		read, input, err := os.Pipe()
@@ -86,14 +91,7 @@ func TestRuntimeConsoleAttachmentGuest(t *testing.T) {
 		if err := session.Start(fmt.Sprintf("timeout 5 sh -c 'exec 3<> %s; printf R >&3; IFS= read -r line <&3 && printf %%s \"$line\" >&3'", path)); err != nil {
 			t.Fatal(err)
 		}
-		select {
-		case event := <-events:
-			if event != (vz.ConsolePortEvent{DeviceIndex: 0, PortIndex: 1, Open: true}) {
-				t.Fatalf("open event = %+v", event)
-			}
-		case <-time.After(5 * time.Second):
-			t.Fatal("missing console open notification")
-		}
+		waitConsolePortState(t, events, true)
 		var ready [1]byte
 		if _, err := io.ReadFull(output, ready[:]); err != nil {
 			t.Fatal(err)
@@ -118,14 +116,7 @@ func TestRuntimeConsoleAttachmentGuest(t *testing.T) {
 			t.Fatal(err)
 		}
 		session.Close()
-		select {
-		case event := <-events:
-			if event != (vz.ConsolePortEvent{DeviceIndex: 0, PortIndex: 1}) {
-				t.Fatalf("close event = %+v", event)
-			}
-		case <-time.After(5 * time.Second):
-			t.Fatal("missing console close notification")
-		}
+		waitConsolePortState(t, events, false)
 		if err := port.SetAttachment(nil); err != nil {
 			t.Fatal(err)
 		}
@@ -133,17 +124,33 @@ func TestRuntimeConsoleAttachmentGuest(t *testing.T) {
 			t.Fatal("port remained connected")
 		}
 	}
+	stops := make(chan struct{}, 1)
+	stopGuestDidStop, err := container.GuestDidStopNotify(stops)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer stopGuestDidStop()
 	session = container.NewSession(t)
 	defer session.Close()
 	if err := session.Start("poweroff"); err != nil {
 		t.Fatal(err)
 	}
 	select {
-	case _, open := <-container.GuestStoppedNotify():
-		if !open {
-			t.Fatal("guest shutdown notification channel closed before notification")
-		}
+	case <-stops:
 	case <-time.After(10 * time.Second):
 		t.Fatal("missing guest shutdown notification")
+	}
+}
+
+func waitConsolePortState(t *testing.T, events <-chan vz.ConsolePortEvent, open bool) {
+	t.Helper()
+	select {
+	case event := <-events:
+		want := vz.ConsolePortEvent{DeviceIndex: 0, PortIndex: 1, Open: open}
+		if event != want {
+			t.Fatalf("console event = %+v, want %+v", event, want)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatalf("missing console event, open=%v", open)
 	}
 }

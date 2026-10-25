@@ -15,20 +15,20 @@ import (
 	pureobjc "github.com/ebitengine/purego/objc"
 )
 
-func TestVirtualMachineStoppedWithErrorNotify(t *testing.T) {
+func TestVirtualMachineDidStopWithErrorNotify(t *testing.T) {
 	machine, err := NewVirtualMachine(newTestConfig(t))
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer objc.Release(machine.pointer)
 	stops := make(chan struct{}, 1)
-	stopGuestStopped, err := machine.GuestStoppedNotify(stops)
+	stopGuestDidStop, err := machine.GuestDidStopNotify(stops)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer stopGuestStopped()
+	defer stopGuestDidStop()
 	failures := make(chan error, 1)
-	stop, err := machine.StoppedWithErrorNotify(failures)
+	stop, err := machine.DidStopWithErrorNotify(failures)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -86,7 +86,7 @@ func TestVirtualMachineReleaseWithUnreadNotifications(t *testing.T) {
 		t.Fatal(err)
 	}
 	failures := make(chan error, 1)
-	stop, err := machine.StoppedWithErrorNotify(failures)
+	stop, err := machine.DidStopWithErrorNotify(failures)
 	if err != nil {
 		t.Fatal(err)
 	}

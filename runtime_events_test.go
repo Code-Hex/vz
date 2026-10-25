@@ -36,7 +36,7 @@ func TestRuntimeNotificationsRelease(t *testing.T) {
 	}
 	defer stopConsole()
 	stopped := make(chan struct{}, 1)
-	stopStopped, err := vm.GuestStoppedNotify(stopped)
+	stopStopped, err := vm.GuestDidStopNotify(stopped)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -411,11 +411,11 @@ func TestStop(t *testing.T) {
 		t.Fatal("want CanRequestStop is true")
 	}
 	stops := make(chan struct{}, 1)
-	stopGuestStopped, err := vm.GuestStoppedNotify(stops)
+	stopGuestDidStop, err := vm.GuestDidStopNotify(stops)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer stopGuestStopped()
+	defer stopGuestDidStop()
 	if err := vm.Stop(); err != nil {
 		t.Fatal(err)
 	}

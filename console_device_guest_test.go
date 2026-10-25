@@ -125,11 +125,11 @@ func TestRuntimeConsoleAttachmentGuest(t *testing.T) {
 		}
 	}
 	stops := make(chan struct{}, 1)
-	stopGuestStopped, err := container.GuestStoppedNotify(stops)
+	stopGuestDidStop, err := container.GuestDidStopNotify(stops)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer stopGuestStopped()
+	defer stopGuestDidStop()
 	session = container.NewSession(t)
 	defer session.Close()
 	if err := session.Start("poweroff"); err != nil {

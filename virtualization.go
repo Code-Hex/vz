@@ -224,17 +224,17 @@ func (v *VirtualMachine) State() VirtualMachineState {
 	return v.machineState.state
 }
 
-// GuestStoppedNotify registers c for normal guest shutdowns, including those
-// requested with RequestStop. Host Stop calls and failures do not notify c.
+// GuestDidStopNotify registers c for notifications when the guest stops the VM,
+// including in response to RequestStop. Host Stop calls and failures do not notify c.
 // Delivery follows StateChangedNotify. The returned function unregisters c.
-func (v *VirtualMachine) GuestStoppedNotify(c chan<- struct{}) (func(), error) {
+func (v *VirtualMachine) GuestDidStopNotify(c chan<- struct{}) (func(), error) {
 	return v.machineState.guestStops.subscribe(c)
 }
 
-// StoppedWithErrorNotify registers c for errors that caused the VM to stop.
-// Normal guest shutdown and host Stop calls do not notify c.
+// DidStopWithErrorNotify registers c for errors that caused the VM to stop.
+// Normal guest shutdown and successful host Stop calls do not notify c.
 // Delivery follows StateChangedNotify. The returned function unregisters c.
-func (v *VirtualMachine) StoppedWithErrorNotify(c chan<- error) (func(), error) {
+func (v *VirtualMachine) DidStopWithErrorNotify(c chan<- error) (func(), error) {
 	return v.machineState.stopErrors.subscribe(c)
 }
 
@@ -510,7 +510,10 @@ func (e *DisconnectedError) Error() string {
 	return fmt.Sprintf("%s: %v", e.Config.attachment, e.Err)
 }
 
-// NetworkDeviceAttachmentWasDisconnected registers c for future attachment errors.
+// NetworkDeviceAttachmentWasDisconnected registers c for network attachment
+// disconnections, such as when a network interface fails to start. This can happen
+// during boot, a device reset, or a reboot, and may happen more than once.
+// The framework clears the affected runtime device's attachment when it disconnects.
 // Delivery follows StateChangedNotify. The returned function unregisters c.
 // This requires macOS 12 or newer.
 func (v *VirtualMachine) NetworkDeviceAttachmentWasDisconnected(c chan<- *DisconnectedError) (func(), error) {

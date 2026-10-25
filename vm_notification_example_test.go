@@ -11,8 +11,8 @@ import (
 )
 
 // This example needs a guest that handles the shutdown request. The host's Stop
-// method does not produce a GuestStoppedNotify notification.
-func ExampleVirtualMachine_GuestStoppedNotify() {
+// method does not produce a GuestDidStopNotify notification.
+func ExampleVirtualMachine_GuestDidStopNotify() {
 	loader, err := vz.NewLinuxBootLoader("testdata/Image", vz.WithInitrd("testdata/initramfs.cpio.gz"))
 	if err != nil {
 		fmt.Println(err)
@@ -37,7 +37,7 @@ func ExampleVirtualMachine_GuestStoppedNotify() {
 	}()
 
 	events := make(chan struct{}, 16)
-	stop, err := machine.GuestStoppedNotify(events)
+	stop, err := machine.GuestDidStopNotify(events)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -70,7 +70,7 @@ func ExampleVirtualMachine_GuestStoppedNotify() {
 
 // This example observes a running VM. An error notification arrives only if the
 // framework stops the VM because of an error; a guest application failure is not enough.
-func ExampleVirtualMachine_StoppedWithErrorNotify() {
+func ExampleVirtualMachine_DidStopWithErrorNotify() {
 	loader, err := vz.NewLinuxBootLoader("testdata/Image", vz.WithInitrd("testdata/initramfs.cpio.gz"))
 	if err != nil {
 		fmt.Println(err)
@@ -95,7 +95,7 @@ func ExampleVirtualMachine_StoppedWithErrorNotify() {
 	}()
 
 	events := make(chan error, 16)
-	stop, err := machine.StoppedWithErrorNotify(events)
+	stop, err := machine.DidStopWithErrorNotify(events)
 	if err != nil {
 		fmt.Println(err)
 		return

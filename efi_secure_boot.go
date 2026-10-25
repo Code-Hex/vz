@@ -99,6 +99,16 @@ func NewEFISignatureList(signatures []EFISignature) (*EFISignatureList, error) {
 		return nil, err
 	}
 	for _, signature := range signatures {
+		switch s := signature.(type) {
+		case *EFISignatureX509Certificate:
+			if s == nil {
+				return nil, fmt.Errorf("EFI signature must not be nil")
+			}
+		case *EFISignatureSHA256Hash:
+			if s == nil {
+				return nil, fmt.Errorf("EFI signature must not be nil")
+			}
+		}
 		if objc.Ptr(signature) == nil {
 			return nil, fmt.Errorf("EFI signature must not be nil")
 		}
@@ -172,7 +182,7 @@ func NewEFISignatureDatabaseConfiguration(keyExchangeKeys, dbSignatures, dbxSign
 	}
 	for _, lists := range [][]*EFISignatureList{keyExchangeKeys, dbSignatures, dbxSignatures} {
 		for _, list := range lists {
-			if list == nil {
+			if list == nil || objc.Ptr(list) == nil {
 				return nil, fmt.Errorf("EFI signature list must not be nil")
 			}
 		}
@@ -298,7 +308,7 @@ func (e *EFIVariableStore) EnableSecureBoot(platformKey *EFISignatureX509Certifi
 	if err := macOSAvailable(27); err != nil {
 		return err
 	}
-	if platformKey == nil {
+	if platformKey == nil || objc.Ptr(platformKey) == nil {
 		return fmt.Errorf("platform key must not be nil")
 	}
 	var nativeError unsafe.Pointer
@@ -332,7 +342,7 @@ func (e *EFIVariableStore) EnrollSecureBootSignatures(signatures *EFISignatureDa
 	if err := macOSAvailable(27); err != nil {
 		return err
 	}
-	if signatures == nil {
+	if signatures == nil || objc.Ptr(signatures) == nil {
 		return fmt.Errorf("signature databases must not be nil")
 	}
 	var nativeError unsafe.Pointer

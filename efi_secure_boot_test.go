@@ -137,3 +137,54 @@ func TestEFISignatureInvalidData(t *testing.T) {
 		}
 	}
 }
+
+func TestEFISignatureInvalidObjects(t *testing.T) {
+	if vz.Available(27) {
+		t.Skip("requires macOS 27")
+	}
+	for name, signature := range map[string]vz.EFISignature{
+		"nil":              nil,
+		"nil certificate":  (*vz.EFISignatureX509Certificate)(nil),
+		"nil hash":         (*vz.EFISignatureSHA256Hash)(nil),
+		"zero certificate": &vz.EFISignatureX509Certificate{},
+		"zero hash":        &vz.EFISignatureSHA256Hash{},
+	} {
+		t.Run(name, func(t *testing.T) {
+			if list, err := vz.NewEFISignatureList([]vz.EFISignature{signature}); err == nil || list != nil {
+				t.Fatalf("list = %v, error = %v; want nil and an error", list, err)
+			}
+		})
+	}
+	for name, list := range map[string]*vz.EFISignatureList{
+		"nil list":  nil,
+		"zero list": {},
+	} {
+		t.Run(name, func(t *testing.T) {
+			lists := []*vz.EFISignatureList{list}
+			for _, databases := range [][3][]*vz.EFISignatureList{
+				{lists, nil, nil},
+				{nil, lists, nil},
+				{nil, nil, lists},
+			} {
+				configuration, err := vz.NewEFISignatureDatabaseConfiguration(databases[0], databases[1], databases[2])
+				if err == nil || configuration != nil {
+					t.Fatalf("configuration = %v, error = %v; want nil and an error", configuration, err)
+				}
+			}
+		})
+	}
+	store, err := vz.NewEFIVariableStore(filepath.Join(t.TempDir(), "efi"), vz.WithCreatingEFIVariableStore())
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, key := range []*vz.EFISignatureX509Certificate{nil, {}} {
+		if err := store.EnableSecureBoot(key); err == nil {
+			t.Fatal("accepted an uninitialized platform key")
+		}
+	}
+	for _, configuration := range []*vz.EFISignatureDatabaseConfiguration{nil, {}} {
+		if err := store.EnrollSecureBootSignatures(configuration); err == nil {
+			t.Fatal("accepted uninitialized signature databases")
+		}
+	}
+}

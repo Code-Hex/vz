@@ -47,15 +47,13 @@ func TestNetworkDisconnectedNotifications(t *testing.T) {
 			}
 		})
 	}
-	emit()
-	notifications, err := machine.NetworkDeviceAttachmentWasDisconnected()
+	notifications := make(chan *DisconnectedError, 40)
+	stop, err := machine.NetworkDeviceAttachmentWasDisconnectedNotify(notifications)
 	if err != nil {
 		t.Fatal(err)
 	}
-	again, err := machine.NetworkDeviceAttachmentWasDisconnected()
-	if err != nil || again != notifications {
-		t.Fatal("notification channel changed between calls")
-	}
+	defer stop()
+	emit()
 	for i := range 40 {
 		select {
 		case event := <-notifications:
@@ -77,12 +75,9 @@ func TestNetworkDisconnectedNotifications(t *testing.T) {
 	emit()
 	objc.Release(machine.pointer)
 	vzbridge.Drain()
-	select {
-	case event, open := <-notifications:
-		if open {
-			t.Fatalf("released machine retained unread notification: %v", event)
-		}
-	case <-time.After(5 * time.Second):
-		t.Fatal("notification channel remained open")
+	stop()
+	if event := <-notifications; event == nil {
+		t.Fatal("release discarded caller buffer")
 	}
+	close(notifications)
 }

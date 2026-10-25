@@ -368,8 +368,8 @@ type NetworkBlockDeviceStorageDeviceAttachment struct {
 
 	*baseStorageDeviceAttachment
 
-	didEncounterError *notificationQueue[error]
-	connected         *notificationQueue[struct{}]
+	didEncounterError *notifications[error]
+	connected         *notifications[struct{}]
 }
 
 var _ StorageDeviceAttachment = (*NetworkBlockDeviceStorageDeviceAttachment)(nil)
@@ -377,9 +377,6 @@ var _ StorageDeviceAttachment = (*NetworkBlockDeviceStorageDeviceAttachment)(nil
 // NewNetworkBlockDeviceStorageDeviceAttachment creates a new network block device storage attachment from an NBD
 // Uniform Resource Indicator (URI) represented as a URL, timeout value, and read-only and synchronization modes
 // that you provide.
-//
-// It also set up a channel that will be used by the VZNetworkBlockDeviceStorageDeviceAttachmentDelegate to
-// return changes to the NetworkBlockDeviceAttachment
 //
 // - url is the NBD server URI. The format specified by https://github.com/NetworkBlockDevice/nbd/blob/master/doc/uri.md
 // - timeout is the duration for the connection between the client and server. When the timeout expires, an attempt to reconnect with the server takes place.
@@ -393,8 +390,8 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 		return nil, err
 	}
 
-	didEncounterError := newNotificationQueue[error]()
-	connected := newNotificationQueue[struct{}]()
+	didEncounterError := &notifications[error]{}
+	connected := &notifications[struct{}]{}
 
 	handle := registerNativeCallback(func(kind uint32, first, second unsafe.Pointer, value uint64) uint64 {
 		switch kind {
@@ -431,21 +428,23 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 	return attachment, nil
 }
 
-// Connected receive the signal via channel when the NBD client successfully connects or reconnects with the server.
-//
-// The NBD connection with the server takes place when the VM is first started, and reconnection attempts take place when the connection
-// times out or when the NBD client has encountered a recoverable error, such as an I/O error from the server.
-//
-// Note that the Virtualization framework may call this method multiple times during a VM’s life cycle. Reconnections are transparent to the guest.
-// Notifications are queued until read. Releasing the attachment discards unread notifications and closes the channel.
-func (n *NetworkBlockDeviceStorageDeviceAttachment) Connected() <-chan struct{} {
-	return n.connected.output
+// WasConnectedNotify registers c for successful NBD connections and reconnections
+// that occur after registration.
+// Delivery never waits and drops notifications when c cannot receive them.
+// The caller chooses the channel capacity. No past notifications are replayed.
+// The returned function unregisters c and can be called more than once.
+// Duplicate registrations do not duplicate delivery; either stop removes them.
+// Stop every registration using c before closing it. The library never closes c.
+// A nil channel or a released attachment returns an error and a nil stop function.
+// Keep the attachment reachable while receiving notifications.
+func (n *NetworkBlockDeviceStorageDeviceAttachment) WasConnectedNotify(c chan<- struct{}) (func(), error) {
+	return n.connected.subscribe(c)
 }
 
-// The DidEncounterError is triggered via the channel when the NBD client encounters an error that cannot be resolved on the client side.
-// In this state, the client will continue attempting to reconnect, but recovery depends entirely on the server's availability.
-// If the server resumes operation, the connection will recover automatically; however, until the server is restored, the client will continue to experience errors.
-// Errors are queued until read. Releasing the attachment discards unread errors and closes the channel.
-func (n *NetworkBlockDeviceStorageDeviceAttachment) DidEncounterError() <-chan error {
-	return n.didEncounterError.output
+// DidEncounterErrorNotify registers c for unrecoverable NBD errors.
+// The NBD client can no longer function after one of these errors.
+// Delivery follows [NetworkBlockDeviceStorageDeviceAttachment.WasConnectedNotify].
+// The returned function unregisters c.
+func (n *NetworkBlockDeviceStorageDeviceAttachment) DidEncounterErrorNotify(c chan<- error) (func(), error) {
+	return n.didEncounterError.subscribe(c)
 }

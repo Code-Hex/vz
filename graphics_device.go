@@ -41,18 +41,14 @@ type GraphicsDisplay struct {
 	vm *VirtualMachine
 }
 
-// GraphicsDisplayChangedNotify reports display reconfiguration in order.
-// Notifications are queued from VM creation, including before this method is called.
-// A guest that does not produce frames at the requested configuration may never
-// produce an end notification. Releasing the VM closes the channel and discards
-// unread notifications. Keep the VM reachable until you finish receiving,
-// for example with runtime.KeepAlive.
-// It returns nil on macOS versions older than 14.
-func (v *VirtualMachine) GraphicsDisplayChangedNotify() <-chan GraphicsDisplayEvent {
-	if macOSAvailable(14) != nil {
-		return nil
+// GraphicsDisplayChangedNotify registers c for future display reconfiguration events.
+// Delivery follows VirtualMachine.StateChangedNotify. The returned function
+// unregisters c. This requires macOS 14 or newer.
+func (v *VirtualMachine) GraphicsDisplayChangedNotify(c chan<- GraphicsDisplayEvent) (func(), error) {
+	if err := macOSAvailable(14); err != nil {
+		return nil, err
 	}
-	return v.machineState.graphicsDisplays.output
+	return v.machineState.graphicsDisplays.subscribe(c)
 }
 
 // GraphicsDevices returns the graphics devices configured on the VM.

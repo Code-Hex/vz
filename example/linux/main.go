@@ -166,9 +166,23 @@ func main() {
 		log.Fatalf("Start virtual machine is failed: %s", err)
 	}
 
-	errCh := make(chan error, 1)
-
+	changed := make(chan vz.VirtualMachineState, 1)
+	stopStateChanged, err := vm.StateChangedNotify(changed)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer stopStateChanged()
 	for {
+		state := vm.State()
+		if state == vz.VirtualMachineStateStopped {
+			log.Println("stopped successfully")
+			return
+		}
+		if state == vz.VirtualMachineStateError {
+			log.Println("virtual machine entered error state")
+			return
+		}
+
 		select {
 		case <-signalCh:
 			result, err := vm.RequestStop()
@@ -176,17 +190,8 @@ func main() {
 				log.Println("request stop error:", err)
 				return
 			}
-			log.Println("recieved signal", result)
-		case newState := <-vm.StateChangedNotify():
-			if newState == vz.VirtualMachineStateRunning {
-				log.Println("start VM is running")
-			}
-			if newState == vz.VirtualMachineStateStopped {
-				log.Println("stopped successfully")
-				return
-			}
-		case err := <-errCh:
-			log.Println("in start:", err)
+			log.Println("received signal", result)
+		case <-changed:
 		}
 	}
 

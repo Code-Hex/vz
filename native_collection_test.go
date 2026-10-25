@@ -5,39 +5,25 @@ package vz
 import (
 	"runtime"
 	"testing"
-	"time"
 
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
-func TestNativeStartedMachineCollectionClosesSubscriptions(t *testing.T) {
+func TestNativeStartedMachineCollectionReleasesSubscriptions(t *testing.T) {
 	if err := macOSAvailable(12); err != nil {
 		t.Skip("stopping a virtual machine requires macOS 12")
 	}
 	runtime.GC()
 	vzbridge.Drain()
 	before := nativeCallbacks.next.Load()
-	states := stoppedNativeMachineStates(t)
-	closed := false
-	defer func() {
-		if t.Failed() {
-			t.Logf("stopped VM subscription closed=%t, remaining callbacks=%d", closed, nativeBridgeCallbackCountAfter(before))
-		}
-	}()
+	stop := stoppedNativeMachineStates(t)
 	awaitNativeBridge(t, func() bool {
-		for !closed {
-			select {
-			case _, open := <-states:
-				closed = !open
-			default:
-				return false
-			}
-		}
 		return nativeBridgeCallbackCountAfter(before) == 0
 	})
+	stop()
 }
 
-func stoppedNativeMachineStates(t *testing.T) <-chan VirtualMachineState {
+func stoppedNativeMachineStates(t *testing.T) func() {
 	t.Helper()
 	loader, err := NewLinuxBootLoader("testdata/Image", WithInitrd("testdata/initramfs.cpio.gz"))
 	if err != nil {
@@ -64,20 +50,12 @@ func stoppedNativeMachineStates(t *testing.T) <-chan VirtualMachineState {
 	if err := machine.Stop(); err != nil {
 		t.Fatal(err)
 	}
-	states := machine.StateChangedNotify()
-	deadline := time.NewTimer(5 * time.Second)
-	defer deadline.Stop()
-	for {
-		select {
-		case state, open := <-states:
-			if !open {
-				t.Fatal("machine subscription closed before the stopped notification")
-			}
-			if state == VirtualMachineStateStopped {
-				return states
-			}
-		case <-deadline.C:
-			t.Fatalf("machine did not report stopped, current state is %s", machine.State())
-		}
+	if machine.State() != VirtualMachineStateStopped {
+		t.Fatalf("state = %s", machine.State())
 	}
+	stop, err := machine.StateChangedNotify(make(chan VirtualMachineState, 1))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return stop
 }

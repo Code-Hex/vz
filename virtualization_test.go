@@ -204,16 +204,6 @@ func newVirtualizationMachine(
 		t.Fatal("want CanStart is true")
 	}
 
-	// As it is not possible to intentionally cause errors, only logging is possible.
-	disconnected, err := vm.NetworkDeviceAttachmentWasDisconnected()
-	if err == nil {
-		go func() {
-			for disconnected := range disconnected {
-				log.Println(disconnected)
-			}
-		}()
-	}
-
 	if err := vm.Start(); err != nil {
 		t.Fatal(err)
 	}
@@ -295,29 +285,33 @@ func backOffDelay(retryAttempts int) time.Duration {
 
 func waitState(t *testing.T, wait time.Duration, vm *vz.VirtualMachine, want vz.VirtualMachineState) {
 	t.Helper()
-	select {
-	case got := <-vm.StateChangedNotify():
-		if want != got {
-			t.Fatalf("unexpected state want %d but got %d", want, got)
-		}
-	case <-time.After(wait):
-		t.Fatal("failed to wait state changed notification")
+	if err := waitUntilState(wait, vm, want); err != nil {
+		t.Fatal(err)
 	}
 }
 
 var ErrErrorState = fmt.Errorf("error state")
 
 func waitUntilState(wait time.Duration, vm *vz.VirtualMachine, want vz.VirtualMachineState) error {
+	timer := time.NewTimer(wait)
+	defer timer.Stop()
+	changed := make(chan vz.VirtualMachineState, 1)
+	stopStateChanged, err := vm.StateChangedNotify(changed)
+	if err != nil {
+		return err
+	}
+	defer stopStateChanged()
 	for {
+		got := vm.State()
+		if got == want {
+			return nil
+		}
+		if got == vz.VirtualMachineStateError {
+			return ErrErrorState
+		}
 		select {
-		case got := <-vm.StateChangedNotify():
-			if want == got {
-				return nil
-			}
-			if got == vz.VirtualMachineStateError {
-				return ErrErrorState
-			}
-		case <-time.After(wait):
+		case <-changed:
+		case <-timer.C:
 			return fmt.Errorf("timedout waiting expected state: %s", want)
 		}
 	}
@@ -346,12 +340,22 @@ func TestRun(t *testing.T) {
 	if got := vm.CanPause(); !got {
 		t.Fatal("want CanPause is true")
 	}
+	changed := make(chan vz.VirtualMachineState, 8)
+	stopStateChanged, err := vm.StateChangedNotify(changed)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer stopStateChanged()
 	if err := vm.Pause(); err != nil {
 		t.Fatal(err)
 	}
 
 	timeout := 5 * time.Second
-	waitState(t, timeout, vm, vz.VirtualMachineStatePausing)
+	select {
+	case <-changed:
+	default:
+		t.Fatal("pause did not notify state change")
+	}
 	waitState(t, timeout, vm, vz.VirtualMachineStatePaused)
 
 	if got := vm.State(); vz.VirtualMachineStatePaused != got {
@@ -360,11 +364,18 @@ func TestRun(t *testing.T) {
 	if got := vm.CanResume(); !got {
 		t.Fatal("want CanPause is true")
 	}
+	for len(changed) > 0 {
+		<-changed
+	}
 	if err := vm.Resume(); err != nil {
 		t.Fatal(err)
 	}
 
-	waitState(t, timeout, vm, vz.VirtualMachineStateResuming)
+	select {
+	case <-changed:
+	default:
+		t.Fatal("resume did not notify state change")
+	}
 	waitState(t, timeout, vm, vz.VirtualMachineStateRunning)
 
 	if got := vm.CanRequestStop(); !got {
@@ -399,6 +410,12 @@ func TestStop(t *testing.T) {
 	if got := vm.CanStop(); !got {
 		t.Fatal("want CanRequestStop is true")
 	}
+	stops := make(chan struct{}, 1)
+	stopGuestDidStop, err := vm.GuestDidStopNotify(stops)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer stopGuestDidStop()
 	if err := vm.Stop(); err != nil {
 		t.Fatal(err)
 	}
@@ -408,9 +425,9 @@ func TestStop(t *testing.T) {
 		t.Fatal(err)
 	}
 	select {
-	case <-vm.GuestStoppedNotify():
+	case <-stops:
 		t.Fatal("host Stop reported a guest shutdown")
-	case <-time.After(100 * time.Millisecond):
+	default:
 	}
 }
 

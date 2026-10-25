@@ -5,7 +5,6 @@ package vz
 import (
 	"runtime"
 	"testing"
-	"time"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
 	pureobjc "github.com/ebitengine/purego/objc"
@@ -30,12 +29,19 @@ func TestRuntimeNotificationsRelease(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	console := vm.ConsolePortChangedNotify()
-	graphics := vm.GraphicsDisplayChangedNotify()
-	stopped := vm.GuestStoppedNotify()
-	if console != vm.ConsolePortChangedNotify() || graphics != vm.GraphicsDisplayChangedNotify() || stopped != vm.GuestStoppedNotify() {
-		t.Fatal("notification methods returned different channels")
+	console := make(chan ConsolePortEvent, 64)
+	stopConsole, err := vm.ConsolePortChangedNotify(console)
+	if err != nil {
+		t.Fatal(err)
 	}
+	defer stopConsole()
+	stopped := make(chan struct{}, 1)
+	stopStopped, err := vm.GuestDidStopNotify(stopped)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer stopStopped()
+	released := nativeMachineReleased(vm)
 	emit := func() {
 		onMachineQueue(t, vm, func() {
 			machine := pureobjc.ID(uintptr(objc.Ptr(vm)))
@@ -57,37 +63,21 @@ func TestRuntimeNotificationsRelease(t *testing.T) {
 		case event := <-console:
 			want := ConsolePortEvent{DeviceIndex: 0, PortIndex: 3, Open: i%2 == 0}
 			if event != want {
-				t.Fatalf("event %d = %+v, want %+v", i, event, want)
+				t.Fatalf("console event = %+v, want %+v", event, want)
 			}
-		case <-time.After(5 * time.Second):
+		default:
 			t.Fatalf("missing console event %d", i)
 		}
 	}
 	emit()
 	runtime.KeepAlive(vm)
 	vm = nil
-	awaitNativeBridge(t, func() bool {
-		select {
-		case _, open := <-graphics:
-			return !open
-		default:
-			return false
-		}
-	})
-	select {
-	case _, open := <-console:
-		if open {
-			t.Fatal("console notifications remained open")
-		}
-	default:
-		t.Fatal("console notifications remained open")
+	awaitNativeBridge(t, released)
+	stopConsole()
+	stopStopped()
+	if got := <-console; !got.Open {
+		t.Fatal("release discarded buffered event")
 	}
-	select {
-	case _, open := <-stopped:
-		if open {
-			t.Fatal("guest shutdown notifications remained open")
-		}
-	default:
-		t.Fatal("guest shutdown notifications remained open")
-	}
+	close(console)
+	close(stopped)
 }

@@ -2,6 +2,7 @@ package vz_test
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -239,5 +240,51 @@ func TestMultipleDirectoryShare(t *testing.T) {
 	_, err = os.Stat(filepath.Join(rwDir, helloTxt))
 	if err != nil {
 		t.Fatalf("expected the file to exist in read/write directory: %v", err)
+	}
+}
+
+func TestMultipleDirectoryShareNames(t *testing.T) {
+	if vz.Available(12) {
+		t.Skip("MultipleDirectoryShare is supported from macOS 12")
+	}
+	shared, err := vz.NewSharedDirectory(t.TempDir(), true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name        string
+		nativeError bool
+	}{
+		{name: "", nativeError: true},
+		{name: ".", nativeError: true},
+		{name: "..", nativeError: true},
+		{name: "a/b", nativeError: true},
+		{name: strings.Repeat("a", 256), nativeError: true},
+		{name: "a\x00b"},
+		{name: "\xff"},
+	} {
+		t.Run(fmt.Sprintf("invalid %q", tc.name), func(t *testing.T) {
+			name := tc.name
+			share, err := vz.NewMultipleDirectoryShare(map[string]*vz.SharedDirectory{name: shared})
+			if share != nil || err == nil {
+				t.Fatalf("got (%v, %v), want (nil, error)", share, err)
+			}
+			if !strings.Contains(err.Error(), fmt.Sprintf("%q", name)) {
+				t.Fatalf("error does not identify name %q: %v", name, err)
+			}
+			var nativeError *vz.NSError
+			if tc.nativeError && !errors.As(err, &nativeError) {
+				t.Fatalf("expected NSError, got %T: %v", err, err)
+			}
+		})
+	}
+	for _, shares := range []map[string]*vz.SharedDirectory{
+		{},
+		{"documents": shared, "共有": shared},
+	} {
+		share, err := vz.NewMultipleDirectoryShare(shares)
+		if err != nil || share == nil {
+			t.Fatalf("got (%v, %v), want a share without an error", share, err)
+		}
 	}
 }

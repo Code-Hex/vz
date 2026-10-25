@@ -148,7 +148,8 @@ type CustomVirtioDeviceStateDelegate interface {
 }
 
 // CustomVirtioDeviceDelegateProvider runs a delegate on a dedicated serial queue.
-// Call Close after the virtual machines using the provider have stopped.
+// Create a separate provider for each device instance, including devices in
+// different virtual machines. Call Close after its virtual machine has stopped.
 //
 // see: https://developer.apple.com/documentation/virtualization/vzcustomvirtiodevicedelegateprovider?language=objc
 type CustomVirtioDeviceDelegateProvider struct {
@@ -185,6 +186,8 @@ type customVirtioDelegateState struct {
 }
 
 // NewCustomVirtioDeviceDelegateProvider creates a provider for delegate.
+// A delegate may be shared by separate providers. Their callbacks can run
+// concurrently on different device queues, so shared state needs synchronization.
 // Each callback receives a CustomVirtioContext with access to the device queue.
 // Its parent defaults to context.Background. WithCustomVirtioContext sets a
 // parent for work done by the delegate, including work after a callback returns.
@@ -252,10 +255,22 @@ func WithCustomVirtioProvider(provider *CustomVirtioDeviceDelegateProvider) Cust
 }
 
 // CustomVirtioDevice is a running custom Virtio device supplied to its delegate.
+// Callbacks may receive different Go wrappers for the same device. Use ID to
+// identify the device across callbacks instead of comparing wrapper pointers.
 //
 // see: https://developer.apple.com/documentation/virtualization/vzcustomvirtiodevice?language=objc
 type CustomVirtioDevice struct {
 	*pointer
+	id uint64
+}
+
+// ID returns a process-local identifier for this device instance. It stays the
+// same across callbacks for the device's lifetime and differs from the ID of any
+// other instance, including devices that share a delegate.
+// It is not the Virtio device type ID passed to NewCustomVirtioDeviceConfiguration
+// and must not be saved as an identifier for a restored virtual machine.
+func (d *CustomVirtioDevice) ID() uint64 {
+	return d.id
 }
 
 var customVirtioCallbackInit sync.Once
@@ -291,6 +306,7 @@ func dispatchCustomVirtioCallback(event uint32, context uint64, first, second un
 	device := &CustomVirtioDevice{
 		pointer: objc.NewManagedPointer(first, vzbridge.ReleaseObject),
 	}
+	device.id = vzbridge.CustomVirtioDeviceID(device)
 	ctx := &customVirtioContext{
 		Context: state.parent,
 		device:  device,

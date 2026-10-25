@@ -2,6 +2,7 @@ package vz_test
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 	"time"
 
@@ -11,13 +12,22 @@ import (
 type customVirtioIteratorDelegate struct {
 	customVirtioTestDelegate
 	breakEarly bool
+	deviceID   uint64
 	errors     chan error
 }
 
-func (*customVirtioIteratorDelegate) DidCreateDevice(vz.CustomVirtioContext, *vz.CustomVirtioDevice) {
+func (d *customVirtioIteratorDelegate) DidCreateDevice(_ vz.CustomVirtioContext, device *vz.CustomVirtioDevice) {
+	d.deviceID = device.ID()
 }
 
-func (d *customVirtioIteratorDelegate) DidReceiveNotificationForQueue(_ vz.CustomVirtioContext, _ *vz.CustomVirtioDevice, queue *vz.VirtioQueue) {
+func (d *customVirtioIteratorDelegate) DidReceiveNotificationForQueue(_ vz.CustomVirtioContext, device *vz.CustomVirtioDevice, queue *vz.VirtioQueue) {
+	if device.ID() != d.deviceID {
+		select {
+		case d.errors <- fmt.Errorf("notification device ID = %d, want %d", device.ID(), d.deviceID):
+		default:
+		}
+		return
+	}
 	elements := queue.Elements()
 	if d.breakEarly {
 		var first *vz.VirtioQueueElement
@@ -95,12 +105,12 @@ func TestVirtioQueueElementsGuest(t *testing.T) {
 
 type customVirtioGuestDelegate struct {
 	customVirtioTestDelegate
-	stopped chan struct{}
+	stopped chan *vz.CustomVirtioDevice
 }
 
-func (d *customVirtioGuestDelegate) WillStop(vz.CustomVirtioContext, *vz.CustomVirtioDevice) {
+func (d *customVirtioGuestDelegate) WillStop(_ vz.CustomVirtioContext, device *vz.CustomVirtioDevice) {
 	select {
-	case d.stopped <- struct{}{}:
+	case d.stopped <- device:
 	default:
 	}
 }
@@ -111,34 +121,56 @@ func TestCustomVirtioGuestLifecycle(t *testing.T) {
 	}
 	delegate := &customVirtioGuestDelegate{
 		customVirtioTestDelegate: customVirtioTestDelegate{
-			created: make(chan *vz.CustomVirtioDevice, 1),
+			created: make(chan *vz.CustomVirtioDevice, 2),
 		},
-		stopped: make(chan struct{}, 1),
+		stopped: make(chan *vz.CustomVirtioDevice, 2),
 	}
 	provider, err := vz.NewCustomVirtioDeviceDelegateProvider(delegate)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer provider.Close()
-	custom, err := vz.NewCustomVirtioDeviceConfiguration(0xff, 0xff, 0, 1, vz.WithCustomVirtioProvider(provider))
+	otherProvider, err := vz.NewCustomVirtioDeviceDelegateProvider(delegate)
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer otherProvider.Close()
+	var devices []*vz.CustomVirtioDeviceConfiguration
+	for _, provider := range []*vz.CustomVirtioDeviceDelegateProvider{provider, otherProvider} {
+		custom, err := vz.NewCustomVirtioDeviceConfiguration(0xff, 0xff, 0, 1, vz.WithCustomVirtioProvider(provider))
+		if err != nil {
+			t.Fatal(err)
+		}
+		devices = append(devices, custom)
+	}
 	container := newVirtualizationMachine(t, func(config *vz.VirtualMachineConfiguration) error {
-		return vz.WithCustomVirtioDevices(custom)(config)
+		return vz.WithCustomVirtioDevices(devices...)(config)
 	})
 	defer container.Shutdown()
-	select {
-	case <-delegate.created:
-	case <-time.After(5 * time.Second):
-		t.Fatal("custom device creation was not reported")
+	created := make(map[uint64]*vz.CustomVirtioDevice)
+	for range devices {
+		select {
+		case device := <-delegate.created:
+			if device.ID() == 0 || created[device.ID()] != nil {
+				t.Fatalf("device ID = %d, want a unique nonzero ID", device.ID())
+			}
+			created[device.ID()] = device
+		case <-time.After(5 * time.Second):
+			t.Fatal("custom device creation was not reported")
+		}
 	}
 	if err := container.Shutdown(); err != nil {
 		t.Fatal(err)
 	}
-	select {
-	case <-delegate.stopped:
-	case <-time.After(5 * time.Second):
-		t.Fatal("custom device stop was not reported")
+	for range devices {
+		select {
+		case device := <-delegate.stopped:
+			if created[device.ID()] == nil {
+				t.Fatalf("stop reported unknown device ID %d", device.ID())
+			}
+			delete(created, device.ID())
+		case <-time.After(5 * time.Second):
+			t.Fatal("custom device stop was not reported")
+		}
 	}
 }

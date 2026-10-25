@@ -115,3 +115,16 @@ func CustomVirtioConfigurationLength(device objc.NSObject) uint64 {
 	runtime.KeepAlive(device)
 	return length
 }
+
+var customVirtioDeviceID lazyBinding[func(unsafe.Pointer) uint64]
+
+func CustomVirtioDeviceID(device objc.NSObject) uint64 {
+	call := customVirtioDeviceID.get(func() func(unsafe.Pointer) uint64 {
+		var call func(unsafe.Pointer) uint64
+		purego.RegisterFunc(&call, uintptr(C.vz_customVirtioDeviceID))
+		return call
+	})
+	id := call(objc.Ptr(device))
+	runtime.KeepAlive(device)
+	return id
+}

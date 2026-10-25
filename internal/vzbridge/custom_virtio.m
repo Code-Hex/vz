@@ -1,10 +1,13 @@
 #import "custom_virtio.h"
 #import <Virtualization/Virtualization.h>
 #import <objc/runtime.h>
+#include <stdatomic.h>
 
 typedef uintptr_t (*VirtioCallback)(uint32_t, uint64_t, void *, void *);
 static char virtioDelegateKey;
 static char virtioConfigurationLengthKey;
+static char virtioDeviceIDKey;
+static _Atomic(uint64_t) nextVirtioDeviceID;
 
 static void invokeVirtioBlock(uintptr_t context)
 {
@@ -38,6 +41,8 @@ API_AVAILABLE(macos(27.0))
 - (void)customVirtioConfiguration:(VZCustomVirtioDeviceConfiguration *)configuration didCreateDevice:(VZCustomVirtioDevice *)device
 {
     vz_setObjectQueue(device, device.deviceQueue);
+    uint64_t deviceID = atomic_fetch_add_explicit(&nextVirtioDeviceID, 1, memory_order_relaxed) + 1;
+    objc_setAssociatedObject(device, &virtioDeviceIDKey, @(deviceID), OBJC_ASSOCIATION_RETAIN);
     objc_setAssociatedObject(device, &virtioConfigurationLengthKey, @(configuration.deviceSpecificConfiguration.configurationData.length), OBJC_ASSOCIATION_RETAIN);
     objc_setAssociatedObject(device, &virtioDelegateKey, self, OBJC_ASSOCIATION_RETAIN);
     device.delegate = self;
@@ -158,4 +163,9 @@ void vz_customVirtioUnmap(void *region, uint64_t offset, uint64_t size, uintptr_
 uint64_t vz_customVirtioConfigurationLength(void *device)
 {
     return [(NSNumber *)objc_getAssociatedObject((id)device, &virtioConfigurationLengthKey) unsignedLongLongValue];
+}
+
+uint64_t vz_customVirtioDeviceID(void *device)
+{
+    return [(NSNumber *)objc_getAssociatedObject((id)device, &virtioDeviceIDKey) unsignedLongLongValue];
 }

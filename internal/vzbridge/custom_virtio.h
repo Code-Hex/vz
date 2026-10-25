@@ -21,3 +21,4 @@ enum {
 };
 
 uint64_t vz_customVirtioConfigurationLength(void *device);
+uint64_t vz_customVirtioDeviceID(void *device);

@@ -242,6 +242,10 @@ func (v *VirtualMachine) StoppedWithErrorNotify(c chan<- error) (func(), error) 
 // Delivery never waits: a notification is dropped if c cannot receive it.
 // The caller chooses the channel capacity. No past notifications are replayed.
 //
+// To wait for a state, register a dedicated channel with capacity at least one,
+// then check State() before waiting and after each notification. The notification
+// value may be out of date, and intermediate states may be missed.
+//
 // Registering the same channel again does not duplicate delivery. Either returned
 // stop function removes that registration. The stop function is safe to call more than once;
 // after it returns, that registration will not send again. Stop every registration

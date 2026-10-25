@@ -378,9 +378,6 @@ var _ StorageDeviceAttachment = (*NetworkBlockDeviceStorageDeviceAttachment)(nil
 // Uniform Resource Indicator (URI) represented as a URL, timeout value, and read-only and synchronization modes
 // that you provide.
 //
-// It also set up a channel that will be used by the VZNetworkBlockDeviceStorageDeviceAttachmentDelegate to
-// return changes to the NetworkBlockDeviceAttachment
-//
 // - url is the NBD server URI. The format specified by https://github.com/NetworkBlockDevice/nbd/blob/master/doc/uri.md
 // - timeout is the duration for the connection between the client and server. When the timeout expires, an attempt to reconnect with the server takes place.
 // - forcedReadOnly if true forces the disk attachment to be read-only, regardless of whether or not the NBD server supports write requests.

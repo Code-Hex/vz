@@ -26,6 +26,9 @@ type VirtioConsoleDevice struct {
 // ConsolePortChangedNotify registers c for future console port opens and closes.
 // Delivery follows VirtualMachine.StateChangedNotify. The returned function
 // unregisters c. This requires macOS 13 or newer.
+//
+// Process or flush pending attachment data before communicating with a new guest
+// process. Closing a port does not guarantee that its output has been consumed.
 func (v *VirtualMachine) ConsolePortChangedNotify(c chan<- ConsolePortEvent) (func(), error) {
 	if err := macOSAvailable(13); err != nil {
 		return nil, err

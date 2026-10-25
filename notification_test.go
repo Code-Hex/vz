@@ -67,11 +67,23 @@ func TestNotifications(t *testing.T) {
 		t.Fatal("registration after release succeeded")
 	}
 	events.send(7)
+	for _, want := range []int{5, 6} {
+		if got, ok := <-other; !ok || got != want {
+			t.Fatalf("other after release = %d, %t, want %d, true", got, ok, want)
+		}
+	}
+	select {
+	case got := <-other:
+		t.Fatalf("delivery to existing registration after release: %d", got)
+	default:
+	}
 	select {
 	case got := <-late:
 		t.Fatalf("delivery after release: %d", got)
 	default:
 	}
+	close(other)
+	events.send(8)
 	close(late)
 }
 

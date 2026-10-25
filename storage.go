@@ -441,8 +441,8 @@ func (n *NetworkBlockDeviceStorageDeviceAttachment) WasConnectedNotify(c chan<- 
 	return n.connected.subscribe(c)
 }
 
-// DidEncounterErrorNotify registers c for NBD errors that need server-side recovery.
-// The client continues attempting to reconnect after these errors.
+// DidEncounterErrorNotify registers c for unrecoverable NBD errors.
+// The NBD client can no longer function after one of these errors.
 // Delivery follows [NetworkBlockDeviceStorageDeviceAttachment.WasConnectedNotify].
 // The returned function unregisters c.
 func (n *NetworkBlockDeviceStorageDeviceAttachment) DidEncounterErrorNotify(c chan<- error) (func(), error) {

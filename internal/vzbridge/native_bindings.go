@@ -30,6 +30,19 @@ func ObjectQueue(object objc.NSObject) unsafe.Pointer {
 	return result
 }
 
+var callSetObjectQueue lazyBinding[func(unsafe.Pointer, unsafe.Pointer)]
+
+func SetObjectQueue(object unsafe.Pointer, queue unsafe.Pointer) {
+	call := callSetObjectQueue.get(func() func(unsafe.Pointer, unsafe.Pointer) {
+		var call func(unsafe.Pointer, unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_setObjectQueue))
+		return call
+	})
+	call(object, queue)
+	runtime.KeepAlive(object)
+	runtime.KeepAlive(queue)
+}
+
 var callInheritObjectQueue lazyBinding[func(unsafe.Pointer, unsafe.Pointer)]
 
 func InheritObjectQueue(object unsafe.Pointer, source unsafe.Pointer) {
@@ -360,9 +373,7 @@ func NewVZVirtualMachineWithDispatchQueue(p0 objc.NSObject, p1 uint64, p2 uint64
 		return call
 	})
 	var result unsafe.Pointer
-	onQueue(func() {
-		result = call(objc.Ptr(p0), p1, p2)
-	})
+	result = call(objc.Ptr(p0), p1, p2)
 	runtime.KeepAlive(p0)
 	return objc.NewManagedPointer(result, ReleaseObject)
 }
@@ -1072,4 +1083,190 @@ func ReconfigureGraphicsDisplaySize(display objc.NSObject, width float64, height
 	})
 	runtime.KeepAlive(display)
 	runtime.KeepAlive(errorOut)
+}
+
+var callNewEFICertificate lazyBinding[func(unsafe.Pointer) unsafe.Pointer]
+
+func NewEFICertificate(data objc.NSObject) *objc.Pointer {
+	call := callNewEFICertificate.get(func() func(unsafe.Pointer) unsafe.Pointer {
+		var call func(unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_newEFICertificate))
+		return call
+	})
+	var result unsafe.Pointer
+	onQueue(func() {
+		result = call(objc.Ptr(data))
+	})
+	runtime.KeepAlive(data)
+	return objc.NewManagedPointer(result, ReleaseObject)
+}
+
+var callEfiCertificateData lazyBinding[func(unsafe.Pointer) unsafe.Pointer]
+
+func EfiCertificateData(signature objc.NSObject) *objc.Pointer {
+	call := callEfiCertificateData.get(func() func(unsafe.Pointer) unsafe.Pointer {
+		var call func(unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_efiCertificateData))
+		return call
+	})
+	var result unsafe.Pointer
+	onQueue(func() {
+		result = call(objc.Ptr(signature))
+	})
+	runtime.KeepAlive(signature)
+	return objc.NewManagedPointer(result, ReleaseObject)
+}
+
+var callIsEFICertificate lazyBinding[func(unsafe.Pointer) bool]
+
+func IsEFICertificate(signature objc.NSObject) bool {
+	call := callIsEFICertificate.get(func() func(unsafe.Pointer) bool {
+		var call func(unsafe.Pointer) bool
+		purego.RegisterFunc(&call, uintptr(C.vz_isEFICertificate))
+		return call
+	})
+	var result bool
+	onQueue(func() {
+		result = call(objc.Ptr(signature))
+	})
+	runtime.KeepAlive(signature)
+	return result
+}
+
+var callEnableEFISecureBoot lazyBinding[func(unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer)]
+
+func EnableEFISecureBoot(store objc.NSObject, signature objc.NSObject, errorOut *unsafe.Pointer) {
+	call := callEnableEFISecureBoot.get(func() func(unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer) {
+		var call func(unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_enableEFISecureBoot))
+		return call
+	})
+	onQueue(func() {
+		call(objc.Ptr(store), objc.Ptr(signature), errorOut)
+	})
+	runtime.KeepAlive(store)
+	runtime.KeepAlive(signature)
+	runtime.KeepAlive(errorOut)
+}
+
+var callRegisterUSBAccessories lazyBinding[func(uint64) unsafe.Pointer]
+
+func RegisterUSBAccessories(context uint64) *objc.Pointer {
+	call := callRegisterUSBAccessories.get(func() func(uint64) unsafe.Pointer {
+		var call func(uint64) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_registerUSBAccessories))
+		return call
+	})
+	var result unsafe.Pointer
+	result = call(context)
+	return objc.NewManagedPointer(result, ReleaseObject)
+}
+
+var callUnregisterUSBAccessories lazyBinding[func(unsafe.Pointer, uint64)]
+
+func UnregisterUSBAccessories(listener objc.NSObject, context uint64) {
+	call := callUnregisterUSBAccessories.get(func() func(unsafe.Pointer, uint64) {
+		var call func(unsafe.Pointer, uint64)
+		purego.RegisterFunc(&call, uintptr(C.vz_unregisterUSBAccessories))
+		return call
+	})
+	call(objc.Ptr(listener), context)
+	runtime.KeepAlive(listener)
+}
+
+var callUSBAccessoryRegistryID lazyBinding[func(unsafe.Pointer) uint64]
+
+func USBAccessoryRegistryID(accessory objc.NSObject) uint64 {
+	call := callUSBAccessoryRegistryID.get(func() func(unsafe.Pointer) uint64 {
+		var call func(unsafe.Pointer) uint64
+		purego.RegisterFunc(&call, uintptr(C.vz_USBAccessoryRegistryID))
+		return call
+	})
+	var result uint64
+	onQueue(func() {
+		result = call(objc.Ptr(accessory))
+	})
+	runtime.KeepAlive(accessory)
+	return result
+}
+
+var callUSBAccessoryDeviceDescriptor lazyBinding[func(unsafe.Pointer) unsafe.Pointer]
+
+func USBAccessoryDeviceDescriptor(accessory objc.NSObject) *objc.Pointer {
+	call := callUSBAccessoryDeviceDescriptor.get(func() func(unsafe.Pointer) unsafe.Pointer {
+		var call func(unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_USBAccessoryDeviceDescriptor))
+		return call
+	})
+	var result unsafe.Pointer
+	onQueue(func() {
+		result = call(objc.Ptr(accessory))
+	})
+	runtime.KeepAlive(accessory)
+	return objc.NewManagedPointer(result, ReleaseObject)
+}
+
+var callUSBAccessoryConfigurationDescriptor lazyBinding[func(unsafe.Pointer) unsafe.Pointer]
+
+func USBAccessoryConfigurationDescriptor(accessory objc.NSObject) *objc.Pointer {
+	call := callUSBAccessoryConfigurationDescriptor.get(func() func(unsafe.Pointer) unsafe.Pointer {
+		var call func(unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_USBAccessoryConfigurationDescriptor))
+		return call
+	})
+	var result unsafe.Pointer
+	onQueue(func() {
+		result = call(objc.Ptr(accessory))
+	})
+	runtime.KeepAlive(accessory)
+	return objc.NewManagedPointer(result, ReleaseObject)
+}
+
+var callObserveUSBDisconnect lazyBinding[func(unsafe.Pointer, uint64, *unsafe.Pointer) unsafe.Pointer]
+
+func ObserveUSBDisconnect(controller objc.NSObject, context uint64, errorOut *unsafe.Pointer) *objc.Pointer {
+	call := callObserveUSBDisconnect.get(func() func(unsafe.Pointer, uint64, *unsafe.Pointer) unsafe.Pointer {
+		var call func(unsafe.Pointer, uint64, *unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_observeUSBDisconnect))
+		return call
+	})
+	var result unsafe.Pointer
+	onObjectQueue(objc.Ptr(controller), func() {
+		result = call(objc.Ptr(controller), context, errorOut)
+	})
+	runtime.KeepAlive(controller)
+	runtime.KeepAlive(errorOut)
+	return objc.NewManagedPointer(result, ReleaseObject)
+}
+
+var callStopObservingUSBDisconnect lazyBinding[func(unsafe.Pointer, unsafe.Pointer)]
+
+func StopObservingUSBDisconnect(controller objc.NSObject, observer objc.NSObject) {
+	call := callStopObservingUSBDisconnect.get(func() func(unsafe.Pointer, unsafe.Pointer) {
+		var call func(unsafe.Pointer, unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_stopObservingUSBDisconnect))
+		return call
+	})
+	onObjectQueue(objc.Ptr(controller), func() {
+		call(objc.Ptr(controller), objc.Ptr(observer))
+	})
+	runtime.KeepAlive(controller)
+	runtime.KeepAlive(observer)
+}
+
+var callEfiSecureBootEnabled lazyBinding[func(unsafe.Pointer, *unsafe.Pointer) bool]
+
+func EfiSecureBootEnabled(store objc.NSObject, errorOut *unsafe.Pointer) bool {
+	call := callEfiSecureBootEnabled.get(func() func(unsafe.Pointer, *unsafe.Pointer) bool {
+		var call func(unsafe.Pointer, *unsafe.Pointer) bool
+		purego.RegisterFunc(&call, uintptr(C.vz_efiSecureBootEnabled))
+		return call
+	})
+	var result bool
+	onQueue(func() {
+		result = call(objc.Ptr(store), errorOut)
+	})
+	runtime.KeepAlive(store)
+	runtime.KeepAlive(errorOut)
+	return result
 }

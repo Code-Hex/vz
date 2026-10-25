@@ -1,6 +1,7 @@
 package vz
 
 import (
+	"errors"
 	"runtime"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
@@ -37,6 +38,7 @@ func (*baseUSBControllerConfiguration) usbControllerConfiguration() {}
 // see: https://developer.apple.com/documentation/virtualization/vzxhcicontrollerconfiguration?language=objc
 type XHCIControllerConfiguration struct {
 	*pointer
+	devices []USBDeviceConfiguration
 
 	*baseUSBControllerConfiguration
 }
@@ -47,7 +49,9 @@ var _ USBControllerConfiguration = (*XHCIControllerConfiguration)(nil)
 //
 // This is only supported on macOS 15 and newer, error will
 // be returned on older versions.
-func NewXHCIControllerConfiguration() (*XHCIControllerConfiguration, error) {
+//
+// see: https://developer.apple.com/documentation/virtualization/vzxhcicontrollerconfiguration?language=objc
+func NewXHCIControllerConfiguration(options ...XHCIControllerConfigurationOption) (*XHCIControllerConfiguration, error) {
 	if err := macOSAvailable(15); err != nil {
 		return nil, err
 	}
@@ -55,7 +59,62 @@ func NewXHCIControllerConfiguration() (*XHCIControllerConfiguration, error) {
 	config := &XHCIControllerConfiguration{
 		pointer: vzbridge.VZXHCIControllerConfiguration_Init(),
 	}
+	for _, option := range options {
+		if err := option(config); err != nil {
+			objc.Release(config)
+			return nil, err
+		}
+	}
 	return config, nil
+}
+
+// USBDeviceConfiguration describes a USB device attached when the VM starts.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzusbdeviceconfiguration?language=objc
+type USBDeviceConfiguration interface {
+	objc.NSObject
+	usbDeviceConfiguration()
+}
+
+// XHCIControllerConfigurationOption configures an XHCI controller at creation.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzxhcicontrollerconfiguration?language=objc
+type XHCIControllerConfigurationOption func(*XHCIControllerConfiguration) error
+
+// WithUSBDevices sets the USB devices attached when the VM starts.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzusbcontrollerconfiguration/usbdevices?language=objc
+func WithUSBDevices(devices ...USBDeviceConfiguration) XHCIControllerConfigurationOption {
+	devices = append([]USBDeviceConfiguration(nil), devices...)
+	return func(configuration *XHCIControllerConfiguration) error {
+		for _, device := range devices {
+			switch d := device.(type) {
+			case *USBMassStorageDeviceConfiguration:
+				if d == nil {
+					return errors.New("vz: nil USB device configuration")
+				}
+			case *USBPassthroughDeviceConfiguration:
+				if d == nil {
+					return errors.New("vz: nil USB device configuration")
+				}
+			}
+			if objc.Ptr(device) == nil {
+				return errors.New("vz: nil USB device configuration")
+			}
+		}
+		array := nativeObjectArray(devices)
+		defer objc.Release(array)
+		vzbridge.VZUSBControllerConfiguration_SetUsbDevices(configuration, array)
+		configuration.devices = devices
+		return nil
+	}
+}
+
+// USBDevices returns the USB devices configured for startup.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzusbcontrollerconfiguration/usbdevices?language=objc
+func (c *XHCIControllerConfiguration) USBDevices() []USBDeviceConfiguration {
+	return append([]USBDeviceConfiguration(nil), c.devices...)
 }
 
 // USBController is representing a USB controller in a virtual machine.

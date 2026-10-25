@@ -2,6 +2,7 @@ package vz
 
 import (
 	"errors"
+	"iter"
 	"runtime"
 	"unsafe"
 
@@ -17,8 +18,10 @@ type VirtioQueue struct {
 }
 
 // NextElement returns the next available descriptor chain, or nil.
-// Drain the queue until nil to re-enable guest notifications. Return each
-// processed element with ReturnToQueue.
+// Keep calling NextElement until it returns nil to re-enable notifications for
+// this queue. If a loop exits early with break or return, explicitly resume
+// consuming the queue later. Waiting for another notification will not resume it.
+// Return each processed element with [VirtioQueueElement.ReturnToQueue].
 //
 // see: https://developer.apple.com/documentation/virtualization/vzvirtioqueue/nextelement()?language=objc
 func (q *VirtioQueue) NextElement() *VirtioQueueElement {
@@ -27,6 +30,28 @@ func (q *VirtioQueue) NextElement() *VirtioQueueElement {
 		return nil
 	}
 	return &VirtioQueueElement{pointer: native, returned: new(bool)}
+}
+
+// Elements returns an iterator over the queue's available descriptor chains.
+// Iteration consumes elements from the live queue. Running the iterator again
+// continues with remaining or newly available elements; it does not replay them.
+// Call [VirtioQueueElement.ReturnToQueue] when each element has been processed.
+// The iterator does not return elements to the guest.
+//
+// Let the loop finish so [VirtioQueue.NextElement] can return nil and re-enable
+// notifications for this queue. If the loop exits early with break or return,
+// explicitly resume iteration or call NextElement until it returns nil. Do not
+// wait for another notification to resume consuming the queue.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzvirtioqueue/nextelement()?language=objc
+func (q *VirtioQueue) Elements() iter.Seq[*VirtioQueueElement] {
+	return func(yield func(*VirtioQueueElement) bool) {
+		for element := q.NextElement(); element != nil; element = q.NextElement() {
+			if !yield(element) {
+				return
+			}
+		}
+	}
 }
 
 // QueueIndex returns the queue's index within its device.

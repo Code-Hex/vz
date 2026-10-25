@@ -185,7 +185,7 @@ func abandonedNativeNetworkAttachment(t *testing.T) func() {
 	if err != nil {
 		t.Fatal(err)
 	}
-	stop, err := attachment.Connected(make(chan struct{}, 1))
+	stop, err := attachment.WasConnectedNotify(make(chan struct{}, 1))
 	if err != nil {
 		t.Fatal(err)
 	}

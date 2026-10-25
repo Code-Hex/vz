@@ -428,7 +428,8 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 	return attachment, nil
 }
 
-// Connected registers c for successful NBD connections and reconnections.
+// WasConnectedNotify registers c for successful NBD connections and reconnections
+// that occur after registration.
 // Delivery never waits and drops notifications when c cannot receive them.
 // The caller chooses the channel capacity. No past notifications are replayed.
 // The returned function unregisters c and can be called more than once.
@@ -436,13 +437,14 @@ func NewNetworkBlockDeviceStorageDeviceAttachment(url string, timeout time.Durat
 // Stop every registration using c before closing it. The library never closes c.
 // A nil channel or a released attachment returns an error and a nil stop function.
 // Keep the attachment reachable while receiving notifications.
-func (n *NetworkBlockDeviceStorageDeviceAttachment) Connected(c chan<- struct{}) (func(), error) {
+func (n *NetworkBlockDeviceStorageDeviceAttachment) WasConnectedNotify(c chan<- struct{}) (func(), error) {
 	return n.connected.subscribe(c)
 }
 
-// DidEncounterError registers c for NBD errors that need server-side recovery.
+// DidEncounterErrorNotify registers c for NBD errors that need server-side recovery.
 // The client continues attempting to reconnect after these errors.
-// Delivery follows Connected. The returned function unregisters c.
-func (n *NetworkBlockDeviceStorageDeviceAttachment) DidEncounterError(c chan<- error) (func(), error) {
+// Delivery follows [NetworkBlockDeviceStorageDeviceAttachment.WasConnectedNotify].
+// The returned function unregisters c.
+func (n *NetworkBlockDeviceStorageDeviceAttachment) DidEncounterErrorNotify(c chan<- error) (func(), error) {
 	return n.didEncounterError.subscribe(c)
 }

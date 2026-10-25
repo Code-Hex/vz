@@ -62,12 +62,12 @@ func runVM(ctx context.Context) error {
 	if nbdAttachment != nil {
 		connected := make(chan struct{}, 1)
 		failures := make(chan error, 16)
-		stopConnected, err := nbdAttachment.Connected(connected)
+		stopConnected, err := nbdAttachment.WasConnectedNotify(connected)
 		if err != nil {
 			return err
 		}
 		defer stopConnected()
-		stopDidEncounterError, err := nbdAttachment.DidEncounterError(failures)
+		stopDidEncounterError, err := nbdAttachment.DidEncounterErrorNotify(failures)
 		if err != nil {
 			return err
 		}

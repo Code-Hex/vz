@@ -17,11 +17,11 @@ func TestNetworkBlockDeviceNotifications(t *testing.T) {
 	attachment, emit := newNetworkBlockDeviceNotificationTest(t)
 	connected := make(chan struct{}, 2)
 	failures := make(chan error, 2)
-	stopConnected, err := attachment.Connected(connected)
+	stopConnected, err := attachment.WasConnectedNotify(connected)
 	if err != nil {
 		t.Fatal(err)
 	}
-	stopFailures, err := attachment.DidEncounterError(failures)
+	stopFailures, err := attachment.DidEncounterErrorNotify(failures)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -51,11 +51,11 @@ func TestNetworkBlockDeviceReleaseWithUnreadNotifications(t *testing.T) {
 	attachment, emit := newNetworkBlockDeviceNotificationTest(t)
 	connected := make(chan struct{}, 1)
 	failures := make(chan error, 1)
-	stopConnected, err := attachment.Connected(connected)
+	stopConnected, err := attachment.WasConnectedNotify(connected)
 	if err != nil {
 		t.Fatal(err)
 	}
-	stopFailures, err := attachment.DidEncounterError(failures)
+	stopFailures, err := attachment.DidEncounterErrorNotify(failures)
 	if err != nil {
 		t.Fatal(err)
 	}

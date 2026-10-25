@@ -1,7 +1,10 @@
 package vz
 
 import (
+	"fmt"
 	"os"
+	"strings"
+	"unicode/utf8"
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
@@ -121,6 +124,7 @@ type MultipleDirectoryShare struct {
 var _ DirectoryShare = (*MultipleDirectoryShare)(nil)
 
 // NewMultipleDirectoryShare creates a new multiple directories share.
+// It returns an error if a directory name is invalid.
 //
 // This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
@@ -129,8 +133,18 @@ func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) (*MultipleDir
 		return nil, err
 	}
 	directories := make(map[string]objc.NSObject, len(shares))
-	for k, v := range shares {
-		directories[k] = v
+	for name, directory := range shares {
+		if !utf8.ValidString(name) || strings.ContainsRune(name, '\x00') {
+			return nil, fmt.Errorf("invalid directory share name %q: must be valid UTF-8 without NUL bytes", name)
+		}
+		nativeName := vzbridge.NSString_StringWithUTF8String(name)
+		var nserrPtr unsafe.Pointer
+		valid := vzbridge.VZMultipleDirectoryShare_ValidateName_Error(nativeName, &nserrPtr)
+		objc.Release(nativeName)
+		if !valid {
+			return nil, fmt.Errorf("invalid directory share name %q: %w", name, objcutil.NewNSError(nserrPtr))
+		}
+		directories[name] = directory
 	}
 
 	dict := nativeObjectDictionary(directories)

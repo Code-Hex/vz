@@ -47,7 +47,7 @@ type VirtualMachineConfiguration struct {
 //
 // This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
-func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize uint64) (*VirtualMachineConfiguration, error) {
+func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize uint64, opts ...VirtualMachineConfigurationOption) (*VirtualMachineConfiguration, error) {
 	if err := macOSAvailable(11); err != nil {
 		return nil, err
 	}
@@ -58,6 +58,11 @@ func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize 
 			uint32(cpu),
 			uint64(memorySize),
 		),
+	}
+	for _, opt := range opts {
+		if err := opt(config); err != nil {
+			return nil, err
+		}
 	}
 	return config, nil
 }

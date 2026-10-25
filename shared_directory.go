@@ -3,8 +3,6 @@ package vz
 import (
 	"fmt"
 	"os"
-	"strings"
-	"unicode/utf8"
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
@@ -134,7 +132,7 @@ func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) (*MultipleDir
 	}
 	directories := make(map[string]objc.NSObject, len(shares))
 	for name, directory := range shares {
-		if !utf8.ValidString(name) || strings.ContainsRune(name, '\x00') {
+		if !validUTF8CString(name) {
 			return nil, fmt.Errorf("invalid directory share name %q: must be valid UTF-8 without NUL bytes", name)
 		}
 		nativeName := vzbridge.NSString_StringWithUTF8String(name)

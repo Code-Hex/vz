@@ -31,9 +31,10 @@ func WithStartUpFromMacOSRecovery(startInRecovery bool) VirtualMachineStartOptio
 		if err := macOSAvailable(13); err != nil {
 			return err
 		}
-		options := vzbridge.VZMacOSVirtualMachineStartOptions_New()
-		vzbridge.VZMacOSVirtualMachineStartOptions_SetStartUpFromMacOSRecovery(options, startInRecovery)
-		vmso.macOSVirtualMachineStartOptionsPtr = options
+		if vmso.macOSVirtualMachineStartOptionsPtr == nil {
+			vmso.macOSVirtualMachineStartOptionsPtr = vzbridge.VZMacOSVirtualMachineStartOptions_New()
+		}
+		vzbridge.VZMacOSVirtualMachineStartOptions_SetStartUpFromMacOSRecovery(vmso.macOSVirtualMachineStartOptionsPtr, startInRecovery)
 		return nil
 	}
 }

@@ -113,3 +113,29 @@ const (
 	// Available from macOS 15.0 and above.
 	ErrorDeviceNotFound
 )
+
+const (
+	// ErrorGuestProvisioningInvalidFullName indicates an invalid guest account full name.
+	//
+	// see: https://developer.apple.com/documentation/virtualization/vzerror/guestprovisioninginvalidfullname?language=objc
+	ErrorGuestProvisioningInvalidFullName ErrorCode = 40001 + iota
+	// ErrorGuestProvisioningInvalidUsername indicates an invalid guest account username.
+	//
+	// see: https://developer.apple.com/documentation/virtualization/vzerror/guestprovisioninginvalidusername?language=objc
+	ErrorGuestProvisioningInvalidUsername
+	// ErrorGuestProvisioningInvalidPassword indicates an invalid guest account password.
+	//
+	// see: https://developer.apple.com/documentation/virtualization/vzerror/guestprovisioninginvalidpassword?language=objc
+	ErrorGuestProvisioningInvalidPassword
+)
+
+const (
+	// ErrorEFISecureBootEnrollmentFailed indicates that Secure Boot signatures could not be enrolled.
+	//
+	// see: https://developer.apple.com/documentation/virtualization/vzerror/efisecurebootenrollmentfailed?language=objc
+	ErrorEFISecureBootEnrollmentFailed ErrorCode = 50001 + iota
+	// ErrorEFIVariableInaccessible indicates that the EFI variable store could not be accessed.
+	//
+	// see: https://developer.apple.com/documentation/virtualization/vzerror/efivariableinaccessible?language=objc
+	ErrorEFIVariableInaccessible
+)

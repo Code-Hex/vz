@@ -99,6 +99,7 @@ type SingleDirectoryShare struct {
 }
 
 // NewSingleDirectoryShare creates a new single directory share.
+// It returns an error if share is nil or uninitialized.
 //
 // This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
@@ -106,6 +107,10 @@ func NewSingleDirectoryShare(share *SharedDirectory) (*SingleDirectoryShare, err
 	if err := macOSAvailable(12); err != nil {
 		return nil, err
 	}
+	if share == nil || objc.Ptr(share) == nil {
+		return nil, fmt.Errorf("shared directory must not be nil or uninitialized")
+	}
+
 	config := &SingleDirectoryShare{
 		pointer: vzbridge.VZSingleDirectoryShare_InitWithDirectory(share),
 	}
@@ -122,7 +127,7 @@ type MultipleDirectoryShare struct {
 var _ DirectoryShare = (*MultipleDirectoryShare)(nil)
 
 // NewMultipleDirectoryShare creates a new multiple directories share.
-// It returns an error if a directory name is invalid.
+// It returns an error if a directory name is invalid or a directory is nil or uninitialized.
 //
 // This is only supported on macOS 12 and newer, error will
 // be returned on older versions.
@@ -132,6 +137,9 @@ func NewMultipleDirectoryShare(shares map[string]*SharedDirectory) (*MultipleDir
 	}
 	directories := make(map[string]objc.NSObject, len(shares))
 	for name, directory := range shares {
+		if directory == nil || objc.Ptr(directory) == nil {
+			return nil, fmt.Errorf("directory share %q must not be nil or uninitialized", name)
+		}
 		if !validUTF8CString(name) {
 			return nil, fmt.Errorf("invalid directory share name %q: must be valid UTF-8 without NUL bytes", name)
 		}

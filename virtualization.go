@@ -116,11 +116,18 @@ func (s *machineState) close() {
 // Each virtual machine has its own serial dispatch queue.
 // vz dispatches VM operations to that queue internally.
 //
+// Each custom Virtio delegate provider may be used by only one device instance.
+// Reusing a provider within this configuration or across construction attempts
+// returns an error before creating the virtual machine.
+//
 // This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
 func NewVirtualMachine(config *VirtualMachineConfiguration) (*VirtualMachine, error) {
 	if err := macOSAvailable(11); err != nil {
 		return nil, err
+	}
+	if !vzbridge.ClaimCustomVirtioProviders(config) {
+		return nil, fmt.Errorf("custom Virtio delegate provider must be used by only one device")
 	}
 	state := &machineState{}
 	stateHandle := registerNativeCallback(func(kind uint32, errorPointer, _ unsafe.Pointer, value uint64) uint64 {

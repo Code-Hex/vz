@@ -28,6 +28,20 @@ func NewCustomVirtioProvider(callback uintptr, context uint64) *objc.Pointer {
 	return objc.NewManagedPointer(p, ReleaseObject)
 }
 
+var customVirtioClaim lazyBinding[func(unsafe.Pointer) bool]
+
+func ClaimCustomVirtioProviders(configuration objc.NSObject) bool {
+	call := customVirtioClaim.get(func() func(unsafe.Pointer) bool {
+		var call func(unsafe.Pointer) bool
+		purego.RegisterFunc(&call, uintptr(C.vz_claimCustomVirtioProviders))
+		return call
+	})
+	var claimed bool
+	onQueue(func() { claimed = call(objc.Ptr(configuration)) })
+	runtime.KeepAlive(configuration)
+	return claimed
+}
+
 var customVirtioClose lazyBinding[func(unsafe.Pointer)]
 
 func CloseCustomVirtioProvider(provider objc.NSObject) {

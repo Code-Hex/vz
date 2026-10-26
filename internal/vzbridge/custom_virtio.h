@@ -1,6 +1,7 @@
 #pragma once
 #include "native.h"
 void *vz_newCustomVirtioProvider(uintptr_t callback, uint64_t context);
+bool vz_claimCustomVirtioProviders(void *configuration);
 void vz_closeCustomVirtioProvider(void *provider);
 void vz_customVirtioUpdate(void *device, void *configuration, uintptr_t callback, uint64_t context);
 void vz_customVirtioMap(void *region, void *memory, uint64_t offset, uint64_t size, uintptr_t callback, uint64_t context);

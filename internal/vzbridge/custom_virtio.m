@@ -20,6 +20,7 @@ API_AVAILABLE(macos(27.0))
 @public
     VirtioCallback callback;
     uint64_t context;
+    BOOL used; // Accessed only on the common bridge queue.
 }
 - (void)invalidate;
 @end
@@ -119,6 +120,26 @@ void vz_closeCustomVirtioProvider(void *provider)
     if (@available(macOS 27.0, *))
         [(VZBridgeCustomVirtioDelegate *)objc_getAssociatedObject((id)provider, &virtioDelegateKey) invalidate];
 #endif
+}
+
+bool vz_claimCustomVirtioProviders(void *configuration)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 270000
+    if (@available(macOS 27.0, *)) {
+        NSMutableSet<VZBridgeCustomVirtioDelegate *> *delegates = [NSMutableSet set];
+        for (VZCustomVirtioDeviceConfiguration *device in [(VZVirtualMachineConfiguration *)configuration customVirtioDevices]) {
+            VZBridgeCustomVirtioDelegate *delegate = objc_getAssociatedObject(device.provider, &virtioDelegateKey);
+            if (!delegate)
+                continue;
+            if (delegate->used || [delegates containsObject:delegate])
+                return false;
+            [delegates addObject:delegate];
+        }
+        for (VZBridgeCustomVirtioDelegate *delegate in delegates)
+            delegate->used = YES;
+    }
+#endif
+    return true;
 }
 
 void vz_customVirtioUpdate(void *device, void *configuration, uintptr_t callback, uint64_t context)

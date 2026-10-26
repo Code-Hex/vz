@@ -45,10 +45,27 @@ func (d *customVirtioIteratorDelegate) DidReceiveNotificationForQueue(_ vz.Custo
 }
 
 func (d *customVirtioIteratorDelegate) fill(element *vz.VirtioQueueElement) {
+	copy := *element
 	data := bytes.Repeat([]byte{0xa5}, int(min(element.WriteBuffersAvailableByteCount(), 64)))
 	err := element.WriteBytes(data)
 	if err == nil {
 		err = element.ReturnToQueue()
+	}
+	if err == nil && copy.ReturnToQueue() == nil {
+		err = fmt.Errorf("copied element accepted a second return")
+	}
+	if err == nil {
+		if _, readErr := copy.ReadBytes(0); readErr == nil {
+			err = fmt.Errorf("copied element accepted a read after return")
+		}
+	}
+	if err == nil {
+		if _, peekErr := copy.PeekBytes(0); peekErr == nil {
+			err = fmt.Errorf("copied element accepted a peek after return")
+		}
+	}
+	if err == nil && copy.WriteBytes(nil) == nil {
+		err = fmt.Errorf("copied element accepted a write after return")
 	}
 	if err != nil {
 		select {
@@ -72,7 +89,14 @@ func TestVirtioQueueElementsGuest(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer provider.Close()
+			defer func() {
+				provider.Close()
+				select {
+				case err := <-delegate.errors:
+					t.Error(err)
+				default:
+				}
+			}()
 			custom, err := vz.NewCustomVirtioDeviceConfiguration(4, 0xff, 0, 1, vz.WithCustomVirtioProvider(provider))
 			if err != nil {
 				t.Fatal(err)
@@ -88,11 +112,6 @@ func TestVirtioQueueElementsGuest(t *testing.T) {
 			session := container.NewSession(t)
 			defer session.Close()
 			output, err := session.Output("timeout 5 dd if=/dev/hwrng bs=64 count=8 iflag=fullblock status=none")
-			select {
-			case delegateErr := <-delegate.errors:
-				t.Fatal(delegateErr)
-			default:
-			}
 			if err != nil {
 				t.Fatalf("read guest entropy: %v", err)
 			}

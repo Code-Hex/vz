@@ -57,7 +57,6 @@ type customVirtioTestDelegate struct {
 	created  chan *vz.CustomVirtioDevice
 	contexts chan vz.CustomVirtioContext
 	unblock  <-chan struct{}
-	returned chan struct{}
 }
 
 func (d *customVirtioTestDelegate) DidCreateDevice(ctx vz.CustomVirtioContext, device *vz.CustomVirtioDevice) {
@@ -73,9 +72,6 @@ func (d *customVirtioTestDelegate) DidCreateDevice(ctx vz.CustomVirtioContext, d
 	d.created <- device
 	if d.unblock != nil {
 		<-d.unblock
-	}
-	if d.returned != nil {
-		close(d.returned)
 	}
 }
 
@@ -98,9 +94,8 @@ func TestCustomVirtioProvider(t *testing.T) {
 	}
 	unblock := make(chan struct{})
 	delegate := &customVirtioTestDelegate{
-		created:  make(chan *vz.CustomVirtioDevice, 1),
-		unblock:  unblock,
-		returned: make(chan struct{}),
+		created: make(chan *vz.CustomVirtioDevice, 1),
+		unblock: unblock,
 	}
 	releaseCallback := sync.OnceFunc(func() { close(unblock) })
 	provider, err := vz.NewCustomVirtioDeviceDelegateProvider(delegate)
@@ -109,16 +104,10 @@ func TestCustomVirtioProvider(t *testing.T) {
 	}
 	closed := make(chan struct{})
 	closeStarted := make(chan struct{})
-	var closedDuringCallback bool
 	startClose := sync.OnceFunc(func() {
 		go func() {
 			close(closeStarted)
 			provider.Close()
-			select {
-			case <-delegate.returned:
-			default:
-				closedDuringCallback = true
-			}
 			provider.Close()
 			close(closed)
 		}()
@@ -154,12 +143,14 @@ func TestCustomVirtioProvider(t *testing.T) {
 	}
 	startClose()
 	<-closeStarted
+	select {
+	case <-closed:
+		t.Fatal("Close returned while the delegate was blocked")
+	case <-time.After(100 * time.Millisecond):
+	}
 	releaseCallback()
 	select {
 	case <-closed:
-		if closedDuringCallback {
-			t.Fatal("Close returned while the delegate was running")
-		}
 	case <-time.After(5 * time.Second):
 		t.Fatal("Close did not finish after the callback returned")
 	}

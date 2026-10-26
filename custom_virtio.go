@@ -150,6 +150,8 @@ type CustomVirtioDeviceStateDelegate interface {
 // CustomVirtioDeviceDelegateProvider runs a delegate on a dedicated serial queue.
 // Create a separate provider for each device instance, including devices in
 // different virtual machines. Call Close after its virtual machine has stopped.
+// NewVirtualMachine rejects reuse of a provider. Once its provider check succeeds,
+// the provider is reserved even if virtual machine construction later fails.
 //
 // see: https://developer.apple.com/documentation/virtualization/vzcustomvirtiodevicedelegateprovider?language=objc
 type CustomVirtioDeviceDelegateProvider struct {

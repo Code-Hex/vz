@@ -142,6 +142,15 @@ void vz_drain(void)
 
 void vz_setCallback(uint64_t callback) { atomic_store(&bridgeCallback, (BridgeCallback)(uintptr_t)callback); }
 
+void *vz_retainVZDiskImageStorageDeviceAttachment(void *attachment)
+{
+    @autoreleasepool {
+        if (![(id)attachment isKindOfClass:[VZDiskImageStorageDeviceAttachment class]])
+            return NULL;
+        return [(id)attachment retain];
+    }
+}
+
 void vz_releaseObject(void *object)
 {
     if (!object)

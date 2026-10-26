@@ -1,6 +1,7 @@
 package vz
 
 import (
+	"errors"
 	"os"
 	"runtime"
 	"time"
@@ -30,7 +31,7 @@ var _ StorageDeviceAttachment = (*DiskImageStorageDeviceAttachment)(nil)
 // DiskImageStorageDeviceAttachment is a storage device attachment using a disk image to implement the storage.
 //
 // This storage device attachment uses a disk image on the host file system as the drive of the storage device.
-// Only raw data disk images are supported.
+// Use NewDiskImageStorageDeviceAttachmentFromNative for a caller-provided native attachment.
 // see: https://developer.apple.com/documentation/virtualization/vzdiskimagestoragedeviceattachment?language=objc
 type DiskImageStorageDeviceAttachment struct {
 	*pointer
@@ -84,6 +85,36 @@ func NewDiskImageStorageDeviceAttachment(diskPath string, readOnly bool) (*DiskI
 		return nil, err
 	}
 	return attachment, nil
+}
+
+// NewDiskImageStorageDeviceAttachmentFromNative wraps a native
+// VZDiskImageStorageDeviceAttachment created by the caller. When using
+// DiskImageKit, first create a VZDiskImageStorageDeviceAttachment in Swift and
+// pass that attachment's pointer.
+//
+// attachment must point to a live NSObject instance and remain valid until this
+// function returns. Nil and objects of another class return an error. Arbitrary
+// or dangling pointers are invalid and may crash the process.
+//
+// On success, the Go wrapper retains its own reference. The caller keeps
+// ownership of its original reference and can release it after this call.
+// The caller is responsible for building, linking, and distributing its bridge.
+//
+// This is supported on macOS 11 and newer. Creating a DiskImageKit attachment
+// requires macOS 27 and newer.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzdiskimagestoragedeviceattachment?language=objc
+func NewDiskImageStorageDeviceAttachmentFromNative(attachment unsafe.Pointer) (*DiskImageStorageDeviceAttachment, error) {
+	if err := macOSAvailable(11); err != nil {
+		return nil, err
+	}
+	pointer := vzbridge.RetainVZDiskImageStorageDeviceAttachment(attachment)
+	if pointer == nil {
+		return nil, errors.New("attachment must be a VZDiskImageStorageDeviceAttachment")
+	}
+	return &DiskImageStorageDeviceAttachment{
+		pointer: pointer,
+	}, nil
 }
 
 // NewDiskImageStorageDeviceAttachmentWithCacheAndSync initialize the attachment from a local file path.

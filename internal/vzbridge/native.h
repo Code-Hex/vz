@@ -61,6 +61,7 @@ VZBridgeOwnedObject vz_newVZNetworkBlockDeviceStorageDeviceAttachment(const char
 VZBridgeOwnedObject vz_newVZVirtioSocketListener(VZBridgeObject device, uint64_t context) __attribute__((annotate("vzbridge:objectqueue")));
 VZBridgeOwnedObject vz_newVZVirtualMachineWithDispatchQueue(VZBridgeObject p0, uint64_t p1, uint64_t p2) __attribute__((annotate("vzbridge:noqueue")));
 void vz_pauseWithCompletionHandler(VZBridgeObject p0, uint64_t p1) __attribute__((annotate("vzbridge:objectqueue")));
+VZBridgeOwnedObject vz_retainVZDiskImageStorageDeviceAttachment(void *attachment) __attribute__((annotate("vzbridge:noqueue")));
 void vz_releaseObject(void *p0) __attribute__((annotate("vzbridge:noqueue")));
 void vz_restoreMachineStateFromURLWithCompletionHandler(VZBridgeObject p0, uint64_t p1, const char *p2) __attribute__((annotate("vzbridge:objectqueue")));
 void vz_resumeWithCompletionHandler(VZBridgeObject p0, uint64_t p1) __attribute__((annotate("vzbridge:objectqueue")));

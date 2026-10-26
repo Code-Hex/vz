@@ -392,6 +392,20 @@ func PauseWithCompletionHandler(p0 objc.NSObject, p1 uint64) {
 	runtime.KeepAlive(p0)
 }
 
+var callRetainVZDiskImageStorageDeviceAttachment lazyBinding[func(unsafe.Pointer) unsafe.Pointer]
+
+func RetainVZDiskImageStorageDeviceAttachment(attachment unsafe.Pointer) *objc.Pointer {
+	call := callRetainVZDiskImageStorageDeviceAttachment.get(func() func(unsafe.Pointer) unsafe.Pointer {
+		var call func(unsafe.Pointer) unsafe.Pointer
+		purego.RegisterFunc(&call, uintptr(C.vz_retainVZDiskImageStorageDeviceAttachment))
+		return call
+	})
+	var result unsafe.Pointer
+	result = call(attachment)
+	runtime.KeepAlive(attachment)
+	return objc.NewManagedPointer(result, ReleaseObject)
+}
+
 var callReleaseObject lazyBinding[func(unsafe.Pointer)]
 
 func ReleaseObject(p0 unsafe.Pointer) {

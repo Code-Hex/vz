@@ -569,18 +569,26 @@ static NSFileHandle *duplicateFile(int descriptor, void **output)
     }
     return [[[NSFileHandle alloc] initWithFileDescriptor:copied closeOnDealloc:YES] autorelease];
 }
-void *vz_newVZFileHandleSerialPortAttachment(int32_t readFD, int32_t writeFD, void **output)
+
+void *vz_newVZFileHandleSerialPortAttachment(int32_t readFD, bool hasRead, int32_t writeFD, bool hasWrite, void **output)
 {
     if (output)
         *output = nil;
-    NSFileHandle *readHandle = duplicateFile(readFD, output);
-    if (!readHandle)
-        return nil;
-    NSFileHandle *writeHandle = duplicateFile(writeFD, output);
-    if (!writeHandle)
-        return nil;
+    NSFileHandle *readHandle = nil;
+    if (hasRead) {
+        readHandle = duplicateFile(readFD, output);
+        if (!readHandle)
+            return nil;
+    }
+    NSFileHandle *writeHandle = nil;
+    if (hasWrite) {
+        writeHandle = duplicateFile(writeFD, output);
+        if (!writeHandle)
+            return nil;
+    }
     return [[VZFileHandleSerialPortAttachment alloc] initWithFileHandleForReading:readHandle fileHandleForWriting:writeHandle];
 }
+
 void *vz_newVZFileHandleNetworkDeviceAttachment(int32_t descriptor, void **output)
 {
     if (output)

@@ -298,19 +298,19 @@ func NewVZFileHandleNetworkDeviceAttachment(p0 int32, p1 *unsafe.Pointer) *objc.
 	return objc.NewManagedPointer(result, ReleaseObject)
 }
 
-var callNewVZFileHandleSerialPortAttachment lazyBinding[func(int32, int32, *unsafe.Pointer) unsafe.Pointer]
+var callNewVZFileHandleSerialPortAttachment lazyBinding[func(int32, bool, int32, bool, *unsafe.Pointer) unsafe.Pointer]
 
-func NewVZFileHandleSerialPortAttachment(p0 int32, p1 int32, p2 *unsafe.Pointer) *objc.Pointer {
-	call := callNewVZFileHandleSerialPortAttachment.get(func() func(int32, int32, *unsafe.Pointer) unsafe.Pointer {
-		var call func(int32, int32, *unsafe.Pointer) unsafe.Pointer
+func NewVZFileHandleSerialPortAttachment(readFD int32, hasRead bool, writeFD int32, hasWrite bool, errorOut *unsafe.Pointer) *objc.Pointer {
+	call := callNewVZFileHandleSerialPortAttachment.get(func() func(int32, bool, int32, bool, *unsafe.Pointer) unsafe.Pointer {
+		var call func(int32, bool, int32, bool, *unsafe.Pointer) unsafe.Pointer
 		purego.RegisterFunc(&call, uintptr(C.vz_newVZFileHandleSerialPortAttachment))
 		return call
 	})
 	var result unsafe.Pointer
 	onQueue(func() {
-		result = call(p0, p1, p2)
+		result = call(readFD, hasRead, writeFD, hasWrite, errorOut)
 	})
-	runtime.KeepAlive(p2)
+	runtime.KeepAlive(errorOut)
 	return objc.NewManagedPointer(result, ReleaseObject)
 }
 

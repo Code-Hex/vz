@@ -126,6 +126,10 @@ func TestAvailableVersionArm64(t *testing.T) {
 				_, err := NewLinuxRosettaAbstractSocketCachingOptions("datagram")
 				return err
 			},
+			"ValidateSaveRestoreSupport": func() error {
+				_, err := (&VirtualMachineConfiguration{}).ValidateSaveRestoreSupport()
+				return err
+			},
 			"SaveMachineStateToPath": func() error {
 				return (*VirtualMachine)(nil).SaveMachineStateToPath(filename)
 			},

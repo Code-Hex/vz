@@ -17,7 +17,13 @@ import (
 //
 // If this evaluates to false, the caller should expect future calls to `(*VirtualMachine).SaveMachineStateToPath` to fail.
 // error If not nil, assigned with an error describing the unsupported configuration option.
+//
+// This is only supported on macOS 14 and newer. Older versions return ErrUnsupportedOSVersion.
 func (v *VirtualMachineConfiguration) ValidateSaveRestoreSupport() (bool, error) {
+	if err := macOSAvailable(14); err != nil {
+		return false, err
+	}
+
 	var nserrPtr unsafe.Pointer
 	ret := vzbridge.VZVirtualMachineConfiguration_ValidateSaveRestoreSupportWithError(v, &nserrPtr)
 	err := objcutil.NewNSError(nserrPtr)

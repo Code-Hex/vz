@@ -83,10 +83,13 @@ func dispatchNativeCallback(kind uint32, context uint64, first, second unsafe.Po
 		return callback(kind, first, second, value)
 	}
 	switch kind {
-	case vzbridge.CallbackSocketConnected, vzbridge.CallbackRestoreImageLoaded:
+	case vzbridge.CallbackSocketConnected, vzbridge.CallbackRestoreImageLoaded, vzbridge.CallbackAccessoryRegistered:
 		vzbridge.ReleaseObject(first)
 		vzbridge.ReleaseObject(second)
-	case vzbridge.CallbackMachineStoppedWithError,
+	case vzbridge.CallbackAccessoryConnected,
+		vzbridge.CallbackAccessoryDisconnected,
+		vzbridge.CallbackUSBPassthroughDisconnected,
+		vzbridge.CallbackMachineStoppedWithError,
 		vzbridge.CallbackCompletion,
 		vzbridge.CallbackNetworkDisconnected,
 		vzbridge.CallbackSocketAccepted,

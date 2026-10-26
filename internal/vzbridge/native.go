@@ -4,7 +4,7 @@ package vzbridge
 
 /*
 #cgo CFLAGS: -flto -mmacosx-version-min=11 -x objective-c -fno-objc-arc
-#cgo LDFLAGS: -framework Foundation -framework Virtualization -framework Cocoa -framework vmnet
+#cgo LDFLAGS: -framework Foundation -framework Virtualization -framework Cocoa -framework vmnet -framework Security
 #include "native.h"
 */
 import "C"
@@ -22,6 +22,11 @@ import (
 const SDKVersion = C.__MAC_OS_X_VERSION_MAX_ALLOWED
 
 const (
+	CallbackAccessoryConnected         = C.VZBridgeCallbackAccessoryConnected
+	CallbackAccessoryDisconnected      = C.VZBridgeCallbackAccessoryDisconnected
+	CallbackAccessoryRegistered        = C.VZBridgeCallbackAccessoryRegistered
+	CallbackUSBPassthroughDisconnected = C.VZBridgeCallbackUSBPassthroughDisconnected
+
 	CallbackGuestStopped                = C.VZBridgeCallbackGuestStopped
 	CallbackConsolePortOpened           = C.VZBridgeCallbackConsolePortOpened
 	CallbackConsolePortClosed           = C.VZBridgeCallbackConsolePortClosed

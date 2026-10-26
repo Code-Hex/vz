@@ -26,6 +26,7 @@ static dispatch_queue_t commonQueue(void)
 @public
     dispatch_queue_t queue;
 }
+- (instancetype)initWithQueue:(dispatch_queue_t)target;
 @end
 
 @implementation VZBridgeQueue
@@ -34,6 +35,16 @@ static dispatch_queue_t commonQueue(void)
     self = [super init];
     if (self) {
         queue = dispatch_queue_create("com.codehex.vz.machine", DISPATCH_QUEUE_SERIAL);
+        dispatch_queue_set_specific(queue, &bridgeQueueKey, queue, NULL);
+    }
+    return self;
+}
+- (instancetype)initWithQueue:(dispatch_queue_t)target
+{
+    self = [super init];
+    if (self) {
+        queue = target;
+        dispatch_retain(queue);
         dispatch_queue_set_specific(queue, &bridgeQueueKey, queue, NULL);
     }
     return self;
@@ -79,6 +90,15 @@ static void syncObject(id object, void (^body)(void))
 {
     @autoreleasepool {
         syncOnQueue(vz_objectQueue(object), body);
+    }
+}
+
+void vz_setObjectQueue(void *object, void *queue)
+{
+    @autoreleasepool {
+        VZBridgeQueue *owner = [[VZBridgeQueue alloc] initWithQueue:(dispatch_queue_t)queue];
+        objc_setAssociatedObject((id)object, &objectQueueKey, owner, OBJC_ASSOCIATION_RETAIN);
+        [owner release];
     }
 }
 
@@ -154,9 +174,13 @@ static uint64_t emit(uint32_t kind, uint64_t context, id first, id second, uint6
     switch (kind) {
     case VZBridgeCallbackSocketConnected:
     case VZBridgeCallbackRestoreImageLoaded:
+    case VZBridgeCallbackAccessoryRegistered:
         [first release];
         [second release];
         break;
+    case VZBridgeCallbackAccessoryConnected:
+    case VZBridgeCallbackAccessoryDisconnected:
+    case VZBridgeCallbackUSBPassthroughDisconnected:
     case VZBridgeCallbackMachineStoppedWithError:
     case VZBridgeCallbackCompletion:
     case VZBridgeCallbackNetworkDisconnected:
@@ -854,4 +878,161 @@ void vz_reconfigureGraphicsDisplaySize(void *display, double width, double heigh
     }
 #endif
     fail(posixError(ENOTSUP), errorOut);
+}
+
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 270000
+#import <AccessoryAccess/AccessoryAccess.h>
+#import <dlfcn.h>
+
+API_AVAILABLE(macos(27.0))
+@interface VZBridgeUSBAccessoryListener : NSObject <AAUSBAccessoryListener> {
+@public
+    uint64_t context;
+}
+@end
+
+@implementation VZBridgeUSBAccessoryListener
+- (void)usbAccessoryDidConnect:(AAUSBAccessory *)accessory
+{
+    emit(VZBridgeCallbackAccessoryConnected, context, [accessory retain], nil, 0);
+}
+- (void)usbAccessoryDidDisconnect:(AAUSBAccessory *)accessory
+{
+    emit(VZBridgeCallbackAccessoryDisconnected, context, [accessory retain], nil, 0);
+}
+- (void)dealloc
+{
+    emit(VZBridgeCallbackContextReleased, context, nil, nil, 0);
+    [super dealloc];
+}
+@end
+
+API_AVAILABLE(macos(27.0))
+static AAUSBAccessoryManager *accessoryManager(void)
+{
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        dlopen("/System/Library/Frameworks/AccessoryAccess.framework/AccessoryAccess", RTLD_LAZY | RTLD_LOCAL);
+    });
+    return [NSClassFromString(@"AAUSBAccessoryManager") sharedManager];
+}
+
+static char usbDisconnectObserverKey;
+
+API_AVAILABLE(macos(27.0))
+@interface VZBridgeUSBDisconnectObserver : NSObject <VZUSBControllerDelegate> {
+@public
+    uint64_t context;
+}
+@end
+
+@implementation VZBridgeUSBDisconnectObserver
+- (void)usbController:(VZUSBController *)controller usbPassthroughDeviceDidDisconnect:(VZUSBPassthroughDevice *)device
+{
+    vz_inheritObjectQueue(device, controller);
+    emit(VZBridgeCallbackUSBPassthroughDisconnected, context, [device retain], nil, 0);
+}
+- (void)dealloc
+{
+    emit(VZBridgeCallbackContextReleased, context, nil, nil, 0);
+    [super dealloc];
+}
+@end
+#endif
+
+void *vz_registerUSBAccessories(uint64_t context)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 270000
+    if (@available(macOS 27.0, *)) {
+        AAUSBAccessoryManager *manager = accessoryManager();
+        if (!manager) {
+            emit(VZBridgeCallbackAccessoryRegistered, context, nil, [posixError(ENOTSUP) retain], 0);
+            return nil;
+        }
+        VZBridgeUSBAccessoryListener *listener = [[VZBridgeUSBAccessoryListener alloc] init];
+        listener->context = context;
+        [manager registerListener:listener
+             withMatchingCriteria:@[]
+                completionHandler:^(NSArray<AAUSBAccessory *> *accessories, NSError *error) {
+                    emit(VZBridgeCallbackAccessoryRegistered, context, [accessories retain], [error retain], 0);
+                }];
+        return listener;
+    }
+#endif
+    emit(VZBridgeCallbackAccessoryRegistered, context, nil, [posixError(ENOTSUP) retain], 0);
+    return nil;
+}
+
+void vz_unregisterUSBAccessories(void *listener, uint64_t context)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 270000
+    if (@available(macOS 27.0, *)) {
+        [accessoryManager() unregisterListener:(id)listener
+                             completionHandler:^{
+                                 emit(VZBridgeCallbackCompletion, context, nil, nil, 0);
+                             }];
+        return;
+    }
+#endif
+    unavailable(VZBridgeCallbackCompletion, context);
+}
+
+uint64_t vz_USBAccessoryRegistryID(void *accessory)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 270000
+    if (@available(macOS 27.0, *))
+        return [(AAUSBAccessory *)accessory registryID];
+#endif
+    return 0;
+}
+
+void *vz_USBAccessoryDeviceDescriptor(void *accessory)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 270000
+    if (@available(macOS 27.0, *))
+        return [[(AAUSBAccessory *)accessory deviceDescriptorData] retain];
+#endif
+    return nil;
+}
+
+void *vz_USBAccessoryConfigurationDescriptor(void *accessory)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 270000
+    if (@available(macOS 27.0, *))
+        return [[(AAUSBAccessory *)accessory configurationDescriptorData] retain];
+#endif
+    return nil;
+}
+
+void *vz_observeUSBDisconnect(void *controller, uint64_t context, void **errorOut)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 270000
+    if (@available(macOS 27.0, *)) {
+        VZUSBController *usb = controller;
+        if (usb.delegate) {
+            fail(posixError(EBUSY), errorOut);
+            return nil;
+        }
+        VZBridgeUSBDisconnectObserver *observer = [[VZBridgeUSBDisconnectObserver alloc] init];
+        observer->context = context;
+        objc_setAssociatedObject(usb, &usbDisconnectObserverKey, observer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        usb.delegate = observer;
+        return observer;
+    }
+#endif
+    fail(posixError(ENOTSUP), errorOut);
+    return nil;
+}
+
+void vz_stopObservingUSBDisconnect(void *controller, void *observer)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 270000
+    if (@available(macOS 27.0, *)) {
+        VZUSBController *usb = controller;
+        if (usb.delegate == observer) {
+            usb.delegate = nil;
+            objc_setAssociatedObject(usb, &usbDisconnectObserverKey, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        }
+    }
+#endif
 }

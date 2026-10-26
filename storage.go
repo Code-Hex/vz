@@ -226,6 +226,8 @@ type USBMassStorageDeviceConfiguration struct {
 	*baseStorageDeviceConfiguration
 }
 
+func (*USBMassStorageDeviceConfiguration) usbDeviceConfiguration() {}
+
 // NewUSBMassStorageDeviceConfiguration initialize a USBMassStorageDeviceConfiguration
 // with a device attachment.
 //

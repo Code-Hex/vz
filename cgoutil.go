@@ -1,6 +1,9 @@
 package vz
 
 import (
+	"strings"
+	"unicode/utf8"
+
 	"github.com/Code-Hex/vz/v4/internal/objc"
 	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
@@ -39,4 +42,8 @@ func nativeObjectDictionary[T objc.NSObject](objects map[string]T) *objc.Pointer
 		vzbridge.NSMutableDictionary_SetObject_ForKey(dictionary, object, vzbridge.NSString_StringWithUTF8String(key))
 	}
 	return dictionary
+}
+
+func validUTF8CString(s string) bool {
+	return utf8.ValidString(s) && !strings.ContainsRune(s, '\x00')
 }

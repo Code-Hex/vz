@@ -22,6 +22,11 @@ enum {
     VZBridgeCallbackConsolePortClosed = 16,
     VZBridgeCallbackDisplayReconfigurationBegan = 17,
     VZBridgeCallbackDisplayReconfigurationEnded = 18,
+    VZBridgeCallbackAccessoryConnected = 30,
+    VZBridgeCallbackAccessoryDisconnected = 31,
+    VZBridgeCallbackAccessoryRegistered = 32,
+    VZBridgeCallbackUSBPassthroughDisconnected = 33,
+
 };
 
 // Object inputs are borrowed; owned results transfer one retain to Go.
@@ -31,6 +36,7 @@ typedef void **VZBridgeErrorOut __attribute__((annotate("vzbridge:errorout")));
 
 void vz_dispatchSyncOnObject(void *object, uintptr_t callback, uintptr_t context) __attribute__((annotate("vzbridge:manual")));
 void *vz_objectQueue(VZBridgeObject object) __attribute__((annotate("vzbridge:noqueue")));
+void vz_setObjectQueue(void *object, void *queue) __attribute__((annotate("vzbridge:noqueue")));
 void vz_inheritObjectQueue(void *object, void *source) __attribute__((annotate("vzbridge:noqueue")));
 void vz_attachDeviceVZUSBController(VZBridgeObject p0, VZBridgeObject p1, uint64_t p2) __attribute__((annotate("vzbridge:objectqueue")));
 void vz_cancelInstallVZMacOSInstaller(VZBridgeObject p0) __attribute__((annotate("vzbridge:objectqueue")));
@@ -53,7 +59,7 @@ VZBridgeOwnedObject vz_newVZFileHandleSerialPortAttachment(int32_t p0, int32_t p
 VZBridgeOwnedObject vz_newVZMacOSInstaller(VZBridgeObject p0, const char *p1) __attribute__((annotate("vzbridge:objectqueue")));
 VZBridgeOwnedObject vz_newVZNetworkBlockDeviceStorageDeviceAttachment(const char *p0, double p1, bool p2, int32_t p3, VZBridgeErrorOut p4, uint64_t p5);
 VZBridgeOwnedObject vz_newVZVirtioSocketListener(VZBridgeObject device, uint64_t context) __attribute__((annotate("vzbridge:objectqueue")));
-VZBridgeOwnedObject vz_newVZVirtualMachineWithDispatchQueue(VZBridgeObject p0, uint64_t p1, uint64_t p2);
+VZBridgeOwnedObject vz_newVZVirtualMachineWithDispatchQueue(VZBridgeObject p0, uint64_t p1, uint64_t p2) __attribute__((annotate("vzbridge:noqueue")));
 void vz_pauseWithCompletionHandler(VZBridgeObject p0, uint64_t p1) __attribute__((annotate("vzbridge:objectqueue")));
 void vz_releaseObject(void *p0) __attribute__((annotate("vzbridge:noqueue")));
 void vz_restoreMachineStateFromURLWithCompletionHandler(VZBridgeObject p0, uint64_t p1, const char *p2) __attribute__((annotate("vzbridge:objectqueue")));
@@ -110,3 +116,17 @@ void vz_releaseVmnetNetworkRequest(void *request) __attribute__((annotate("vzbri
 
 void vz_graphicsDisplaySize(VZBridgeObject display, void *size) __attribute__((annotate("vzbridge:objectqueue")));
 void vz_reconfigureGraphicsDisplaySize(VZBridgeObject display, double width, double height, VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:objectqueue")));
+
+VZBridgeOwnedObject vz_newEFICertificate(VZBridgeObject data);
+VZBridgeOwnedObject vz_efiCertificateData(VZBridgeObject signature);
+bool vz_isEFICertificate(VZBridgeObject signature);
+void vz_enableEFISecureBoot(VZBridgeObject store, VZBridgeObject signature, VZBridgeErrorOut errorOut);
+
+VZBridgeOwnedObject vz_registerUSBAccessories(uint64_t context) __attribute__((annotate("vzbridge:noqueue")));
+void vz_unregisterUSBAccessories(VZBridgeObject listener, uint64_t context) __attribute__((annotate("vzbridge:noqueue")));
+uint64_t vz_USBAccessoryRegistryID(VZBridgeObject accessory);
+VZBridgeOwnedObject vz_USBAccessoryDeviceDescriptor(VZBridgeObject accessory);
+VZBridgeOwnedObject vz_USBAccessoryConfigurationDescriptor(VZBridgeObject accessory);
+VZBridgeOwnedObject vz_observeUSBDisconnect(VZBridgeObject controller, uint64_t context, VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:objectqueue")));
+void vz_stopObservingUSBDisconnect(VZBridgeObject controller, VZBridgeObject observer) __attribute__((annotate("vzbridge:objectqueue")));
+bool vz_efiSecureBootEnabled(VZBridgeObject store, VZBridgeErrorOut errorOut);

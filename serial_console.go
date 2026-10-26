@@ -35,13 +35,17 @@ type FileHandleSerialPortAttachment struct {
 	*baseSerialPortAttachment
 }
 
-// NewFileHandleSerialPortAttachment initialize the FileHandleSerialPortAttachment from file handles.
+// NewFileHandleSerialPortAttachment creates a serial attachment from file handles.
+// Data read from read is sent to the guest. Data from the guest is written to write.
+// Either file may be nil to disable that direction, and both may be nil.
 //
-// read parameter is an *os.File for reading from the file.
-// write parameter is an *os.File for writing to the file.
+// The attachment duplicates each non-nil file descriptor. The caller retains
+// ownership of the original files and may close them after this call returns.
+// A closed file returns an error.
 //
-// This is only supported on macOS 11 and newer, error will
-// be returned on older versions.
+// This is only supported on macOS 11 and newer. An error is returned on older versions.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzfilehandleserialportattachment/init(filehandleforreading:filehandleforwriting:)?language=objc
 func NewFileHandleSerialPortAttachment(read, write *os.File) (*FileHandleSerialPortAttachment, error) {
 	defer runtime.KeepAlive(read)
 	defer runtime.KeepAlive(write)
@@ -53,7 +57,9 @@ func NewFileHandleSerialPortAttachment(read, write *os.File) (*FileHandleSerialP
 	attachment := &FileHandleSerialPortAttachment{
 		pointer: vzbridge.NewVZFileHandleSerialPortAttachment(
 			int32(read.Fd()),
+			read != nil,
 			int32(write.Fd()),
+			write != nil,
 			&nserrPtr,
 		),
 	}

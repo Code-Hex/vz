@@ -68,7 +68,7 @@ func TestNativeFileDescriptorFailureClosesPartialDuplicate(t *testing.T) {
 	before := nativeOpenDescriptors(t)
 	for i := 0; i < 30; i++ {
 		var pointer unsafe.Pointer
-		attachment := NewVZFileHandleSerialPortAttachment(int32(file.Fd()), -1, &pointer)
+		attachment := NewVZFileHandleSerialPortAttachment(int32(file.Fd()), true, -1, true, &pointer)
 		if attachment != nil {
 			objc.Release(attachment)
 			t.Fatal("invalid write descriptor was accepted")

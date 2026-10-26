@@ -55,7 +55,7 @@ int64_t vz_macOSRestoreImagePatchVersion(VZBridgeObject p0);
 void vz_setInvalidDiskModeError(VZBridgeErrorOut errorOut);
 VZBridgeOwnedObject vz_newVZDiskBlockDeviceStorageDeviceAttachment(int32_t p0, bool p1, int32_t p2, VZBridgeErrorOut p3);
 VZBridgeOwnedObject vz_newVZFileHandleNetworkDeviceAttachment(int32_t p0, VZBridgeErrorOut p1);
-VZBridgeOwnedObject vz_newVZFileHandleSerialPortAttachment(int32_t p0, int32_t p1, VZBridgeErrorOut p2);
+VZBridgeOwnedObject vz_newVZFileHandleSerialPortAttachment(int32_t readFD, bool hasRead, int32_t writeFD, bool hasWrite, VZBridgeErrorOut errorOut);
 VZBridgeOwnedObject vz_newVZMacOSInstaller(VZBridgeObject p0, const char *p1) __attribute__((annotate("vzbridge:objectqueue")));
 VZBridgeOwnedObject vz_newVZNetworkBlockDeviceStorageDeviceAttachment(const char *p0, double p1, bool p2, int32_t p3, VZBridgeErrorOut p4, uint64_t p5);
 VZBridgeOwnedObject vz_newVZVirtioSocketListener(VZBridgeObject device, uint64_t context) __attribute__((annotate("vzbridge:objectqueue")));

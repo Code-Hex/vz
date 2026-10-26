@@ -76,6 +76,46 @@ type USBDeviceConfiguration interface {
 	usbDeviceConfiguration()
 }
 
+// USBDeviceConfigurationOption configures a USB device at creation.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzusbdeviceconfiguration?language=objc
+type USBDeviceConfigurationOption func(USBDeviceConfiguration) error
+
+// WithUSBDeviceUUID sets the device UUID. Before restoring a virtual machine,
+// use the UUID returned by USBDevice.UUID when the machine was saved.
+// If omitted, the framework generates a UUID.
+//
+// This requires macOS 15 or later. It returns an error if uuid is invalid.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzusbdeviceconfiguration/uuid?language=objc
+func WithUSBDeviceUUID(uuid string) USBDeviceConfigurationOption {
+	return func(configuration USBDeviceConfiguration) error {
+		if err := macOSAvailable(15); err != nil {
+			return err
+		}
+		if !validUTF8CString(uuid) {
+			return errors.New("vz: invalid USB device UUID")
+		}
+		value := vzbridge.NSString_StringWithUTF8String(uuid)
+		defer objc.Release(value)
+		nativeUUID := vzbridge.NSUUID_InitWithUUIDString(value)
+		if objc.Ptr(nativeUUID) == nil {
+			return errors.New("vz: invalid USB device UUID")
+		}
+		defer objc.Release(nativeUUID)
+
+		switch config := configuration.(type) {
+		case *USBMassStorageDeviceConfiguration:
+			vzbridge.VZUSBMassStorageDeviceConfiguration_SetUuid(config, nativeUUID)
+		case *USBPassthroughDeviceConfiguration:
+			vzbridge.VZUSBPassthroughDeviceConfiguration_SetUuid(config, nativeUUID)
+		default:
+			return errors.New("vz: unsupported USB device configuration")
+		}
+		return nil
+	}
+}
+
 // XHCIControllerConfigurationOption configures an XHCI controller at creation.
 //
 // see: https://developer.apple.com/documentation/virtualization/vzxhcicontrollerconfiguration?language=objc

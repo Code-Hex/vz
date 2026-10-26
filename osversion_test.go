@@ -349,6 +349,13 @@ func TestAvailableVersion(t *testing.T) {
 		}
 	})
 
+	t.Run("macOS 15", func(t *testing.T) {
+		majorMinorVersion = 14
+		err := WithUSBDeviceUUID("DFA9B5EE-FF88-48D9-A66D-86B22062D816")(nil)
+		if !errors.Is(err, ErrUnsupportedOSVersion) {
+			t.Fatalf("WithUSBDeviceUUID returned %v, want ErrUnsupportedOSVersion", err)
+		}
+	})
 }
 
 func Test_fetchMajorMinorVersion(t *testing.T) {

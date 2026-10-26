@@ -233,7 +233,7 @@ func (*USBMassStorageDeviceConfiguration) usbDeviceConfiguration() {}
 //
 // This is only supported on macOS 13 and newer, error will
 // be returned on older versions.
-func NewUSBMassStorageDeviceConfiguration(attachment StorageDeviceAttachment) (*USBMassStorageDeviceConfiguration, error) {
+func NewUSBMassStorageDeviceConfiguration(attachment StorageDeviceAttachment, options ...USBDeviceConfigurationOption) (*USBMassStorageDeviceConfiguration, error) {
 	if err := macOSAvailable(13); err != nil {
 		return nil, err
 	}
@@ -242,6 +242,12 @@ func NewUSBMassStorageDeviceConfiguration(attachment StorageDeviceAttachment) (*
 		baseStorageDeviceConfiguration: &baseStorageDeviceConfiguration{
 			attachment: attachment,
 		},
+	}
+	for _, option := range options {
+		if err := option(usbMass); err != nil {
+			objc.Release(usbMass)
+			return nil, err
+		}
 	}
 	return usbMass, nil
 }

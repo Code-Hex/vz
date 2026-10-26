@@ -48,6 +48,11 @@ func TestGuestProvisioningInvalidAccount(t *testing.T) {
 	if macOSAvailable(27) != nil {
 		t.Skip("requires macOS 27")
 	}
+	for _, options := range []*MacGuestProvisioningOptions{nil, {}} {
+		if err := WithGuestProvisioningOptions(options)(&virtualMachineStartOptions{}); err == nil {
+			t.Fatal("accepted uninitialized guest provisioning options")
+		}
+	}
 	options, err := NewMacGuestProvisioningOptions("Guest", "", "password")
 	if err != nil {
 		t.Fatal(err)

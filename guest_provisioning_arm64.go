@@ -83,7 +83,7 @@ func WithGuestProvisioningOptions(options *MacGuestProvisioningOptions) VirtualM
 		if err := macOSAvailable(27); err != nil {
 			return err
 		}
-		if options == nil {
+		if options == nil || objc.Ptr(options) == nil {
 			return fmt.Errorf("guest provisioning options must not be nil")
 		}
 		if start.macOSVirtualMachineStartOptionsPtr == nil {

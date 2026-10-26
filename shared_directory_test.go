@@ -288,3 +288,37 @@ func TestMultipleDirectoryShareNames(t *testing.T) {
 		}
 	}
 }
+
+func TestDirectoryShareInvalidDirectory(t *testing.T) {
+	if vz.Available(12) {
+		t.Skip("Directory sharing is supported from macOS 12")
+	}
+
+	for _, tc := range []struct {
+		name      string
+		directory *vz.SharedDirectory
+	}{
+		{name: "nil"},
+		{name: "zero", directory: &vz.SharedDirectory{}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Run("single", func(t *testing.T) {
+				share, err := vz.NewSingleDirectoryShare(tc.directory)
+				if share != nil || err == nil {
+					t.Fatalf("got (%v, %v), want (nil, error)", share, err)
+				}
+			})
+			t.Run("multiple", func(t *testing.T) {
+				share, err := vz.NewMultipleDirectoryShare(map[string]*vz.SharedDirectory{
+					"documents": tc.directory,
+				})
+				if share != nil || err == nil {
+					t.Fatalf("got (%v, %v), want (nil, error)", share, err)
+				}
+				if !strings.Contains(err.Error(), "documents") {
+					t.Fatalf("error does not identify the directory: %v", err)
+				}
+			})
+		})
+	}
+}

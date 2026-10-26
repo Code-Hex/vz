@@ -147,16 +147,23 @@ func (*USBPassthroughDeviceConfiguration) usbDeviceConfiguration() {}
 // This requires macOS 27 or later.
 //
 // see: https://developer.apple.com/documentation/virtualization/vzusbpassthroughdeviceconfiguration/init(device:)?language=objc
-func NewUSBPassthroughDeviceConfiguration(accessory *USBAccessory) (*USBPassthroughDeviceConfiguration, error) {
+func NewUSBPassthroughDeviceConfiguration(accessory *USBAccessory, options ...USBDeviceConfigurationOption) (*USBPassthroughDeviceConfiguration, error) {
 	if err := macOSAvailable(27); err != nil {
 		return nil, err
 	}
 	if accessory == nil || objc.Ptr(accessory) == nil {
 		return nil, errors.New("vz: nil USB accessory")
 	}
-	return &USBPassthroughDeviceConfiguration{
+	configuration := &USBPassthroughDeviceConfiguration{
 		pointer: vzbridge.VZUSBPassthroughDeviceConfiguration_InitWithDevice(accessory),
-	}, nil
+	}
+	for _, option := range options {
+		if err := option(configuration); err != nil {
+			objc.Release(configuration)
+			return nil, err
+		}
+	}
+	return configuration, nil
 }
 
 // NewUSBPassthroughDevice creates a device that can be attached with USBController.Attach.

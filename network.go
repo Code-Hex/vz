@@ -313,7 +313,10 @@ type MACAddress struct {
 	*pointer
 }
 
-// NewMACAddress creates a new MACAddress with net.HardwareAddr (MAC address).
+// NewMACAddress creates a new MACAddress with a six-byte Ethernet address.
+// It returns an error if macAddr does not contain exactly six bytes.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzmacaddress/init(string:)?language=objc
 //
 // This is only supported on macOS 11 and newer, error will
 // be returned on older versions.
@@ -321,10 +324,16 @@ func NewMACAddress(macAddr net.HardwareAddr) (*MACAddress, error) {
 	if err := macOSAvailable(11); err != nil {
 		return nil, err
 	}
-	ma := &MACAddress{
-		pointer: vzbridge.VZMACAddress_InitWithString(vzbridge.NSString_StringWithUTF8String(macAddr.String())),
+	if len(macAddr) != 6 {
+		return nil, fmt.Errorf("MAC address must contain 6 bytes, got %d", len(macAddr))
 	}
-	return ma, nil
+	address := vzbridge.NSString_StringWithUTF8String(macAddr.String())
+	defer objc.Release(address)
+	ptr := vzbridge.VZMACAddress_InitWithString(address)
+	if ptr == nil {
+		return nil, fmt.Errorf("invalid MAC address %q", macAddr)
+	}
+	return &MACAddress{pointer: ptr}, nil
 }
 
 // NewRandomLocallyAdministeredMACAddress creates a valid, random, unicast, locally administered address.

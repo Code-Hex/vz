@@ -109,3 +109,40 @@ func TestVirtioNetworkDeviceConfigurationGetDefaultMACAddress(t *testing.T) {
 		t.Fatalf("want colon-separated MAC address but got %q", got)
 	}
 }
+
+func TestNewMACAddress(t *testing.T) {
+	for _, address := range []net.HardwareAddr{
+		{0x02, 0x00, 0x5e, 0x10, 0x00, 0x01},
+		{0x01, 0x00, 0x5e, 0x00, 0x00, 0x01},
+		{0xff, 0xff, 0xff, 0xff, 0xff, 0xff},
+	} {
+		t.Run(address.String(), func(t *testing.T) {
+			got, err := vz.NewMACAddress(address)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got == nil {
+				t.Fatal("got nil MAC address")
+			}
+			if !bytes.Equal(got.HardwareAddr(), address) {
+				t.Fatalf("MAC address = %s, want %s", got, address)
+			}
+		})
+	}
+}
+
+func TestNewMACAddressInvalidLength(t *testing.T) {
+	for _, address := range []net.HardwareAddr{
+		nil,
+		{},
+		{0x02, 0x00},
+		{0x02, 0x00, 0x5e, 0x10, 0x00},
+		{0x02, 0x00, 0x5e, 0x10, 0x00, 0x01, 0x00},
+		{0x02, 0x00, 0x5e, 0xff, 0xfe, 0x10, 0x00, 0x01},
+	} {
+		got, err := vz.NewMACAddress(address)
+		if got != nil || err == nil {
+			t.Errorf("NewMACAddress(%v) = (%v, %v), want (nil, error)", []byte(address), got, err)
+		}
+	}
+}

@@ -55,6 +55,14 @@ func TestAvailableVersionArm64(t *testing.T) {
 				_, err := NewMacAuxiliaryStorage("")
 				return err
 			},
+			"GetLatestSupportedMacOSRestoreImage": func() error {
+				_, err := GetLatestSupportedMacOSRestoreImage()
+				return err
+			},
+			"GetLatestSupportedMacOSRestoreImageURL": func() error {
+				_, err := GetLatestSupportedMacOSRestoreImageURL()
+				return err
+			},
 			"FetchLatestSupportedMacOSRestoreImage": func() error {
 				_, err := FetchLatestSupportedMacOSRestoreImage(context.Background(), "")
 				return err

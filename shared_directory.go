@@ -128,11 +128,14 @@ type MultipleDirectoryShare struct {
 
 var _ DirectoryShare = (*MultipleDirectoryShare)(nil)
 
-// CanonicalizeDirectoryShareName removes *, /, :, <, >, ?, \, and | from name
-// so it can be used as a key in NewMultipleDirectoryShare.
-// It discards the first NUL byte and everything after it.
-// It returns an error if name contains invalid UTF-8, or if the
-// result is empty, is "." or "..", or exceeds 255 bytes in UTF-8.
+// CanonicalizeDirectoryShareName applies Apple's directory share name conversion.
+// It removes *, /, :, <, >, ?, \, and |, and discards the first NUL byte and
+// everything after it. It returns an error if name contains invalid UTF-8,
+// or if the filtered name is empty, is "." or "..", or exceeds 255 UTF-8 bytes.
+//
+// After these checks, it removes one leading byte order mark (U+FEFF), matching
+// Apple's string conversion. This can leave an empty name, ".", or "..".
+// NewMultipleDirectoryShare rejects those results.
 // Other characters, including whitespace and combining characters, are preserved.
 // Different inputs can produce the same name; callers must handle collisions
 // before adding names to a share map.
@@ -159,7 +162,7 @@ func CanonicalizeDirectoryShareName(name string) (string, error) {
 	if len(name) > 255 {
 		return "", fmt.Errorf("directory share name exceeds 255 UTF-8 bytes")
 	}
-	return name, nil
+	return strings.TrimPrefix(name, "\uFEFF"), nil
 }
 
 // NewMultipleDirectoryShare creates a new multiple directories share.

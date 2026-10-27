@@ -1,6 +1,8 @@
 package vz
 
 import (
+	"errors"
+
 	"github.com/Code-Hex/vz/v4/internal/objc"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
@@ -28,8 +30,28 @@ type VirtioConsoleDeviceConfiguration struct {
 
 var _ ConsoleDeviceConfiguration = (*VirtioConsoleDeviceConfiguration)(nil)
 
+// VirtioConsoleDeviceConfigurationOption configures a new Virtio console device.
+type VirtioConsoleDeviceConfigurationOption func(*VirtioConsoleDeviceConfiguration) error
+
+// WithVirtioConsoleMaximumPortCount sets the number of ports allocated by the device.
+// count must be greater than the highest port index added to the configuration.
+// Without this option, Virtualization.framework derives the count from the ports.
+// This option applies when creating the configuration, not while a VM is running.
+//
+// See: https://developer.apple.com/documentation/virtualization/vzvirtioconsoleportconfigurationarray/maximumportcount?language=objc
+func WithVirtioConsoleMaximumPortCount(count uint32) VirtioConsoleDeviceConfigurationOption {
+	return func(config *VirtioConsoleDeviceConfiguration) error {
+		vzbridge.VZVirtioConsolePortConfigurationArray_SetMaximumPortCount(config.portsPtr, count)
+		return nil
+	}
+}
+
 // NewVirtioConsoleDeviceConfiguration creates a new VirtioConsoleDeviceConfiguration.
-func NewVirtioConsoleDeviceConfiguration() (*VirtioConsoleDeviceConfiguration, error) {
+//
+// This is only supported on macOS 13 and newer.
+//
+// See: https://developer.apple.com/documentation/virtualization/vzvirtioconsoledeviceconfiguration?language=objc
+func NewVirtioConsoleDeviceConfiguration(opts ...VirtioConsoleDeviceConfigurationOption) (*VirtioConsoleDeviceConfiguration, error) {
 	if err := macOSAvailable(13); err != nil {
 		return nil, err
 	}
@@ -38,6 +60,14 @@ func NewVirtioConsoleDeviceConfiguration() (*VirtioConsoleDeviceConfiguration, e
 		consolePorts: make(map[int]*VirtioConsolePortConfiguration),
 	}
 	config.portsPtr = vzbridge.VZVirtioConsoleDeviceConfiguration_Ports(config)
+	for _, opt := range opts {
+		if opt == nil {
+			return nil, errors.New("vz: nil console device configuration option")
+		}
+		if err := opt(config); err != nil {
+			return nil, err
+		}
+	}
 	return config, nil
 }
 

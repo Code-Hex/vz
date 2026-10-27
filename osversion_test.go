@@ -261,7 +261,7 @@ func TestAvailableVersion(t *testing.T) {
 				return err
 			},
 			"NewVirtioConsoleDeviceConfiguration": func() error {
-				_, err := NewVirtioConsoleDeviceConfiguration()
+				_, err := NewVirtioConsoleDeviceConfiguration(WithVirtioConsoleMaximumPortCount(8))
 				return err
 			},
 			"NewVirtioConsolePortConfiguration": func() error {

@@ -65,6 +65,34 @@ type baseVirtioSoundDeviceStreamConfiguration struct{}
 
 func (*baseVirtioSoundDeviceStreamConfiguration) virtioSoundDeviceStreamConfiguration() {}
 
+// VirtioSoundDeviceInputStreamConfiguration defines a PCM input stream that
+// supplies silence to the guest without using the host's audio input device.
+//
+// See: https://developer.apple.com/documentation/virtualization/vzvirtiosounddeviceinputstreamconfiguration?language=objc
+type VirtioSoundDeviceInputStreamConfiguration struct {
+	*pointer
+
+	*baseVirtioSoundDeviceStreamConfiguration
+}
+
+var _ VirtioSoundDeviceStreamConfiguration = (*VirtioSoundDeviceInputStreamConfiguration)(nil)
+
+// NewVirtioSoundDeviceInputStreamConfiguration creates an input stream without
+// an audio source. Virtualization supplies silence when the source is nil.
+//
+// This requires macOS 12 or newer.
+//
+// See: https://developer.apple.com/documentation/virtualization/vzvirtiosounddeviceinputstreamconfiguration/source?language=objc
+func NewVirtioSoundDeviceInputStreamConfiguration() (*VirtioSoundDeviceInputStreamConfiguration, error) {
+	if err := macOSAvailable(12); err != nil {
+		return nil, err
+	}
+	config := &VirtioSoundDeviceInputStreamConfiguration{
+		pointer: vzbridge.VZVirtioSoundDeviceInputStreamConfiguration_Init(),
+	}
+	return config, nil
+}
+
 // VirtioSoundDeviceHostInputStreamConfiguration is a PCM stream of input audio data,
 // such as from a microphone via host.
 type VirtioSoundDeviceHostInputStreamConfiguration struct {

@@ -270,9 +270,8 @@ func (m *MacOSRestoreImage) Supported() (bool, error) {
 	return m.supported, nil
 }
 
-// URL returns URL of this restore image.
-// the value of this property will be a file URL. (https://~)
-// the value of this property will be a network URL referring to an installation media file. (file:///~)
+// URL returns the location of this restore image.
+// Images fetched from Apple have a network URL. Images loaded from disk have a file URL.
 func (m *MacOSRestoreImage) URL() string {
 	return m.url
 }
@@ -436,35 +435,44 @@ func downloadRestoreImage(ctx context.Context, url string, destPath string) (*pr
 	return reader, nil
 }
 
-// GetLatestSupportedMacOSRestoreImageURL get the latest macOS restore image url supported by this host from the network.
+// GetLatestSupportedMacOSRestoreImage retrieves metadata for the latest macOS restore
+// image supported by this host. It contacts Apple but does not download the image file.
+// The returned image includes its URL, OS version, build version, and configuration requirements.
 //
-// This is only supported on macOS 12 and newer, error will
-// be returned on older versions.
-func GetLatestSupportedMacOSRestoreImageURL() (string, error) {
+// This requires macOS 12 or newer.
+//
+// See: https://developer.apple.com/documentation/virtualization/vzmacosrestoreimage/fetchlatestsupported(completionhandler:)?language=objc
+func GetLatestSupportedMacOSRestoreImage() (*MacOSRestoreImage, error) {
 	if err := macOSAvailable(12); err != nil {
-		return "", err
+		return nil, err
 	}
 	waitCh := make(chan struct{})
 	var (
-		url      string
+		image    *MacOSRestoreImage
 		fetchErr error
 	)
 	handler := macOSRestoreImageHandler(func(restoreImage *MacOSRestoreImage, err error) {
-		if restoreImage != nil {
-			url = restoreImage.URL()
-		}
+		image = restoreImage
 		fetchErr = err
-		defer close(waitCh)
+		close(waitCh)
 	})
 	request := nativeRestoreImageRequest(handler)
-	vzbridge.FetchLatestSupportedMacOSRestoreImageWithCompletionHandler(
-		request,
-	)
+	vzbridge.FetchLatestSupportedMacOSRestoreImageWithCompletionHandler(request)
 	<-waitCh
-	if fetchErr != nil {
-		return "", fetchErr
+	return image, fetchErr
+}
+
+// GetLatestSupportedMacOSRestoreImageURL returns the download URL of the latest
+// macOS restore image supported by this host. To also obtain the image's metadata,
+// use GetLatestSupportedMacOSRestoreImage.
+//
+// This requires macOS 12 or newer.
+func GetLatestSupportedMacOSRestoreImageURL() (string, error) {
+	image, err := GetLatestSupportedMacOSRestoreImage()
+	if err != nil {
+		return "", err
 	}
-	return url, nil
+	return image.URL(), nil
 }
 
 // FetchLatestSupportedMacOSRestoreImage fetches the latest macOS restore image supported by this host from the network.

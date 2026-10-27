@@ -52,7 +52,7 @@ func TestRuntimeNetworkDevice(t *testing.T) {
 	}
 	wantMTU := 1500
 	if macOSAvailable(13) == nil {
-		wantMTU = 2000
+		wantMTU = 1600
 		if err := attachment.SetMaximumTransmissionUnit(wantMTU); err != nil {
 			t.Fatal(err)
 		}
@@ -71,6 +71,20 @@ func TestRuntimeNetworkDevice(t *testing.T) {
 		if fileAttachment, ok := got.(*FileHandleNetworkDeviceAttachment); ok {
 			if mtu := fileAttachment.MaximumTransmissionUnit(); mtu != wantMTU {
 				t.Errorf("MTU = %d, want %d", mtu, wantMTU)
+			}
+			if macOSAvailable(13) == nil {
+				if err := attachment.SetMaximumTransmissionUnit(1500); err != nil {
+					t.Fatal(err)
+				}
+				if mtu := fileAttachment.MaximumTransmissionUnit(); mtu != 1500 {
+					t.Errorf("runtime attachment MTU = %d, want 1500", mtu)
+				}
+				if err := fileAttachment.SetMaximumTransmissionUnit(1600); err != nil {
+					t.Fatal(err)
+				}
+				if mtu := attachment.MaximumTransmissionUnit(); mtu != 1600 {
+					t.Errorf("original attachment MTU = %d, want 1600", mtu)
+				}
 			}
 		}
 		if got != nil {

@@ -155,8 +155,6 @@ type FileHandleNetworkDeviceAttachment struct {
 	*pointer
 
 	*baseNetworkDeviceAttachment
-
-	mtu int
 }
 
 func (*FileHandleNetworkDeviceAttachment) String() string {
@@ -188,7 +186,6 @@ func NewFileHandleNetworkDeviceAttachment(file *os.File) (*FileHandleNetworkDevi
 			int32(file.Fd()),
 			&nserrPtr,
 		),
-		mtu: 1500, // The default MTU is 1500.
 	}
 	if err := objcutil.NewNSError(nserrPtr); err != nil {
 		return nil, err
@@ -237,14 +234,18 @@ func (f *FileHandleNetworkDeviceAttachment) SetMaximumTransmissionUnit(mtu int) 
 		return err
 	}
 	vzbridge.VZFileHandleNetworkDeviceAttachment_SetMaximumTransmissionUnit(f, int64(mtu))
-	f.mtu = mtu
 	return nil
 }
 
 // MaximumTransmissionUnit returns the maximum transmission unit (MTU) associated with this attachment.
-// The default MTU is 1500.
+// The default MTU is 1500. On macOS 11 and 12, the MTU is always 1500.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzfilehandlenetworkdeviceattachment/maximumtransmissionunit?language=objc
 func (f *FileHandleNetworkDeviceAttachment) MaximumTransmissionUnit() int {
-	return f.mtu
+	if macOSAvailable(13) != nil {
+		return 1500
+	}
+	return int(vzbridge.VZFileHandleNetworkDeviceAttachment_MaximumTransmissionUnit(f))
 }
 
 // NetworkDeviceAttachment for a network device attachment.

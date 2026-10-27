@@ -9,10 +9,6 @@ import (
 )
 
 func TestFileHandleNetworkDeviceAttachmentMTU(t *testing.T) {
-	if vz.Available(13) {
-		t.Skip("FileHandleNetworkDeviceAttachment.SetMaximumTransmissionUnit is supported from macOS 13")
-	}
-
 	ln, err := net.ListenUDP("udp", &net.UDPAddr{
 		Port: 0,
 		IP:   net.ParseIP("127.0.0.1"),
@@ -26,6 +22,7 @@ func TestFileHandleNetworkDeviceAttachmentMTU(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer f.Close()
 
 	attachment, err := vz.NewFileHandleNetworkDeviceAttachment(f)
 	if err != nil {
@@ -36,14 +33,17 @@ func TestFileHandleNetworkDeviceAttachmentMTU(t *testing.T) {
 		t.Fatalf("want default mtu 1500 but got %d", got)
 	}
 
-	want := 2000
+	if vz.Available(13) {
+		return
+	}
+	want := 1600
 	if err := attachment.SetMaximumTransmissionUnit(want); err != nil {
 		t.Fatal(err)
 	}
 
 	got2 := attachment.MaximumTransmissionUnit()
 	if got2 != want {
-		t.Fatalf("want mtu %d but got %d", want, got)
+		t.Fatalf("want mtu %d but got %d", want, got2)
 	}
 }
 

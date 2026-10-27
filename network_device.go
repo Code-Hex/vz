@@ -43,14 +43,7 @@ func (d *NetworkDevice) Attachment() NetworkDeviceAttachment {
 	case "VZBridgedNetworkDeviceAttachment":
 		return &BridgedNetworkDeviceAttachment{pointer: ptr}
 	case "VZFileHandleNetworkDeviceAttachment":
-		mtu := 1500
-		if macOSAvailable(13) == nil {
-			mtu = int(vzbridge.VZFileHandleNetworkDeviceAttachment_MaximumTransmissionUnit(ptr))
-		}
-		return &FileHandleNetworkDeviceAttachment{
-			pointer: ptr,
-			mtu:     mtu,
-		}
+		return &FileHandleNetworkDeviceAttachment{pointer: ptr}
 	case "VZVmnetNetworkDeviceAttachment":
 		return &VMNetNetworkDeviceAttachment{pointer: ptr}
 	default:

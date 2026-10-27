@@ -177,15 +177,49 @@ type MacAuxiliaryStorage struct {
 // NewMacAuxiliaryStorageOption is an option type to initialize a new Mac auxiliary storage
 type NewMacAuxiliaryStorageOption func(*MacAuxiliaryStorage) error
 
-// WithCreatingMacAuxiliaryStorage is an option when initialize a new Mac auxiliary storage with data creation
-// to you specified storage path.
-func WithCreatingMacAuxiliaryStorage(hardwareModel *MacHardwareModel) NewMacAuxiliaryStorageOption {
-	return func(mas *MacAuxiliaryStorage) error {
+// MacAuxiliaryStorageCreationOption configures creation of Mac auxiliary storage.
+//
+// See: https://developer.apple.com/documentation/virtualization/vzmacauxiliarystorage/initializationoptions?language=objc
+type MacAuxiliaryStorageCreationOption func(*macAuxiliaryStorageCreationOptions)
 
+type macAuxiliaryStorageCreationOptions struct {
+	allowOverwrite bool
+}
+
+// WithMacAuxiliaryStorageAllowOverwrite controls whether creation may replace an
+// existing file. Overwriting is allowed by default.
+//
+// See: https://developer.apple.com/documentation/virtualization/vzmacauxiliarystorage/initializationoptions/allowoverwrite?language=objc
+func WithMacAuxiliaryStorageAllowOverwrite(allow bool) MacAuxiliaryStorageCreationOption {
+	return func(options *macAuxiliaryStorageCreationOptions) {
+		options.allowOverwrite = allow
+	}
+}
+
+// WithCreatingMacAuxiliaryStorage creates initialized auxiliary storage for the
+// hardware model at the specified path. By default, it overwrites an existing file.
+//
+// See: https://developer.apple.com/documentation/virtualization/vzmacauxiliarystorage/initcreatingstorageaturl:hardwaremodel:options:error:?language=objc
+func WithCreatingMacAuxiliaryStorage(hardwareModel *MacHardwareModel, opts ...MacAuxiliaryStorageCreationOption) NewMacAuxiliaryStorageOption {
+	return func(mas *MacAuxiliaryStorage) error {
+		options := macAuxiliaryStorageCreationOptions{
+			allowOverwrite: true,
+		}
+		for _, opt := range opts {
+			if opt == nil {
+				return fmt.Errorf("nil Mac auxiliary storage creation option")
+			}
+			opt(&options)
+		}
+		var nativeOptions uint64
+		if options.allowOverwrite {
+			nativeOptions = vzbridge.VZMacAuxiliaryStorageInitializationOptionAllowOverwrite
+		}
 		var nserrPtr unsafe.Pointer
 		mas.pointer = vzbridge.NewVZMacAuxiliaryStorageWithCreating(
 			mas.storagePath,
 			hardwareModel,
+			nativeOptions,
 			&nserrPtr,
 		)
 		if err := objcutil.NewNSError(nserrPtr); err != nil {

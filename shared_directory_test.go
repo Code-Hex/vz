@@ -322,3 +322,43 @@ func TestDirectoryShareInvalidDirectory(t *testing.T) {
 		})
 	}
 }
+
+func TestCanonicalizeDirectoryShareName(t *testing.T) {
+	cases := []struct {
+		name    string
+		input   string
+		want    string
+		wantErr bool
+	}{
+		{name: "unchanged", input: "Shared Documents", want: "Shared Documents"},
+		{name: "unsafe characters", input: `a*/:<>?\|b`, want: "ab"},
+		{name: "preserved punctuation", input: " .hidden\t\n\" ", want: " .hidden\t\n\" "},
+		{name: "unicode", input: "日本語😀e\u0301", want: "日本語😀e\u0301"},
+		{name: "empty", wantErr: true},
+		{name: "only unsafe characters", input: `*/:<>?\|`, wantErr: true},
+		{name: "dot", input: "/.", wantErr: true},
+		{name: "dot dot", input: ".:/.", wantErr: true},
+		{name: "three dots", input: "...", want: "..."},
+		{name: "maximum bytes", input: strings.Repeat("a", 255), want: strings.Repeat("a", 255)},
+		{name: "too long", input: strings.Repeat("a", 256), wantErr: true},
+		{name: "multibyte maximum", input: strings.Repeat("😀", 63) + "abc", want: strings.Repeat("😀", 63) + "abc"},
+		{name: "multibyte too long", input: strings.Repeat("😀", 64), wantErr: true},
+		{name: "length after removal", input: strings.Repeat("/", 256) + "name", want: "name"},
+		{name: "invalid UTF-8", input: "a\xffb", wantErr: true},
+		{name: "NUL", input: "a\x00b", want: "a"},
+		{name: "leading NUL", input: "\x00a", wantErr: true},
+		{name: "NUL after unsafe characters", input: "a/\x00b", want: "a"},
+		{name: "NUL before unsafe characters", input: "a\x00/b", want: "a"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := vz.CanonicalizeDirectoryShareName(tc.input)
+			if (err != nil) != tc.wantErr {
+				t.Fatalf("error = %v, want error = %t", err, tc.wantErr)
+			}
+			if got != tc.want {
+				t.Fatalf("name = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}

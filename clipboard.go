@@ -13,8 +13,6 @@ type SpiceAgentPortAttachment struct {
 	*pointer
 
 	*baseSerialPortAttachment
-
-	enabledSharesClipboard bool
 }
 
 var _ SerialPortAttachment = (*SpiceAgentPortAttachment)(nil)
@@ -28,20 +26,24 @@ func NewSpiceAgentPortAttachment() (*SpiceAgentPortAttachment, error) {
 		return nil, err
 	}
 	spiceAgent := &SpiceAgentPortAttachment{
-		pointer:                vzbridge.VZSpiceAgentPortAttachment_Init(),
-		enabledSharesClipboard: true,
+		pointer: vzbridge.VZSpiceAgentPortAttachment_Init(),
 	}
 	return spiceAgent, nil
 }
 
-// SetSharesClipboard sets enable the Spice agent clipboard sharing capability.
+// SetSharesClipboard enables or disables clipboard sharing through the Spice agent.
+//
+// See: https://developer.apple.com/documentation/virtualization/vzspiceagentportattachment/sharesclipboard?language=objc
 func (s *SpiceAgentPortAttachment) SetSharesClipboard(enable bool) {
-	vzbridge.VZSpiceAgentPortAttachment_SetSharesClipboard(s, bool(enable))
-	s.enabledSharesClipboard = enable
+	vzbridge.VZSpiceAgentPortAttachment_SetSharesClipboard(s, enable)
 }
 
-// SharesClipboard returns enable the Spice agent clipboard sharing capability.
-func (s *SpiceAgentPortAttachment) SharesClipboard() bool { return s.enabledSharesClipboard }
+// SharesClipboard reports whether clipboard sharing is enabled on the attachment.
+//
+// See: https://developer.apple.com/documentation/virtualization/vzspiceagentportattachment/sharesclipboard?language=objc
+func (s *SpiceAgentPortAttachment) SharesClipboard() bool {
+	return vzbridge.VZSpiceAgentPortAttachment_SharesClipboard(s)
+}
 
 // SpiceAgentPortAttachmentName returns the Spice agent port name.
 func SpiceAgentPortAttachmentName() (string, error) {

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/Code-Hex/vz/v4"
+	"golang.org/x/crypto/ssh"
 )
 
 func TestRuntimeConsoleAttachmentGuest(t *testing.T) {
@@ -132,7 +133,11 @@ func TestRuntimeConsoleAttachmentGuest(t *testing.T) {
 	defer stopGuestDidStop()
 	session = container.NewSession(t)
 	defer session.Close()
-	if err := session.Start("poweroff"); err != nil {
+	command := struct {
+		Command string
+	}{Command: "poweroff"}
+	// Shutdown can close SSH before its reply arrives. Wait for the VM notification instead.
+	if _, err := session.SendRequest("exec", false, ssh.Marshal(command)); err != nil {
 		t.Fatal(err)
 	}
 	select {

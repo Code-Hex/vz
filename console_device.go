@@ -96,6 +96,8 @@ func (p *VirtioConsolePort) Attachment() SerialPortAttachment {
 		return &FileHandleSerialPortAttachment{pointer: ptr}
 	case "VZFileSerialPortAttachment":
 		return &FileSerialPortAttachment{pointer: ptr}
+	case "VZSpiceAgentPortAttachment":
+		return &SpiceAgentPortAttachment{pointer: ptr}
 	default:
 		return nil
 	}

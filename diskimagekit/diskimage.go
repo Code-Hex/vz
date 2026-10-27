@@ -367,6 +367,8 @@ func createFile(path string, initialize func(*os.File) error) (*os.File, error) 
 			return nil, err
 		}
 	}
+	// Build beside the destination so rename can replace it after initialization
+	// succeeds. Until then, failures leave the existing inode and its locks alone.
 	temporary := filepath.Join(dir, ".diskimage-"+rand.Text())
 	f, err := os.OpenFile(temporary, os.O_RDWR|os.O_CREATE|os.O_EXCL, 0666)
 	if err != nil {
@@ -604,6 +606,8 @@ func (d *DiskImage) read(index int, p []byte, off int64, fill bool) (int, error)
 	n := 0
 	for len(p) > 0 {
 		if off >= l.size {
+			// A smaller intermediate layer hides the tail of its parent. Falling
+			// through here would expose that data again through a larger overlay.
 			clear(p)
 			return n + len(p), nil
 		}

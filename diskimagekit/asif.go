@@ -31,6 +31,8 @@ type geometry struct {
 }
 
 func newGeometry(block BlockSize, maximum uint64, chunk int64) geometry {
+	// A bitmap uses two bits per block. One bitmap chunk therefore covers
+	// 4*block data chunks; its pointer follows those entries in the table group.
 	entries := 4 * int64(block)
 	groupBytes := 8 * (entries + 1)
 	covered := (chunk / groupBytes) * entries * chunk
@@ -270,6 +272,8 @@ func (l *layer) initASIF(header []byte) error {
 }
 
 func (l *layer) metadataLimit(offset, maximum uint64) (uint64, error) {
+	// Metadata links need not increase in offset. Growing the image must stop
+	// before the lowest metadata chunk, even when it occurs later in the chain.
 	limit := offset
 	seen := make(map[uint64]struct{})
 	for offset != 0 {
@@ -539,6 +543,9 @@ func createASIF(path string, blocks int64, block BlockSize, kind LayerType, pare
 		}
 	}
 	g := newGeometry(block, uint64(maximumSize), chunkSize)
+	// Keep the initial image compact. The header and directories occupy chunk 0,
+	// followed by a table, metadata payload, and bitmap. The table maps metadata
+	// near the end of the logical address space to these physical chunks.
 	data := make([]byte, 4*chunkSize)
 	put64 := func(offset int64, value uint64) { bigEndian.PutUint64(data[offset:offset+8], value) }
 	put32 := func(offset int64, value uint32) { bigEndian.PutUint32(data[offset:offset+4], value) }

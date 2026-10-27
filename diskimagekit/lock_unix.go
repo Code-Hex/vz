@@ -24,6 +24,7 @@ func lockFile(file *os.File, mode OpenMode) error {
 }
 
 func openRegularFile(path string, flags int) (*os.File, error) {
+	// A FIFO can block in OpenFile before we get a chance to reject its type.
 	f, err := os.OpenFile(path, flags|syscall.O_NONBLOCK, 0)
 	if err != nil {
 		return nil, err

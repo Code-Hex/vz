@@ -63,6 +63,8 @@ func beginUpdate(l *layer) (*asifUpdate, error) {
 }
 
 func (l *layer) failMutation(err error) error {
+	// A failed write or Sync may have reached storage. Reopen to reload the
+	// on-disk directory before choosing chunks to reuse.
 	l.mutationErr = fmt.Errorf("diskimagekit: ASIF mutation failed; close and reopen before writing: %w", err)
 	return l.mutationErr
 }
@@ -148,6 +150,8 @@ func (u *asifUpdate) selectBitmap(group int64) error {
 	g := u.layer.asif.geometry
 	u.bitmap = make([]byte, g.chunk)
 	u.bitmapGroup = group
+	// Every sparse entry in this group shares one bitmap. Preserve the other
+	// entries' block states when changing just one of them.
 	for i := int64(0); i < g.entries; i++ {
 		if bigEndian.Uint64(u.table[group+i*8:])>>62 != 3 {
 			continue
@@ -260,6 +264,8 @@ func (u *asifUpdate) commit() error {
 			off += count
 		}
 	}
+	// Include entries present only in the inactive directory so removed
+	// mappings are cleared before that directory becomes current again.
 	changed := maps.Clone(u.inactive)
 	for index, pointer := range u.directory {
 		changed[index] = pointer
@@ -351,6 +357,8 @@ func (d *DiskImage) writeChunk(index int, p []byte, off int64) (*asifChunk, erro
 	}
 	start := off % g.chunk
 	end := min(start+int64(len(p)), g.chunk)
+	// Once a block belongs to this layer, reads no longer fall through to its
+	// parent. A partial overwrite must copy the parent's untouched bytes first.
 	for sector := start / g.block; sector <= (end-1)/g.block; sector++ {
 		blockStart := sector * g.block
 		blockEnd := blockStart + g.block

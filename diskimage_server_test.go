@@ -26,11 +26,11 @@ func TestDiskImageServerClose(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer server.Close()
-	endpoint, err := url.Parse(server.URL())
+	serverURL, err := url.Parse(server.URL())
 	if err != nil {
 		t.Fatal(err)
 	}
-	dir := filepath.Dir(endpoint.Query().Get("socket"))
+	dir := filepath.Dir(serverURL.Query().Get("socket"))
 	var workers sync.WaitGroup
 	for range 8 {
 		workers.Go(func() {
@@ -64,24 +64,24 @@ func TestDiskImageServerListener(t *testing.T) {
 					t.Fatal(err)
 				}
 				defer listener.Close()
-				endpoint := "nbd://" + listener.Addr().String() + "/"
-				opts = append(opts, WithDiskImageServerListener(listener, endpoint))
+				serverURL := "nbd://" + listener.Addr().String() + "/"
+				opts = append(opts, WithDiskImageServerListener(listener, serverURL))
 			}
 			server, err := NewDiskImageServer(image, opts...)
 			if err != nil {
 				t.Fatal(err)
 			}
 			defer server.Close()
-			endpoint, err := url.Parse(server.URL())
+			serverURL, err := url.Parse(server.URL())
 			if err != nil {
 				t.Fatal(err)
 			}
-			address := endpoint.Host
+			address := serverURL.Host
 			if network == "unix" {
-				if endpoint.Scheme != "nbd+unix" {
-					t.Fatalf("URL scheme = %q, want nbd+unix", endpoint.Scheme)
+				if serverURL.Scheme != "nbd+unix" {
+					t.Fatalf("URL scheme = %q, want nbd+unix", serverURL.Scheme)
 				}
-				address = endpoint.Query().Get("socket")
+				address = serverURL.Query().Get("socket")
 			} else if server.URL() != "nbd://"+listener.Addr().String()+"/" {
 				t.Fatalf("unexpected custom URL: %s", server.URL())
 			}
@@ -189,7 +189,7 @@ func TestDiskImageServerInvalidInputs(t *testing.T) {
 	}{
 		{"nil option", nil},
 		{"nil listener", WithDiskImageServerListener(nil, "nbd://127.0.0.1/")},
-		{"empty endpoint", WithDiskImageServerListener(listener, "")},
+		{"empty URL", WithDiskImageServerListener(listener, "")},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			if server, err := NewDiskImageServer(image, test.option); err == nil {

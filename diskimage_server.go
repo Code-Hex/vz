@@ -19,44 +19,48 @@ import (
 // The server runs independently of any attachment. Stop every VM using the
 // server before calling Close, then close the image separately.
 type DiskImageServer struct {
-	server   *nbd.Server
-	listener net.Listener
-	endpoint string
-	dir      string
-	served   chan struct{}
-	serveErr error
-	once     sync.Once
-	closeErr error
+	server    *nbd.Server
+	listener  net.Listener
+	serverURL string
+	dir       string
+	served    chan struct{}
+	serveErr  error
+	once      sync.Once
+	closeErr  error
 }
 
 type diskImageServerOptions struct {
-	listener net.Listener
-	endpoint string
+	listener  net.Listener
+	serverURL string
 }
 
 // DiskImageServerOption configures NewDiskImageServer.
 type DiskImageServerOption func(*diskImageServerOptions) error
 
 // WithDiskImageServerListener serves the image on listener and makes URL return
-// endpoint. The endpoint must reach listener, directly or through a proxy, and
-// use the empty NBD export name. The server does not validate or connect to it.
-// Without this option, NewDiskImageServer creates a Unix socket in a private
-// temporary directory.
+// serverURL, the connection URL for NBD clients. It must reach listener, directly
+// or through a proxy, and use the empty NBD export name. For example:
+//
+//	nbd://127.0.0.1:10809/
+//	nbd+unix:///?socket=/tmp/vz-disk/disk.sock
+//
+// The server does not validate or connect to this URL. Without this option,
+// NewDiskImageServer creates a Unix socket in a private temporary directory.
 //
 // A successful constructor takes ownership of the selected listener. On failure,
 // the listener remains owned by the caller. A listener replaced by a later option
 // is never used or closed. The caller must provide any access controls because
 // the NBD server has no authentication or encryption.
-func WithDiskImageServerListener(listener net.Listener, endpoint string) DiskImageServerOption {
+func WithDiskImageServerListener(listener net.Listener, serverURL string) DiskImageServerOption {
 	return func(options *diskImageServerOptions) error {
 		if listener == nil {
 			return errors.New("vz: nil disk image server listener")
 		}
-		if endpoint == "" {
-			return errors.New("vz: empty disk image server endpoint")
+		if serverURL == "" {
+			return errors.New("vz: empty disk image server URL")
 		}
 		options.listener = listener
-		options.endpoint = endpoint
+		options.serverURL = serverURL
 		return nil
 	}
 }
@@ -116,19 +120,19 @@ func NewDiskImageServer(image *diskimagekit.DiskImage, opts ...DiskImageServerOp
 			os.RemoveAll(dir)
 			return nil, err
 		}
-		endpoint := url.URL{
+		serverURL := url.URL{
 			Scheme:   "nbd+unix",
 			Path:     "/",
 			RawQuery: url.Values{"socket": {socket}}.Encode(),
 		}
-		options.endpoint = endpoint.String()
+		options.serverURL = serverURL.String()
 	}
 	s := &DiskImageServer{
-		server:   server,
-		listener: options.listener,
-		endpoint: options.endpoint,
-		dir:      dir,
-		served:   make(chan struct{}),
+		server:    server,
+		listener:  options.listener,
+		serverURL: options.serverURL,
+		dir:       dir,
+		served:    make(chan struct{}),
 	}
 	go func() {
 		s.serveErr = server.Serve(s.listener)
@@ -137,10 +141,10 @@ func NewDiskImageServer(image *diskimagekit.DiskImage, opts ...DiskImageServerOp
 	return s, nil
 }
 
-// URL returns the endpoint for NewNetworkBlockDeviceStorageDeviceAttachment.
-// The default endpoint uses a Unix socket and the empty NBD export name.
+// URL returns the NBD connection URL for NewNetworkBlockDeviceStorageDeviceAttachment.
+// The default URL uses a Unix socket and the empty NBD export name.
 func (s *DiskImageServer) URL() string {
-	return s.endpoint
+	return s.serverURL
 }
 
 // Close stops accepting clients, disconnects them, and waits for image operations

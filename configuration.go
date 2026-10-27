@@ -55,7 +55,7 @@ func NewVirtualMachineConfiguration(bootLoader BootLoader, cpu uint, memorySize 
 	config := &VirtualMachineConfiguration{
 		pointer: vzbridge.NewVZVirtualMachineConfiguration(
 			bootLoader,
-			uint32(cpu),
+			uint64(cpu),
 			uint64(memorySize),
 		),
 	}

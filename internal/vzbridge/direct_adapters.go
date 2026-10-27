@@ -17,10 +17,10 @@ func NewVZGenericMachineIdentifierWithBytes(bytes unsafe.Pointer, length int32) 
 	return VZGenericMachineIdentifier_InitWithDataRepresentation(data)
 }
 
-func NewVZVirtualMachineConfiguration(bootLoader objc.NSObject, cpuCount uint32, memorySize uint64) *objc.Pointer {
+func NewVZVirtualMachineConfiguration(bootLoader objc.NSObject, cpuCount uint64, memorySize uint64) *objc.Pointer {
 	config := VZVirtualMachineConfiguration_New()
 	VZVirtualMachineConfiguration_SetBootLoader(config, bootLoader)
-	VZVirtualMachineConfiguration_SetCPUCount(config, uint64(cpuCount))
+	VZVirtualMachineConfiguration_SetCPUCount(config, cpuCount)
 	VZVirtualMachineConfiguration_SetMemorySize(config, memorySize)
 	return config
 }

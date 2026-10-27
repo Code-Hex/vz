@@ -34,12 +34,12 @@ func NewVZMacAuxiliaryStorage(path string) *objc.Pointer {
 	return VZMacAuxiliaryStorage_InitWithContentsOfURL(url)
 }
 
-func NewVZMacAuxiliaryStorageWithCreating(path string, hardwareModel objc.NSObject, errorOut *unsafe.Pointer) *objc.Pointer {
+func NewVZMacAuxiliaryStorageWithCreating(path string, hardwareModel objc.NSObject, options uint64, errorOut *unsafe.Pointer) *objc.Pointer {
 	value := NSString_StringWithUTF8String(path)
 	defer objc.Release(value)
 	url := NSURL_FileURLWithPath(value)
 	defer objc.Release(url)
 	return VZMacAuxiliaryStorage_InitCreatingStorageAtURL_HardwareModel_Options_Error(
-		url, hardwareModel, VZMacAuxiliaryStorageInitializationOptionAllowOverwrite, errorOut,
+		url, hardwareModel, options, errorOut,
 	)
 }

@@ -149,13 +149,54 @@ type EFIVariableStore struct {
 // NewEFIVariableStoreOption is an option type to initialize a new EFIVariableStore.
 type NewEFIVariableStoreOption func(*EFIVariableStore) error
 
-// WithCreatingEFIVariableStore is an option to initialized VZEFIVariableStore to a path on a file system.
-// If the variable store already exists in path, it is overwritten.
-func WithCreatingEFIVariableStore() NewEFIVariableStoreOption {
-	return func(es *EFIVariableStore) error {
+// EFIVariableStoreCreationOption configures creation of an EFI variable store.
+//
+// See: https://developer.apple.com/documentation/virtualization/vzefivariablestore/initializationoptions?language=objc
+type EFIVariableStoreCreationOption func(*efiVariableStoreCreationOptions)
 
+type efiVariableStoreCreationOptions struct {
+	allowOverwrite bool
+}
+
+// WithEFIVariableStoreAllowOverwrite controls whether creation may replace an
+// existing file. Overwriting is allowed by default.
+//
+// See: https://developer.apple.com/documentation/virtualization/vzefivariablestore/initializationoptions/allowoverwrite?language=objc
+func WithEFIVariableStoreAllowOverwrite(allow bool) EFIVariableStoreCreationOption {
+	return func(options *efiVariableStoreCreationOptions) {
+		options.allowOverwrite = allow
+	}
+}
+
+// WithCreatingEFIVariableStore creates an initialized EFI variable store at the
+// specified path. By default, it overwrites an existing file.
+//
+// See: https://developer.apple.com/documentation/virtualization/vzefivariablestore/initcreatingvariablestoreaturl:options:error:?language=objc
+func WithCreatingEFIVariableStore(opts ...EFIVariableStoreCreationOption) NewEFIVariableStoreOption {
+	return func(es *EFIVariableStore) error {
+		options := efiVariableStoreCreationOptions{
+			allowOverwrite: true,
+		}
+		for _, opt := range opts {
+			if opt == nil {
+				return fmt.Errorf("nil EFI variable store creation option")
+			}
+			opt(&options)
+		}
+		var nativeOptions uint64
+		if options.allowOverwrite {
+			nativeOptions = vzbridge.VZEFIVariableStoreInitializationOptionAllowOverwrite
+		}
+		path := vzbridge.NSString_StringWithUTF8String(es.path)
+		defer objc.Release(path)
+		url := vzbridge.NSURL_FileURLWithPath(path)
+		defer objc.Release(url)
 		var nserrPtr unsafe.Pointer
-		es.pointer = vzbridge.VZEFIVariableStore_InitCreatingVariableStoreAtURL_Options_Error(vzbridge.NSURL_FileURLWithPath(vzbridge.NSString_StringWithUTF8String(es.path)), vzbridge.VZEFIVariableStoreInitializationOptionAllowOverwrite, &nserrPtr)
+		es.pointer = vzbridge.VZEFIVariableStore_InitCreatingVariableStoreAtURL_Options_Error(
+			url,
+			nativeOptions,
+			&nserrPtr,
+		)
 		if err := objcutil.NewNSError(nserrPtr); err != nil {
 			return err
 		}

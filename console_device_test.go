@@ -77,3 +77,57 @@ func TestRuntimeConsolePort(t *testing.T) {
 	port = nil
 	awaitNativeBridge(t, released)
 }
+
+func TestRuntimeConsolePortSpiceAttachment(t *testing.T) {
+	if macOSAvailable(13) != nil {
+		t.Skip("requires macOS 13")
+	}
+	attachment, err := NewSpiceAgentPortAttachment()
+	if err != nil {
+		t.Fatal(err)
+	}
+	name, err := SpiceAgentPortAttachmentName()
+	if err != nil {
+		t.Fatal(err)
+	}
+	portConfig, err := NewVirtioConsolePortConfiguration(
+		WithVirtioConsolePortConfigurationName(name),
+		WithVirtioConsolePortConfigurationAttachment(attachment),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	console, err := NewVirtioConsoleDeviceConfiguration()
+	if err != nil {
+		t.Fatal(err)
+	}
+	console.SetVirtioConsolePortConfiguration(0, portConfig)
+	config := newTestConfig(t)
+	config.SetConsoleDevicesVirtualMachineConfiguration([]ConsoleDeviceConfiguration{console})
+	vm, err := NewVirtualMachine(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	port := vm.ConsoleDevices()[0].Ports()[0]
+	for _, enabled := range []bool{true, false} {
+		attachment.SetSharesClipboard(enabled)
+		got, ok := port.Attachment().(*SpiceAgentPortAttachment)
+		if !ok {
+			t.Fatalf("attachment is not a SpiceAgentPortAttachment")
+		}
+		defer objc.Release(got)
+		if got.SharesClipboard() != enabled {
+			t.Fatalf("shares clipboard = %v, want %v", got.SharesClipboard(), enabled)
+		}
+		got.SetSharesClipboard(!enabled)
+		if attachment.SharesClipboard() != !enabled {
+			t.Fatalf("original attachment shares clipboard = %v, want %v", attachment.SharesClipboard(), !enabled)
+		}
+	}
+	if err := port.SetAttachment(nil); err != nil {
+		t.Fatal(err)
+	}
+	if got := port.Attachment(); got != nil {
+		t.Fatalf("disconnected attachment = %T, want nil", got)
+	}
+}

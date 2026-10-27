@@ -92,6 +92,26 @@ func (a *asifImage) reservedEnd(pointer uint64) uint64 {
 	return pointer
 }
 
+// asifChunkState is the two-bit tag in an ASIF table entry.
+type asifChunkState uint64
+
+const (
+	asifChunkInherited asifChunkState = 0
+	asifChunkData      asifChunkState = 1
+	asifChunkZero      asifChunkState = 2
+	asifChunkBitmap    asifChunkState = 3
+)
+
+// asifBlockState is the two-bit value for one block in an ASIF bitmap.
+type asifBlockState uint8
+
+const (
+	asifBlockInherited asifBlockState = 0
+	asifBlockData      asifBlockState = 1
+	asifBlockZero      asifBlockState = 2
+	asifBlockInvalid   asifBlockState = 3
+)
+
 type extentKind uint8
 
 const (
@@ -435,18 +455,18 @@ func (l *layer) asifExtent(offset uint64) (extent, error) {
 		return extent{}, invalid("unknown chunk flags")
 	}
 	physical := entry & physicalMask
-	status := entry >> 62
-	switch status {
-	case 0, 2:
+	chunkState := asifChunkState(entry >> 62)
+	switch chunkState {
+	case asifChunkInherited, asifChunkZero:
 		kind := extentInherited
-		if status == 2 {
+		if chunkState == asifChunkZero {
 			kind = extentZero
 		}
 		return extent{
 			kind:   kind,
 			length: length,
 		}, nil
-	case 3:
+	case asifChunkBitmap:
 		bitmap := bigEndian.Uint64(table[group+g.entries*8:])
 		sector := index*(g.chunk/g.block) + within/g.block
 		bitmapOffset, err := a.physicalRange(bitmap, 0, g.chunk)
@@ -457,20 +477,20 @@ func (l *layer) asifExtent(offset uint64) (extent, error) {
 		if _, err := l.io.ReadAt(b[:], bitmapOffset+sector/4); err != nil {
 			return extent{}, err
 		}
-		state := (b[0] >> ((sector % 4) * 2)) & 3
+		blockState := asifBlockState((b[0] >> ((sector % 4) * 2)) & 3)
 		length = g.block - within%g.block
-		switch state {
-		case 0:
+		switch blockState {
+		case asifBlockInherited:
 			return extent{
 				kind:   extentInherited,
 				length: length,
 			}, nil
-		case 2:
+		case asifBlockZero:
 			return extent{
 				kind:   extentZero,
 				length: length,
 			}, nil
-		case 3:
+		case asifBlockInvalid:
 			return extent{}, invalid("invalid bitmap state")
 		}
 	}
@@ -573,9 +593,9 @@ func createASIF(path string, blocks int64, block BlockSize, kind LayerType, pare
 	relative := metadata % g.covered
 	index := (relative / chunkSize) % g.entries
 	group := chunkSize + (relative/(g.entries*chunkSize))*g.groupBytes
-	put64(group+index*8, 3<<62|2)
+	put64(group+index*8, uint64(asifChunkBitmap)<<62|2)
 	put64(group+g.entries*8, 3)
-	data[3*chunkSize+index*(chunkSize/int64(block))/4] = 5
+	data[3*chunkSize+index*(chunkSize/int64(block))/4] = byte(asifBlockData | asifBlockData<<2)
 	copy(data[2*chunkSize:], "meta")
 	put32(2*chunkSize+4, 1)
 	put32(2*chunkSize+8, uint32(block))

@@ -74,20 +74,21 @@ func (l *layer) markTable(table, bitmap []byte, used map[uint64]struct{}) error 
 			if entry & ^(physicalMask|3<<62) != 0 {
 				return invalid("unknown chunk flags")
 			}
-			physical, status := entry&physicalMask, entry>>62
+			physical := entry & physicalMask
+			chunkState := asifChunkState(entry >> 62)
 
-			switch status {
-			case 0, 2:
+			switch chunkState {
+			case asifChunkInherited, asifChunkZero:
 				if physical != 0 {
 					used[physical] = struct{}{}
 				}
-			case 1:
+			case asifChunkData:
 				if physical != 0 {
 					if err := l.markPayload(physical, used); err != nil {
 						return err
 					}
 				}
-			case 3:
+			case asifChunkBitmap:
 				if !bitmapLoaded {
 					bitmapOffset, err := l.markChunk(bitmapPointer, g.chunk, used)
 					if err != nil {
@@ -116,7 +117,8 @@ func (g geometry) checkBitmap(bitmap []byte, index int64) error {
 	first := index * (g.chunk / g.block)
 	for sector := int64(0); sector < g.chunk/g.block; sector++ {
 		at := first + sector
-		if (bitmap[at/4]>>((at%4)*2))&3 == 3 {
+		state := asifBlockState((bitmap[at/4] >> ((at % 4) * 2)) & 3)
+		if state == asifBlockInvalid {
 			return invalid("invalid bitmap state")
 		}
 	}

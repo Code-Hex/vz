@@ -104,13 +104,13 @@ func (u *asifUpdate) selectTable(logical int64) error {
 }
 
 func (u *asifUpdate) setChunk(logical int64, data []byte) error {
-	entry := uint64(2) << 62
+	entry := uint64(asifChunkZero) << 62
 	if data != nil {
 		pointer, err := u.allocate(data)
 		if err != nil {
 			return err
 		}
-		entry = uint64(1)<<62 | pointer
+		entry = uint64(asifChunkData)<<62 | pointer
 	}
 	return u.setEntry(logical, entry)
 }
@@ -153,7 +153,8 @@ func (u *asifUpdate) selectBitmap(group int64) error {
 	// Every sparse entry in this group shares one bitmap. Preserve the other
 	// entries' block states when changing just one of them.
 	for i := int64(0); i < g.entries; i++ {
-		if bigEndian.Uint64(u.table[group+i*8:])>>62 != 3 {
+		state := asifChunkState(bigEndian.Uint64(u.table[group+i*8:]) >> 62)
+		if state != asifChunkBitmap {
 			continue
 		}
 		pointer := bigEndian.Uint64(u.table[group+g.entries*8:])
@@ -190,18 +191,18 @@ func (u *asifUpdate) setSparseChunk(logical int64, chunk *asifChunk) error {
 	index := (relative / g.chunk) % g.entries
 	first := index * (g.chunk / g.block)
 	for i, kind := range chunk.states {
-		var state byte
+		state := asifBlockInherited
 		switch kind {
 		case extentData:
-			state = 1
+			state = asifBlockData
 		case extentZero:
-			state = 2
+			state = asifBlockZero
 		}
 		at := first + int64(i)
 		shift := (at % 4) * 2
-		u.bitmap[at/4] = u.bitmap[at/4]&^(3<<shift) | state<<shift
+		u.bitmap[at/4] = u.bitmap[at/4]&^(3<<shift) | byte(state)<<shift
 	}
-	bigEndian.PutUint64(u.table[group+index*8:], uint64(3)<<62|pointer)
+	bigEndian.PutUint64(u.table[group+index*8:], uint64(asifChunkBitmap)<<62|pointer)
 	return nil
 }
 
@@ -488,14 +489,14 @@ func (u *asifUpdate) discardAfter(size int64) error {
 			relative := logical % g.covered
 			group := relative / (g.entries * g.chunk) * g.groupBytes
 			entry := (relative / g.chunk) % g.entries
-			status := bigEndian.Uint64(table[group+entry*8:]) >> 62
+			state := asifChunkState(bigEndian.Uint64(table[group+entry*8:]) >> 62)
 			first := max(size-logical, 0)
 			last := min(l.size-logical, g.chunk)
-			if status != 2 && first == 0 && last == g.chunk {
+			if state != asifChunkZero && first == 0 && last == g.chunk {
 				if err := u.setChunk(logical, nil); err != nil {
 					return err
 				}
-			} else if status == 1 || status == 3 {
+			} else if state == asifChunkData || state == asifChunkBitmap {
 				chunk, err := l.ownChunk(logical)
 				if err != nil {
 					return err
@@ -507,7 +508,7 @@ func (u *asifUpdate) discardAfter(size int64) error {
 				if !slices.Contains(chunk.states, extentData) {
 					entry := uint64(0)
 					if chunk.states[0] == extentZero {
-						entry = uint64(2) << 62
+						entry = uint64(asifChunkZero) << 62
 					}
 					if err := u.setEntry(logical, entry); err != nil {
 						return err

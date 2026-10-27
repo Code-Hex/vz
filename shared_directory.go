@@ -3,6 +3,8 @@ package vz
 import (
 	"fmt"
 	"os"
+	"strings"
+	"unicode/utf8"
 	"unsafe"
 
 	"github.com/Code-Hex/vz/v4/internal/objc"
@@ -125,6 +127,43 @@ type MultipleDirectoryShare struct {
 }
 
 var _ DirectoryShare = (*MultipleDirectoryShare)(nil)
+
+// CanonicalizeDirectoryShareName applies Apple's directory share name conversion.
+// It removes *, /, :, <, >, ?, \, and |, and discards the first NUL byte and
+// everything after it. It returns an error if name contains invalid UTF-8,
+// or if the filtered name is empty, is "." or "..", or exceeds 255 UTF-8 bytes.
+//
+// After these checks, it removes one leading byte order mark (U+FEFF), matching
+// Apple's string conversion. This can leave an empty name, ".", or "..".
+// NewMultipleDirectoryShare rejects those results.
+// Other characters, including whitespace and combining characters, are preserved.
+// Different inputs can produce the same name; callers must handle collisions
+// before adding names to a share map.
+//
+// This function runs entirely in Go and does not require macOS 12.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzmultipledirectoryshare/canonicalizedname(from:)?language=objc
+func CanonicalizeDirectoryShareName(name string) (string, error) {
+	if !utf8.ValidString(name) {
+		return "", fmt.Errorf("directory share name must be valid UTF-8")
+	}
+	name, _, _ = strings.Cut(name, "\x00")
+	name = strings.Map(func(r rune) rune {
+		switch r {
+		case '*', '/', ':', '<', '>', '?', '\\', '|':
+			return -1
+		}
+		return r
+	}, name)
+	switch name {
+	case "", ".", "..":
+		return "", fmt.Errorf("cannot produce a valid directory share name")
+	}
+	if len(name) > 255 {
+		return "", fmt.Errorf("directory share name exceeds 255 UTF-8 bytes")
+	}
+	return strings.TrimPrefix(name, "\uFEFF"), nil
+}
 
 // NewMultipleDirectoryShare creates a new multiple directories share.
 // It returns an error if a directory name is invalid or a directory is nil or uninitialized.

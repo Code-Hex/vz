@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/Code-Hex/vz/v4/internal/macos"
+	"github.com/Code-Hex/vz/v4/internal/objc"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 	"github.com/Code-Hex/vz/v4/vmnet"
 	"github.com/Code-Hex/vz/v4/vmnetsock"
@@ -243,6 +244,85 @@ func TestAdapterStreamTermination(t *testing.T) {
 			}
 			if err := a.Close(); (err != nil) != test.wantError {
 				t.Fatalf("Close = %v", err)
+			}
+		})
+	}
+}
+
+func TestAdapterQueuedBurst(t *testing.T) {
+	if macos.Available(26, vzbridge.SDKVersion) != nil {
+		t.Skip("requires macOS 26 SDK")
+	}
+	for _, transport := range []vmnetsock.Transport{vmnetsock.Stream, vmnetsock.Datagram} {
+		t.Run(string(rune('0'+transport)), func(t *testing.T) {
+			c, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { objc.Release(c) })
+			network, err := vmnet.NewNetwork(c)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { objc.Release((*objc.Pointer)(network)) })
+			sender, receiver := newInterface(t, network), newInterface(t, network)
+			frames := make([][]byte, 70)
+			for j := range frames {
+				frame := bytes.Repeat([]byte{byte(j)}, 60+j)
+				copy(frame, []byte{255, 255, 255, 255, 255, 255})
+				copy(frame[6:], sender.MACAddress())
+				binary.BigEndian.PutUint16(frame[12:], 0x88b5)
+				frames[j] = frame
+			}
+			if n, err := sender.WritePackets(frames); n != len(frames) || err != nil {
+				t.Fatalf("burst write = %d, %v", n, err)
+			}
+			adapter, err := vmnetsock.New(t.Context(), receiver, transport)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer adapter.Close()
+			file := duplicate(t, adapter)
+			peer, err := net.FileConn(file)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer peer.Close()
+			if err := peer.SetReadDeadline(time.Now().Add(3 * time.Second)); err != nil {
+				t.Fatal(err)
+			}
+			buffer := make([]byte, receiver.MaxPacketSize())
+			for received := 0; received < len(frames); {
+				var size int
+				if transport == vmnetsock.Stream {
+					var header [4]byte
+					if _, err := io.ReadFull(peer, header[:]); err != nil {
+						t.Fatal(err)
+					}
+					size = int(binary.BigEndian.Uint32(header[:]))
+					if size == 0 || size > len(buffer) {
+						t.Fatalf("invalid frame size %d", size)
+					}
+					_, err = io.ReadFull(peer, buffer[:size])
+				} else {
+					size, err = peer.Read(buffer)
+				}
+				if err != nil {
+					t.Fatalf("frame %d: %v", received, err)
+				}
+				if size < 14 || binary.BigEndian.Uint16(buffer[12:]) != 0x88b5 {
+					continue
+				}
+				if !bytes.Equal(buffer[:size], frames[received]) {
+					t.Fatalf("frame %d differs, length %d", received, size)
+				}
+				received++
+			}
+			if err := adapter.Close(); err != nil {
+				t.Fatal(err)
+			}
+			if err := receiver.WritePacket(frames[0]); err != nil {
+				t.Fatalf("borrowed interface stopped: %v", err)
 			}
 		})
 	}

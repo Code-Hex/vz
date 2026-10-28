@@ -146,24 +146,29 @@ func (s *adapterState) forwardToInterface(iface *vmnet.Interface, transport Tran
 }
 
 func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface, transport Transport) error {
-	frame := make([]byte, iface.MaxPacketSize())
-
+	size := iface.MaxPacketSize()
+	count := min(32, max(1, 256000/size))
+	frames := make([][]byte, count)
+	for j := range frames {
+		frames[j] = make([]byte, size)
+	}
+	headers := make([][4]byte, count)
+	vectors := make(net.Buffers, 2*count)
 	for {
-		n, err := iface.ReadPacket(ctx, frame)
+		n, err := iface.ReadPackets(ctx, frames)
 		if err != nil {
 			return err
 		}
-
 		if transport == Stream {
-			err = writeStreamFrame(s.conn, frame[:n])
-		} else {
-			err = writeDatagramFrame(s.conn, frame[:n])
-			if errors.Is(err, unix.ENOBUFS) {
-				continue
+			if err := writeStreamFrames(s.conn, frames[:n], headers, vectors); err != nil {
+				return err
 			}
-		}
-		if err != nil {
-			return err
+		} else {
+			for _, frame := range frames[:n] {
+				if err := writeDatagramFrame(s.conn, frame); err != nil && !errors.Is(err, unix.ENOBUFS) {
+					return err
+				}
+			}
 		}
 	}
 }

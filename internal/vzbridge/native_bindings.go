@@ -895,12 +895,12 @@ func StopVmnetInterface(session unsafe.Pointer, errorOut *unsafe.Pointer) {
 	runtime.KeepAlive(errorOut)
 }
 
-var callReadVmnetPacket lazyBinding[func(unsafe.Pointer, unsafe.Pointer, uint64, *unsafe.Pointer) int32]
+var callWriteVmnetPacket lazyBinding[func(unsafe.Pointer, unsafe.Pointer, uint64, *unsafe.Pointer) int32]
 
-func ReadVmnetPacket(session unsafe.Pointer, buffer unsafe.Pointer, size uint64, errorOut *unsafe.Pointer) int32 {
-	call := callReadVmnetPacket.get(func() func(unsafe.Pointer, unsafe.Pointer, uint64, *unsafe.Pointer) int32 {
+func WriteVmnetPacket(session unsafe.Pointer, buffer unsafe.Pointer, size uint64, errorOut *unsafe.Pointer) int32 {
+	call := callWriteVmnetPacket.get(func() func(unsafe.Pointer, unsafe.Pointer, uint64, *unsafe.Pointer) int32 {
 		var call func(unsafe.Pointer, unsafe.Pointer, uint64, *unsafe.Pointer) int32
-		purego.RegisterFunc(&call, uintptr(C.vz_readVmnetPacket))
+		purego.RegisterFunc(&call, uintptr(C.vz_writeVmnetPacket))
 		return call
 	})
 	var result int32
@@ -911,18 +911,38 @@ func ReadVmnetPacket(session unsafe.Pointer, buffer unsafe.Pointer, size uint64,
 	return result
 }
 
-var callWriteVmnetPacket lazyBinding[func(unsafe.Pointer, unsafe.Pointer, uint64, *unsafe.Pointer)]
+var callReadVmnetPackets lazyBinding[func(unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, int32, *unsafe.Pointer) int32]
 
-func WriteVmnetPacket(session unsafe.Pointer, buffer unsafe.Pointer, size uint64, errorOut *unsafe.Pointer) {
-	call := callWriteVmnetPacket.get(func() func(unsafe.Pointer, unsafe.Pointer, uint64, *unsafe.Pointer) {
-		var call func(unsafe.Pointer, unsafe.Pointer, uint64, *unsafe.Pointer)
-		purego.RegisterFunc(&call, uintptr(C.vz_writeVmnetPacket))
+func ReadVmnetPackets(session unsafe.Pointer, buffers unsafe.Pointer, sizes unsafe.Pointer, count int32, errorOut *unsafe.Pointer) int32 {
+	call := callReadVmnetPackets.get(func() func(unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, int32, *unsafe.Pointer) int32 {
+		var call func(unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, int32, *unsafe.Pointer) int32
+		purego.RegisterFunc(&call, uintptr(C.vz_readVmnetPackets))
 		return call
 	})
-	call(session, buffer, size, errorOut)
+	var result int32
+	result = call(session, buffers, sizes, count, errorOut)
 	runtime.KeepAlive(session)
-	runtime.KeepAlive(buffer)
+	runtime.KeepAlive(buffers)
+	runtime.KeepAlive(sizes)
 	runtime.KeepAlive(errorOut)
+	return result
+}
+
+var callWriteVmnetPackets lazyBinding[func(unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, int32, *unsafe.Pointer) int32]
+
+func WriteVmnetPackets(session unsafe.Pointer, buffers unsafe.Pointer, sizes unsafe.Pointer, count int32, errorOut *unsafe.Pointer) int32 {
+	call := callWriteVmnetPackets.get(func() func(unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, int32, *unsafe.Pointer) int32 {
+		var call func(unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, int32, *unsafe.Pointer) int32
+		purego.RegisterFunc(&call, uintptr(C.vz_writeVmnetPackets))
+		return call
+	})
+	var result int32
+	result = call(session, buffers, sizes, count, errorOut)
+	runtime.KeepAlive(session)
+	runtime.KeepAlive(buffers)
+	runtime.KeepAlive(sizes)
+	runtime.KeepAlive(errorOut)
+	return result
 }
 
 var callCopyVmnetNetworkSerialization lazyBinding[func(unsafe.Pointer, *unsafe.Pointer) unsafe.Pointer]

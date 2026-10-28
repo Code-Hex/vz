@@ -78,8 +78,8 @@ func TestStreamFrames(t *testing.T) {
 			}
 		})
 	}
-	writer := &shortWriter{}
-	if err := writeStreamFrame(writer, []byte("abc")); err != nil {
+	writer := &bytes.Buffer{}
+	if err := writeStreamFrames(writer, [][]byte{[]byte("abc")}, make([][4]byte, 1), make(net.Buffers, 2)); err != nil {
 		t.Fatal(err)
 	}
 	if !bytes.Equal(writer.Bytes(), []byte{0, 0, 0, 3, 'a', 'b', 'c'}) {
@@ -143,8 +143,12 @@ func TestSocketBackpressureClose(t *testing.T) {
 
 			done := make(chan error, 1)
 			go func() {
-				_, err := conn.Write(frame)
-				done <- err
+				if transport == Stream {
+					done <- writeStreamFrames(conn, [][]byte{frame}, make([][4]byte, 1), make(net.Buffers, 2))
+				} else {
+					_, err := conn.Write(frame)
+					done <- err
+				}
 			}()
 			if err := conn.Close(); err != nil {
 				t.Fatal(err)
@@ -181,5 +185,50 @@ func saturateSocket(t *testing.T, conn *net.UnixConn, frame []byte) {
 	}
 	if !errors.Is(fillErr, unix.EAGAIN) && !errors.Is(fillErr, unix.ENOBUFS) {
 		t.Fatalf("socket did not reach backpressure: %v", fillErr)
+	}
+}
+
+func TestStreamBatchFrames(t *testing.T) {
+	conn, file, err := socketPair(Stream, 1500)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	defer file.Close()
+	peer, err := net.FileConn(file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer peer.Close()
+	deadline := time.Now().Add(3 * time.Second)
+	if err := conn.SetWriteDeadline(deadline); err != nil {
+		t.Fatal(err)
+	}
+	if err := peer.SetReadDeadline(deadline); err != nil {
+		t.Fatal(err)
+	}
+	frames := [][]byte{[]byte("abc"), []byte("d"), bytes.Repeat([]byte{42}, 1500)}
+	headers := make([][4]byte, len(frames))
+	vectors := make(net.Buffers, 2*len(frames))
+	var want bytes.Buffer
+	for _, frame := range frames {
+		binary.Write(&want, binary.BigEndian, uint32(len(frame)))
+		want.Write(frame)
+	}
+	for range 2 {
+		if err := writeStreamFrames(conn, frames, headers, vectors); err != nil {
+			t.Fatal(err)
+		}
+		got := make([]byte, want.Len())
+		if _, err := io.ReadFull(peer, got); err != nil {
+			t.Fatal(err)
+		}
+		if !bytes.Equal(got, want.Bytes()) {
+			t.Fatal("stream batch changed framing or order")
+		}
+	}
+	writer := &shortWriter{}
+	if err := writeStreamFrames(writer, frames, headers, vectors); !errors.Is(err, io.ErrShortWrite) {
+		t.Fatalf("short writer = %v", err)
 	}
 }

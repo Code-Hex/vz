@@ -226,47 +226,12 @@ func (i *Interface) ReadPacket(ctx context.Context, frame []byte) (int, error) {
 	if len(frame) < r.maxSize {
 		return 0, io.ErrShortBuffer
 	}
-	select {
-	case r.readers <- struct{}{}:
-	case <-ctx.Done():
-		return 0, ctx.Err()
-	case <-r.done:
-		return 0, net.ErrClosed
+	frames := [][]byte{frame}
+	n, err := i.ReadPackets(ctx, frames)
+	if err != nil || n == 0 {
+		return 0, err
 	}
-	defer func() { <-r.readers }()
-	var pinned runtime.Pinner
-	pinned.Pin(&frame[0])
-	defer pinned.Unpin()
-	for {
-		if err := ctx.Err(); err != nil {
-			return 0, err
-		}
-		r.mu.Lock()
-		if r.stopping {
-			r.mu.Unlock()
-			return 0, net.ErrClosed
-		}
-		var errorPtr unsafe.Pointer
-		n := int(vzbridge.ReadVmnetPacket(r.session, unsafe.Pointer(&frame[0]), uint64(len(frame)), &errorPtr))
-		err := vmnetError(errorPtr)
-		r.mu.Unlock()
-		if err != nil {
-			return 0, err
-		}
-		if n > 0 {
-			if n > len(frame) {
-				return 0, fmt.Errorf("vmnet returned oversized frame %d", n)
-			}
-			return n, nil
-		}
-		select {
-		case <-r.wake:
-		case <-ctx.Done():
-			return 0, ctx.Err()
-		case <-r.done:
-			return 0, net.ErrClosed
-		}
-	}
+	return len(frames[0]), nil
 }
 
 // WritePacket synchronously sends a frame and does not retain its buffer.
@@ -281,15 +246,21 @@ func (i *Interface) WritePacket(frame []byte) error {
 	if r.stopping {
 		return net.ErrClosed
 	}
-	if len(frame) == 0 || len(frame) > r.maxSize {
-		return fmt.Errorf("invalid vmnet frame length %d, maximum %d", len(frame), r.maxSize)
+	if len(frame) == 0 || len(frame) > min(r.maxSize, packetBatchBytes) {
+		return fmt.Errorf("invalid vmnet frame length %d, maximum %d", len(frame), min(r.maxSize, packetBatchBytes))
 	}
 	var pinned runtime.Pinner
 	pinned.Pin(&frame[0])
 	defer pinned.Unpin()
 	var errorPtr unsafe.Pointer
-	vzbridge.WriteVmnetPacket(r.session, unsafe.Pointer(&frame[0]), uint64(len(frame)), &errorPtr)
-	return vmnetError(errorPtr)
+	n := vzbridge.WriteVmnetPacket(r.session, unsafe.Pointer(&frame[0]), uint64(len(frame)), &errorPtr)
+	if err := vmnetError(errorPtr); err != nil {
+		return err
+	}
+	if n != 1 {
+		return io.ErrShortWrite
+	}
+	return nil
 }
 
 // Stop interrupts readers and stops the interface.

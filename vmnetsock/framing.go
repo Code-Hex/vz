@@ -27,23 +27,20 @@ func readStreamFrame(reader io.Reader, frame []byte) (int, error) {
 	return int(size), err
 }
 
-func writeStreamFrame(writer io.Writer, frame []byte) error {
-	var header [4]byte
-	binary.BigEndian.PutUint32(header[:], uint32(len(frame)))
-
-	for _, data := range [][]byte{header[:], frame} {
-		for len(data) > 0 {
-			n, err := writer.Write(data)
-			if err != nil {
-				return err
-			}
-			if n == 0 {
-				return io.ErrShortWrite
-			}
-			data = data[n:]
-		}
+func writeStreamFrames(writer io.Writer, frames [][]byte, headers [][4]byte, vectors net.Buffers) error {
+	vectors = vectors[:2*len(frames)]
+	var expected int64
+	for j, frame := range frames {
+		binary.BigEndian.PutUint32(headers[j][:], uint32(len(frame)))
+		vectors[2*j] = headers[j][:]
+		vectors[2*j+1] = frame
+		expected += int64(4 + len(frame))
 	}
-	return nil
+	n, err := vectors.WriteTo(writer)
+	if err == nil && n != expected {
+		return io.ErrShortWrite
+	}
+	return err
 }
 
 func readDatagramFrame(conn *net.UnixConn, frame []byte) (int, error) {

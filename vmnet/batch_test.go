@@ -14,12 +14,12 @@ import (
 	"github.com/Code-Hex/vz/v4/internal/objc"
 )
 
-func batchInterfaces(t *testing.T) (*Interface, *Interface) {
+func batchInterfaces(t *testing.T, options ...InterfaceOption) (*Interface, *Interface) {
 	t.Helper()
 	if Available(26) {
 		t.Skip("requires macOS 26 SDK")
 	}
-	c, err := NewNetworkConfiguration(ModeHost)
+	c, err := NewNetworkConfiguration(ModeHost, WithMTU(1500))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -29,8 +29,8 @@ func batchInterfaces(t *testing.T) (*Interface, *Interface) {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { objc.Release((*objc.Pointer)(network)) })
-	start := func() *Interface {
-		i, err := StartInterfaceWithNetwork(network)
+	start := func(opts ...InterfaceOption) *Interface {
+		i, err := StartInterfaceWithNetwork(network, opts...)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -41,7 +41,7 @@ func batchInterfaces(t *testing.T) (*Interface, *Interface) {
 		})
 		return i
 	}
-	return start(), start()
+	return start(), start(options...)
 }
 
 func batchFrame(source net.HardwareAddr, index, size int) []byte {

@@ -17,10 +17,10 @@ import (
 type Transport uint8
 
 const (
-	// Stream uses a four-byte big-endian frame length followed by Ethernet bytes.
+	// Stream uses a four-byte big-endian packet length followed by packet bytes.
 	Stream Transport = iota
 
-	// Datagram sends one Ethernet frame per UNIX datagram.
+	// Datagram sends one packet per UNIX datagram.
 	Datagram
 )
 
@@ -43,6 +43,8 @@ type adapterState struct {
 // New creates a socket pair and starts forwarding immediately.
 // The Adapter owns both sockets and borrows iface without stopping it.
 // Dup returns a caller-owned socket to pass through exec.Cmd.ExtraFiles.
+// Packets pass through unchanged. If iface uses Virtio headers, the peer must
+// support that format and the offload features enabled on iface.
 func New(ctx context.Context, iface *vmnet.Interface, transport Transport) (*Adapter, error) {
 	if iface == nil || iface.MaxPacketSize() == 0 {
 		return nil, fmt.Errorf("vmnet interface is nil or uninitialized")

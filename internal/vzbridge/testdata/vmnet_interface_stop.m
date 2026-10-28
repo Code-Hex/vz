@@ -8,6 +8,7 @@ static vmnet_return_t startStatus = VMNET_SUCCESS, registrationStatus = VMNET_SU
 static int stops, callbacks, frees;
 static bool bridged, listFails, emptyList, startReturnsNull;
 static uint32_t expectedOptions;
+static uint64_t reportedMaximum = 1514, expectedMaximum = 1514;
 static void (^savedCallback)(interface_event_t, xpc_object_t);
 
 static void countFree(void *pointer)
@@ -29,7 +30,13 @@ static interface_ref startBridgedInterface(xpc_object_t description, dispatch_qu
     assert(xpc_dictionary_get_uint64(description, vmnet_operation_mode_key) == VMNET_BRIDGED_MODE);
     assert(strcmp(xpc_dictionary_get_string(description, vmnet_shared_interface_name_key), "en0") == 0);
     assert(xpc_dictionary_get_bool(description, vmnet_allocate_mac_address_key) == !(expectedOptions & 1));
-    assert(xpc_dictionary_get_bool(description, vmnet_enable_checksum_offload_key) == !!(expectedOptions & 2));
+    if (expectedOptions & 16) {
+        assert(xpc_dictionary_get_bool(description, vmnet_enable_virtio_header_key));
+        assert(!xpc_dictionary_get_value(description, vmnet_enable_checksum_offload_key));
+    } else {
+        assert(!xpc_dictionary_get_value(description, vmnet_enable_virtio_header_key));
+        assert(xpc_dictionary_get_bool(description, vmnet_enable_checksum_offload_key) == !!(expectedOptions & 2));
+    }
     assert(xpc_dictionary_get_bool(description, vmnet_enable_tso_key) == !!(expectedOptions & 4));
     assert(xpc_dictionary_get_bool(description, vmnet_enable_isolation_key) == !!(expectedOptions & 8));
     assert(xpc_dictionary_get_count(description) == 6);
@@ -37,7 +44,7 @@ static interface_ref startBridgedInterface(xpc_object_t description, dispatch_qu
         return NULL;
     dispatch_async(queue, ^{
         xpc_object_t parameters = xpc_dictionary_create(NULL, NULL, 0);
-        xpc_dictionary_set_uint64(parameters, vmnet_max_packet_size_key, 1514);
+        xpc_dictionary_set_uint64(parameters, vmnet_max_packet_size_key, reportedMaximum);
         xpc_dictionary_set_string(parameters, vmnet_mac_address_key, "02:00:00:00:00:01");
         completion(startStatus, parameters);
         xpc_release(parameters);
@@ -102,7 +109,7 @@ static void checkStop(vmnet_return_t unregisterResult, vmnet_return_t stopResult
         : vz_startVmnetInterface(NULL, "", 0, (uint64_t)wake, 1, &size, mac, &error);
     assert(session && !error);
     if (bridged) {
-        assert(size == 1514);
+        assert(size == expectedMaximum);
         const uint8_t expectedMAC[] = { 2, 0, 0, 0, 0, 1 };
         assert(memcmp(mac, expectedMAC, sizeof(mac)) == 0);
     }
@@ -176,6 +183,19 @@ int main(void)
             startStatus = registrationStatus = VMNET_SUCCESS;
             for (expectedOptions = 0; expectedOptions < 16; expectedOptions++)
                 checkStop(VMNET_SUCCESS, VMNET_SUCCESS, VMNET_SUCCESS, VMNET_SUCCESS);
+            expectedOptions = 16;
+            const uint64_t limits[][2] = {
+                { 1514, 1526 },
+                { 0, 0 },
+                { INT32_MAX, (uint64_t)INT32_MAX + 12 },
+                { UINT64_MAX, UINT64_MAX },
+            };
+            for (size_t i = 0; i < sizeof(limits) / sizeof(limits[0]); i++) {
+                reportedMaximum = limits[i][0];
+                expectedMaximum = limits[i][1];
+                checkStop(VMNET_SUCCESS, VMNET_SUCCESS, VMNET_SUCCESS, VMNET_SUCCESS);
+            }
+            reportedMaximum = expectedMaximum = 1514;
             expectedOptions = 0;
             startReturnsNull = true;
             frees = 0;

@@ -11,7 +11,14 @@ import (
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
+// Bound the native descriptor arrays to 32 packets per call. This is our batch
+// size; the bridge also checks vmnet's per-interface packet limits.
+// See https://developer.apple.com/documentation/vmnet/vmnet_read_max_packets_key
 const packetBatchLimit = 32
+
+// Apple documents a 256 KB limit per read/write call. Use decimal KB to keep
+// this cap conservative; the documentation does not give an exact byte count.
+// See https://developer.apple.com/documentation/vmnet
 const packetBatchBytes = 256000
 
 // ReadPackets reads Ethernet frames into frames and returns the number read.

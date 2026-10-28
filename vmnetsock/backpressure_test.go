@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/Code-Hex/vz/v4/internal/macos"
+	"github.com/Code-Hex/vz/v4/internal/objc"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 	"github.com/Code-Hex/vz/v4/vmnet"
 )
@@ -26,10 +27,12 @@ func TestAdapterBackpressureCleanup(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
+				t.Cleanup(func() { objc.Release(c) })
 				n, err := vmnet.NewNetwork(c)
 				if err != nil {
 					t.Fatal(err)
 				}
+				t.Cleanup(func() { objc.Release((*objc.Pointer)(n)) })
 				receiver, err := vmnet.StartInterfaceWithNetwork(n)
 				if err != nil {
 					t.Fatal(err)

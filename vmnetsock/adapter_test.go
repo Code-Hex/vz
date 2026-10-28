@@ -43,10 +43,12 @@ func TestAdapterFramesAndLifetime(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			t.Cleanup(func() { objc.Release(c) })
 			n, err := vmnet.NewNetwork(c)
 			if err != nil {
 				t.Fatal(err)
 			}
+			t.Cleanup(func() { objc.Release((*objc.Pointer)(n)) })
 			a, b := newInterface(t, n), newInterface(t, n)
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
@@ -146,11 +148,16 @@ func TestAdapterCancellation(t *testing.T) {
 	if macos.Available(26, vzbridge.SDKVersion) != nil {
 		t.Skip("requires macOS 26 SDK")
 	}
-	c, _ := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
+	c, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { objc.Release(c) })
 	n, err := vmnet.NewNetwork(c)
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Cleanup(func() { objc.Release((*objc.Pointer)(n)) })
 	for _, transport := range []vmnetsock.Transport{vmnetsock.Stream, vmnetsock.Datagram} {
 		i := newInterface(t, n)
 		ctx, cancel := context.WithCancel(context.Background())
@@ -186,10 +193,12 @@ func TestAdapterStreamTermination(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Cleanup(func() { objc.Release(c) })
 	n, err := vmnet.NewNetwork(c)
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Cleanup(func() { objc.Release((*objc.Pointer)(n)) })
 	for _, test := range []struct {
 		name      string
 		payload   []byte

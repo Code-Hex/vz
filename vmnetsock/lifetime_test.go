@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/Code-Hex/vz/v4/internal/macos"
+	"github.com/Code-Hex/vz/v4/internal/objc"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 	"github.com/Code-Hex/vz/v4/vmnet"
 	"github.com/Code-Hex/vz/v4/vmnetsock"
@@ -36,10 +37,12 @@ func TestAdapterDuplicateOwnership(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			t.Cleanup(func() { objc.Release(configuration) })
 			network, err := vmnet.NewNetwork(configuration)
 			if err != nil {
 				t.Fatal(err)
 			}
+			t.Cleanup(func() { objc.Release((*objc.Pointer)(network)) })
 			adapter, err := vmnetsock.New(context.Background(), newInterface(t, network), transport)
 			if err != nil {
 				t.Fatal(err)
@@ -95,10 +98,12 @@ func TestAdapterConcurrentDupAndClose(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Cleanup(func() { objc.Release(config) })
 	network, err := vmnet.NewNetwork(config)
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Cleanup(func() { objc.Release((*objc.Pointer)(network)) })
 	for _, transport := range []vmnetsock.Transport{vmnetsock.Stream, vmnetsock.Datagram} {
 		adapter, err := vmnetsock.New(context.Background(), newInterface(t, network), transport)
 		if err != nil {

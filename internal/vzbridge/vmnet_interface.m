@@ -7,6 +7,7 @@ struct VmnetSession {
     interface_ref interface;
     dispatch_queue_t events;
     dispatch_block_t disableCallback;
+    uint64_t readMaxPackets, writeMaxPackets;
 };
 static void interfaceError(vmnet_return_t status, NSString *operation, void **output)
 {
@@ -43,6 +44,8 @@ void *vz_startVmnetInterface(void *network, const char *name, uint32_t options, 
             result = status;
             if (status == VMNET_SUCCESS && parameters) {
                 *(uint64_t *)maxPacketSize = xpc_dictionary_get_uint64(parameters, vmnet_max_packet_size_key);
+                session->readMaxPackets = xpc_dictionary_get_uint64(parameters, vmnet_read_max_packets_key);
+                session->writeMaxPackets = xpc_dictionary_get_uint64(parameters, vmnet_write_max_packets_key);
                 const char *address = xpc_dictionary_get_string(parameters, vmnet_mac_address_key);
                 unsigned int bytes[6];
                 if (address && sscanf(address, "%x:%x:%x:%x:%x:%x", &bytes[0], &bytes[1], &bytes[2], &bytes[3], &bytes[4], &bytes[5]) == 6)
@@ -137,30 +140,83 @@ void vz_stopVmnetInterface(void *pointer, void **errorOut)
     }
 #endif
 }
-int32_t vz_readVmnetPacket(void *pointer, void *buffer, uint64_t size, void **errorOut)
+int32_t vz_writeVmnetPacket(void *pointer, const void *buffer, uint64_t size, void **errorOut)
 {
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
     if (@available(macOS 26, *)) {
         struct VmnetSession *session = pointer;
-        struct iovec vec = { .iov_base = buffer, .iov_len = size };
-        struct vmpktdesc packet = { .vm_pkt_size = size, .vm_pkt_iov = &vec, .vm_pkt_iovcnt = 1, .vm_flags = 0 };
+        struct iovec vector = { .iov_base = (void *)buffer, .iov_len = size };
+        struct vmpktdesc packet = { .vm_pkt_size = size, .vm_pkt_iov = &vector, .vm_pkt_iovcnt = 1, .vm_flags = 0 };
         int count = 1;
-        vmnet_return_t result = vmnet_read(session->interface, &packet, &count);
-        interfaceError(result, @"vmnet_read", errorOut);
-        return result == VMNET_SUCCESS && count ? (int32_t)packet.vm_pkt_size : 0;
+        vmnet_return_t result = vmnet_write(session->interface, &packet, &count);
+        interfaceError(result, @"vmnet_write", errorOut);
+        return result == VMNET_SUCCESS ? count : 0;
     }
 #endif
     return 0;
 }
-void vz_writeVmnetPacket(void *pointer, const void *buffer, uint64_t size, void **errorOut)
+
+// vmnet limits each call to 256 KB. Use decimal KB conservatively.
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+static int32_t transferPackets(void *pointer, void *buffers, void *sizes, int32_t requested, bool reading, void **errorOut)
+{
+    struct VmnetSession *session = pointer;
+    uint64_t limit = reading ? session->readMaxPackets : session->writeMaxPackets;
+    if (!limit)
+        limit = 1;
+    if (requested < 1 || requested > 32) {
+        interfaceError(VMNET_INVALID_ARGUMENT, @"packet batch count", errorOut);
+        return 0;
+    }
+    struct iovec vectors[32];
+    struct vmpktdesc packets[32];
+    uint64_t *lengths = sizes;
+    uint64_t remaining = 256000;
+    int submitted = 0;
+    for (; submitted < requested && submitted < limit; submitted++) {
+        uint64_t size = lengths[submitted];
+        if (!size || size > remaining)
+            break;
+        remaining -= size;
+        vectors[submitted] = (struct iovec) { .iov_base = ((void **)buffers)[submitted], .iov_len = size };
+        packets[submitted] = (struct vmpktdesc) { .vm_pkt_size = size, .vm_pkt_iov = &vectors[submitted], .vm_pkt_iovcnt = 1, .vm_flags = 0 };
+    }
+    if (!submitted) {
+        interfaceError(VMNET_INVALID_ARGUMENT, @"packet batch size", errorOut);
+        return 0;
+    }
+    int count = submitted;
+    vmnet_return_t result = reading ? vmnet_read(session->interface, packets, &count)
+                                    : vmnet_write(session->interface, packets, &count);
+    interfaceError(result, reading ? @"vmnet_read" : @"vmnet_write", errorOut);
+    // An error may leave count unchanged. Only successful calls report progress.
+    if (result != VMNET_SUCCESS)
+        return 0;
+    if (count < 0 || count > submitted) {
+        interfaceError(VMNET_FAILURE, @"packet batch result count", errorOut);
+        return 0;
+    }
+    if (reading)
+        for (int i = 0; i < count; i++)
+            lengths[i] = packets[i].vm_pkt_size;
+    return count;
+}
+#endif
+
+int32_t vz_readVmnetPackets(void *pointer, void *buffers, void *sizes, int32_t count, void **errorOut)
 {
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
-    if (@available(macOS 26, *)) {
-        struct VmnetSession *session = pointer;
-        struct iovec vec = { .iov_base = (void *)buffer, .iov_len = size };
-        struct vmpktdesc packet = { .vm_pkt_size = size, .vm_pkt_iov = &vec, .vm_pkt_iovcnt = 1, .vm_flags = 0 };
-        int count = 1;
-        interfaceError(vmnet_write(session->interface, &packet, &count), @"vmnet_write", errorOut);
-    }
+    if (@available(macOS 26, *))
+        return transferPackets(pointer, buffers, sizes, count, true, errorOut);
 #endif
+    return 0;
+}
+
+int32_t vz_writeVmnetPackets(void *pointer, void *buffers, void *sizes, int32_t count, void **errorOut)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    if (@available(macOS 26, *))
+        return transferPackets(pointer, buffers, sizes, count, false, errorOut);
+#endif
+    return 0;
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"syscall"
 	"testing"
 	"time"
 
@@ -105,35 +106,6 @@ func (w *shortWriter) Write(p []byte) (int, error) {
 	return w.Buffer.Write(p)
 }
 
-func TestDatagramFrames(t *testing.T) {
-	conn, file, err := socketPair(Datagram, 3)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer conn.Close()
-	defer file.Close()
-	if _, err := file.Write([]byte("abc")); err != nil {
-		t.Fatal(err)
-	}
-	buf := make([]byte, 3)
-	n, err := readDatagramFrame(conn, buf)
-	if err != nil || string(buf[:n]) != "abc" {
-		t.Fatalf("datagram = %q, %v", buf[:n], err)
-	}
-	if _, err := file.Write([]byte("abcd")); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := readDatagramFrame(conn, buf); err == nil {
-		t.Fatal("truncated datagram accepted")
-	}
-	if _, err := file.Write(nil); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := readDatagramFrame(conn, buf); err == nil {
-		t.Fatal("empty datagram accepted")
-	}
-}
-
 func TestSocketBackpressureClose(t *testing.T) {
 	for _, transport := range []Transport{Stream, Datagram} {
 		t.Run(fmt.Sprint(transport), func(t *testing.T) {
@@ -147,14 +119,20 @@ func TestSocketBackpressureClose(t *testing.T) {
 			}
 			frame := make([]byte, 65550)
 			saturateSocket(t, conn, frame)
+			var raw syscall.RawConn
+			if transport == Datagram {
+				raw, err = conn.SyscallConn()
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
 
 			done := make(chan error, 1)
 			go func() {
 				if transport == Stream {
 					done <- writeStreamFrames(conn, [][]byte{frame}, make([][4]byte, 1), make(net.Buffers, 2))
 				} else {
-					_, err := conn.Write(frame)
-					done <- err
+					done <- writeDatagramPackets(raw, [][]byte{frame})
 				}
 			}()
 			if err := conn.Close(); err != nil {

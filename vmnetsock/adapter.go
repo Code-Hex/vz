@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 	"sync"
+	"syscall"
 
 	"github.com/Code-Hex/vz/v4/vmnet"
 	"golang.org/x/sys/unix"
@@ -112,34 +113,36 @@ func (a *Adapter) Dup() (*os.File, error) {
 }
 
 func (s *adapterState) forwardToInterface(ctx context.Context, iface *vmnet.Interface, transport Transport) error {
-	var reader *streamPacketReader
-	var frame []byte
+	var readPackets func() ([][]byte, error)
 	if transport == Stream {
-		reader = newStreamPacketReader(s.conn, iface.MaxPacketSize())
+		reader := newStreamPacketReader(s.conn, iface.MaxPacketSize())
+		readPackets = reader.readPackets
 	} else {
-		frame = make([]byte, iface.MaxPacketSize())
+		size := min(iface.MaxPacketSize(), packetBatchBytes)
+		count := packetBatchSize(size)
+		raw, err := s.conn.SyscallConn()
+		if err != nil {
+			return err
+		}
+		frames := make([][]byte, count)
+		for i := range frames {
+			frames[i] = make([]byte, size)
+		}
+		readPackets = func() ([][]byte, error) {
+			n, err := readDatagramPackets(raw, frames, size)
+			return frames[:n], err
+		}
 	}
 
 	for {
 		if err := ctx.Err(); err != nil {
 			return err
 		}
-		var err error
-		if transport == Stream {
-			var frames [][]byte
-			frames, err = reader.readPackets()
-			if err == nil {
-				_, err = iface.WritePackets(frames)
+		frames, err := readPackets()
+		if len(frames) > 0 {
+			if _, writeErr := iface.WritePackets(frames); writeErr != nil && !vmnetBufferExhausted(writeErr) {
+				return writeErr
 			}
-		} else {
-			var n int
-			n, err = readDatagramFrame(s.conn, frame)
-			if err == nil {
-				err = iface.WritePacket(frame[:n])
-			}
-		}
-		if vmnetBufferExhausted(err) {
-			continue
 		}
 		if errors.Is(err, io.EOF) {
 			return nil
@@ -159,9 +162,16 @@ func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface
 	}
 	var headers [][4]byte
 	var vectors net.Buffers
+	var raw syscall.RawConn
 	if transport == Stream {
 		headers = make([][4]byte, count)
 		vectors = make(net.Buffers, 2*count)
+	} else {
+		var err error
+		raw, err = s.conn.SyscallConn()
+		if err != nil {
+			return err
+		}
 	}
 	for {
 		n, err := iface.ReadPackets(ctx, frames)
@@ -173,10 +183,10 @@ func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface
 				return err
 			}
 		} else {
-			for _, frame := range frames[:n] {
-				if err := writeDatagramFrame(s.conn, frame); err != nil && !errors.Is(err, unix.ENOBUFS) {
-					return err
-				}
+			// Drop the unsent suffix on ENOBUFS. Socket writability does not
+			// guarantee space in the peer's datagram receive buffer.
+			if err := writeDatagramPackets(raw, frames[:n]); err != nil && !errors.Is(err, unix.ENOBUFS) {
+				return err
 			}
 		}
 	}

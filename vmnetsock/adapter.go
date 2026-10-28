@@ -78,15 +78,10 @@ func New(ctx context.Context, iface *vmnet.Interface, transport Transport) (*Ada
 		s.finish(s.forwardToPeer(run, iface, transport))
 	})
 	go func() {
+		<-run.Done()
+		s.finish(run.Err())
 		pumps.Wait()
 		close(s.done)
-	}()
-	go func() {
-		select {
-		case <-ctx.Done():
-			s.finish(ctx.Err())
-		case <-s.done:
-		}
 	}()
 
 	return &Adapter{state: s}, nil

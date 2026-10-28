@@ -31,7 +31,10 @@ void *vz_startVmnetInterface(void *network, const char *name, uint32_t options, 
         dispatch_semaphore_t done = dispatch_semaphore_create(0);
         xpc_object_t desc = xpc_dictionary_create(NULL, NULL, 0);
         xpc_dictionary_set_bool(desc, vmnet_allocate_mac_address_key, !(options & 1));
-        xpc_dictionary_set_bool(desc, vmnet_enable_checksum_offload_key, options & 2);
+        if (options & 16)
+            xpc_dictionary_set_bool(desc, vmnet_enable_virtio_header_key, true);
+        else
+            xpc_dictionary_set_bool(desc, vmnet_enable_checksum_offload_key, options & 2);
         xpc_dictionary_set_bool(desc, vmnet_enable_tso_key, options & 4);
         xpc_dictionary_set_bool(desc, vmnet_enable_isolation_key, options & 8);
         if (name) {
@@ -43,7 +46,12 @@ void *vz_startVmnetInterface(void *network, const char *name, uint32_t options, 
         vmnet_start_interface_completion_handler_t handler = ^(vmnet_return_t status, xpc_object_t parameters) {
             result = status;
             if (status == VMNET_SUCCESS && parameters) {
-                *(uint64_t *)maxPacketSize = xpc_dictionary_get_uint64(parameters, vmnet_max_packet_size_key);
+                uint64_t maximum = xpc_dictionary_get_uint64(parameters, vmnet_max_packet_size_key);
+                // vmnet reports the frame limit without the virtio header.
+                // Leave invalid limits intact for the Go startup validation.
+                if ((options & 16) && maximum > 0 && maximum <= INT32_MAX)
+                    maximum += 12;
+                *(uint64_t *)maxPacketSize = maximum;
                 session->readMaxPackets = xpc_dictionary_get_uint64(parameters, vmnet_read_max_packets_key);
                 session->writeMaxPackets = xpc_dictionary_get_uint64(parameters, vmnet_write_max_packets_key);
                 const char *address = xpc_dictionary_get_string(parameters, vmnet_mac_address_key);

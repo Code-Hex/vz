@@ -17,6 +17,16 @@ func TestInterfaceOptionNativeFlags(t *testing.T) {
 		{name: "disable MAC", options: []InterfaceOption{WithInterfaceMACAllocation(false)}, want: 1},
 		{name: "checksum offload", options: []InterfaceOption{WithInterfaceChecksumOffload(true)}, want: 2},
 		{name: "TSO", options: []InterfaceOption{WithInterfaceTSO(true)}, want: 4},
+		{name: "virtio header", options: []InterfaceOption{WithInterfaceVirtioHeader(true)}, want: 16},
+		{
+			name: "disable header after checksum",
+			options: []InterfaceOption{
+				WithInterfaceVirtioHeader(true),
+				WithInterfaceChecksumOffload(true),
+				WithInterfaceVirtioHeader(false),
+			},
+			want: 2,
+		},
 		{name: "isolation", options: []InterfaceOption{WithInterfaceIsolation(true)}, want: 8},
 		{
 			name: "all capabilities",
@@ -35,6 +45,7 @@ func TestInterfaceOptionNativeFlags(t *testing.T) {
 				WithInterfaceChecksumOffload(true), WithInterfaceChecksumOffload(false),
 				WithInterfaceTSO(true), WithInterfaceTSO(false),
 				WithInterfaceIsolation(true), WithInterfaceIsolation(false),
+				WithInterfaceVirtioHeader(true), WithInterfaceVirtioHeader(false),
 			},
 		},
 	} {

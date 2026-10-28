@@ -17,6 +17,8 @@ const packetBatchBytes = 256000
 // ReadPackets reads Ethernet frames into frames and returns the number read.
 // It waits for at least one frame, but does not wait to fill the batch.
 // A read may return fewer frames than fit, even when more frames are queued.
+// With [WithInterfaceVirtioHeader] enabled, each frame starts with a 12-byte
+// Virtio header, which is included in its returned length.
 //
 // Each buffer must have capacity for [Interface.MaxPacketSize] bytes. On success,
 // ReadPackets sets the lengths of frames[:n] to the received frame lengths.
@@ -89,6 +91,8 @@ func (i *Interface) ReadPackets(ctx context.Context, frames [][]byte) (int, erro
 // It checks every frame before sending any, then splits the frames into native
 // batches as needed. Each frame must contain between 1 and
 // min(MaxPacketSize(), 256000) bytes.
+// With [WithInterfaceVirtioHeader] enabled, each frame must start with a
+// 12-byte Virtio header, which counts toward these size limits.
 //
 // On error, n counts only frames confirmed by successful native calls. The failed
 // call may have sent additional frames, so retrying frames[n:] can send duplicates.

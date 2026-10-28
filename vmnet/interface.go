@@ -24,6 +24,7 @@ type interfaceConfiguration struct {
 	enableChecksumOffload bool
 	enableTSO             bool
 	enableIsolation       bool
+	enableVirtioHeader    bool
 }
 
 // InterfaceOption configures an interface before it starts.
@@ -46,6 +47,24 @@ func WithInterfaceChecksumOffload(enabled bool) InterfaceOption {
 	}
 }
 
+// WithInterfaceVirtioHeader controls whether packets include a 12-byte Virtio
+// network header before the Ethernet frame. It is disabled by default.
+// Read and write methods pass the header through unchanged. The caller or peer
+// must handle any checksum and segmentation work specified by received headers.
+// Writes must provide valid header metadata. This option cannot be enabled with
+// [WithInterfaceChecksumOffload].
+//
+// A socket peer must understand this packet format. Plain Ethernet connections,
+// including QEMU stream/socket networking, VZ file-handle attachments, and
+// krunkit's Unix datagram backend, cannot consume these packets without conversion.
+//
+// See: https://developer.apple.com/documentation/vmnet/vmnet_enable_virtio_header_key-swift.var?language=objc
+func WithInterfaceVirtioHeader(enabled bool) InterfaceOption {
+	return func(c *interfaceConfiguration) {
+		c.enableVirtioHeader = enabled
+	}
+}
+
 // WithInterfaceTSO controls TCP segmentation offload, which is disabled by default.
 // When enabled, the peer must support large TCP frames.
 func WithInterfaceTSO(enabled bool) InterfaceOption {
@@ -65,6 +84,7 @@ func WithInterfaceIsolation(enabled bool) InterfaceOption {
 }
 
 // Interface exchanges Ethernet frames on a Network or a bridged physical interface.
+// [WithInterfaceVirtioHeader] adds a raw Virtio network header to each packet.
 // Copies share one lifetime.
 // Call Stop when finished. Its zero value is not usable.
 type Interface struct{ owner *interfaceOwner }
@@ -140,6 +160,9 @@ func startInterface(n *Network, name string, opts ...InterfaceOption) (*Interfac
 	for _, opt := range opts {
 		opt(&c)
 	}
+	if c.enableVirtioHeader && c.enableChecksumOffload {
+		return nil, fmt.Errorf("vmnet virtio header and checksum offload cannot both be enabled")
+	}
 	r := &interfaceResource{wake: make(chan struct{}, 1), done: make(chan struct{}), readers: make(chan struct{}, 1)}
 	r.handle = cgo.NewHandle(r.wake)
 	var size uint64
@@ -170,6 +193,9 @@ func (c interfaceConfiguration) nativeFlags() uint32 {
 	}
 	if c.enableIsolation {
 		flags |= 8
+	}
+	if c.enableVirtioHeader {
+		flags |= 16
 	}
 	return flags
 }
@@ -203,6 +229,7 @@ func (i *Interface) MACAddress() net.HardwareAddr {
 }
 
 // MaxPacketSize returns the maximum Ethernet frame size, including Ethernet headers.
+// When [WithInterfaceVirtioHeader] is enabled, it also includes the 12-byte Virtio header.
 func (i *Interface) MaxPacketSize() int {
 	if i == nil || i.owner == nil {
 		return 0
@@ -211,6 +238,7 @@ func (i *Interface) MaxPacketSize() int {
 }
 
 // ReadPacket waits for one frame. The buffer must hold MaxPacketSize bytes.
+// [WithInterfaceVirtioHeader] includes the Virtio header in the buffer and byte count.
 // A canceled context or Stop interrupts the wait. Concurrent readers share packets.
 func (i *Interface) ReadPacket(ctx context.Context, frame []byte) (int, error) {
 	if i == nil || i.owner == nil {
@@ -235,6 +263,7 @@ func (i *Interface) ReadPacket(ctx context.Context, frame []byte) (int, error) {
 }
 
 // WritePacket synchronously sends a frame and does not retain its buffer.
+// [WithInterfaceVirtioHeader] requires frame to start with a 12-byte Virtio header.
 func (i *Interface) WritePacket(frame []byte) error {
 	if i == nil || i.owner == nil {
 		return fmt.Errorf("vmnet interface is nil or uninitialized")

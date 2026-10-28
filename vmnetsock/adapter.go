@@ -72,7 +72,7 @@ func New(ctx context.Context, iface *vmnet.Interface, transport Transport) (*Ada
 
 	var pumps sync.WaitGroup
 	pumps.Go(func() {
-		s.finish(s.forwardToInterface(iface, transport))
+		s.finish(s.forwardToInterface(run, iface, transport))
 	})
 	pumps.Go(func() {
 		s.finish(s.forwardToPeer(run, iface, transport))
@@ -116,25 +116,33 @@ func (a *Adapter) Dup() (*os.File, error) {
 	return os.NewFile(uintptr(fd), "vmnet-peer"), nil
 }
 
-func (s *adapterState) forwardToInterface(iface *vmnet.Interface, transport Transport) error {
-	frame := make([]byte, iface.MaxPacketSize())
+func (s *adapterState) forwardToInterface(ctx context.Context, iface *vmnet.Interface, transport Transport) error {
+	var reader *streamPacketReader
+	var frame []byte
+	if transport == Stream {
+		reader = newStreamPacketReader(s.conn, iface.MaxPacketSize())
+	} else {
+		frame = make([]byte, iface.MaxPacketSize())
+	}
 
 	for {
-		var n int
-		var err error
-		if transport == Stream {
-			n, err = readStreamFrame(s.conn, frame)
-		} else {
-			n, err = readDatagramFrame(s.conn, frame)
-		}
-		if err != nil {
-			if errors.Is(err, io.EOF) {
-				return nil
-			}
+		if err := ctx.Err(); err != nil {
 			return err
 		}
-
-		err = iface.WritePacket(frame[:n])
+		var err error
+		if transport == Stream {
+			var frames [][]byte
+			frames, err = reader.readPackets()
+			if err == nil {
+				_, err = iface.WritePackets(frames)
+			}
+		} else {
+			var n int
+			n, err = readDatagramFrame(s.conn, frame)
+			if err == nil {
+				err = iface.WritePacket(frame[:n])
+			}
+		}
 		if vmnetBufferExhausted(err) {
 			continue
 		}
@@ -149,13 +157,17 @@ func (s *adapterState) forwardToInterface(iface *vmnet.Interface, transport Tran
 
 func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface, transport Transport) error {
 	size := iface.MaxPacketSize()
-	count := min(32, max(1, 256000/size))
+	count := packetBatchSize(size)
 	frames := make([][]byte, count)
 	for j := range frames {
 		frames[j] = make([]byte, size)
 	}
-	headers := make([][4]byte, count)
-	vectors := make(net.Buffers, 2*count)
+	var headers [][4]byte
+	var vectors net.Buffers
+	if transport == Stream {
+		headers = make([][4]byte, count)
+		vectors = make(net.Buffers, 2*count)
+	}
 	for {
 		n, err := iface.ReadPackets(ctx, frames)
 		if err != nil {

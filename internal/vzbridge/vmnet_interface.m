@@ -164,7 +164,6 @@ int32_t vz_writeVmnetPacket(void *pointer, const void *buffer, uint64_t size, vo
     return 0;
 }
 
-// vmnet limits each call to 256 KB. Use decimal KB conservatively.
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
 static int32_t transferPackets(void *pointer, void *buffers, void *sizes, int32_t requested, bool reading, void **errorOut)
 {
@@ -172,6 +171,7 @@ static int32_t transferPackets(void *pointer, void *buffers, void *sizes, int32_
     uint64_t limit = reading ? session->readMaxPackets : session->writeMaxPackets;
     if (!limit)
         limit = 1;
+    // Match vmnet.packetBatchLimit so the descriptor arrays stay bounded.
     if (requested < 1 || requested > 32) {
         interfaceError(VMNET_INVALID_ARGUMENT, @"packet batch count", errorOut);
         return 0;
@@ -179,6 +179,8 @@ static int32_t transferPackets(void *pointer, void *buffers, void *sizes, int32_
     struct iovec vectors[32];
     struct vmpktdesc packets[32];
     uint64_t *lengths = sizes;
+    // Apple documents 256 KB per call. Use decimal KB, as in vmnet.packetBatchBytes.
+    // https://developer.apple.com/documentation/vmnet
     uint64_t remaining = 256000;
     int submitted = 0;
     for (; submitted < requested && submitted < limit; submitted++) {

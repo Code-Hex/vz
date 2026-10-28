@@ -30,15 +30,22 @@ func TestStreamFrames(t *testing.T) {
 				_, _ = b.Write(part)
 			}
 		}()
-		buf := make([]byte, 3)
-		for _, want := range []string{"abc", "de"} {
-			n, err := readStreamFrame(a, buf)
-			if err != nil || string(buf[:n]) != want {
-				t.Fatalf("frame %q, %v, want %q", buf[:n], err, want)
+		reader := newStreamPacketReader(a, 3)
+		var got []string
+		for {
+			frames, err := reader.readPackets()
+			if errors.Is(err, io.EOF) {
+				break
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, frame := range frames {
+				got = append(got, string(frame))
 			}
 		}
-		if _, err := readStreamFrame(a, buf); !errors.Is(err, io.EOF) {
-			t.Fatalf("EOF = %v", err)
+		if len(got) != 2 || got[0] != "abc" || got[1] != "de" {
+			t.Fatalf("frames = %q", got)
 		}
 	})
 	for _, test := range []struct {
@@ -63,7 +70,7 @@ func TestStreamFrames(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			_, err := readStreamFrame(bytes.NewReader(test.data), make([]byte, 3))
+			_, err := newStreamPacketReader(bytes.NewReader(test.data), 3).readPackets()
 			if !errors.Is(err, test.want) {
 				t.Fatalf("read = %v", err)
 			}
@@ -73,7 +80,7 @@ func TestStreamFrames(t *testing.T) {
 		t.Run("invalid length", func(t *testing.T) {
 			var header [4]byte
 			binary.BigEndian.PutUint32(header[:], length)
-			if _, err := readStreamFrame(bytes.NewReader(header[:]), make([]byte, 3)); err == nil {
+			if _, err := newStreamPacketReader(bytes.NewReader(header[:]), 3).readPackets(); err == nil {
 				t.Fatal("invalid length accepted")
 			}
 		})
@@ -230,5 +237,121 @@ func TestStreamBatchFrames(t *testing.T) {
 	writer := &shortWriter{}
 	if err := writeStreamFrames(writer, frames, headers, vectors); !errors.Is(err, io.ErrShortWrite) {
 		t.Fatalf("short writer = %v", err)
+	}
+}
+
+func TestStreamPacketReaderSuffix(t *testing.T) {
+	for _, test := range []struct {
+		name   string
+		suffix []byte
+		want   error
+	}{
+		{
+			name: "EOF",
+			want: io.EOF,
+		},
+		{
+			name:   "partial header",
+			suffix: []byte{0, 0},
+			want:   io.ErrUnexpectedEOF,
+		},
+		{
+			name:   "partial payload",
+			suffix: []byte{0, 0, 0, 3, 'x'},
+			want:   io.ErrUnexpectedEOF,
+		},
+		{
+			name:   "invalid length",
+			suffix: []byte{0, 0, 0, 4},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			data := append([]byte{0, 0, 0, 3, 'a', 'b', 'c', 0, 0, 0, 1, 'd'}, test.suffix...)
+			reader := newStreamPacketReader(bytes.NewReader(data), 3)
+			frames, err := reader.readPackets()
+			if err != nil || len(frames) != 2 {
+				t.Fatalf("complete prefix = %q, %v", frames, err)
+			}
+			if string(frames[0]) != "abc" || string(frames[1]) != "d" {
+				t.Fatalf("frames = %q", frames)
+			}
+			for _, frame := range frames {
+				if cap(frame) != len(frame) {
+					t.Fatalf("frame capacity = %d, length = %d", cap(frame), len(frame))
+				}
+			}
+			_, err = reader.readPackets()
+			if err == nil || test.want != nil && !errors.Is(err, test.want) {
+				t.Fatalf("suffix error = %v, want %v", err, test.want)
+			}
+		})
+	}
+}
+
+func TestStreamPacketReaderDoesNotWaitForNextFrame(t *testing.T) {
+	a, b := net.Pipe()
+	defer a.Close()
+	defer b.Close()
+	if err := a.SetReadDeadline(time.Now().Add(3 * time.Second)); err != nil {
+		t.Fatal(err)
+	}
+	continueWrite := make(chan struct{})
+	done := make(chan error, 1)
+	go func() {
+		if _, err := b.Write([]byte{0, 0, 0, 1, 'a', 0, 0, 0, 2, 'b'}); err != nil {
+			done <- err
+			return
+		}
+		<-continueWrite
+		_, err := b.Write([]byte{'c'})
+		done <- err
+	}()
+	reader := newStreamPacketReader(a, 3)
+	frames, err := reader.readPackets()
+	close(continueWrite)
+	if err != nil || len(frames) != 1 || string(frames[0]) != "a" {
+		t.Fatalf("first batch = %q, %v", frames, err)
+	}
+	frames, err = reader.readPackets()
+	if err != nil || len(frames) != 1 || string(frames[0]) != "bc" {
+		t.Fatalf("second batch = %q, %v", frames, err)
+	}
+	if err := <-done; err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestStreamPacketReaderBatchLimits(t *testing.T) {
+	for _, size := range []int{1, 1500, 65550, 256000} {
+		t.Run(fmt.Sprint(size), func(t *testing.T) {
+			var data bytes.Buffer
+			for i := range 35 {
+				binary.Write(&data, binary.BigEndian, uint32(size))
+				data.Write(bytes.Repeat([]byte{byte(i)}, size))
+			}
+			reader := newStreamPacketReader(&data, size)
+			got := 0
+			for {
+				frames, err := reader.readPackets()
+				if errors.Is(err, io.EOF) {
+					break
+				}
+				if err != nil {
+					t.Fatal(err)
+				}
+				if len(frames) == 0 || len(frames) > 32 || len(frames)*size > 256000 {
+					t.Fatalf("batch has %d packets of %d bytes", len(frames), size)
+				}
+				for _, frame := range frames {
+					if len(frame) != size || !bytes.Equal(frame, bytes.Repeat([]byte{byte(got)}, size)) {
+						t.Fatalf("packet %d was changed", got)
+					}
+					got++
+				}
+			}
+			if got != 35 {
+				t.Fatalf("received %d packets, want 35", got)
+			}
+		})
 	}
 }

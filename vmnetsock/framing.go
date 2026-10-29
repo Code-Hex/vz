@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net"
-
-	"golang.org/x/sys/unix"
 )
 
 // Apple documents a 256 KB limit per read/write call. Use the same conservative
@@ -99,29 +97,4 @@ func writeStreamFrames(writer io.Writer, frames [][]byte, headers [][4]byte, vec
 		return io.ErrShortWrite
 	}
 	return err
-}
-
-func readDatagramFrame(conn *net.UnixConn, frame []byte) (int, error) {
-	n, _, flags, _, err := conn.ReadMsgUnix(frame, nil)
-	if err != nil {
-		return 0, err
-	}
-	if flags&unix.MSG_TRUNC != 0 {
-		return 0, fmt.Errorf("datagram frame exceeds maximum %d", len(frame))
-	}
-	if n == 0 {
-		return 0, fmt.Errorf("empty datagram frame")
-	}
-	return n, nil
-}
-
-func writeDatagramFrame(conn *net.UnixConn, frame []byte) error {
-	n, err := conn.Write(frame)
-	if err != nil {
-		return err
-	}
-	if n != len(frame) {
-		return io.ErrShortWrite
-	}
-	return nil
 }

@@ -9,6 +9,72 @@ import (
 )
 
 const (
+	ethernetHeaderSize = 14
+	etherTypeOffset    = 12
+	etherTypeIPv4      = 0x0800
+	etherTypeIPv6      = 0x86dd
+	etherTypeVLAN      = 0x8100
+	etherTypeQinQ      = 0x88a8
+
+	ipv4Version              = 4
+	ipv4HeaderSize           = 20
+	ipv4TotalLengthOffset    = 2
+	ipv4IdentificationOffset = 4
+	ipv4FragmentFlagsOffset  = 6
+	ipv4ProtocolOffset       = 9
+	ipv4ChecksumOffset       = 10
+	ipv4SourceOffset         = 12
+	ipv4DestinationOffset    = 16
+	ipv4MoreFragments        = 0x2000
+	ipv4FragmentOffsetMask   = 0x1fff
+	defaultIPv4MSS           = 536
+
+	ipv6Version             = 6
+	ipv6HeaderSize          = 40
+	ipv6PayloadLengthOffset = 4
+	ipv6NextHeaderOffset    = 6
+	ipv6SourceOffset        = 8
+	ipv6DestinationOffset   = 24
+	defaultIPv6MSS          = 1220
+
+	ipProtocolTCP          = 6
+	ipv6HopByHop           = 0
+	ipv6Routing            = 43
+	ipv6Fragment           = 44
+	ipv6Authentication     = 51
+	ipv6DestinationOptions = 60
+
+	tcpHeaderSize            = 20
+	tcpDestinationPortOffset = 2
+	tcpSequenceOffset        = 4
+	tcpAcknowledgmentOffset  = 8
+	tcpHeaderLengthOffset    = 12
+	tcpFlagsOffset           = 13
+	tcpChecksumOffset        = 16
+
+	tcpFlagFIN = 0x01
+	tcpFlagSYN = 0x02
+	tcpFlagRST = 0x04
+	tcpFlagPSH = 0x08
+	tcpFlagACK = 0x10
+	tcpFlagURG = 0x20
+	tcpFlagCWR = 0x80
+
+	tcpOptionEnd           = 0
+	tcpOptionNOP           = 1
+	tcpOptionMSS           = 2
+	tcpOptionWindowScale   = 3
+	tcpOptionSACKPermitted = 4
+	tcpOptionSACK          = 5
+	tcpOptionTimestamp     = 8
+	tcpOptionMSSLength     = 4
+
+	peerDirection   = 0
+	nativeDirection = 1
+	bothFINs        = 1<<peerDirection | 1<<nativeDirection
+)
+
+const (
 	// These are adapter memory policies, not vmnet or TCP protocol limits.
 	// Keep at most 4096 handshakes and fail admission instead of forgetting an
 	// active connection's MSS. Give idle connections a longer lifetime than
@@ -86,7 +152,7 @@ func (s *tcpSegmentation) forwardNative(frame []byte, now time.Time, emit func([
 		return err
 	}
 	if packet == nil {
-		if len(frame) > s.mtu+14 {
+		if len(frame) > s.mtu+ethernetHeaderSize {
 			return fmt.Errorf("cannot segment oversized non-TCP frame")
 		}
 		return emit(frame)
@@ -100,10 +166,10 @@ func (s *tcpSegmentation) forwardNative(frame []byte, now time.Time, emit func([
 
 func (s *tcpSegmentation) observe(p *tcpPacket, peer bool, now time.Time) (int, error) {
 	key := tcpFlowKey{peer: p.src, remote: p.dst}
-	direction := 0
+	direction := peerDirection
 	if !peer {
 		key.peer, key.remote = key.remote, key.peer
-		direction = 1
+		direction = nativeDirection
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -112,8 +178,8 @@ func (s *tcpSegmentation) observe(p *tcpPacket, peer bool, now time.Time) (int, 
 		delete(s.flows, key)
 		known = false
 	}
-	flags := p.tcp[13]
-	if flags&4 != 0 {
+	flags := p.tcp[tcpFlagsOffset]
+	if flags&tcpFlagRST != 0 {
 		if p.payload() != 0 {
 			return 0, fmt.Errorf("TCP reset contains data")
 		}
@@ -124,9 +190,10 @@ func (s *tcpSegmentation) observe(p *tcpPacket, peer bool, now time.Time) (int, 
 		}
 		return 0, nil
 	}
-	seq, ack := binary.BigEndian.Uint32(p.tcp[4:]), binary.BigEndian.Uint32(p.tcp[8:])
-	if flags&2 != 0 {
-		if !known && flags&0x10 == 0 {
+	seq := binary.BigEndian.Uint32(p.tcp[tcpSequenceOffset:])
+	ack := binary.BigEndian.Uint32(p.tcp[tcpAcknowledgmentOffset:])
+	if flags&tcpFlagSYN != 0 {
+		if !known && flags&tcpFlagACK == 0 {
 			for key, entry := range s.flows {
 				if entry.expired(now) {
 					delete(s.flows, key)
@@ -150,10 +217,12 @@ func (s *tcpSegmentation) observe(p *tcpPacket, peer bool, now time.Time) (int, 
 	}
 	f.lastSeen = now
 	opposite := 1 - direction
-	if flags&0x10 != 0 && f.finSeen&(1<<opposite) != 0 && int32(ack-f.fin[opposite]) >= 0 {
+	// TCP sequence ordering uses the signed distance between two 32-bit values.
+	if flags&tcpFlagACK != 0 && f.finSeen&(1<<opposite) != 0 && int32(ack-f.fin[opposite]) >= 0 {
 		f.finAcked |= 1 << opposite
 	}
-	if flags&1 != 0 {
+	if flags&tcpFlagFIN != 0 {
+		// FIN occupies one sequence number after the payload.
 		end := seq + uint32(p.payload()) + 1
 		if f.finSeen&(1<<direction) != 0 && f.fin[direction] != end {
 			return 0, fmt.Errorf("TCP FIN retransmission changed sequence")
@@ -162,7 +231,7 @@ func (s *tcpSegmentation) observe(p *tcpPacket, peer bool, now time.Time) (int, 
 		f.finSeen |= 1 << direction
 	}
 	// Keep the MSS for FIN/data retransmission after both half-closes finish.
-	if f.finAcked == 3 && f.closedAt.IsZero() {
+	if f.finAcked == bothFINs && f.closedAt.IsZero() {
 		f.closedAt = now
 	}
 	s.flows[key] = f
@@ -173,9 +242,9 @@ func (f tcpFlow) observeSYN(p *tcpPacket, peer, known bool) (tcpFlow, bool, erro
 	if p.payload() != 0 {
 		return f, known, fmt.Errorf("TCP SYN data is not supported for segmentation")
 	}
-	seq := binary.BigEndian.Uint32(p.tcp[4:])
-	ack := binary.BigEndian.Uint32(p.tcp[8:])
-	if p.tcp[13]&0x10 == 0 {
+	seq := binary.BigEndian.Uint32(p.tcp[tcpSequenceOffset:])
+	ack := binary.BigEndian.Uint32(p.tcp[tcpAcknowledgmentOffset:])
+	if p.tcp[tcpFlagsOffset]&tcpFlagACK == 0 {
 		expectedISN := f.peerISN
 		sameDirection := f.phase != tcpNativeSYN
 		if !peer {
@@ -227,40 +296,41 @@ type tcpPacket struct {
 }
 
 func parseTCPPacket(frame []byte) (*tcpPacket, error) {
-	if len(frame) < 14 {
+	if len(frame) < ethernetHeaderSize {
 		return nil, fmt.Errorf("short Ethernet frame")
 	}
-	p := &tcpPacket{frame: frame, ip: frame[14:]}
+	p := &tcpPacket{frame: frame, ip: frame[ethernetHeaderSize:]}
 	var src, dst netip.Addr
-	switch binary.BigEndian.Uint16(frame[12:]) {
-	case 0x8100, 0x88a8:
+	switch binary.BigEndian.Uint16(frame[etherTypeOffset:]) {
+	case etherTypeVLAN, etherTypeQinQ:
 		return nil, fmt.Errorf("VLAN frames are not supported with TCP segmentation")
-	case 0x800:
-		if len(p.ip) < 20 || p.ip[0]>>4 != 4 {
+	case etherTypeIPv4:
+		if len(p.ip) < ipv4HeaderSize || p.ip[0]>>4 != ipv4Version {
 			return nil, fmt.Errorf("invalid IPv4 header")
 		}
-		p.version = 4
-		p.ipHeader = int(p.ip[0]&15) * 4
-		n := int(binary.BigEndian.Uint16(p.ip[2:]))
-		if p.ipHeader < 20 || n < p.ipHeader || n > len(p.ip) {
+		p.version = ipv4Version
+		p.ipHeader = int(p.ip[0]&0x0f) * 4
+		n := int(binary.BigEndian.Uint16(p.ip[ipv4TotalLengthOffset:]))
+		if p.ipHeader < ipv4HeaderSize || n < p.ipHeader || n > len(p.ip) {
 			return nil, fmt.Errorf("invalid IPv4 length")
 		}
 		p.ip = p.ip[:n]
-		if p.ip[9] != 6 {
+		if p.ip[ipv4ProtocolOffset] != ipProtocolTCP {
 			return nil, nil
 		}
-		if p.ipHeader != 20 || binary.BigEndian.Uint16(p.ip[6:])&0x3fff != 0 {
+		fragmentFlags := binary.BigEndian.Uint16(p.ip[ipv4FragmentFlagsOffset:])
+		if p.ipHeader != ipv4HeaderSize || fragmentFlags&(ipv4MoreFragments|ipv4FragmentOffsetMask) != 0 {
 			return nil, fmt.Errorf("TCP IPv4 options and fragments are not supported")
 		}
-		src = netip.AddrFrom4([4]byte(p.ip[12:16]))
-		dst = netip.AddrFrom4([4]byte(p.ip[16:20]))
-	case 0x86dd:
-		if len(p.ip) < 40 || p.ip[0]>>4 != 6 {
+		src = netip.AddrFrom4([4]byte(p.ip[ipv4SourceOffset:ipv4DestinationOffset]))
+		dst = netip.AddrFrom4([4]byte(p.ip[ipv4DestinationOffset:ipv4HeaderSize]))
+	case etherTypeIPv6:
+		if len(p.ip) < ipv6HeaderSize || p.ip[0]>>4 != ipv6Version {
 			return nil, fmt.Errorf("invalid IPv6 header")
 		}
-		p.version = 6
-		p.ipHeader = 40
-		n := 40 + int(binary.BigEndian.Uint16(p.ip[4:]))
+		p.version = ipv6Version
+		p.ipHeader = ipv6HeaderSize
+		n := ipv6HeaderSize + int(binary.BigEndian.Uint16(p.ip[ipv6PayloadLengthOffset:]))
 		if n > len(p.ip) {
 			return nil, fmt.Errorf("invalid IPv6 length")
 		}
@@ -269,22 +339,22 @@ func parseTCPPacket(frame []byte) (*tcpPacket, error) {
 		if err != nil || !isTCP {
 			return nil, err
 		}
-		src = netip.AddrFrom16([16]byte(p.ip[8:24]))
-		dst = netip.AddrFrom16([16]byte(p.ip[24:40]))
+		src = netip.AddrFrom16([16]byte(p.ip[ipv6SourceOffset:ipv6DestinationOffset]))
+		dst = netip.AddrFrom16([16]byte(p.ip[ipv6DestinationOffset:ipv6HeaderSize]))
 	default:
 		return nil, nil
 	}
-	p.frame = frame[:14+len(p.ip)]
+	p.frame = frame[:ethernetHeaderSize+len(p.ip)]
 	p.tcp = p.ip[p.ipHeader:]
-	if len(p.tcp) < 20 {
+	if len(p.tcp) < tcpHeaderSize {
 		return nil, fmt.Errorf("short TCP header")
 	}
-	p.tcpHeader = int(p.tcp[12]>>4) * 4
-	if p.tcpHeader < 20 || p.tcpHeader > len(p.tcp) {
+	p.tcpHeader = int(p.tcp[tcpHeaderLengthOffset]>>4) * 4
+	if p.tcpHeader < tcpHeaderSize || p.tcpHeader > len(p.tcp) {
 		return nil, fmt.Errorf("invalid TCP header length")
 	}
 	p.src = netip.AddrPortFrom(src, binary.BigEndian.Uint16(p.tcp))
-	p.dst = netip.AddrPortFrom(dst, binary.BigEndian.Uint16(p.tcp[2:]))
+	p.dst = netip.AddrPortFrom(dst, binary.BigEndian.Uint16(p.tcp[tcpDestinationPortOffset:]))
 	if err := p.parseOptions(); err != nil {
 		return nil, err
 	}
@@ -292,17 +362,22 @@ func parseTCPPacket(frame []byte) (*tcpPacket, error) {
 }
 
 func ipv6TCPHeader(ip []byte) (bool, error) {
-	next := ip[6]
-	offset := 40
-	for next == 0 || next == 43 || next == 60 || next == 51 || next == 44 {
-		if next == 44 {
+	next := ip[ipv6NextHeaderOffset]
+	offset := ipv6HeaderSize
+	for next != ipProtocolTCP {
+		switch next {
+		case ipv6HopByHop, ipv6Routing, ipv6DestinationOptions, ipv6Authentication:
+		case ipv6Fragment:
 			return false, fmt.Errorf("IPv6 fragments are not supported with TCP segmentation")
+		default:
+			return false, nil
 		}
 		if offset+2 > len(ip) {
 			return false, fmt.Errorf("short IPv6 extension")
 		}
+		// Extension lengths use eight-byte units. AH uses four-byte units.
 		length := (int(ip[offset+1]) + 1) * 8
-		if next == 51 {
+		if next == ipv6Authentication {
 			length = (int(ip[offset+1]) + 2) * 4
 		}
 		if offset+length > len(ip) {
@@ -311,10 +386,7 @@ func ipv6TCPHeader(ip []byte) (bool, error) {
 		next = ip[offset]
 		offset += length
 	}
-	if next != 6 {
-		return false, nil
-	}
-	if offset != 40 {
+	if offset != ipv6HeaderSize {
 		return false, fmt.Errorf("TCP IPv6 extensions are not supported")
 	}
 	return true, nil
@@ -324,17 +396,17 @@ func (p *tcpPacket) parseOptions() error {
 	// RFC 9293 section 3.7.1 supplies these defaults only when an observed
 	// SYN omits MSS. A connection whose SYN was missed never reaches tcpReady.
 	// https://www.rfc-editor.org/rfc/rfc9293.html#section-3.7.1
-	p.mss = 536
-	if p.version == 6 {
-		p.mss = 1220
+	p.mss = defaultIPv4MSS
+	if p.version == ipv6Version {
+		p.mss = defaultIPv6MSS
 	}
 	seenMSS := false
-	for options := p.tcp[20:p.tcpHeader]; len(options) > 0; {
+	for options := p.tcp[tcpHeaderSize:p.tcpHeader]; len(options) > 0; {
 		kind := options[0]
-		if kind == 0 {
+		if kind == tcpOptionEnd {
 			break
 		}
-		if kind == 1 {
+		if kind == tcpOptionNOP {
 			options = options[1:]
 			continue
 		}
@@ -342,13 +414,13 @@ func (p *tcpPacket) parseOptions() error {
 			return fmt.Errorf("invalid TCP option length")
 		}
 		switch kind {
-		case 2, 3, 4, 5, 8:
+		case tcpOptionMSS, tcpOptionWindowScale, tcpOptionSACKPermitted, tcpOptionSACK, tcpOptionTimestamp:
 			// MSS, window scale, SACK, and timestamps survive segmentation.
 		default:
 			p.unsupportedOption = true
 		}
-		if kind == 2 {
-			if options[1] != 4 || seenMSS {
+		if kind == tcpOptionMSS {
+			if options[1] != tcpOptionMSSLength || seenMSS {
 				return fmt.Errorf("invalid TCP MSS option")
 			}
 			p.mss = int(binary.BigEndian.Uint16(options[2:]))
@@ -375,7 +447,7 @@ func (p *tcpPacket) emit(mtu, mss int, emit func([]byte) error) error {
 	}
 	// MSS excludes fixed headers. Options consume part of its data allowance.
 	// https://www.rfc-editor.org/rfc/rfc9293.html#section-3.7.1
-	limit := min(mtu-p.ipHeader-p.tcpHeader, mss-(p.tcpHeader-20))
+	limit := min(mtu-p.ipHeader-p.tcpHeader, mss-(p.tcpHeader-tcpHeaderSize))
 	if limit <= 0 {
 		return fmt.Errorf("TCP headers leave no payload within MSS")
 	}
@@ -388,47 +460,57 @@ func (p *tcpPacket) emit(mtu, mss int, emit func([]byte) error) error {
 	if p.unsupportedOption {
 		return fmt.Errorf("TCP option does not support segmentation")
 	}
-	if p.tcp[13]&0x26 != 0 || p.tcp[13]&0x10 == 0 {
+	flags := p.tcp[tcpFlagsOffset]
+	if flags&(tcpFlagSYN|tcpFlagRST|tcpFlagURG) != 0 || flags&tcpFlagACK == 0 {
 		return fmt.Errorf("unsupported TCP flags for segmentation")
 	}
-	headers := 14 + p.ipHeader + p.tcpHeader
+	headers := ethernetHeaderSize + p.ipHeader + p.tcpHeader
 	buffer := make([]byte, headers+limit)
-	sequence := binary.BigEndian.Uint32(p.tcp[4:])
+	sequence := binary.BigEndian.Uint32(p.tcp[tcpSequenceOffset:])
 	for offset := 0; offset < p.payload(); offset += limit {
 		end := min(offset+limit, p.payload())
 		frame := buffer[:headers+end-offset]
 		copy(frame, p.frame[:headers])
 		copy(frame[headers:], p.tcp[p.tcpHeader+offset:p.tcpHeader+end])
-		ip := frame[14:]
+		ip := frame[ethernetHeaderSize:]
 		tcp := ip[p.ipHeader:]
-		binary.BigEndian.PutUint32(tcp[4:], sequence+uint32(offset))
+		binary.BigEndian.PutUint32(tcp[tcpSequenceOffset:], sequence+uint32(offset))
+		// Carry CWR on the first segment. FIN and PSH follow the final payload byte.
 		if offset != 0 {
-			tcp[13] &^= 0x80
+			tcp[tcpFlagsOffset] &^= tcpFlagCWR
 		}
 		if end != p.payload() {
-			tcp[13] &^= 9
+			tcp[tcpFlagsOffset] &^= tcpFlagFIN | tcpFlagPSH
 		}
-		if p.version == 4 {
-			binary.BigEndian.PutUint16(ip[2:], uint16(len(ip)))
-			binary.BigEndian.PutUint16(ip[4:], binary.BigEndian.Uint16(p.ip[4:])+uint16(offset/limit))
-			ip[10], ip[11] = 0, 0
-			binary.BigEndian.PutUint16(ip[10:], tcpChecksum(ip[:20], 0))
-		} else {
-			binary.BigEndian.PutUint16(ip[4:], uint16(len(tcp)))
-		}
-		tcp[16], tcp[17] = 0, 0
-		sum := uint64(6 + len(tcp))
-		if p.version == 4 {
-			sum = tcpSum(ip[12:20], sum)
-		} else {
-			sum = tcpSum(ip[8:40], sum)
-		}
-		binary.BigEndian.PutUint16(tcp[16:], tcpChecksum(tcp, sum))
+		p.updateSegmentHeaders(ip, offset/limit)
 		if err := emit(frame); err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func (p *tcpPacket) updateSegmentHeaders(ip []byte, segmentIndex int) {
+	tcp := ip[p.ipHeader:]
+	if p.version == ipv4Version {
+		binary.BigEndian.PutUint16(ip[ipv4TotalLengthOffset:], uint16(len(ip)))
+		id := binary.BigEndian.Uint16(p.ip[ipv4IdentificationOffset:]) + uint16(segmentIndex)
+		binary.BigEndian.PutUint16(ip[ipv4IdentificationOffset:], id)
+		binary.BigEndian.PutUint16(ip[ipv4ChecksumOffset:], 0)
+		binary.BigEndian.PutUint16(ip[ipv4ChecksumOffset:], tcpChecksum(ip[:ipv4HeaderSize], 0))
+	} else {
+		binary.BigEndian.PutUint16(ip[ipv6PayloadLengthOffset:], uint16(len(tcp)))
+	}
+	// TCP's pseudo-header includes the segment length, which changes when split.
+	// https://www.rfc-editor.org/rfc/rfc9293.html#section-3.1
+	binary.BigEndian.PutUint16(tcp[tcpChecksumOffset:], 0)
+	sum := uint64(ipProtocolTCP + len(tcp))
+	if p.version == ipv4Version {
+		sum = tcpSum(ip[ipv4SourceOffset:ipv4HeaderSize], sum)
+	} else {
+		sum = tcpSum(ip[ipv6SourceOffset:ipv6HeaderSize], sum)
+	}
+	binary.BigEndian.PutUint16(tcp[tcpChecksumOffset:], tcpChecksum(tcp, sum))
 }
 
 func tcpSum(data []byte, sum uint64) uint64 {

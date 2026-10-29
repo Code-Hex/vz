@@ -243,13 +243,13 @@ func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface
 	var peerFrames [][]byte
 	outputCount := count
 	if s.tcp != nil {
-		outputCount = packetBatchSize(s.tcp.mtu + 14)
+		outputCount = packetBatchSize(s.tcp.mtu + ethernetHeaderSize)
 	}
 	if config.convertVirtioHeader {
 		peerFrames = make([][]byte, outputCount)
 		if s.tcp != nil {
 			for i := range peerFrames {
-				peerFrames[i] = make([]byte, s.tcp.mtu+14)
+				peerFrames[i] = make([]byte, s.tcp.mtu+ethernetHeaderSize)
 			}
 		}
 	}

@@ -100,6 +100,7 @@ VZBridgeOwnedObject vz_newVmnetNetworkDeviceAttachment(VZBridgeObject network);
 void *vz_vmnetNetworkDeviceAttachmentNetwork(VZBridgeObject attachment);
 void vz_releaseCFObject(void *object);
 void *vz_startVmnetInterface(VZBridgeObject network, const char *name, uint32_t options, uint64_t callback, uint64_t context, void *maxPacketSize, void *mac, VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:noqueue")));
+uint64_t vz_vmnetInterfaceMTU(void *session) __attribute__((annotate("vzbridge:noqueue")));
 VZBridgeOwnedObject vz_copyVmnetBridgedInterfaces(VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:noqueue")));
 void vz_stopVmnetInterface(void *session, VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:noqueue")));
 int32_t vz_writeVmnetPacket(void *session, const void *buffer, uint64_t size, VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:noqueue")));

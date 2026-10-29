@@ -868,6 +868,20 @@ func StartVmnetInterface(network objc.NSObject, name string, options uint32, cal
 	return result
 }
 
+var callVmnetInterfaceMTU lazyBinding[func(unsafe.Pointer) uint64]
+
+func VmnetInterfaceMTU(session unsafe.Pointer) uint64 {
+	call := callVmnetInterfaceMTU.get(func() func(unsafe.Pointer) uint64 {
+		var call func(unsafe.Pointer) uint64
+		purego.RegisterFunc(&call, uintptr(C.vz_vmnetInterfaceMTU))
+		return call
+	})
+	var result uint64
+	result = call(session)
+	runtime.KeepAlive(session)
+	return result
+}
+
 var callCopyVmnetBridgedInterfaces lazyBinding[func(*unsafe.Pointer) unsafe.Pointer]
 
 func CopyVmnetBridgedInterfaces(errorOut *unsafe.Pointer) *objc.Pointer {

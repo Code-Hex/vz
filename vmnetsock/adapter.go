@@ -9,6 +9,7 @@ import (
 	"os"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/Code-Hex/vz/v4/vmnet"
 	"golang.org/x/sys/unix"
@@ -34,11 +35,22 @@ type adapterConfiguration struct {
 
 // WithVirtioHeaderConversion connects a raw Virtio vmnet interface to a peer
 // that exchanges plain Ethernet frames, such as QEMU stream/socket networking.
-// Start iface with vmnet.WithInterfaceVirtioHeader(true) and leave TSO disabled.
+// Start iface with vmnet.WithInterfaceVirtioHeader(true).
 // The adapter completes partial checksums and removes incoming Virtio headers.
 // The peer must send fully checksummed Ethernet frames; the adapter adds
 // zeroed headers to them. Unsupported segmentation or RSC checksum metadata
 // stops forwarding. Close returns the error.
+//
+// With TSO enabled, the adapter tracks TCP handshakes and splits complete-checksum
+// TCP frames using the peer's MSS and the interface MTU. Start forwarding before
+// connections are established. TCP data from vmnet without an observed handshake
+// stops the adapter, even when it fits the MTU. The table holds up to 4096 connections;
+// entries expire after 30 idle minutes, or two minutes for incomplete handshakes,
+// resets, and fully acknowledged closes. A full table stops forwarding.
+// Close releases all entries. TCP over IPv4 options or IPv6 extensions, fragments,
+// VLAN frames, and nonzero Virtio GSO types are not supported in this mode. Splitting TCP
+// frames with authentication, MPTCP, or unknown options is not supported.
+// TCP simultaneous open and data carried on SYN packets are not supported.
 func WithVirtioHeaderConversion() Option {
 	return func(config *adapterConfiguration) {
 		config.convertVirtioHeader = true
@@ -59,6 +71,7 @@ type adapterState struct {
 	once   sync.Once
 	done   chan struct{}
 	err    error
+	tcp    *tcpSegmentation
 }
 
 // New creates a socket pair and starts forwarding immediately.
@@ -86,8 +99,8 @@ func New(ctx context.Context, iface *vmnet.Interface, transport Transport, opts 
 		if !iface.VirtioHeaderEnabled() {
 			return nil, fmt.Errorf("Virtio header conversion requires interface Virtio headers")
 		}
-		if iface.TSOEnabled() {
-			return nil, fmt.Errorf("Virtio header conversion requires interface TSO to be disabled")
+		if iface.TSOEnabled() && (iface.MTU() < 68 || iface.MTU() > 65535) {
+			return nil, fmt.Errorf("invalid interface MTU for TCP segmentation: %d", iface.MTU())
 		}
 		if iface.MaxPacketSize() <= virtioHeaderSize {
 			return nil, fmt.Errorf("vmnet packet size cannot hold a Virtio header")
@@ -108,6 +121,10 @@ func New(ctx context.Context, iface *vmnet.Interface, transport Transport, opts 
 		done:   make(chan struct{}),
 	}
 
+	if config.convertVirtioHeader && iface.TSOEnabled() {
+		s.tcp = newTCPSegmentation(iface.MTU())
+	}
+
 	var pumps sync.WaitGroup
 	pumps.Go(func() {
 		s.finish(s.forwardToInterface(run, iface, transport, config))
@@ -119,6 +136,9 @@ func New(ctx context.Context, iface *vmnet.Interface, transport Transport, opts 
 		<-run.Done()
 		s.finish(run.Err())
 		pumps.Wait()
+		if s.tcp != nil {
+			s.tcp.clear()
+		}
 		close(s.done)
 	}()
 
@@ -189,6 +209,11 @@ func (s *adapterState) forwardToInterface(ctx context.Context, iface *vmnet.Inte
 		frames, err := readPackets()
 		if config.convertVirtioHeader {
 			for i, frame := range frames {
+				if s.tcp != nil {
+					if e := s.tcp.observePeer(frame, time.Now()); e != nil {
+						return e
+					}
+				}
 				nativeFrames[i] = nativeFrames[i][:virtioHeaderSize+len(frame)]
 				copy(nativeFrames[i][virtioHeaderSize:], frame)
 			}
@@ -216,15 +241,24 @@ func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface
 		frames[j] = make([]byte, size)
 	}
 	var peerFrames [][]byte
+	outputCount := count
+	if s.tcp != nil {
+		outputCount = packetBatchSize(s.tcp.mtu + 14)
+	}
 	if config.convertVirtioHeader {
-		peerFrames = make([][]byte, count)
+		peerFrames = make([][]byte, outputCount)
+		if s.tcp != nil {
+			for i := range peerFrames {
+				peerFrames[i] = make([]byte, s.tcp.mtu+14)
+			}
+		}
 	}
 	var headers [][4]byte
 	var vectors net.Buffers
 	var raw syscall.RawConn
 	if transport == Stream {
-		headers = make([][4]byte, count)
-		vectors = make(net.Buffers, 2*count)
+		headers = make([][4]byte, outputCount)
+		vectors = make(net.Buffers, 2*outputCount)
 	} else {
 		var err error
 		raw, err = s.conn.SyscallConn()
@@ -232,12 +266,31 @@ func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface
 			return err
 		}
 	}
+	writePackets := func(packets [][]byte) error {
+		if transport == Stream {
+			return writeStreamFrames(s.conn, packets, headers, vectors)
+		}
+		// ENOBUFS drops the unsent suffix; retrying the batch would duplicate
+		// frames that already reached the peer.
+		err := writeDatagramPackets(raw, packets)
+		if errors.Is(err, unix.ENOBUFS) {
+			return nil
+		}
+		return err
+	}
+
 	for {
 		n, err := iface.ReadPackets(ctx, frames)
 		if err != nil {
 			return err
 		}
 		packets := frames[:n]
+		if s.tcp != nil {
+			if err := s.forwardTCPPackets(packets, peerFrames, writePackets); err != nil {
+				return err
+			}
+			continue
+		}
 		if config.convertVirtioHeader {
 			for i, frame := range packets {
 				peerFrames[i], err = virtioEthernetPacket(frame)
@@ -247,18 +300,43 @@ func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface
 			}
 			packets = peerFrames[:n]
 		}
-		if transport == Stream {
-			if err := writeStreamFrames(s.conn, packets, headers, vectors); err != nil {
-				return err
-			}
-		} else {
-			// Drop the unsent suffix on ENOBUFS. Socket writability does not
-			// guarantee space in the peer's datagram receive buffer.
-			if err := writeDatagramPackets(raw, packets); err != nil && !errors.Is(err, unix.ENOBUFS) {
-				return err
-			}
+		if err := writePackets(packets); err != nil {
+			return err
 		}
 	}
+}
+
+// forwardTCPPackets copies each borrowed segment before its scratch buffer is reused.
+// Flush full batches so a large frame with a small MSS does not grow the batch.
+func (s *adapterState) forwardTCPPackets(packets, peerFrames [][]byte, writePackets func([][]byte) error) error {
+	used := 0
+	flush := func() error {
+		if used == 0 {
+			return nil
+		}
+		err := writePackets(peerFrames[:used])
+		used = 0
+		return err
+	}
+	emit := func(frame []byte) error {
+		peerFrames[used] = peerFrames[used][:len(frame)]
+		copy(peerFrames[used], frame)
+		used++
+		if used == len(peerFrames) {
+			return flush()
+		}
+		return nil
+	}
+	for _, frame := range packets {
+		plain, err := virtioEthernetPacket(frame)
+		if err != nil {
+			return err
+		}
+		if err = s.tcp.forwardNative(plain, time.Now(), emit); err != nil {
+			return err
+		}
+	}
+	return flush()
 }
 
 func (s *adapterState) finish(err error) {

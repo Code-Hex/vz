@@ -22,7 +22,7 @@ func virtioEthernetPacket(packet []byte) ([]byte, error) {
 	}
 	flags := packet[0]
 	if packet[1] != 0 {
-		return nil, fmt.Errorf("unsupported virtio GSO type %#x: disable interface TSO", packet[1])
+		return nil, fmt.Errorf("unsupported virtio GSO type %#x", packet[1])
 	}
 	frame := packet[virtioHeaderSize:]
 	// Virtio 1.1 section 5.1.6.4.2 requires ignoring unknown flags.

@@ -9,6 +9,7 @@ import (
 	"io"
 	"net"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -361,7 +362,7 @@ func TestAdapterQueuedBurst(t *testing.T) {
 	}
 }
 
-func TestAdapterVirtioConversionRejectsTSO(t *testing.T) {
+func TestAdapterVirtioConversionTSOUnknownConnection(t *testing.T) {
 	if macos.Available(26, vzbridge.SDKVersion) != nil {
 		t.Skip("requires macOS 26 SDK")
 	}
@@ -380,8 +381,126 @@ func TestAdapterVirtioConversionRejectsTSO(t *testing.T) {
 		t.Fatal("interface did not retain offload configuration")
 	}
 	adapter, err := vmnetsock.New(context.Background(), iface, vmnetsock.Stream, vmnetsock.WithVirtioHeaderConversion())
-	if err == nil {
-		adapter.Close()
-		t.Fatal("conversion accepted an interface with TSO")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer adapter.Close()
+	file := duplicate(t, adapter)
+	peer, err := net.FileConn(file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer peer.Close()
+	if err := file.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := peer.SetReadDeadline(time.Now().Add(3 * time.Second)); err != nil {
+		t.Fatal(err)
+	}
+	sender := newInterface(t, n)
+	// This valid TCP data frame deliberately has no preceding handshake.
+	frame, _ := hex.DecodeString("000000000000000000000000080045000029000100004006f6cac0000202c000020104d2005000000001000000015018ffffaea3000078")
+	copy(frame, iface.MACAddress())
+	copy(frame[6:], sender.MACAddress())
+	if err := sender.WritePacket(frame); err != nil {
+		t.Fatal(err)
+	}
+	buffer := make([]byte, 2048)
+	for {
+		_, err = peer.Read(buffer)
+		if err != nil {
+			break
+		}
+	}
+	if !errors.Is(err, io.EOF) {
+		t.Fatalf("peer read = %v, want EOF", err)
+	}
+	if err := adapter.Close(); err == nil || !strings.Contains(err.Error(), "no observed MSS handshake") {
+		t.Fatalf("Close = %v, want missing handshake error", err)
+	}
+}
+
+func TestAdapterTSOCloseDuringTraffic(t *testing.T) {
+	if macos.Available(26, vzbridge.SDKVersion) != nil {
+		t.Skip("requires macOS 26 SDK")
+	}
+	config, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost, vmnet.WithMTU(1500))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { objc.Release(config) })
+	network, err := vmnet.NewNetwork(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { objc.Release((*objc.Pointer)(network)) })
+	iface := newInterface(t, network, vmnet.WithInterfaceVirtioHeader(true), vmnet.WithInterfaceTSO(true))
+	remote := newInterface(t, network)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	adapter, err := vmnetsock.New(ctx, iface, vmnetsock.Stream, vmnetsock.WithVirtioHeaderConversion())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer adapter.Close()
+	file := duplicate(t, adapter)
+	peer, err := net.FileConn(file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer peer.Close()
+	if err := file.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := peer.SetDeadline(time.Now().Add(3 * time.Second)); err != nil {
+		t.Fatal(err)
+	}
+	// Repeat one SYN so both forwarding and MSS observation stay active.
+	syn, _ := hex.DecodeString("00000000000000000000000008004500002c000100004006f6c7c0000202c000020104d2005000000001000000006002ffff13b4000002040100")
+	copy(syn, remote.MACAddress())
+	copy(syn[6:], iface.MACAddress())
+	var header [4]byte
+	binary.BigEndian.PutUint32(header[:], uint32(len(syn)))
+	wire := append(header[:], syn...)
+	writesDone := make(chan struct{})
+	go func() {
+		defer close(writesDone)
+		for {
+			if _, err := peer.Write(wire); err != nil {
+				return
+			}
+		}
+	}()
+	buffer := make([]byte, remote.MaxPacketSize())
+	for {
+		n, err := remote.ReadPacket(ctx, buffer)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if bytes.Equal(buffer[:n], syn) {
+			break
+		}
+	}
+	closed := make(chan error, 1)
+	go func() { closed <- adapter.Close() }()
+	cancel()
+	select {
+	case err := <-closed:
+		if err != nil && !errors.Is(err, context.Canceled) {
+			t.Fatal(err)
+		}
+	case <-time.After(3 * time.Second):
+		t.Fatal("Close did not stop forwarding")
+	}
+	select {
+	case <-writesDone:
+	case <-time.After(3 * time.Second):
+		t.Fatal("peer writes did not stop")
+	}
+	if _, err := adapter.Dup(); !errors.Is(err, os.ErrClosed) {
+		t.Fatalf("Dup after Close = %v", err)
+	}
+	if err := iface.WritePacket(append(make([]byte, 12), syn...)); err != nil {
+		t.Fatalf("borrowed interface stopped: %v", err)
 	}
 }

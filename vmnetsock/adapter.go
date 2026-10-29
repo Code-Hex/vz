@@ -25,6 +25,26 @@ const (
 	Datagram
 )
 
+// Option configures a socket adapter.
+type Option func(*adapterConfiguration)
+
+type adapterConfiguration struct {
+	convertVirtioHeader bool
+}
+
+// WithVirtioHeaderConversion connects a raw Virtio vmnet interface to a peer
+// that exchanges plain Ethernet frames, such as QEMU stream/socket networking.
+// Start iface with vmnet.WithInterfaceVirtioHeader(true) and leave TSO disabled.
+// The adapter completes partial checksums and removes incoming Virtio headers.
+// The peer must send fully checksummed Ethernet frames; the adapter adds
+// zeroed headers to them. Unsupported segmentation or RSC checksum metadata
+// stops forwarding. Close returns the error.
+func WithVirtioHeaderConversion() Option {
+	return func(config *adapterConfiguration) {
+		config.convertVirtioHeader = true
+	}
+}
+
 // Adapter forwards packets until Close, context cancellation, or a forwarding error.
 // Copies share a single lifetime. Adapter borrows the Interface and never calls Stop.
 type Adapter struct {
@@ -44,9 +64,10 @@ type adapterState struct {
 // New creates a socket pair and starts forwarding immediately.
 // The Adapter owns both sockets and borrows iface without stopping it.
 // Dup returns a caller-owned socket to pass through exec.Cmd.ExtraFiles.
-// Packets pass through unchanged. If iface uses Virtio headers, the peer must
-// support that format and the offload features enabled on iface.
-func New(ctx context.Context, iface *vmnet.Interface, transport Transport) (*Adapter, error) {
+// Packets pass through unchanged unless WithVirtioHeaderConversion is set.
+// Without conversion, a peer of an interface using Virtio headers must support that
+// format and the offload features enabled on iface.
+func New(ctx context.Context, iface *vmnet.Interface, transport Transport, opts ...Option) (*Adapter, error) {
 	if iface == nil || iface.MaxPacketSize() == 0 {
 		return nil, fmt.Errorf("vmnet interface is nil or uninitialized")
 	}
@@ -55,6 +76,22 @@ func New(ctx context.Context, iface *vmnet.Interface, transport Transport) (*Ada
 	}
 	if err := ctx.Err(); err != nil {
 		return nil, err
+	}
+
+	var config adapterConfiguration
+	for _, opt := range opts {
+		opt(&config)
+	}
+	if config.convertVirtioHeader {
+		if !iface.VirtioHeaderEnabled() {
+			return nil, fmt.Errorf("Virtio header conversion requires interface Virtio headers")
+		}
+		if iface.TSOEnabled() {
+			return nil, fmt.Errorf("Virtio header conversion requires interface TSO to be disabled")
+		}
+		if iface.MaxPacketSize() <= virtioHeaderSize {
+			return nil, fmt.Errorf("vmnet packet size cannot hold a Virtio header")
+		}
 	}
 
 	conn, file, err := socketPair(transport, iface.MaxPacketSize())
@@ -73,10 +110,10 @@ func New(ctx context.Context, iface *vmnet.Interface, transport Transport) (*Ada
 
 	var pumps sync.WaitGroup
 	pumps.Go(func() {
-		s.finish(s.forwardToInterface(run, iface, transport))
+		s.finish(s.forwardToInterface(run, iface, transport, config))
 	})
 	pumps.Go(func() {
-		s.finish(s.forwardToPeer(run, iface, transport))
+		s.finish(s.forwardToPeer(run, iface, transport, config))
 	})
 	go func() {
 		<-run.Done()
@@ -112,13 +149,16 @@ func (a *Adapter) Dup() (*os.File, error) {
 	return os.NewFile(uintptr(fd), "vmnet-peer"), nil
 }
 
-func (s *adapterState) forwardToInterface(ctx context.Context, iface *vmnet.Interface, transport Transport) error {
+func (s *adapterState) forwardToInterface(ctx context.Context, iface *vmnet.Interface, transport Transport, config adapterConfiguration) error {
+	size := min(iface.MaxPacketSize(), packetBatchBytes)
+	if config.convertVirtioHeader {
+		size -= virtioHeaderSize
+	}
 	var readPackets func() ([][]byte, error)
 	if transport == Stream {
-		reader := newStreamPacketReader(s.conn, iface.MaxPacketSize())
+		reader := newStreamPacketReader(s.conn, size)
 		readPackets = reader.readPackets
 	} else {
-		size := min(iface.MaxPacketSize(), packetBatchBytes)
 		count := packetBatchSize(size)
 		raw, err := s.conn.SyscallConn()
 		if err != nil {
@@ -134,11 +174,26 @@ func (s *adapterState) forwardToInterface(ctx context.Context, iface *vmnet.Inte
 		}
 	}
 
+	var nativeFrames [][]byte
+	if config.convertVirtioHeader {
+		nativeFrames = make([][]byte, packetBatchSize(size))
+		for i := range nativeFrames {
+			nativeFrames[i] = make([]byte, size+virtioHeaderSize)
+		}
+	}
+
 	for {
 		if err := ctx.Err(); err != nil {
 			return err
 		}
 		frames, err := readPackets()
+		if config.convertVirtioHeader {
+			for i, frame := range frames {
+				nativeFrames[i] = nativeFrames[i][:virtioHeaderSize+len(frame)]
+				copy(nativeFrames[i][virtioHeaderSize:], frame)
+			}
+			frames = nativeFrames[:len(frames)]
+		}
 		if len(frames) > 0 {
 			if _, writeErr := iface.WritePackets(frames); writeErr != nil && !vmnetBufferExhausted(writeErr) {
 				return writeErr
@@ -153,12 +208,16 @@ func (s *adapterState) forwardToInterface(ctx context.Context, iface *vmnet.Inte
 	}
 }
 
-func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface, transport Transport) error {
+func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface, transport Transport, config adapterConfiguration) error {
 	size := iface.MaxPacketSize()
 	count := packetBatchSize(size)
 	frames := make([][]byte, count)
 	for j := range frames {
 		frames[j] = make([]byte, size)
+	}
+	var peerFrames [][]byte
+	if config.convertVirtioHeader {
+		peerFrames = make([][]byte, count)
 	}
 	var headers [][4]byte
 	var vectors net.Buffers
@@ -178,14 +237,24 @@ func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface
 		if err != nil {
 			return err
 		}
+		packets := frames[:n]
+		if config.convertVirtioHeader {
+			for i, frame := range packets {
+				peerFrames[i], err = virtioEthernetPacket(frame)
+				if err != nil {
+					return err
+				}
+			}
+			packets = peerFrames[:n]
+		}
 		if transport == Stream {
-			if err := writeStreamFrames(s.conn, frames[:n], headers, vectors); err != nil {
+			if err := writeStreamFrames(s.conn, packets, headers, vectors); err != nil {
 				return err
 			}
 		} else {
 			// Drop the unsent suffix on ENOBUFS. Socket writability does not
 			// guarantee space in the peer's datagram receive buffer.
-			if err := writeDatagramPackets(raw, frames[:n]); err != nil && !errors.Is(err, unix.ENOBUFS) {
+			if err := writeDatagramPackets(raw, packets); err != nil && !errors.Is(err, unix.ENOBUFS) {
 				return err
 			}
 		}

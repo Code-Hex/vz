@@ -19,9 +19,9 @@ import (
 	"github.com/Code-Hex/vz/v4/vmnetsock"
 )
 
-func newInterface(t *testing.T, n *vmnet.Network) *vmnet.Interface {
+func newInterface(t *testing.T, n *vmnet.Network, opts ...vmnet.InterfaceOption) *vmnet.Interface {
 	t.Helper()
-	i, err := vmnet.StartInterfaceWithNetwork(n)
+	i, err := vmnet.StartInterfaceWithNetwork(n, opts...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,8 +37,18 @@ func TestAdapterFramesAndLifetime(t *testing.T) {
 	if macos.Available(26, vzbridge.SDKVersion) != nil {
 		t.Skip("requires macOS 26 SDK")
 	}
-	for _, transport := range []vmnetsock.Transport{vmnetsock.Stream, vmnetsock.Datagram} {
-		t.Run(string(rune('0'+transport)), func(t *testing.T) {
+	for _, test := range []struct {
+		name      string
+		transport vmnetsock.Transport
+		convert   bool
+	}{
+		{name: "stream", transport: vmnetsock.Stream},
+		{name: "datagram", transport: vmnetsock.Datagram},
+		{name: "stream Virtio conversion", transport: vmnetsock.Stream, convert: true},
+		{name: "datagram Virtio conversion", transport: vmnetsock.Datagram, convert: true},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			transport := test.transport
 			c, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
 			if err != nil {
 				t.Fatal(err)
@@ -49,10 +59,21 @@ func TestAdapterFramesAndLifetime(t *testing.T) {
 				t.Fatal(err)
 			}
 			t.Cleanup(func() { objc.Release((*objc.Pointer)(n)) })
-			a, b := newInterface(t, n), newInterface(t, n)
+			a := newInterface(t, n, vmnet.WithInterfaceVirtioHeader(test.convert))
+			b := newInterface(t, n)
+			if a.VirtioHeaderEnabled() != test.convert || a.TSOEnabled() {
+				t.Fatal("unexpected interface offload configuration")
+			}
+			var opts []vmnetsock.Option
+			if test.convert {
+				opts = append(opts, vmnetsock.WithVirtioHeaderConversion())
+			} else if adapter, err := vmnetsock.New(context.Background(), a, transport, vmnetsock.WithVirtioHeaderConversion()); err == nil {
+				adapter.Close()
+				t.Fatal("conversion accepted an interface without Virtio headers")
+			}
 			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
-			adapter, err := vmnetsock.New(ctx, a, transport)
+			adapter, err := vmnetsock.New(ctx, a, transport, opts...)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -125,6 +146,9 @@ func TestAdapterFramesAndLifetime(t *testing.T) {
 			}
 			if _, err := peer.Write(frame); err == nil {
 				t.Fatal("peer write succeeded after adapter closed")
+			}
+			if test.convert {
+				frame = append(make([]byte, 12), frame...)
 			}
 			if err := a.WritePacket(frame); err != nil {
 				t.Fatalf("borrowed interface stopped: %v", err)
@@ -334,5 +358,30 @@ func TestAdapterQueuedBurst(t *testing.T) {
 				t.Fatalf("borrowed interface stopped: %v", err)
 			}
 		})
+	}
+}
+
+func TestAdapterVirtioConversionRejectsTSO(t *testing.T) {
+	if macos.Available(26, vzbridge.SDKVersion) != nil {
+		t.Skip("requires macOS 26 SDK")
+	}
+	c, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost, vmnet.WithMTU(1500))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer objc.Release(c)
+	n, err := vmnet.NewNetwork(c)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer objc.Release((*objc.Pointer)(n))
+	iface := newInterface(t, n, vmnet.WithInterfaceVirtioHeader(true), vmnet.WithInterfaceTSO(true))
+	if !iface.VirtioHeaderEnabled() || !iface.TSOEnabled() {
+		t.Fatal("interface did not retain offload configuration")
+	}
+	adapter, err := vmnetsock.New(context.Background(), iface, vmnetsock.Stream, vmnetsock.WithVirtioHeaderConversion())
+	if err == nil {
+		adapter.Close()
+		t.Fatal("conversion accepted an interface with TSO")
 	}
 }

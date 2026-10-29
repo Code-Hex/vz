@@ -97,6 +97,7 @@ type interfaceResource struct {
 	stopping     bool
 	stopErr      error
 	maxSize      int
+	mtu          int
 	virtioHeader bool
 	tso          bool
 	mac          [6]byte
@@ -219,6 +220,19 @@ func completeInterfaceStart(r *interfaceResource, size uint64, startErr error) (
 	if startErr == nil && (size == 0 || size > uint64(^uint32(0)>>1)) {
 		startErr = fmt.Errorf("vmnet returned invalid maximum packet size %d", size)
 	}
+	if startErr == nil {
+		mtu := vzbridge.VmnetInterfaceMTU(r.session)
+		switch {
+		case mtu == 0:
+			// Startup already checked OS and SDK availability. A zero value
+			// means vmnet did not provide usable MTU metadata.
+			startErr = fmt.Errorf("vmnet did not report a nonzero interface MTU in vmnet_mtu_key")
+		case mtu > 65535:
+			startErr = fmt.Errorf("vmnet interface MTU %d exceeds the maximum of 65535", mtu)
+		default:
+			r.mtu = int(mtu)
+		}
+	}
 	if startErr != nil {
 		return nil, errors.Join(startErr, r.stop())
 	}
@@ -234,6 +248,18 @@ func (i *Interface) MACAddress() net.HardwareAddr {
 		return nil
 	}
 	return append(net.HardwareAddr(nil), i.owner.resource.mac[:]...)
+}
+
+// MTU returns the interface MTU reported by vmnet, without Ethernet or Virtio
+// headers. Unlike MaxPacketSize, it does not grow when TSO is enabled.
+// It returns zero for a nil or uninitialized Interface.
+//
+// See: https://developer.apple.com/documentation/vmnet/vmnet_mtu_key?language=objc
+func (i *Interface) MTU() int {
+	if i == nil || i.owner == nil {
+		return 0
+	}
+	return i.owner.resource.mtu
 }
 
 // MaxPacketSize returns the maximum Ethernet frame size, including Ethernet headers.

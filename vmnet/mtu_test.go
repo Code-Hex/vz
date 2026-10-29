@@ -86,9 +86,12 @@ func TestWithMTUInterface(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		iface, err := StartInterfaceWithNetwork(network)
+		iface, err := StartInterfaceWithNetwork(network, WithInterfaceTSO(true))
 		if err != nil {
 			t.Fatal(err)
+		}
+		if iface.MTU() != 1500 {
+			t.Errorf("MTU = %d, want 1500", iface.MTU())
 		}
 		if err := iface.Stop(); err != nil {
 			t.Fatal(err)

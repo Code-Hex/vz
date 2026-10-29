@@ -7,7 +7,7 @@ struct VmnetSession {
     interface_ref interface;
     dispatch_queue_t events;
     dispatch_block_t disableCallback;
-    uint64_t readMaxPackets, writeMaxPackets;
+    uint64_t readMaxPackets, writeMaxPackets, mtu;
 };
 static void interfaceError(vmnet_return_t status, NSString *operation, void **output)
 {
@@ -46,6 +46,7 @@ void *vz_startVmnetInterface(void *network, const char *name, uint32_t options, 
         vmnet_start_interface_completion_handler_t handler = ^(vmnet_return_t status, xpc_object_t parameters) {
             result = status;
             if (status == VMNET_SUCCESS && parameters) {
+                session->mtu = xpc_dictionary_get_uint64(parameters, vmnet_mtu_key);
                 uint64_t maximum = xpc_dictionary_get_uint64(parameters, vmnet_max_packet_size_key);
                 // vmnet reports the frame limit without the virtio header.
                 // Leave invalid limits intact for the Go startup validation.
@@ -95,6 +96,15 @@ void *vz_startVmnetInterface(void *network, const char *name, uint32_t options, 
     }
 #endif
     return NULL;
+}
+
+uint64_t vz_vmnetInterfaceMTU(void *session)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
+    return ((struct VmnetSession *)session)->mtu;
+#else
+    return 0;
+#endif
 }
 
 void *vz_copyVmnetBridgedInterfaces(void **errorOut)

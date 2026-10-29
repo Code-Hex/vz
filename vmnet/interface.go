@@ -222,9 +222,14 @@ func completeInterfaceStart(r *interfaceResource, size uint64, startErr error) (
 	}
 	if startErr == nil {
 		mtu := vzbridge.VmnetInterfaceMTU(r.session)
-		if mtu == 0 || mtu > 65535 {
-			startErr = fmt.Errorf("vmnet returned invalid MTU %d", mtu)
-		} else {
+		switch {
+		case mtu == 0:
+			// Startup already checked OS and SDK availability. A zero value
+			// means vmnet did not provide usable MTU metadata.
+			startErr = fmt.Errorf("vmnet did not report a nonzero interface MTU in vmnet_mtu_key")
+		case mtu > 65535:
+			startErr = fmt.Errorf("vmnet interface MTU %d exceeds the maximum of 65535", mtu)
+		default:
 			r.mtu = int(mtu)
 		}
 	}

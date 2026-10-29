@@ -90,15 +90,17 @@ func WithInterfaceIsolation(enabled bool) InterfaceOption {
 type Interface struct{ owner *interfaceOwner }
 type interfaceOwner struct{ resource *interfaceResource }
 type interfaceResource struct {
-	mu         sync.Mutex
-	session    unsafe.Pointer
-	handle     cgo.Handle
-	wake, done chan struct{}
-	stopping   bool
-	stopErr    error
-	maxSize    int
-	mac        [6]byte
-	readers    chan struct{}
+	mu           sync.Mutex
+	session      unsafe.Pointer
+	handle       cgo.Handle
+	wake, done   chan struct{}
+	stopping     bool
+	stopErr      error
+	maxSize      int
+	virtioHeader bool
+	tso          bool
+	mac          [6]byte
+	readers      chan struct{}
 }
 
 var interfaceWake = purego.NewCallback(func(handle uint64) {
@@ -163,7 +165,13 @@ func startInterface(n *Network, name string, opts ...InterfaceOption) (*Interfac
 	if c.enableVirtioHeader && c.enableChecksumOffload {
 		return nil, fmt.Errorf("vmnet virtio header and checksum offload cannot both be enabled")
 	}
-	r := &interfaceResource{wake: make(chan struct{}, 1), done: make(chan struct{}), readers: make(chan struct{}, 1)}
+	r := &interfaceResource{
+		wake:         make(chan struct{}, 1),
+		done:         make(chan struct{}),
+		readers:      make(chan struct{}, 1),
+		virtioHeader: c.enableVirtioHeader,
+		tso:          c.enableTSO,
+	}
 	r.handle = cgo.NewHandle(r.wake)
 	var size uint64
 	var errorPtr unsafe.Pointer
@@ -235,6 +243,22 @@ func (i *Interface) MaxPacketSize() int {
 		return 0
 	}
 	return i.owner.resource.maxSize
+}
+
+// VirtioHeaderEnabled reports whether the interface was started with raw Virtio
+// headers. It returns false for a nil or uninitialized interface.
+//
+// See https://developer.apple.com/documentation/vmnet/vmnet_enable_virtio_header_key
+func (i *Interface) VirtioHeaderEnabled() bool {
+	return i != nil && i.owner != nil && i.owner.resource.virtioHeader
+}
+
+// TSOEnabled reports whether the interface was started with TCP segmentation
+// offload. It returns false for a nil or uninitialized interface.
+//
+// See https://developer.apple.com/documentation/vmnet/vmnet_enable_tso_key
+func (i *Interface) TSOEnabled() bool {
+	return i != nil && i.owner != nil && i.owner.resource.tso
 }
 
 // ReadPacket waits for one frame. The buffer must hold MaxPacketSize bytes.

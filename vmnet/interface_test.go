@@ -91,7 +91,7 @@ func TestVMNetInterfaceBoundaries(t *testing.T) {
 		if err := i.Stop(); err == nil {
 			t.Fatal("invalid interface stopped")
 		}
-		if i.MaxPacketSize() != 0 || i.MACAddress() != nil {
+		if i.MaxPacketSize() != 0 || i.MACAddress() != nil || i.VirtioHeaderEnabled() || i.TSOEnabled() {
 			t.Fatal("invalid interface metadata")
 		}
 	}

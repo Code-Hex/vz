@@ -469,6 +469,12 @@ func (p *tcpPacket) emit(mtu, mss int, emit func([]byte) error) error {
 	if p.payload() <= limit {
 		return emit(p.frame)
 	}
+	return p.emitSegments(limit, emit)
+}
+
+// emitSegments recalculates checksums even when the output is a single segment.
+// Standard Virtio GSO carries a partial checksum in that case too.
+func (p *tcpPacket) emitSegments(limit int, emit func([]byte) error) error {
 	// Authentication and data mappings cannot be copied onto new segments.
 	// Unknown options may have the same restriction, so only known options
 	// pass above MTU/MSS. See https://www.rfc-editor.org/rfc/rfc2385.html#section-2.

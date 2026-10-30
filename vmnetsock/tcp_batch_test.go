@@ -30,7 +30,7 @@ func TestTCPBatchCopiesSegments(t *testing.T) {
 	peerFrames := [][]byte{make([]byte, 1514), make([]byte, 1514)}
 	var batchSizes []int
 	var received []byte
-	err := state.forwardTCPPackets([][]byte{packet}, peerFrames, func(frames [][]byte) error {
+	err := state.forwardTCPPackets([][]byte{packet}, peerFrames, false, func(frames [][]byte) error {
 		batchSizes = append(batchSizes, len(frames))
 		for _, frame := range frames {
 			if len(frame) < 54 {

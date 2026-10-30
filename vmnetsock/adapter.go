@@ -30,8 +30,16 @@ const (
 type Option func(*adapterConfiguration)
 
 type adapterConfiguration struct {
-	convertVirtioHeader bool
+	mode packetMode
 }
+
+type packetMode uint8
+
+const (
+	packetPassthrough packetMode = iota
+	packetEthernet
+	packetPeerVirtio
+)
 
 // WithVirtioHeaderConversion connects a raw Virtio vmnet interface to a peer
 // that exchanges plain Ethernet frames, such as QEMU stream/socket networking.
@@ -57,7 +65,32 @@ type adapterConfiguration struct {
 // TCP simultaneous open and data carried on SYN packets are not supported.
 func WithVirtioHeaderConversion() Option {
 	return func(config *adapterConfiguration) {
-		config.convertVirtioHeader = true
+		config.mode = packetEthernet
+	}
+}
+
+// WithPeerVirtioHeaderNormalization completes partial checksums and splits TCP
+// GSO received from the socket peer before sending packets to iface. Both ends
+// exchange 12-byte little-endian Virtio network headers. Start iface with
+// vmnet.WithInterfaceVirtioHeader(true). Normalized packets have zeroed headers.
+//
+// Packets from iface to the socket peer keep their original bytes, including
+// checksum, GSO, and RSC metadata. The peer must handle that metadata. RSC packets
+// from the socket peer stop forwarding. Close returns the forwarding error.
+//
+// Checksum completion works without TSO. TCPv4 and TCPv6 GSO, including ECN,
+// require TSO on iface. Output is limited by gso_size, the interface MTU, and
+// the iface-side receiver's advertised MSS. UDP GSO is not supported.
+//
+// With TSO enabled, start forwarding before TCP connections are established.
+// TCP data from the socket peer without an observed handshake stops forwarding,
+// even below MTU. Handshake observation in both directions has the connection
+// table, timeout, and packet layout restrictions of [WithVirtioHeaderConversion].
+// Those restrictions also apply to unchanged packets from iface.
+// If both conversion options are supplied, the last option selects the mode.
+func WithPeerVirtioHeaderNormalization() Option {
+	return func(config *adapterConfiguration) {
+		config.mode = packetPeerVirtio
 	}
 }
 
@@ -81,7 +114,8 @@ type adapterState struct {
 // New creates a socket pair and starts forwarding immediately.
 // The Adapter owns both sockets and borrows iface without stopping it.
 // Dup returns a caller-owned socket to pass through exec.Cmd.ExtraFiles.
-// Packets pass through unchanged unless WithVirtioHeaderConversion is set.
+// Packets pass through unchanged unless WithVirtioHeaderConversion or
+// WithPeerVirtioHeaderNormalization is set. If both are set, the last option wins.
 // Without conversion, a peer of an interface using Virtio headers must support that
 // format and the offload features enabled on iface.
 func New(ctx context.Context, iface *vmnet.Interface, transport Transport, opts ...Option) (*Adapter, error) {
@@ -99,7 +133,7 @@ func New(ctx context.Context, iface *vmnet.Interface, transport Transport, opts 
 	for _, opt := range opts {
 		opt(&config)
 	}
-	if config.convertVirtioHeader {
+	if config.mode != packetPassthrough {
 		if !iface.VirtioHeaderEnabled() {
 			return nil, fmt.Errorf("Virtio header conversion requires interface Virtio headers")
 		}
@@ -125,7 +159,7 @@ func New(ctx context.Context, iface *vmnet.Interface, transport Transport, opts 
 		done:   make(chan struct{}),
 	}
 
-	if config.convertVirtioHeader && iface.TSOEnabled() {
+	if config.mode != packetPassthrough && iface.TSOEnabled() {
 		s.tcp = newTCPSegmentation(iface.MTU())
 	}
 
@@ -175,7 +209,7 @@ func (a *Adapter) Dup() (*os.File, error) {
 
 func (s *adapterState) forwardToInterface(ctx context.Context, iface *vmnet.Interface, transport Transport, config adapterConfiguration) error {
 	size := min(iface.MaxPacketSize(), packetBatchBytes)
-	if config.convertVirtioHeader {
+	if config.mode == packetEthernet {
 		size -= virtioHeaderSize
 	}
 	batchBytes := min(packetBatchBytes, packetBatchLimit*size)
@@ -198,9 +232,25 @@ func (s *adapterState) forwardToInterface(ctx context.Context, iface *vmnet.Inte
 
 	var nativeFrames [][]byte
 	var nativeBuffer []byte
-	if config.convertVirtioHeader {
+	if config.mode == packetEthernet {
 		nativeFrames = make([][]byte, packetBatchLimit)
 		nativeBuffer = make([]byte, batchBytes+packetBatchLimit*virtioHeaderSize)
+	} else if config.mode == packetPeerVirtio && s.tcp != nil {
+		size := virtioHeaderSize + ethernetHeaderSize + s.tcp.mtu
+		nativeFrames = make([][]byte, packetBatchSize(size))
+		for i := range nativeFrames {
+			nativeFrames[i] = make([]byte, size)
+		}
+	}
+	writePackets := func(packets [][]byte) error {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+		_, err := iface.WritePackets(packets)
+		if vmnetBufferExhausted(err) {
+			return nil
+		}
+		return err
 	}
 
 	for {
@@ -208,7 +258,7 @@ func (s *adapterState) forwardToInterface(ctx context.Context, iface *vmnet.Inte
 			return err
 		}
 		frames, err := readPackets()
-		if config.convertVirtioHeader {
+		if config.mode == packetEthernet {
 			used := 0
 			for i, frame := range frames {
 				if s.tcp != nil {
@@ -225,7 +275,13 @@ func (s *adapterState) forwardToInterface(ctx context.Context, iface *vmnet.Inte
 			frames = nativeFrames[:len(frames)]
 		}
 		if len(frames) > 0 {
-			if _, writeErr := iface.WritePackets(frames); writeErr != nil && !vmnetBufferExhausted(writeErr) {
+			var writeErr error
+			if config.mode == packetPeerVirtio {
+				writeErr = s.normalizePeerPackets(frames, nativeFrames, writePackets)
+			} else {
+				writeErr = writePackets(frames)
+			}
+			if writeErr != nil {
 				return writeErr
 			}
 		}
@@ -247,10 +303,10 @@ func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface
 	}
 	var peerFrames [][]byte
 	outputCount := count
-	if s.tcp != nil {
+	if config.mode == packetEthernet && s.tcp != nil {
 		outputCount = packetBatchSize(s.tcp.mtu + ethernetHeaderSize)
 	}
-	if config.convertVirtioHeader {
+	if config.mode == packetEthernet {
 		peerFrames = make([][]byte, outputCount)
 		if s.tcp != nil {
 			for i := range peerFrames {
@@ -284,13 +340,19 @@ func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface
 			return err
 		}
 		packets := frames[:n]
-		if s.tcp != nil {
-			if err := s.forwardTCPPackets(packets, peerFrames, writePackets); err != nil {
+		if config.mode == packetPeerVirtio && s.tcp != nil {
+			if err := s.forwardObservedPackets(packets, writePackets); err != nil {
 				return err
 			}
 			continue
 		}
-		if config.convertVirtioHeader {
+		if config.mode == packetEthernet && s.tcp != nil {
+			if err := s.forwardTCPPackets(packets, peerFrames, false, writePackets); err != nil {
+				return err
+			}
+			continue
+		}
+		if config.mode == packetEthernet {
 			for i, frame := range packets {
 				peerFrames[i], err = virtioEthernetPacket(frame)
 				if err != nil {
@@ -305,9 +367,43 @@ func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface
 	}
 }
 
+func (s *adapterState) normalizePeerPackets(packets, output [][]byte, writePackets func([][]byte) error) error {
+	for _, packet := range packets {
+		if len(packet) > 0 && packet[0]&virtioRSCInfo != 0 {
+			return fmt.Errorf("cannot normalize peer Virtio RSC metadata")
+		}
+	}
+	if s.tcp != nil {
+		return s.forwardTCPPackets(packets, output, true, writePackets)
+	}
+	for _, packet := range packets {
+		if _, err := virtioEthernetPacket(packet); err != nil {
+			return err
+		}
+		clear(packet[:virtioHeaderSize])
+	}
+	return writePackets(packets)
+}
+
+func (s *adapterState) forwardObservedPackets(packets [][]byte, writePackets func([][]byte) error) error {
+	for _, packet := range packets {
+		if len(packet) < virtioHeaderSize+ethernetHeaderSize {
+			return fmt.Errorf("virtio packet is shorter than its header and Ethernet frame")
+		}
+		if err := s.tcp.observePeer(packet[virtioHeaderSize:], time.Now()); err != nil {
+			return err
+		}
+	}
+	return writePackets(packets)
+}
+
 // forwardTCPPackets copies each borrowed segment before its scratch buffer is reused.
 // Flush full batches so a large frame with a small MSS does not grow the batch.
-func (s *adapterState) forwardTCPPackets(packets, peerFrames [][]byte, writePackets func([][]byte) error) error {
+func (s *adapterState) forwardTCPPackets(packets, peerFrames [][]byte, virtioOutput bool, writePackets func([][]byte) error) error {
+	prefix := 0
+	if virtioOutput {
+		prefix = virtioHeaderSize
+	}
 	used := 0
 	flush := func() error {
 		if used == 0 {
@@ -318,8 +414,9 @@ func (s *adapterState) forwardTCPPackets(packets, peerFrames [][]byte, writePack
 		return err
 	}
 	emit := func(frame []byte) error {
-		peerFrames[used] = peerFrames[used][:len(frame)]
-		copy(peerFrames[used], frame)
+		peerFrames[used] = peerFrames[used][:prefix+len(frame)]
+		clear(peerFrames[used][:prefix])
+		copy(peerFrames[used][prefix:], frame)
 		used++
 		if used == len(peerFrames) {
 			return flush()

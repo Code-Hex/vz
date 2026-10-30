@@ -8,6 +8,11 @@ import (
 	"time"
 )
 
+// Ethernet padding can extend short packets to the minimum frame length,
+// excluding the FCS. Linux defines this bound as ETH_ZLEN.
+// https://github.com/torvalds/linux/blob/v6.12/include/uapi/linux/if_ether.h
+const ethernetMinimumFrameSize = 60
+
 const (
 	ethernetHeaderSize = 14
 	etherTypeOffset    = 12

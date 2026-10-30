@@ -38,18 +38,22 @@ type adapterConfiguration struct {
 // Start iface with vmnet.WithInterfaceVirtioHeader(true).
 // The adapter completes partial checksums and removes incoming Virtio headers.
 // The peer must send fully checksummed Ethernet frames; the adapter adds
-// zeroed headers to them. Unsupported segmentation or RSC checksum metadata
-// stops forwarding. Close returns the error.
+// zeroed headers to them. Unsupported GSO types or RSC checksum metadata stop
+// forwarding. Close returns the error.
 //
 // With TSO enabled, the adapter tracks TCP handshakes and splits complete-checksum
-// TCP frames using the peer's MSS and the interface MTU. Start forwarding before
-// connections are established. TCP data from vmnet without an observed handshake
-// stops the adapter, even when it fits the MTU. The table holds up to 4096 connections;
-// entries expire after 30 idle minutes, or two minutes for incomplete handshakes,
-// resets, and fully acknowledged closes. A full table stops forwarding.
-// Close releases all entries. TCP over IPv4 options or IPv6 extensions, fragments,
-// VLAN frames, and nonzero Virtio GSO types are not supported in this mode. Splitting TCP
-// frames with authentication, MPTCP, or unknown options is not supported.
+// TCP frames using the peer's MSS and the interface MTU. It also converts standard
+// Virtio TCPv4 and TCPv6 GSO, including ECN, using gso_size as a payload limit.
+// GSO conversion requires TSO on iface. UDP GSO is not supported.
+// Start forwarding before connections are established. TCP data from vmnet
+// without an observed handshake stops the adapter, even when it fits the MTU.
+// The table holds up to 4096 connections. Entries expire after 30 idle minutes.
+// Incomplete handshakes, resets, and fully acknowledged closes expire after two
+// minutes. A full table stops forwarding.
+// Close releases all entries. TCP over IPv4 options, IPv6 extensions, fragments,
+// or VLAN frames is not supported in this mode. GSO conversion and TCP segmentation
+// do not support TCP authentication, MPTCP, or unknown TCP options. BIG TCP
+// encodings with zero IP length fields are not supported.
 // TCP simultaneous open and data carried on SYN packets are not supported.
 func WithVirtioHeaderConversion() Option {
 	return func(config *adapterConfiguration) {
@@ -323,11 +327,7 @@ func (s *adapterState) forwardTCPPackets(packets, peerFrames [][]byte, writePack
 		return nil
 	}
 	for _, frame := range packets {
-		plain, err := virtioEthernetPacket(frame)
-		if err != nil {
-			return err
-		}
-		if err = s.tcp.forwardNative(plain, time.Now(), emit); err != nil {
+		if err := s.tcp.forwardVirtio(frame, time.Now(), emit); err != nil {
 			return err
 		}
 	}

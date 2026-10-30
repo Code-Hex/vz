@@ -463,7 +463,7 @@ func TestTCPPacketBoundaries(t *testing.T) {
 	mld[20] = 0
 	binary.BigEndian.PutUint16(mld[18:], 32)
 	mld[54] = 58
-	if p, err := parseTCPPacket(mld); err != nil || p != nil {
+	if p, err := parseTCPPacket(mld); err != nil || p.tcp != nil {
 		t.Fatalf("non-TCP IPv6 extension: %v, %v", p, err)
 	}
 	mld[54] = 6

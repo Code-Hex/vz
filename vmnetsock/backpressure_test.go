@@ -19,9 +19,18 @@ func TestAdapterBackpressureCleanup(t *testing.T) {
 	if macos.Available(26, vzbridge.SDKVersion) != nil {
 		t.Skip("requires macOS 26 SDK")
 	}
-	for _, transport := range []Transport{Stream, Datagram} {
+	for _, test := range []struct {
+		transport Transport
+		normalize bool
+	}{
+		{transport: Stream},
+		{transport: Datagram},
+		{transport: Stream, normalize: true},
+		{transport: Datagram, normalize: true},
+	} {
+		transport := test.transport
 		for _, cancelContext := range []bool{false, true} {
-			t.Run(fmt.Sprintf("%d/cancel=%v", transport, cancelContext), func(t *testing.T) {
+			t.Run(fmt.Sprintf("%d/normalize=%v/cancel=%v", transport, test.normalize, cancelContext), func(t *testing.T) {
 				c, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
 				if err != nil {
 					t.Fatal(err)
@@ -32,7 +41,7 @@ func TestAdapterBackpressureCleanup(t *testing.T) {
 					t.Fatal(err)
 				}
 				t.Cleanup(func() { objc.Release((*objc.Pointer)(n)) })
-				receiver, err := vmnet.StartInterfaceWithNetwork(n)
+				receiver, err := vmnet.StartInterfaceWithNetwork(n, vmnet.WithInterfaceVirtioHeader(test.normalize), vmnet.WithInterfaceTSO(test.normalize))
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -45,7 +54,11 @@ func TestAdapterBackpressureCleanup(t *testing.T) {
 
 				ctx, cancel := context.WithCancel(context.Background())
 				defer cancel()
-				a, err := New(ctx, receiver, transport)
+				var opts []Option
+				if test.normalize {
+					opts = append(opts, WithPeerVirtioHeaderNormalization())
+				}
+				a, err := New(ctx, receiver, transport, opts...)
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -84,6 +97,9 @@ func TestAdapterBackpressureCleanup(t *testing.T) {
 					}
 				case <-time.After(3 * time.Second):
 					t.Fatal("adapter did not join pumps under backpressure")
+				}
+				if test.normalize && a.state.tcp.flows != nil {
+					t.Fatal("adapter retained TCP state after joining pumps")
 				}
 				if cancelContext {
 					if _, err := file.Stat(); err != nil {

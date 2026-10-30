@@ -10,13 +10,14 @@ import (
 )
 
 // readDatagramPackets waits for the first packet, then drains queued packets.
-// An invalid packet returns the valid prefix and an error together.
-func readDatagramPackets(raw syscall.RawConn, frames [][]byte, maximum int) (int, error) {
-	var count int
+// Frames borrow buffer until the next call. An invalid packet returns the valid
+// prefix and an error together.
+func readDatagramPackets(raw syscall.RawConn, frames [][]byte, buffer []byte, maximum int) (int, error) {
+	var count, used int
 	var recvErr error
 	err := raw.Read(func(fd uintptr) bool {
-		for count < len(frames) {
-			frame := frames[count][:maximum]
+		for count < len(frames) && len(buffer)-used >= maximum {
+			frame := buffer[used : used+maximum]
 			n, _, flags, _, err := unix.Recvmsg(int(fd), frame, nil, unix.MSG_DONTWAIT)
 			switch err {
 			case nil:
@@ -37,7 +38,8 @@ func readDatagramPackets(raw syscall.RawConn, frames [][]byte, maximum int) (int
 				recvErr = fmt.Errorf("empty datagram frame")
 				return true
 			}
-			frames[count] = frame[:n]
+			frames[count] = frame[:n:n]
+			used += n
 			count++
 		}
 		return true

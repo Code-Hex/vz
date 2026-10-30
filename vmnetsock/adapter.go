@@ -174,32 +174,29 @@ func (s *adapterState) forwardToInterface(ctx context.Context, iface *vmnet.Inte
 	if config.convertVirtioHeader {
 		size -= virtioHeaderSize
 	}
+	batchBytes := min(packetBatchBytes, packetBatchLimit*size)
 	var readPackets func() ([][]byte, error)
 	if transport == Stream {
 		reader := newStreamPacketReader(s.conn, size)
 		readPackets = reader.readPackets
 	} else {
-		count := packetBatchSize(size)
 		raw, err := s.conn.SyscallConn()
 		if err != nil {
 			return err
 		}
-		frames := make([][]byte, count)
-		for i := range frames {
-			frames[i] = make([]byte, size)
-		}
+		frames := make([][]byte, packetBatchLimit)
+		buffer := make([]byte, batchBytes)
 		readPackets = func() ([][]byte, error) {
-			n, err := readDatagramPackets(raw, frames, size)
+			n, err := readDatagramPackets(raw, frames, buffer, size)
 			return frames[:n], err
 		}
 	}
 
 	var nativeFrames [][]byte
+	var nativeBuffer []byte
 	if config.convertVirtioHeader {
-		nativeFrames = make([][]byte, packetBatchSize(size))
-		for i := range nativeFrames {
-			nativeFrames[i] = make([]byte, size+virtioHeaderSize)
-		}
+		nativeFrames = make([][]byte, packetBatchLimit)
+		nativeBuffer = make([]byte, batchBytes+packetBatchLimit*virtioHeaderSize)
 	}
 
 	for {
@@ -208,14 +205,18 @@ func (s *adapterState) forwardToInterface(ctx context.Context, iface *vmnet.Inte
 		}
 		frames, err := readPackets()
 		if config.convertVirtioHeader {
+			used := 0
 			for i, frame := range frames {
 				if s.tcp != nil {
 					if e := s.tcp.observePeer(frame, time.Now()); e != nil {
 						return e
 					}
 				}
-				nativeFrames[i] = nativeFrames[i][:virtioHeaderSize+len(frame)]
+				nativeFrames[i] = nativeBuffer[used : used+virtioHeaderSize+len(frame)]
+				// This header may overlap a previous batch's payload.
+				clear(nativeFrames[i][:virtioHeaderSize])
 				copy(nativeFrames[i][virtioHeaderSize:], frame)
+				used += len(nativeFrames[i])
 			}
 			frames = nativeFrames[:len(frames)]
 		}

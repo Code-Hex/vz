@@ -13,9 +13,11 @@ import (
 // See https://developer.apple.com/documentation/vmnet
 const packetBatchBytes = 256000
 
+// Match vmnet's internal batch size, not Apple's packet limit.
+const packetBatchLimit = 32
+
 func packetBatchSize(size int) int {
-	// Match vmnet's internal 32-packet batch size, not Apple's packet limit.
-	return min(32, max(1, packetBatchBytes/size))
+	return min(packetBatchLimit, max(1, packetBatchBytes/size))
 }
 
 type streamPacketReader struct {
@@ -30,7 +32,7 @@ func newStreamPacketReader(reader io.Reader, maxSize int) *streamPacketReader {
 	count := packetBatchSize(maxSize)
 	return &streamPacketReader{
 		reader:  bufio.NewReaderSize(reader, count*(maxSize+4)),
-		frames:  make([][]byte, 0, count),
+		frames:  make([][]byte, 0, packetBatchLimit),
 		maxSize: maxSize,
 	}
 }

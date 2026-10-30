@@ -41,9 +41,7 @@ func TestDatagramPackets(t *testing.T) {
 		t.Fatal(err)
 	}
 	frames := make([][]byte, 32)
-	for i := range frames {
-		frames[i] = make([]byte, 1500)
-	}
+	buffer := make([]byte, 32*1500)
 	for _, packets := range [][][]byte{
 		{[]byte("abc"), []byte("d"), bytes.Repeat([]byte{42}, 1500)},
 		{[]byte("single")},
@@ -52,7 +50,7 @@ func TestDatagramPackets(t *testing.T) {
 		if err := writeDatagramPackets(writer, packets); err != nil {
 			t.Fatal(err)
 		}
-		n, err := readDatagramPackets(reader, frames, 1500)
+		n, err := readDatagramPackets(reader, frames, buffer, 1500)
 		if err != nil || n != len(packets) {
 			t.Fatalf("read = %d, %v, want %d packets", n, err, len(packets))
 		}
@@ -68,7 +66,7 @@ func TestDatagramPackets(t *testing.T) {
 		}
 	}
 	for received := 0; received < 35; {
-		n, err := readDatagramPackets(reader, frames, 1500)
+		n, err := readDatagramPackets(reader, frames, buffer, 1500)
 		if err != nil || n == 0 || n > 32 {
 			t.Fatalf("bounded read = %d, %v", n, err)
 		}
@@ -102,8 +100,9 @@ func TestDatagramPacketsInvalidSuffix(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			frames := [][]byte{make([]byte, 3), make([]byte, 3), make([]byte, 3)}
-			n, err := readDatagramPackets(reader, frames, 3)
+			frames := make([][]byte, 3)
+			buffer := make([]byte, 9)
+			n, err := readDatagramPackets(reader, frames, buffer, 3)
 			if n != 1 || err == nil || string(frames[0]) != "abc" {
 				t.Fatalf("valid prefix = %q, %d, %v", frames[:n], n, err)
 			}
@@ -124,7 +123,7 @@ func TestDatagramPacketsReadClose(t *testing.T) {
 	}
 	done := make(chan error, 1)
 	go func() {
-		_, err := readDatagramPackets(reader, [][]byte{make([]byte, 1500)}, 1500)
+		_, err := readDatagramPackets(reader, make([][]byte, 1), make([]byte, 1500), 1500)
 		done <- err
 	}()
 	if err := conn.Close(); err != nil {
@@ -151,11 +150,12 @@ func TestDatagramPacketsReadDeadline(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	frames := [][]byte{make([]byte, 3), make([]byte, 3), make([]byte, 3)}
+	frames := make([][]byte, 3)
+	buffer := make([]byte, 9)
 	if err := conn.SetReadDeadline(time.Now().Add(20 * time.Millisecond)); err != nil {
 		t.Fatal(err)
 	}
-	if n, err := readDatagramPackets(reader, frames, 3); n != 0 || !errors.Is(err, os.ErrDeadlineExceeded) {
+	if n, err := readDatagramPackets(reader, frames, buffer, 3); n != 0 || !errors.Is(err, os.ErrDeadlineExceeded) {
 		t.Fatalf("empty socket read = %d, %v", n, err)
 	}
 	if err := conn.SetReadDeadline(time.Now().Add(3 * time.Second)); err != nil {
@@ -164,7 +164,7 @@ func TestDatagramPacketsReadDeadline(t *testing.T) {
 	if _, err := file.Write([]byte("abc")); err != nil {
 		t.Fatal(err)
 	}
-	if n, err := readDatagramPackets(reader, frames, 3); n != 1 || err != nil || string(frames[0]) != "abc" {
+	if n, err := readDatagramPackets(reader, frames, buffer, 3); n != 1 || err != nil || string(frames[0]) != "abc" {
 		t.Fatalf("read after deadline = %d, %q, %v", n, frames[0], err)
 	}
 }
@@ -235,6 +235,65 @@ func TestDatagramPacketsPartialSend(t *testing.T) {
 		n, err := peer.Read(frame)
 		if err != nil || !bytes.Equal(frame[:n], want) {
 			t.Fatalf("recovered send = %x, %v", frame[:n], err)
+		}
+	}
+}
+
+func TestDatagramPacketsMixedSizes(t *testing.T) {
+	conn, file, err := socketPair(Datagram, 65550)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	defer file.Close()
+	peer, err := net.FileConn(file)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer peer.Close()
+	deadline := time.Now().Add(3 * time.Second)
+	if err := conn.SetReadDeadline(deadline); err != nil {
+		t.Fatal(err)
+	}
+	if err := peer.SetWriteDeadline(deadline); err != nil {
+		t.Fatal(err)
+	}
+	raw, err := conn.SyscallConn()
+	if err != nil {
+		t.Fatal(err)
+	}
+	frames := make([][]byte, 32)
+	buffer := make([]byte, 256000)
+	small := make([]int, 32)
+	for i := range small {
+		small[i] = 1500
+	}
+	for _, lengths := range [][]int{
+		small,
+		{60, 65550, 1500, 65550, 61, 65550, 60},
+		{1500, 60, 1514, 61},
+	} {
+		packets := make([][]byte, len(lengths))
+		for i, length := range lengths {
+			packets[i] = bytes.Repeat([]byte{byte(i + 1)}, length)
+			if _, err := peer.Write(packets[i]); err != nil {
+				t.Fatal(err)
+			}
+		}
+		for received := 0; received < len(packets); {
+			n, err := readDatagramPackets(raw, frames, buffer, 65550)
+			if err != nil || n == 0 || n > len(packets)-received {
+				t.Fatalf("read = %d, %v, with %d packets remaining", n, err, len(packets)-received)
+			}
+			if len(packets) == 32 && received == 0 && n != 32 {
+				t.Fatalf("small packet batch = %d, want 32 packets", n)
+			}
+			for _, frame := range frames[:n] {
+				if !bytes.Equal(frame, packets[received]) {
+					t.Fatalf("packet %d differs", received)
+				}
+				received++
+			}
 		}
 	}
 }

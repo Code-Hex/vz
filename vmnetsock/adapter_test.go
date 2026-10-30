@@ -42,15 +42,18 @@ func TestAdapterFramesAndLifetime(t *testing.T) {
 		name      string
 		transport vmnetsock.Transport
 		convert   bool
+		tso       bool
 	}{
 		{name: "stream", transport: vmnetsock.Stream},
 		{name: "datagram", transport: vmnetsock.Datagram},
 		{name: "stream Virtio conversion", transport: vmnetsock.Stream, convert: true},
 		{name: "datagram Virtio conversion", transport: vmnetsock.Datagram, convert: true},
+		{name: "stream TSO conversion", transport: vmnetsock.Stream, convert: true, tso: true},
+		{name: "datagram TSO conversion", transport: vmnetsock.Datagram, convert: true, tso: true},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			transport := test.transport
-			c, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
+			c, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost, vmnet.WithMTU(1500))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -60,9 +63,9 @@ func TestAdapterFramesAndLifetime(t *testing.T) {
 				t.Fatal(err)
 			}
 			t.Cleanup(func() { objc.Release((*objc.Pointer)(n)) })
-			a := newInterface(t, n, vmnet.WithInterfaceVirtioHeader(test.convert))
+			a := newInterface(t, n, vmnet.WithInterfaceVirtioHeader(test.convert), vmnet.WithInterfaceTSO(test.tso))
 			b := newInterface(t, n)
-			if a.VirtioHeaderEnabled() != test.convert || a.TSOEnabled() {
+			if a.VirtioHeaderEnabled() != test.convert || a.TSOEnabled() != test.tso {
 				t.Fatal("unexpected interface offload configuration")
 			}
 			var opts []vmnetsock.Option
@@ -95,48 +98,62 @@ func TestAdapterFramesAndLifetime(t *testing.T) {
 				t.Fatal(err)
 			}
 			frame, _ := hex.DecodeString("ffffffffffff02000000000108060001080006040001020000000001c0a8ff02000000000000c0a8ff03000000000000000000000000000000000000")
-			if transport == vmnetsock.Stream {
-				var header [4]byte
-				binary.BigEndian.PutUint32(header[:], uint32(len(frame)))
-				_, err = peer.Write(append(header[:], frame...))
-			} else {
-				_, err = peer.Write(frame)
-			}
-			if err != nil {
-				t.Fatal(err)
-			}
 			buffer := make([]byte, b.MaxPacketSize())
-			for {
-				count, err := b.ReadPacket(ctx, buffer)
-				if err != nil {
-					t.Fatal(err)
-				}
-				if bytes.Equal(buffer[:count], frame) {
-					break
-				}
-			}
-			if err := b.WritePacket(frame); err != nil {
-				t.Fatal(err)
-			}
-			for {
-				var count int
-				if transport == vmnetsock.Stream {
-					var header [4]byte
-					if _, err = io.ReadFull(peer, header[:]); err == nil {
-						count = int(binary.BigEndian.Uint32(header[:]))
-						if count > len(buffer) {
-							t.Fatal("oversized peer frame")
-						}
-						_, err = io.ReadFull(peer, buffer[:count])
+			for _, lengths := range [][]int{{60, 128, 61}, {61, 60, 128}} {
+				frames := make([][]byte, len(lengths))
+				var wire bytes.Buffer
+				for i, length := range lengths {
+					frames[i] = append(bytes.Clone(frame), bytes.Repeat([]byte{0xa5}, length-len(frame))...)
+					if transport == vmnetsock.Stream {
+						binary.Write(&wire, binary.BigEndian, uint32(len(frames[i])))
+						wire.Write(frames[i])
+					} else if _, err := peer.Write(frames[i]); err != nil {
+						t.Fatal(err)
 					}
-				} else {
-					count, err = peer.Read(buffer)
 				}
-				if err != nil {
-					t.Fatal(err)
+				if transport == vmnetsock.Stream {
+					if _, err := peer.Write(wire.Bytes()); err != nil {
+						t.Fatal(err)
+					}
 				}
-				if bytes.Equal(buffer[:count], frame) {
-					break
+				for _, want := range frames {
+					for {
+						count, err := b.ReadPacket(ctx, buffer)
+						if err != nil {
+							t.Fatal(err)
+						}
+						if bytes.Equal(buffer[:count], want) {
+							break
+						}
+					}
+				}
+				for _, packet := range frames {
+					if err := b.WritePacket(packet); err != nil {
+						t.Fatal(err)
+					}
+				}
+				for _, want := range frames {
+					for {
+						var count int
+						if transport == vmnetsock.Stream {
+							var header [4]byte
+							if _, err = io.ReadFull(peer, header[:]); err == nil {
+								count = int(binary.BigEndian.Uint32(header[:]))
+								if count > len(buffer) {
+									t.Fatal("oversized peer frame")
+								}
+								_, err = io.ReadFull(peer, buffer[:count])
+							}
+						} else {
+							count, err = peer.Read(buffer)
+						}
+						if err != nil {
+							t.Fatal(err)
+						}
+						if bytes.Equal(buffer[:count], want) {
+							break
+						}
+					}
 				}
 			}
 			if err := adapter.Close(); err != nil {
@@ -289,7 +306,7 @@ func TestAdapterQueuedBurst(t *testing.T) {
 	}
 	for _, transport := range []vmnetsock.Transport{vmnetsock.Stream, vmnetsock.Datagram} {
 		t.Run(string(rune('0'+transport)), func(t *testing.T) {
-			c, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
+			c, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost, vmnet.WithMTU(1500))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -302,14 +319,20 @@ func TestAdapterQueuedBurst(t *testing.T) {
 			sender, receiver := newInterface(t, network), newInterface(t, network)
 			frames := make([][]byte, 70)
 			for j := range frames {
-				frame := bytes.Repeat([]byte{byte(j)}, 60+j)
+				size := 60 + j
+				if transport == vmnetsock.Datagram {
+					size = 1500
+				}
+				frame := bytes.Repeat([]byte{byte(j)}, size)
 				copy(frame, []byte{255, 255, 255, 255, 255, 255})
 				copy(frame[6:], sender.MACAddress())
 				binary.BigEndian.PutUint16(frame[12:], 0x88b5)
 				frames[j] = frame
 			}
-			if n, err := sender.WritePackets(frames); n != len(frames) || err != nil {
-				t.Fatalf("burst write = %d, %v", n, err)
+			if transport == vmnetsock.Stream {
+				if n, err := sender.WritePackets(frames); n != len(frames) || err != nil {
+					t.Fatalf("burst write = %d, %v", n, err)
+				}
 			}
 			adapter, err := vmnetsock.New(t.Context(), receiver, transport)
 			if err != nil {
@@ -322,6 +345,17 @@ func TestAdapterQueuedBurst(t *testing.T) {
 				t.Fatal(err)
 			}
 			defer peer.Close()
+			if err := file.Close(); err != nil {
+				t.Fatal(err)
+			}
+			if transport == vmnetsock.Datagram {
+				if err := peer.(*net.UnixConn).SetReadBuffer(8192); err != nil {
+					t.Fatal(err)
+				}
+				if n, err := sender.WritePackets(frames); n != len(frames) || err != nil {
+					t.Fatalf("burst write = %d, %v", n, err)
+				}
+			}
 			if err := peer.SetReadDeadline(time.Now().Add(3 * time.Second)); err != nil {
 				t.Fatal(err)
 			}
@@ -351,6 +385,26 @@ func TestAdapterQueuedBurst(t *testing.T) {
 					t.Fatalf("frame %d differs, length %d", received, size)
 				}
 				received++
+			}
+			if transport == vmnetsock.Datagram {
+				sentinel := bytes.Clone(frames[0])
+				sentinel[len(sentinel)-1] = 0xff
+				if err := sender.WritePacket(sentinel); err != nil {
+					t.Fatal(err)
+				}
+				for {
+					size, err := peer.Read(buffer)
+					if err != nil {
+						t.Fatalf("frame after draining burst: %v", err)
+					}
+					if size < 14 || binary.BigEndian.Uint16(buffer[12:]) != 0x88b5 {
+						continue
+					}
+					if !bytes.Equal(buffer[:size], sentinel) {
+						t.Fatal("frame after draining burst differs")
+					}
+					break
+				}
 			}
 			if err := adapter.Close(); err != nil {
 				t.Fatal(err)

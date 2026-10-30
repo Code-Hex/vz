@@ -140,7 +140,7 @@ func TestSocketBackpressureClose(t *testing.T) {
 			}
 			select {
 			case err := <-done:
-				if !errors.Is(err, net.ErrClosed) && !(transport == Datagram && errors.Is(err, unix.ENOBUFS)) {
+				if !errors.Is(err, net.ErrClosed) {
 					t.Fatalf("blocked write = %v", err)
 				}
 			case <-time.After(3 * time.Second):
@@ -331,5 +331,23 @@ func TestStreamPacketReaderBatchLimits(t *testing.T) {
 				t.Fatalf("received %d packets, want 35", got)
 			}
 		})
+	}
+}
+
+func TestStreamPacketReaderSmallFramesWithLargeMaximum(t *testing.T) {
+	var data bytes.Buffer
+	for i := range 32 {
+		binary.Write(&data, binary.BigEndian, uint32(1500))
+		data.Write(bytes.Repeat([]byte{byte(i)}, 1500))
+	}
+	reader := newStreamPacketReader(&data, 65550)
+	frames, err := reader.readPackets()
+	if err != nil || len(frames) != 32 {
+		t.Fatalf("small packet batch = %d, %v, want 32 packets", len(frames), err)
+	}
+	for i, frame := range frames {
+		if !bytes.Equal(frame, bytes.Repeat([]byte{byte(i)}, 1500)) {
+			t.Fatalf("packet %d differs", i)
+		}
 	}
 }

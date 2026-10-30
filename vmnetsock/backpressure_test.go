@@ -1,7 +1,6 @@
 package vmnetsock
 
 import (
-	"bytes"
 	"context"
 	"encoding/hex"
 	"errors"
@@ -61,15 +60,6 @@ func TestAdapterBackpressureCleanup(t *testing.T) {
 
 				frame, _ := hex.DecodeString("ffffffffffff02000000000108060001080006040001020000000001c0a8ff02000000000000c0a8ff03000000000000000000000000000000000000")
 				sendPacketBurst(t, sender, frame)
-				if transport == Datagram {
-					peer, err := net.FileConn(file)
-					if err != nil {
-						t.Fatal(err)
-					}
-					defer peer.Close()
-
-					checkDatagramRecovery(t, a, sender, peer, frame, receiver.MaxPacketSize())
-				}
 
 				done := make(chan error, 1)
 				if cancelContext {
@@ -120,49 +110,6 @@ func sendPacketBurst(t *testing.T, sender *vmnet.Interface, frame []byte) {
 			if !errors.As(err, &nativeErr) || nativeErr.Code != 1007 {
 				t.Fatal(err)
 			}
-			break
-		}
-	}
-}
-
-func checkDatagramRecovery(t *testing.T, a *Adapter, sender *vmnet.Interface, peer net.Conn, frame []byte, maxSize int) {
-	t.Helper()
-
-	if err := peer.SetReadDeadline(time.Now().Add(100 * time.Millisecond)); err != nil {
-		t.Fatal(err)
-	}
-	buffer := make([]byte, maxSize)
-	for {
-		_, err := peer.Read(buffer)
-		if err != nil {
-			var timeout net.Error
-			if !errors.As(err, &timeout) || !timeout.Timeout() {
-				t.Fatal(err)
-			}
-			break
-		}
-	}
-
-	select {
-	case <-a.state.done:
-		t.Fatalf("saturation stopped adapter: %v", a.state.err)
-	default:
-	}
-
-	sentinel := bytes.Clone(frame)
-	sentinel[len(sentinel)-1] = 0x7f
-	if err := sender.WritePacket(sentinel); err != nil {
-		t.Fatal(err)
-	}
-	if err := peer.SetReadDeadline(time.Now().Add(3 * time.Second)); err != nil {
-		t.Fatal(err)
-	}
-	for {
-		count, err := peer.Read(buffer)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if bytes.Equal(buffer[:count], sentinel) {
 			break
 		}
 	}

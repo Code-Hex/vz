@@ -142,10 +142,10 @@ func (s *tcpSegmentation) observePeer(frame []byte, now time.Time) error {
 	if err != nil {
 		return err
 	}
-	if packet == nil {
+	if packet.tcp == nil {
 		return nil
 	}
-	_, err = s.observe(packet, true, now)
+	_, err = s.observe(&packet, true, now)
 	return err
 }
 
@@ -154,13 +154,13 @@ func (s *tcpSegmentation) forwardNative(frame []byte, now time.Time, emit func([
 	if err != nil {
 		return err
 	}
-	if packet == nil {
+	if packet.tcp == nil {
 		if len(frame) > s.mtu+ethernetHeaderSize {
 			return fmt.Errorf("cannot segment oversized non-TCP frame")
 		}
 		return emit(frame)
 	}
-	mss, err := s.observe(packet, false, now)
+	mss, err := s.observe(&packet, false, now)
 	if err != nil {
 		return err
 	}
@@ -308,68 +308,70 @@ type tcpPacket struct {
 	unsupportedOption                 bool
 }
 
-func parseTCPPacket(frame []byte) (*tcpPacket, error) {
+// The slices borrow frame. A nil tcp slice marks a non-TCP frame.
+// Returning the metadata by value avoids a per-packet allocation.
+func parseTCPPacket(frame []byte) (tcpPacket, error) {
 	if len(frame) < ethernetHeaderSize {
-		return nil, fmt.Errorf("short Ethernet frame")
+		return tcpPacket{}, fmt.Errorf("short Ethernet frame")
 	}
-	p := &tcpPacket{frame: frame, ip: frame[ethernetHeaderSize:]}
+	p := tcpPacket{frame: frame, ip: frame[ethernetHeaderSize:]}
 	var src, dst netip.Addr
 	switch binary.BigEndian.Uint16(frame[etherTypeOffset:]) {
 	case etherTypeVLAN, etherTypeQinQ:
-		return nil, fmt.Errorf("VLAN frames are not supported with TCP segmentation")
+		return tcpPacket{}, fmt.Errorf("VLAN frames are not supported with TCP segmentation")
 	case etherTypeIPv4:
 		if len(p.ip) < ipv4HeaderSize || p.ip[0]>>4 != ipv4Version {
-			return nil, fmt.Errorf("invalid IPv4 header")
+			return tcpPacket{}, fmt.Errorf("invalid IPv4 header")
 		}
 		p.version = ipv4Version
 		p.ipHeader = int(p.ip[0]&0x0f) * 4
 		n := int(binary.BigEndian.Uint16(p.ip[ipv4TotalLengthOffset:]))
 		if p.ipHeader < ipv4HeaderSize || n < p.ipHeader || n > len(p.ip) {
-			return nil, fmt.Errorf("invalid IPv4 length")
+			return tcpPacket{}, fmt.Errorf("invalid IPv4 length")
 		}
 		p.ip = p.ip[:n]
 		if p.ip[ipv4ProtocolOffset] != ipProtocolTCP {
-			return nil, nil
+			return tcpPacket{}, nil
 		}
 		fragmentFlags := binary.BigEndian.Uint16(p.ip[ipv4FragmentFlagsOffset:])
 		if p.ipHeader != ipv4HeaderSize || fragmentFlags&(ipv4MoreFragments|ipv4FragmentOffsetMask) != 0 {
-			return nil, fmt.Errorf("TCP IPv4 options and fragments are not supported")
+			return tcpPacket{}, fmt.Errorf("TCP IPv4 options and fragments are not supported")
 		}
 		src = netip.AddrFrom4([4]byte(p.ip[ipv4SourceOffset:ipv4DestinationOffset]))
 		dst = netip.AddrFrom4([4]byte(p.ip[ipv4DestinationOffset:ipv4HeaderSize]))
 	case etherTypeIPv6:
 		if len(p.ip) < ipv6HeaderSize || p.ip[0]>>4 != ipv6Version {
-			return nil, fmt.Errorf("invalid IPv6 header")
+			return tcpPacket{}, fmt.Errorf("invalid IPv6 header")
 		}
 		p.version = ipv6Version
 		p.ipHeader = ipv6HeaderSize
 		n := ipv6HeaderSize + int(binary.BigEndian.Uint16(p.ip[ipv6PayloadLengthOffset:]))
 		if n > len(p.ip) {
-			return nil, fmt.Errorf("invalid IPv6 length")
+			return tcpPacket{}, fmt.Errorf("invalid IPv6 length")
 		}
 		p.ip = p.ip[:n]
 		isTCP, err := ipv6TCPHeader(p.ip)
 		if err != nil || !isTCP {
-			return nil, err
+			return tcpPacket{}, err
 		}
 		src = netip.AddrFrom16([16]byte(p.ip[ipv6SourceOffset:ipv6DestinationOffset]))
 		dst = netip.AddrFrom16([16]byte(p.ip[ipv6DestinationOffset:ipv6HeaderSize]))
 	default:
-		return nil, nil
+		return tcpPacket{}, nil
 	}
 	p.frame = frame[:ethernetHeaderSize+len(p.ip)]
 	p.tcp = p.ip[p.ipHeader:]
 	if len(p.tcp) < tcpHeaderSize {
-		return nil, fmt.Errorf("short TCP header")
+		return tcpPacket{}, fmt.Errorf("short TCP header")
 	}
 	p.tcpHeader = int(p.tcp[tcpHeaderLengthOffset]>>4) * 4
 	if p.tcpHeader < tcpHeaderSize || p.tcpHeader > len(p.tcp) {
-		return nil, fmt.Errorf("invalid TCP header length")
+		return tcpPacket{}, fmt.Errorf("invalid TCP header length")
 	}
 	p.src = netip.AddrPortFrom(src, binary.BigEndian.Uint16(p.tcp))
 	p.dst = netip.AddrPortFrom(dst, binary.BigEndian.Uint16(p.tcp[tcpDestinationPortOffset:]))
 	if err := p.parseOptions(); err != nil {
-		return nil, err
+		return tcpPacket{}, err
 	}
 	return p, nil
 }

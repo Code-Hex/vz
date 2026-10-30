@@ -271,13 +271,7 @@ func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface
 		if transport == Stream {
 			return writeStreamFrames(s.conn, packets, headers, vectors)
 		}
-		// ENOBUFS drops the unsent suffix; retrying the batch would duplicate
-		// frames that already reached the peer.
-		err := writeDatagramPackets(raw, packets)
-		if errors.Is(err, unix.ENOBUFS) {
-			return nil
-		}
-		return err
+		return writeDatagramPackets(raw, packets)
 	}
 
 	for {

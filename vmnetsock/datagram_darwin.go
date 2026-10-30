@@ -66,7 +66,10 @@ func writeDatagramPackets(raw syscall.RawConn, frames [][]byte) error {
 				sent++
 			case unix.EINTR:
 				continue
-			case unix.EAGAIN:
+			case unix.EAGAIN, unix.ENOBUFS:
+				// Darwin wakes connected datagram senders when the peer drains its
+				// receive queue. Preserve sent so the accepted prefix is not repeated.
+				// https://github.com/apple-oss-distributions/xnu/blob/f6217f891ac0bb64f3d375211650a4c1ff8ca1ea/bsd/kern/uipc_usrreq.c#L425-L478
 				return false
 			default:
 				sendErr = os.NewSyscallError("sendmsg", err)

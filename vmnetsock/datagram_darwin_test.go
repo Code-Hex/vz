@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"syscall"
 	"testing"
 	"time"
 
@@ -169,6 +170,24 @@ func TestDatagramPacketsReadDeadline(t *testing.T) {
 	}
 }
 
+type writeWaitNotifier struct {
+	syscall.RawConn
+	waiting chan struct{}
+}
+
+func (r writeWaitNotifier) Write(f func(uintptr) bool) error {
+	return r.RawConn.Write(func(fd uintptr) bool {
+		ready := f(fd)
+		if !ready {
+			select {
+			case r.waiting <- struct{}{}:
+			default:
+			}
+		}
+		return ready
+	})
+}
+
 func TestDatagramPacketsPartialSend(t *testing.T) {
 	conn, file, err := socketPair(Datagram, 1500)
 	if err != nil {
@@ -193,49 +212,118 @@ func TestDatagramPacketsPartialSend(t *testing.T) {
 	if _, err := peer.Read(frame); err != nil {
 		t.Fatal(err)
 	}
-	writer, err := conn.SyscallConn()
+	raw, err := conn.SyscallConn()
 	if err != nil {
 		t.Fatal(err)
 	}
+	writer := writeWaitNotifier{RawConn: raw, waiting: make(chan struct{}, 1)}
 	packets := [][]byte{
 		bytes.Repeat([]byte{1}, 1500),
 		bytes.Repeat([]byte{2}, 1500),
 		bytes.Repeat([]byte{3}, 1500),
 	}
-	if err := writeDatagramPackets(writer, packets); !errors.Is(err, unix.ENOBUFS) {
-		t.Fatalf("partial send = %v, want ENOBUFS", err)
+	done := make(chan error, 1)
+	go func() { done <- writeDatagramPackets(writer, packets) }()
+	select {
+	case <-writer.waiting:
+	case err := <-done:
+		t.Fatalf("partial send returned before the peer drained: %v", err)
+	case <-time.After(3 * time.Second):
+		t.Fatal("partial send did not reach backpressure")
 	}
-	raw, err := peer.SyscallConn()
+
+	for {
+		n, err := peer.Read(frame)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if frame[0] != 0 {
+			if !bytes.Equal(frame[:n], packets[0]) {
+				t.Fatalf("first packet = %x", frame[:n])
+			}
+			break
+		}
+	}
+	for _, want := range packets[1:] {
+		n, err := peer.Read(frame)
+		if err != nil || !bytes.Equal(frame[:n], want) {
+			t.Fatalf("resumed send = %x, %v", frame[:n], err)
+		}
+	}
+	if err := <-done; err != nil {
+		t.Fatalf("send after draining = %v", err)
+	}
+	rawPeer, err := peer.SyscallConn()
 	if err != nil {
 		t.Fatal(err)
 	}
-	var received []byte
 	var readErr error
-	if err := raw.Control(func(fd uintptr) {
-		for {
-			var n int
-			n, readErr = unix.Read(int(fd), frame)
-			if readErr != nil {
-				return
-			}
-			if n > 0 && frame[0] != 0 {
-				received = append(received, frame[0])
-			}
-		}
+	if err := rawPeer.Control(func(fd uintptr) {
+		_, readErr = unix.Read(int(fd), frame)
 	}); err != nil {
 		t.Fatal(err)
 	}
-	if !errors.Is(readErr, unix.EAGAIN) || !bytes.Equal(received, []byte{1}) {
-		t.Fatalf("sent prefix = %v, drain error = %v", received, readErr)
+	if !errors.Is(readErr, unix.EAGAIN) {
+		t.Fatalf("extra packet after resumed send: %v", readErr)
 	}
-	if err := writeDatagramPackets(writer, packets); err != nil {
-		t.Fatalf("send after draining = %v", err)
-	}
-	for _, want := range packets {
-		n, err := peer.Read(frame)
-		if err != nil || !bytes.Equal(frame[:n], want) {
-			t.Fatalf("recovered send = %x, %v", frame[:n], err)
-		}
+}
+
+func TestDatagramPacketsWriteInterrupted(t *testing.T) {
+	for _, test := range []struct {
+		name      string
+		interrupt func(*net.UnixConn) error
+		want      error
+	}{
+		{
+			name:      "close",
+			interrupt: (*net.UnixConn).Close,
+			want:      net.ErrClosed,
+		},
+		{
+			name: "deadline",
+			interrupt: func(conn *net.UnixConn) error {
+				return conn.SetWriteDeadline(time.Now())
+			},
+			want: os.ErrDeadlineExceeded,
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			conn, file, err := socketPair(Datagram, 1500)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer conn.Close()
+			defer file.Close()
+			if err := conn.SetWriteDeadline(time.Now().Add(3 * time.Second)); err != nil {
+				t.Fatal(err)
+			}
+			saturateSocket(t, conn, make([]byte, 1500))
+			raw, err := conn.SyscallConn()
+			if err != nil {
+				t.Fatal(err)
+			}
+			writer := writeWaitNotifier{RawConn: raw, waiting: make(chan struct{}, 1)}
+			done := make(chan error, 1)
+			go func() { done <- writeDatagramPackets(writer, [][]byte{make([]byte, 1500)}) }()
+			select {
+			case <-writer.waiting:
+			case err := <-done:
+				t.Fatalf("send returned before interruption: %v", err)
+			case <-time.After(3 * time.Second):
+				t.Fatal("send did not reach backpressure")
+			}
+			if err := test.interrupt(conn); err != nil {
+				t.Fatal(err)
+			}
+			select {
+			case err := <-done:
+				if !errors.Is(err, test.want) {
+					t.Fatalf("interrupted send = %v, want %v", err, test.want)
+				}
+			case <-time.After(3 * time.Second):
+				t.Fatal("interruption did not release the writer")
+			}
+		})
 	}
 }
 

@@ -140,7 +140,7 @@ func TestSocketBackpressureClose(t *testing.T) {
 			}
 			select {
 			case err := <-done:
-				if !errors.Is(err, net.ErrClosed) && !(transport == Datagram && errors.Is(err, unix.ENOBUFS)) {
+				if !errors.Is(err, net.ErrClosed) {
 					t.Fatalf("blocked write = %v", err)
 				}
 			case <-time.After(3 * time.Second):

@@ -121,11 +121,14 @@ func (f tcpFlow) expired(now time.Time) bool {
 type tcpSegmentation struct {
 	mu    sync.Mutex
 	mtu   int
-	flows map[tcpFlowKey]tcpFlow
+	flows map[tcpFlowKey]*tcpFlow
 }
 
 func newTCPSegmentation(mtu int) *tcpSegmentation {
-	return &tcpSegmentation{mtu: mtu, flows: make(map[tcpFlowKey]tcpFlow)}
+	return &tcpSegmentation{
+		mtu:   mtu,
+		flows: make(map[tcpFlowKey]*tcpFlow),
+	}
 }
 
 func (s *tcpSegmentation) clear() {
@@ -173,9 +176,15 @@ func (s *tcpSegmentation) observe(p *tcpPacket, peer bool, now time.Time) (int, 
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	f, known := s.flows[key]
+	entry, known := s.flows[key]
+	// Validate updates on a copy before committing them to a live flow.
+	var f tcpFlow
+	if known {
+		f = *entry
+	}
 	if known && f.expired(now) {
 		delete(s.flows, key)
+		entry = nil
 		known = false
 	}
 	flags := p.tcp[tcpFlagsOffset]
@@ -186,7 +195,7 @@ func (s *tcpSegmentation) observe(p *tcpPacket, peer bool, now time.Time) (int, 
 		// The opposite pump can still receive data sent before the reset.
 		if known && f.closedAt.IsZero() {
 			f.closedAt = now
-			s.flows[key] = f
+			*entry = f
 		}
 		return 0, nil
 	}
@@ -234,7 +243,11 @@ func (s *tcpSegmentation) observe(p *tcpPacket, peer bool, now time.Time) (int, 
 	if f.finAcked == bothFINs && f.closedAt.IsZero() {
 		f.closedAt = now
 	}
-	s.flows[key] = f
+	if entry == nil {
+		entry = new(tcpFlow)
+		s.flows[key] = entry
+	}
+	*entry = f
 	return f.mss, nil
 }
 

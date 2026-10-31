@@ -5,8 +5,10 @@
 //
 
 #import "virtualization_view.h"
+#import "native.h"
 
 #import <QuartzCore/QuartzCore.h>
+#import <objc/runtime.h>
 
 static const CGFloat VZGraphicsHeaderHeight = 40.0;
 
@@ -513,6 +515,22 @@ static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRati
 
 @end
 
+static char viewMachineLifetimeKey;
+
+@interface VZGraphicViewMachineLifetime : NSObject {
+@public
+    void *machine;
+}
+@end
+
+@implementation VZGraphicViewMachineLifetime
+- (void)dealloc
+{
+    vz_releaseObject(machine);
+    [super dealloc];
+}
+@end
+
 @implementation VZGraphicWindowController {
     VZVirtualMachine *_virtualMachine;
     dispatch_queue_t _queue;
@@ -550,6 +568,10 @@ static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRati
     VZVirtualMachineView *view = [[[VZVirtualMachineView alloc] init] autorelease];
     view.capturesSystemKeys = YES;
     view.virtualMachine = _virtualMachine;
+    VZGraphicViewMachineLifetime *lifetime = [[VZGraphicViewMachineLifetime alloc] init];
+    lifetime->machine = [_virtualMachine retain];
+    objc_setAssociatedObject(view, &viewMachineLifetimeKey, lifetime, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [lifetime release];
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
     if (@available(macOS 14.0, *)) {
         // Configure the app to automatically respond to changes in the display size.
@@ -600,7 +622,6 @@ static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRati
     [self stopScrollTimer];
     [_window setDelegate:nil];
     [_window close];
-    _virtualMachineView.virtualMachine = nil;
     VZVirtualMachine *machine = _virtualMachine;
     dispatch_sync(_queue, ^{
         [machine removeObserver:self forKeyPath:@"state"];

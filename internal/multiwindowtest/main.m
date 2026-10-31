@@ -148,6 +148,7 @@ static void runScenario(Scenario scenario, VZVirtualMachine *first, VZVirtualMac
             vz_addGraphicWindow(application, second, 640, 480, "Second VM", true);
         }
         __block BOOL completed = NO;
+        __block VZVirtualMachineView *retainedView = nil;
         void (^checkWindows)(void) = ^{
             NSWindow *firstWindow = windowNamed(@"First VM");
             NSWindow *secondWindow = windowNamed(@"Second VM");
@@ -166,6 +167,7 @@ static void runScenario(Scenario scenario, VZVirtualMachine *first, VZVirtualMac
             if (scenario == CloseFirst) {
                 checkWindowMenuState(firstWindow, secondWindow);
                 require(vz_runGraphicApplication(application) == VZGraphicApplicationDuplicateMachine, @"Duplicate application windows were accepted");
+                retainedView = [machineView(firstWindow.contentView) retain];
             }
             if (scenario == Quit) {
                 completed = YES;
@@ -190,6 +192,11 @@ static void runScenario(Scenario scenario, VZVirtualMachine *first, VZVirtualMac
             later(^{
                 require(state(remaining) == VZVirtualMachineStateRunning, @"Remaining VM stopped running");
                 require(liveObjects(controllers) == 1, @"Closed window controller is retained while another VM runs");
+                if (retainedView) {
+                    require(retainedView.virtualMachine == first, @"Closing the controller cleared the retained native view's VM binding");
+                    [retainedView release];
+                    retainedView = nil;
+                }
                 require(!windowNamed(closedTitle).visible, @"Closed VM window remains visible");
                 require(windowNamed(remainingTitle).visible, @"Closing one VM hid the other window");
                 operate(remaining, ^(void (^done)(NSError *)) {

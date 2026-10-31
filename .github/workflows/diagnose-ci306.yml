@@ -27,6 +27,7 @@ jobs:
           import sys
           import time
 
+          os.environ['PWD'] = os.getcwd()
           subprocess.run(['go', 'version'], check=True)
           process = subprocess.Popen(['make', 'test'], start_new_session=True)
           start = time.monotonic()

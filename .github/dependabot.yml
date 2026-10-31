@@ -2,11 +2,21 @@ version: 2
 updates:
 - package-ecosystem: gomod
   directory: "/"
+  schedule:
+    interval: weekly
 - package-ecosystem: gomod
   directory: "/example/gui-linux"
+  schedule:
+    interval: weekly
 - package-ecosystem: gomod
   directory: "/example/linux"
+  schedule:
+    interval: weekly
 - package-ecosystem: gomod
-  directory: "/example/macos"
+  directory: "/example/macOS"
+  schedule:
+    interval: weekly
 - package-ecosystem: github-actions
   directory: "/"
+  schedule:
+    interval: weekly

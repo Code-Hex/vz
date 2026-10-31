@@ -48,6 +48,7 @@ jobs:
       - uses: actions/setup-go@v7.0.0
         with:
           go-version: ${{ matrix.go }}
+          check-latest: true
       - name: Verify saved metadata
         run: go test ./cmd/vzbridgegen ./internal/vzbridge/nativegen -run '^TestMetadata' -count=1
       - name: Regenerate bindings
@@ -78,6 +79,7 @@ jobs:
         uses: actions/setup-go@v7.0.0
         with:
           go-version: ${{ matrix.go }}
+          check-latest: true
       - name: vet
         run: go vet ./...
       - name: Test binding generators
@@ -131,6 +133,7 @@ jobs:
         uses: actions/setup-go@v7.0.0
         with:
           go-version: ${{ matrix.go }}
+          check-latest: true
       - name: Download Linux kernel
         run: make download_kernel
       - name: Unit Test

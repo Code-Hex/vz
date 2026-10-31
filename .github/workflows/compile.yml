@@ -10,14 +10,28 @@ on:
     paths-ignore:
       - example/**
       - README.md
+env:
+  GOTOOLCHAIN: local
 jobs:
   formatting-check:
     name: Formatting Check
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7.0.1
+      with:
+        persist-credentials: false
+    - name: Install actions lock verifier
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: gh extension install github/gh-actions-lock --pin v0.4.0
+    - name: Verify actions lock
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: gh actions-lock --verify
     - name: Run clang-format style check for Objective-C files.
-      uses: jidicula/clang-format-action@v4.13.0
+      uses: jidicula/clang-format-action@v4.18.0
       with:
         clang-format-version: '13'
   generated-code:
@@ -26,13 +40,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go: ['1.25.x', '1.26.x', '1.27.1']
+        go: ['1.26.x', '1.27.x']
     env:
-      GOTOOLCHAIN: local
       CGO_ENABLED: '0'
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v6
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-go@v7.0.0
         with:
           go-version: ${{ matrix.go }}
       - name: Verify saved metadata
@@ -51,18 +64,18 @@ jobs:
       fail-fast: false
       matrix:
         os:
-        - macos-14
         - macos-15
         - macos-15-intel
         - macos-26
+        - xcode-27
         go:
-        - '^1.25'
-        - '^1.26'
+        - '1.26.x'
+        - '1.27.x'
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
       - name: Set up Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7.0.0
         with:
           go-version: ${{ matrix.go }}
       - name: vet
@@ -105,17 +118,17 @@ jobs:
     timeout-minutes: 10
     strategy:
       fail-fast: false
-      # Can't expand the matrix due to the flakiness of the CI infra
       matrix:
         os:
         - macos-15-intel
         go:
-        - '^1.25'
+        - '1.26.x'
+        - '1.27.x'
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
       - name: Set up Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7.0.0
         with:
           go-version: ${{ matrix.go }}
       - name: Download Linux kernel

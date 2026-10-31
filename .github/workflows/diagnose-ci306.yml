@@ -1,0 +1,61 @@
+name: Diagnose Intel Go 1.26
+on:
+  push:
+    branches: [codex/diagnose-ci306-intel]
+permissions:
+  contents: read
+env:
+  GOTOOLCHAIN: local
+jobs:
+  reproduce:
+    runs-on: macos-15-intel
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-go@v7.0.0
+        with:
+          go-version: '1.26.x'
+          check-latest: true
+      - run: make download_kernel
+      - name: Run original tests with process sampling
+        shell: python3 {0}
+        run: |
+          import os
+          import pathlib
+          import signal
+          import subprocess
+          import sys
+          import time
+
+          subprocess.run(['go', 'version'], check=True)
+          process = subprocess.Popen(['make', 'test'], start_new_session=True)
+          start = time.monotonic()
+          sample_at = 90
+          while process.poll() is None:
+              elapsed = time.monotonic() - start
+              if elapsed >= sample_at:
+                  print('DIAGNOSTIC elapsed=' + str(int(elapsed)), flush=True)
+                  listing = subprocess.run(['ps', '-axo', 'pid=,ppid=,etime=,stat=,comm='], capture_output=True, text=True, timeout=10)
+                  print(listing.stdout, flush=True)
+                  for line in listing.stdout.splitlines():
+                      fields = line.split()
+                      if fields and fields[-1].endswith('.test'):
+                          output = pathlib.Path(os.environ['RUNNER_TEMP']) / ('sample-' + fields[0] + '-' + str(sample_at) + '.txt')
+                          try:
+                              subprocess.run(['sample', fields[0], '1', '1', '-file', str(output)], timeout=15, check=False)
+                          except subprocess.TimeoutExpired:
+                              print('DIAGNOSTIC sample timed out for ' + fields[0], flush=True)
+                          if output.exists():
+                              print(output.read_text(), flush=True)
+                  sample_at += 90
+              if elapsed >= 360:
+                  print('DIAGNOSTIC test command exceeded six minutes', flush=True)
+                  os.killpg(process.pid, signal.SIGQUIT)
+                  try:
+                      process.wait(timeout=10)
+                  except subprocess.TimeoutExpired:
+                      os.killpg(process.pid, signal.SIGKILL)
+                      process.wait()
+                  sys.exit(124)
+              time.sleep(1)
+          sys.exit(process.returncode)

@@ -20,7 +20,8 @@ test/run:
 test/graphics:
 	@binary=$$(mktemp -t vz-graphics-test) || exit 1; \
 	trap 'rm -f "$$binary"' EXIT; \
-	xcrun clang -fblocks -I internal/vzbridge internal/graphicstest/main.m internal/vzbridge/virtualization_view.m \
+	xcrun clang -fblocks -I internal/vzbridge internal/graphicstest/main.m \
+		internal/vzbridge/native.m internal/vzbridge/virtualization_view.m \
 		-framework Cocoa -framework Virtualization -framework QuartzCore -o "$$binary" && "$$binary"
 
 .PHONY: test/graphics/multiple

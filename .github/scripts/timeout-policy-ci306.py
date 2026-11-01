@@ -66,6 +66,8 @@ def parse_values(text):
     measured, symbols, meta = {}, {}, None
     complete = 0
     for line in text.splitlines():
+        if not line.strip():
+            continue
         if line == 'COMPLETE':
             complete += 1
             continue

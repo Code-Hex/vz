@@ -1,4 +1,4 @@
-name: Measure Intel kernel timeout policy without a VM
+name: Confirm Intel kernel timeout policy without a VM
 on:
   push:
     branches: [codex/diagnose-ci306-intel]

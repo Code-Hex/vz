@@ -63,6 +63,15 @@ jobs:
           codesign --force --entitlements "$RUNNER_TEMP/original-network.entitlements" -s - "$RUNNER_TEMP/original-network.test"
           codesign --verify "$RUNNER_TEMP/original-network.test"
           shasum -a 256 original-source/testdata/Image original-source/testdata/initramfs.cpio.gz "$RUNNER_TEMP/original-network.test"
+      - name: Prepare Intel-only collector and pinned Apple decoder
+        run: |
+          test "$(uname -s)" = Darwin
+          test "$(uname -m)" = x86_64
+          xcrun clang -std=c11 -Wall -Wextra -Werror .github/scripts/stackshot-once-timeout-ci306.c -o "$RUNNER_TEMP/stackshot-once-timeout"
+          curl --fail --silent --show-error --location --connect-timeout 10 --max-time 60 --output "$RUNNER_TEMP/kcdata.py" https://raw.githubusercontent.com/apple-oss-distributions/xnu/f6217f891ac0bb64f3d375211650a4c1ff8ca1ea/tools/lldbmacros/kcdata.py
+          echo '9ee5193fa81863d3b02df52ff4c3cc844aba73d5295c451730c6b783f403da11  '"$RUNNER_TEMP/kcdata.py" | shasum -a 256 -c -
+      - name: Read timeout constants once after running UUID verification
+        run: python3 .github/scripts/timeout-policy-ci306.py
       - name: Observe the original Go test independently
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -70,3 +79,13 @@ jobs:
         run: |
           test -n "$CI306_OBSERVER_RECEIVER"
           python3 .github/scripts/dual-observer-fbt-wrapper-ci306.py
+      - name: Upload encrypted startup policy only
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: ci306-timeout-policy-encrypted
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/timeout-policy/capture.enc
+            ${{ runner.temp }}/timeout-policy/password.enc

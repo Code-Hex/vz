@@ -13,6 +13,8 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
+      - name: Build the one-shot stackshot collector
+        run: xcrun clang -Wall -Wextra -Werror .github/scripts/stackshot-once-ci306.c -o "$RUNNER_TEMP/stackshot-once"
       - name: Collect bounded kernel diagnostics without starting a VM
         run: |
           python3 - <<'PYCODE'
@@ -30,9 +32,15 @@ jobs:
               ('entitlements', ['/usr/bin/codesign', '-d', '--entitlements', ':-', '/usr/sbin/spindump']),
               ('spindump-help', ['/usr/sbin/spindump', '-h']),
               ('spindump', ['/usr/bin/sudo', '-n', '/usr/sbin/spindump', '-noTarget', '1', '100', '-noSymbolicate', '-noBinary', '-o', str(raw / 'kernel-stack.txt')]),
-              ('spindump-fast', ['/usr/bin/sudo', '-n', '/usr/sbin/spindump', '-noTarget', '0.1', '10', '-noIPC', '-noSymbolicate', '-noBinary', '-o', str(raw / 'kernel-fast.txt')]),
-              ('spindump-symbols', ['/usr/bin/sudo', '-n', '/usr/sbin/spindump', '-noTarget', '0.1', '10', '-noBinary', '-o', str(raw / 'kernel-symbols.txt')]),
+              ('spindump-fast', ['/usr/bin/sudo', '-n', '/usr/sbin/spindump', '-noTarget', '1', '100', '-noIPC', '-noSymbolicate', '-noBinary', '-o', str(raw / 'kernel-fast.txt')]),
+              ('spindump-symbols', ['/usr/bin/sudo', '-n', '/usr/sbin/spindump', '-noTarget', '1', '100', '-noBinary', '-o', str(raw / 'kernel-symbols.txt')]),
+              ('stackshot', ['/usr/bin/sudo', '-n', str(Path(os.environ['RUNNER_TEMP']) / 'stackshot-once'), str(raw / 'shot.kcdata')]),
+              ('stackshot-owner', ['/usr/bin/sudo', '-n', '/usr/sbin/chown', str(os.getuid()), str(raw / 'shot.kcdata')]),
+              ('stackshot-parse', ['/usr/bin/sudo', '-n', '/usr/sbin/spindump', '-i', str(raw / 'shot.kcdata'), '-noSymbolicate', '-noBinary', '-o', str(raw / 'shot-parsed.txt')]),
               ('kernel-files', ['/bin/ls', '-lh', '/System/Library/Kernels/kernel', '/System/Library/KernelCollections/BootKernelExtensions.kc', '/System/Library/KernelCollections/SystemKernelExtensions.kc']),
+              ('kernel-uuid', ['/usr/bin/xcrun', 'dwarfdump', '--uuid', '/System/Library/Kernels/kernel']),
+              ('kernel-nm', ['/usr/bin/xcrun', 'nm', '-n', '/System/Library/Kernels/kernel']),
+              ('kernel-layout', ['/usr/bin/xcrun', 'otool', '-l', '/System/Library/Kernels/kernel']),
               ('kernel-log', ['/usr/bin/sudo', '-n', '/usr/bin/log', 'show', '--last', '20s', '--style', 'compact', '--predicate', 'process == "kernel"']),
               ('console', ['/bin/ls', '-l', '/dev/console', '/Library/Logs/DiagnosticReports']),
               ('ktrace-help', ['/usr/bin/sudo', '-n', '/usr/bin/ktrace', '-h']),

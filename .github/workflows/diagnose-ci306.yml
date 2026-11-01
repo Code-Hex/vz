@@ -1,40 +1,45 @@
-name: Diagnose Intel socket lifetime
+name: Diagnose native Virtualization networking
 on:
   push:
     branches: [codex/diagnose-ci306-intel]
 permissions:
   contents: read
   checks: write
-env:
-  GOTOOLCHAIN: local
 jobs:
   reproduce:
-    name: vsock NAT ${{ matrix.nat }}
+    name: native NAT=${{ matrix.nat }} DGRAM=${{ matrix.dgram }}
     runs-on: macos-15-intel
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
         include:
-          - nat: 'on'
-            skip_nat: '0'
-          - nat: 'off'
-            skip_nat: '1'
+          - nat: '1'
+            dgram: '0'
+          - nat: '1'
+            dgram: '2'
+          - nat: '0'
+            dgram: '2'
     env:
-      CI306_SKIP_NAT: ${{ matrix.skip_nat }}
+      NAT: ${{ matrix.nat }}
+      DGRAM: ${{ matrix.dgram }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-go@v7.0.0
-        with:
-          go-version: '1.26.x'
-          check-latest: true
       - run: make download_kernel
-      - name: Record socket lifecycle outside the runner
+      - name: Build and sign native control
+        run: |
+          xcrun clang -fno-objc-arc -fblocks -Wall -Wextra -Werror -mmacosx-version-min=12.0 -framework Foundation -framework Virtualization .github/scripts/native-ci306.m -o "$RUNNER_TEMP/native-ci306"
+          cat > "$RUNNER_TEMP/native-ci306.entitlements" <<'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict><key>com.apple.security.virtualization</key><true/></dict></plist>
+          PLIST
+          codesign --force --entitlements "$RUNNER_TEMP/native-ci306.entitlements" -s - "$RUNNER_TEMP/native-ci306"
+      - name: Record native lifecycle outside the runner
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          TRACE_NAME: ci306-vsock-nat-${{ matrix.nat }}
-          TRACE_PATTERN: '^TestVirtioSocketListener$'
-          TRACE_COUNT: '20'
+          TRACE_NAME: ci306-native-nat-${{ matrix.nat }}-dgram-${{ matrix.dgram }}
+          TRACE_NATIVE: '1'
         run: python3 .github/scripts/probe-ci306.py

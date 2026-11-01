@@ -2,6 +2,7 @@ name: Compare native two VM configurations
 on:
   push:
     branches: [codex/diagnose-ci306-intel]
+    paths: ['.github/workflows/diagnose-ci306.yml']
 permissions:
   contents: read
   checks: write

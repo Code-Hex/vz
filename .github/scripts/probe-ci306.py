@@ -157,7 +157,7 @@ def main():
             "output": {"title": "テスト診断", "summary": summary(observations, started)},
         })
         check_url = api + "/" + str(check["id"])
-    except (OSError, ValueError, KeyError, urllib.error.URLError, http.client.HTTPException) as error:
+    except (OSError, ValueError, KeyError, urllib.error.URLError, http.client.HTTPException, subprocess.TimeoutExpired) as error:
         report_error("Check Run 作成失敗。テスト未開始", error)
         return 1
 
@@ -195,7 +195,7 @@ def main():
         try:
             check_request("PATCH", check_url, token, {"status": "completed", "conclusion": "failure",
                           "output": {"title": "テスト診断", "summary": "テストプロセスを開始できません。"}})
-        except (OSError, ValueError, urllib.error.URLError, http.client.HTTPException) as error:
+        except (OSError, ValueError, urllib.error.URLError, http.client.HTTPException, subprocess.TimeoutExpired) as error:
             report_error("Check Run 更新失敗", error)
         return 1
 
@@ -220,7 +220,7 @@ def main():
                     acknowledged = checkpoint["id"]
                     last_snapshot = observations.snapshot()
                     last_update = time.monotonic()
-            except (OSError, ValueError, urllib.error.URLError, http.client.HTTPException) as error:
+            except (OSError, ValueError, urllib.error.URLError, http.client.HTTPException, subprocess.TimeoutExpired) as error:
                 report_error("診断バリア更新失敗。ack 保留", error)
             now = time.monotonic()
             current = observations.snapshot()
@@ -229,7 +229,7 @@ def main():
                     check_request("PATCH", check_url, token, {"output": {"title": "テスト診断",
                                   "summary": summary(observations, started)}})
                     last_snapshot = current
-                except (OSError, ValueError, urllib.error.URLError, http.client.HTTPException) as error:
+                except (OSError, ValueError, urllib.error.URLError, http.client.HTTPException, subprocess.TimeoutExpired) as error:
                     report_error("Check Run 更新失敗", error)
                 last_update = time.monotonic()
             time.sleep(0.2)
@@ -243,7 +243,7 @@ def main():
             check_request("PATCH", check_url, token, {"status": "completed",
                           "conclusion": "success" if exit_code == 0 else "failure",
                           "output": {"title": "テスト診断", "summary": final_summary}})
-        except (OSError, ValueError, urllib.error.URLError, http.client.HTTPException) as error:
+        except (OSError, ValueError, urllib.error.URLError, http.client.HTTPException, subprocess.TimeoutExpired) as error:
             report_error("Check Run 最終更新失敗", error)
         print(final_summary)
         return exit_code

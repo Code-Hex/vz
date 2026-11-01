@@ -1,0 +1,74 @@
+name: Compare the newer Intel host
+on:
+  push:
+    branches: [codex/diagnose-ci306-intel]
+    paths: ['.github/workflows/diagnose-ci306-new-intel.yml']
+permissions:
+  contents: read
+  checks: write
+env:
+  GOTOOLCHAIN: local
+jobs:
+  native:
+    name: Native pairs on macOS 26 Intel
+    runs-on: macos-26-intel
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - run: make download_kernel
+      - name: Build the independent native probe
+        run: |
+          xcrun clang -fno-objc-arc -fblocks -Wall -Wextra -Werror -mmacosx-version-min=12.0 -framework Foundation -framework Virtualization .github/scripts/native-pair-ci306.m -o "$RUNNER_TEMP/native-pair-ci306"
+          python3 - <<'PYCODE'
+          import os
+          from pathlib import Path
+          Path(os.environ['RUNNER_TEMP'], 'native.entitlements').write_text('<?xml version="1.0"?><plist version="1.0"><dict><key>com.apple.security.virtualization</key><true/></dict></plist>')
+          PYCODE
+          codesign --force --entitlements "$RUNNER_TEMP/native.entitlements" -s - "$RUNNER_TEMP/native-pair-ci306"
+      - name: Run twenty native pairs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TRACE_NAME: ci306-native-pair-macos26
+          TRACE_NATIVE_PAIR: '1'
+          CI306_NO_BARRIERS: '1'
+          NAT: '1'
+          DGRAM: '2'
+          COUNT: '20'
+          CONSOLE: '0'
+          NONBLOCK: '0'
+          EARLY_RELEASE: '0'
+        run: python3 -u .github/scripts/probe-ci306.py
+  go:
+    name: Original network on macOS 26 Intel Go ${{ matrix.go }}
+    runs-on: macos-26-intel
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.26.x', '1.27.x']
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: 0f8b230847c7769663b8c2347f4f2c5f9940cc29
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-go@v7.0.0
+        with:
+          go-version: ${{ matrix.go }}
+          check-latest: true
+          cache-dependency-path: source/go.sum
+      - run: make -C source download_kernel
+      - name: Run the original network test ten times
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TRACE_NAME: ci306-network-macos26-${{ matrix.go }}
+          TRACE_SOURCE_DIR: ${{ github.workspace }}/source
+          TRACE_PATTERN: '^TestRuntimeNetworkConnection$'
+          TRACE_COUNT: '10'
+          CI306_NO_BARRIERS: '1'
+        run: python3 -u .github/scripts/probe-ci306.py

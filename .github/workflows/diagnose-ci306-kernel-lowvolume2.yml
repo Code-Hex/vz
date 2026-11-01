@@ -1,0 +1,67 @@
+name: Verify DTrace kernel observation on Intel
+on:
+  push:
+    branches: [codex/diagnose-ci306-intel]
+    paths: ['.github/workflows/diagnose-ci306-kernel-lowvolume2.yml']
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: macos-15-intel
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Collect bounded kernel diagnostics without starting a VM
+        run: |
+          python3 - <<'PYCODE'
+          import hashlib, json, os, secrets, shutil, signal, subprocess, tarfile, time
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'kernel-capability'
+          raw = root / 'raw'
+          raw.mkdir(parents=True, mode=0o700)
+          commands = [
+              ('fbt-return', ['/usr/bin/sudo', '-n', '/usr/sbin/dtrace', '-l', '-n', 'fbt:mach_kernel:mp_cpus_call1:return']),
+              ('fbt-applehv-wildcard', ['/usr/bin/sudo', '-n', '/usr/sbin/dtrace', '-l', '-n', 'fbt:*AppleHV*:*:entry']),
+              ('profile-test', ['/usr/bin/sudo', '-n', '/usr/sbin/dtrace', '-q', '-x', 'switchrate=1hz', '-n', 'profile-10 /arg0/ { printf("K cpu=%d tid=%d ns=%llu pc=%p\\n", cpu, tid, timestamp, arg0); stack(12); } tick-5sec { exit(0); }']),
+              ('fbt-test', ['/usr/bin/sudo', '-n', '/usr/sbin/dtrace', '-q', '-x', 'switchrate=1hz', '-n', 'fbt:mach_kernel:mp_cpus_call1:entry { printf("MP entry cpu=%d tid=%d ns=%llu mask=%llx mode=%llu fn=%p arg=%p\\n", cpu, tid, timestamp, arg0, arg1, arg2, arg3); } fbt:mach_kernel:mp_cpus_call1:return { printf("MP return cpu=%d tid=%d ns=%llu\\n", cpu, tid, timestamp); } tick-5sec { exit(0); }']),
+              ('kernel-log-stream', ['/usr/bin/sudo', '-n', '/usr/bin/log', 'stream', '--style', 'compact', '--level', 'default', '--predicate', 'process == "kernel"', '--timeout', '5']),
+              ('dmesg', ['/usr/bin/sudo', '-n', '/sbin/dmesg']),
+          ]
+          results = []
+          for name, argv in commands:
+              began = time.monotonic()
+              with (raw / (name + '.log')).open('wb') as output:
+                  child = subprocess.Popen(argv, stdout=output, stderr=subprocess.STDOUT, start_new_session=True)
+                  try:
+                      code = child.wait(timeout=45)
+                      status = 'exited'
+                  except subprocess.TimeoutExpired:
+                      subprocess.run(['/usr/bin/sudo', '-n', '/bin/kill', '-KILL', '--', '-' + str(child.pid)], timeout=5, check=False)
+                      code = child.wait(timeout=5)
+                      status = 'timed_out'
+              results.append({'name': name, 'status': status, 'returncode': code, 'seconds': round(time.monotonic() - began, 3)})
+          summary = {'results': results, 'observation_only': True}
+          (raw / 'summary.json').write_text(json.dumps(summary, indent=2))
+          print(json.dumps(summary))
+          archive = root / 'raw.tar.gz'
+          with tarfile.open(archive, 'w:gz') as out:
+              out.add(raw, arcname='raw')
+          password = root / 'password'
+          password.write_text(secrets.token_hex(32))
+          password.chmod(0o600)
+          subprocess.run(['/usr/bin/openssl', 'enc', '-aes-256-cbc', '-pbkdf2', '-iter', '100000', '-salt', '-in', str(archive), '-out', str(root / 'capture.enc'), '-pass', 'file:' + str(password)], check=True)
+          subprocess.run(['/usr/bin/openssl', 'pkeyutl', '-encrypt', '-pubin', '-inkey', '.github/scripts/observer-public.pem', '-pkeyopt', 'rsa_padding_mode:oaep', '-in', str(password), '-out', str(root / 'password.enc')], check=True)
+          password.unlink()
+          print('encrypted_capture_sha256=' + hashlib.sha256((root / 'capture.enc').read_bytes()).hexdigest())
+          PYCODE
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: ci306-kernel-lowvolume2-encrypted
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/kernel-capability/capture.enc
+            ${{ runner.temp }}/kernel-capability/password.enc

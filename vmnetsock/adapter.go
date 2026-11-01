@@ -46,13 +46,16 @@ const (
 // Start iface with vmnet.WithInterfaceVirtioHeader(true).
 // The adapter completes partial checksums and removes incoming Virtio headers.
 // The peer must send fully checksummed Ethernet frames; the adapter adds
-// zeroed headers to them. Unsupported GSO types or RSC checksum metadata stop
-// forwarding. Close returns the error.
+// zeroed headers to them. Unsupported GSO types stop forwarding. Close returns
+// the error.
 //
 // With TSO enabled, the adapter tracks TCP handshakes and splits complete-checksum
 // TCP frames using the peer's MSS and the interface MTU. It also converts standard
 // Virtio TCPv4 and TCPv6 GSO, including ECN, using gso_size as a payload limit.
 // GSO conversion requires TSO on iface. UDP GSO is not supported.
+// TCP RSC normalization also requires TSO. It splits checksum-validated packets
+// and recalculates their checksums, including when vmnet supplies no GSO size.
+// RSC metadata that reports duplicate ACKs is not supported.
 // Start forwarding before connections are established. TCP data from vmnet
 // without an observed handshake stops the adapter, even when it fits the MTU.
 // The table holds up to 4096 connections. Entries expire after 30 idle minutes.
@@ -76,11 +79,14 @@ func WithVirtioHeaderConversion() Option {
 //
 // Packets from iface to the socket peer keep their original bytes, including
 // checksum, GSO, and RSC metadata. The peer must handle that metadata. RSC packets
-// from the socket peer stop forwarding. Close returns the forwarding error.
+// from the socket peer require TSO and a supported TCP packet. Close returns
+// the forwarding error for unsupported RSC metadata, including duplicate ACKs.
 //
 // Checksum completion works without TSO. TCPv4 and TCPv6 GSO, including ECN,
 // require TSO on iface. Output is limited by gso_size, the interface MTU, and
 // the iface-side receiver's advertised MSS. UDP GSO is not supported.
+// TCP RSC uses the same MTU and MSS limits and recalculates checksums from the
+// packet instead of interpreting its coalescing counters as checksum offsets.
 //
 // With TSO enabled, start forwarding before TCP connections are established.
 // TCP data from the socket peer without an observed handshake stops forwarding,
@@ -370,7 +376,19 @@ func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface
 func (s *adapterState) normalizePeerPackets(packets, output [][]byte, writePackets func([][]byte) error) error {
 	for _, packet := range packets {
 		if len(packet) > 0 && packet[0]&virtioRSCInfo != 0 {
-			return fmt.Errorf("cannot normalize peer Virtio RSC metadata")
+			if s.tcp == nil {
+				return fmt.Errorf("peer Virtio RSC normalization requires TSO")
+			}
+			if len(packet) < virtioHeaderSize+ethernetHeaderSize {
+				return fmt.Errorf("peer Virtio RSC packet is shorter than its headers")
+			}
+			p, err := parseTCPPacket(packet[virtioHeaderSize:])
+			if err != nil {
+				return err
+			}
+			if p.tcp == nil {
+				return fmt.Errorf("cannot normalize non-TCP peer Virtio RSC metadata")
+			}
 		}
 	}
 	if s.tcp != nil {

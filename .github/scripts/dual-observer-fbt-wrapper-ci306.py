@@ -68,7 +68,6 @@ def main():
         env[name] = os.environ[name]
     controller = subprocess.Popen(['/usr/bin/python3', str(HERE / 'launchd-fbt-gate-ci306.py')], env=env, stdin=subprocess.PIPE, start_new_session=True)
     services = {}
-    activated = False
     oldterm = signal.getsignal(signal.SIGTERM)
     def terminate(_signum, _frame):
         raise SystemExit(1)
@@ -97,7 +96,6 @@ def main():
             time.sleep(0.5)
         if time.monotonic() >= startup_deadline or not first or not heartbeat or not first.get('observed_helper_alive') or not heartbeat.get('first_post') or not distinct_services(first, heartbeat, controller.pid, os.getpgrp()):
             raise RuntimeError('independent observers not ready')
-        activated = True
         controller.stdin.write(json.dumps({'token':token}, separators=(',', ':')).encode() + b'\n')
         controller.stdin.close()
         code = controller.wait()

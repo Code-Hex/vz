@@ -1,0 +1,20 @@
+name: Verify independent root observer without virtual machines
+on:
+  push:
+    branches: [codex/diagnose-ci306-intel]
+    paths: ['.github/workflows/diagnose-ci306-launchd-preflight.yml']
+permissions:
+  contents: read
+  checks: write
+jobs:
+  preflight:
+    runs-on: macos-15-intel
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Verify launchd observer after controlled helper exit
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/launchd-preflight-ci306.py

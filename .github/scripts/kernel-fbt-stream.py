@@ -107,7 +107,6 @@ def watchdog(parent, deadline):
 
 
 def fit_record(record):
-    # Keep complete newest events, recording loss separately from collector loss.
     record = dict(record)
     record['window'] = dict(record['window'])
     record['window']['raw_lines'] = list(record['window']['raw_lines'])
@@ -249,7 +248,6 @@ def main():
             if not path.exists():
                 available = sorted(private.glob('window-*.json.gz'))
                 if available and available[0].name > path.name:
-                    # Collector reports dropped sequences in each subsequent window.
                     candidate_seq = int(available[0].name[7:13])
                     missing_windows.extend(range(next_window, candidate_seq))
                     next_window = candidate_seq

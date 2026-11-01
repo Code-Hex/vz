@@ -202,7 +202,7 @@ def main():
         code = proc.poll()
         return {'status': 'running' if code is None else 'exited', 'returncode': code}
     def public_state():
-        return {'native': state(child), 'producers': {name: state(producers.get(name)) for name in ('fbt', 'profile')}, 'collector': state(collector), 'native_output_bytes': tail.read()['total_bytes'], 'pending_window_sequences': [int(p.name[7:13]) for p in sorted(private.glob('window-*.json.gz'))]}
+        return {'variant': int(mode), 'native': state(child), 'producers': {name: state(producers.get(name)) for name in ('fbt', 'profile')}, 'collector': state(collector), 'native_output_bytes': tail.read()['total_bytes'], 'pending_window_sequences': [int(p.name[7:13]) for p in sorted(private.glob('window-*.json.gz'))]}
     def publish(phase, conclusion=None, annotation=None):
         body = {'phase': phase, 'run_id': run, **public_state(), 'error': failure, 'snapshot': last}
         summary = json.dumps(body, separators=(',', ':'), ensure_ascii=True)

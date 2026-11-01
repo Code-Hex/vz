@@ -19,7 +19,7 @@ jobs:
         with:
           persist-credentials: false
       - run: make download_kernel
-      - name: Build unchanged native probe
+      - name: Build phase-gated native probe
         run: |
           xcrun clang -fno-objc-arc -fblocks -Wall -Wextra -Werror -mmacosx-version-min=12.0 -framework Foundation -framework Virtualization .github/scripts/native-phase-ci306.m -o "$RUNNER_TEMP/native-phase-control"
           python3 - <<'PYCODE'

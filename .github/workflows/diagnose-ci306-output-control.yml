@@ -1,0 +1,59 @@
+name: Observe output volume without Virtualization framework
+on:
+  push:
+    branches: [codex/diagnose-ci306-intel]
+    paths: ['.github/workflows/diagnose-ci306-output-control.yml']
+permissions:
+  contents: read
+  checks: write
+jobs:
+  observe:
+    runs-on: macos-15-intel
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Prepare a bounded output stream without a virtual machine
+        run: |
+          python3 - <<'PYCODE'
+          import os, shlex, sys
+          from pathlib import Path
+          temp = Path(os.environ['RUNNER_TEMP'])
+          stream = temp / 'output-control.py'
+          stream.write_text("import os,time\nframe=b'CONTROL_ONLY_NO_VZ '+b'x'*1004+b'\\n'\nfor _ in range(120):\n os.write(1,frame)\n time.sleep(1)\nos.write(1,b'CONTROL_ONLY_COMPLETE\\n')\n")
+          command = temp / 'native-pair-control'
+          command.write_text('#!/bin/sh\nexec ' + shlex.join([sys.executable, str(stream)]) + '\n')
+          command.chmod(0o700)
+          for name in ('Image', 'initramfs.cpio.gz'):
+              (Path('testdata') / name).write_bytes(b'')
+          PYCODE
+      - name: Prepare the temporary authenticated transport
+        run: |
+          curl --fail --location --output "$RUNNER_TEMP/cloudflared.tgz" https://github.com/cloudflare/cloudflared/releases/download/2026.10.7/cloudflared-darwin-amd64.tgz
+          python3 - <<'PYCODE'
+          import hashlib, os
+          from pathlib import Path
+          p = Path(os.environ['RUNNER_TEMP'], 'cloudflared.tgz')
+          assert hashlib.sha256(p.read_bytes()).hexdigest() == '02f3edfd87684dd5b705607688e4eb4b323f6e777b81e7b3a85af556aa356848'
+          PYCODE
+          tar -xzf "$RUNNER_TEMP/cloudflared.tgz" -C "$RUNNER_TEMP" cloudflared
+      - name: Wait for external observation commands
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/external-bootstrap-observed.py
+      - name: Collect only transport samples and sanitized local observations
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: ci306-output-control-observation
+          if-no-files-found: warn
+          retention-days: 7
+          path: |
+            ${{ runner.temp }}/ci306-transport-sample-0.txt
+            ${{ runner.temp }}/ci306-transport-sample-0.command.txt
+            ${{ runner.temp }}/ci306-transport-sample-1.txt
+            ${{ runner.temp }}/ci306-transport-sample-1.command.txt
+            ${{ runner.temp }}/ci306-transport-sample-2.txt
+            ${{ runner.temp }}/ci306-transport-sample-2.command.txt
+            ${{ runner.temp }}/ci306-sidecar-state.json

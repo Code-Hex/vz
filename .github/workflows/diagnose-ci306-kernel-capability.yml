@@ -41,12 +41,17 @@ jobs:
               ('kernel-uuid', ['/usr/bin/xcrun', 'dwarfdump', '--uuid', '/System/Library/Kernels/kernel']),
               ('kernel-nm', ['/usr/bin/xcrun', 'nm', '-n', '/System/Library/Kernels/kernel']),
               ('kernel-layout', ['/usr/bin/xcrun', 'otool', '-l', '/System/Library/Kernels/kernel']),
+              ('applehv-files', ['/bin/ls', '-lh', '/System/Library/Extensions/AppleHV.kext/Contents/MacOS/AppleHV']),
+              ('applehv-uuid', ['/usr/bin/xcrun', 'dwarfdump', '--uuid', '/System/Library/Extensions/AppleHV.kext/Contents/MacOS/AppleHV']),
+              ('applehv-nm', ['/usr/bin/xcrun', 'nm', '-n', '/System/Library/Extensions/AppleHV.kext/Contents/MacOS/AppleHV']),
+              ('applehv-disassembly', ['/usr/bin/xcrun', 'otool', '-tV', '/System/Library/Extensions/AppleHV.kext/Contents/MacOS/AppleHV']),
+              ('tailspin-info', ['/usr/bin/sudo', '-n', '/usr/bin/tailspin', 'info']),
               ('kernel-log', ['/usr/bin/sudo', '-n', '/usr/bin/log', 'show', '--last', '20s', '--style', 'compact', '--predicate', 'process == "kernel"']),
               ('console', ['/bin/ls', '-l', '/dev/console', '/Library/Logs/DiagnosticReports']),
               ('ktrace-help', ['/usr/bin/sudo', '-n', '/usr/bin/ktrace', '-h']),
               ('trace-info', ['/usr/bin/sudo', '-n', '/usr/bin/ktrace', 'info']),
               ('stackshot-before-trace', ['/usr/bin/sudo', '-n', '/usr/bin/python3', '.github/scripts/stackshot-stats-ci306.py']),
-              ('trace-events', ['/usr/bin/sudo', '-n', '/usr/bin/ktrace', 'trace', '-N', '-t', '-f', 'S0x01ac,S0x0140,S0x0105,S0x0109,S0x0180', '-b', '16', '-T', '5s', '--ndjson']),
+              ('trace-events', ['/usr/bin/sudo', '-n', '/usr/bin/ktrace', 'trace', '-N', '-t', '-f', 'S0x01ac,S0x0140,S0x0105,S0x0109,S0x0180,S0x0170,S0x0190,S0x01a1', '-b', '16', '-T', '5s', '--ndjson']),
               ('stackshot-after-trace', ['/usr/bin/sudo', '-n', '/usr/bin/python3', '.github/scripts/stackshot-stats-ci306.py']),
           ]
           results = []

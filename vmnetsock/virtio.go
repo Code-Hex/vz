@@ -19,6 +19,11 @@ const (
 	virtioGSOECN        byte = 0x80
 )
 
+const (
+	virtioRSCSegmentsOffset      = 6
+	virtioRSCDuplicateACKsOffset = 8
+)
+
 // virtioEthernetPacket completes checksum offload in place and returns the
 // Ethernet frame. The caller retains the original slice for the next read.
 func virtioEthernetPacket(packet []byte) ([]byte, error) {
@@ -126,7 +131,7 @@ func (s *tcpSegmentation) forwardVirtio(packet []byte, now time.Time, emit func(
 		// cannot reconstruct those ACKs, so do not silently discard them.
 		// See Virtio 1.2 section 5.1.6.4.
 		// https://docs.oasis-open.org/virtio/virtio/v1.2/virtio-v1.2.html
-		if binary.LittleEndian.Uint16(packet[8:10]) != 0 {
+		if binary.LittleEndian.Uint16(packet[virtioRSCDuplicateACKsOffset:]) != 0 {
 			return fmt.Errorf("virtio TCP RSC duplicate ACKs are not supported")
 		}
 	}

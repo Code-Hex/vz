@@ -180,6 +180,9 @@ def main():
         command = ['/bin/bash', '-c', 'for ((i=1;i<=10;i++)); do "$1" "$2" "$3" || exit $?; done', 'native-probe',
                    os.path.join(os.environ['RUNNER_TEMP'], 'native-ci306'), os.path.join(cwd, 'testdata/Image'),
                    os.path.join(cwd, 'testdata/initramfs.cpio.gz')]
+    if os.environ.get('TRACE_NATIVE_PAIR') == '1':
+        command = [os.path.join(os.environ['RUNNER_TEMP'], 'native-pair-ci306'),
+                   os.path.join(cwd, 'testdata/Image'), os.path.join(cwd, 'testdata/initramfs.cpio.gz')]
     finished = threading.Event()
     log_fd, log_path = tempfile.mkstemp(prefix="ci306-", suffix=".log", dir=log_dir)
     os.close(log_fd)

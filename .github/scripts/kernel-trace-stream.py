@@ -165,6 +165,7 @@ def main():
     tail = Tail()
     stderr_tails = {'producer': Tail(), 'collector': Tail()}
     stderr_readers = []
+    native_reader = None
     clock = ParentClock()
     last = None
     next_window = 0
@@ -262,7 +263,7 @@ def main():
     try:
         created = bootstrap.check_request('POST', api, {'name': NAME, 'head_sha': sha, 'status': 'in_progress', 'output': {'title': NAME, 'summary': json.dumps({'phase': 'initializing', 'run_id': run})}}, token, temp, env)
         check_id = int(created['id'])
-        producer = spawn(['/usr/bin/sudo','-n','/usr/bin/ktrace','trace','-N','-t','-f','D0x01700040,S0x0190,S0x01a1,D0x01090040','-b','16','-T','180s','--ndjson'], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
+        producer = spawn(['/usr/bin/sudo','-n','/usr/bin/ktrace','trace','-N','-t','-f','S0x0190,S0x01a1,S0x0109','-b','16','-T','180s','--ndjson'], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
         producer_reader = threading.Thread(target=stderr_tails['producer'].drain, args=(producer.stderr,), daemon=True)
         producer_reader.start()
         stderr_readers.append(producer_reader)
@@ -283,8 +284,8 @@ def main():
         if next_window == 0 or time.monotonic() >= deadline:
             raise TimeoutError('baseline deadline')
         child = spawn([str(native), str(kernel), str(initramfs)], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=0)
-        reader = threading.Thread(target=tail.drain, args=(child.stdout,), daemon=True)
-        reader.start()
+        native_reader = threading.Thread(target=tail.drain, args=(child.stdout,), daemon=True)
+        native_reader.start()
         publish('native_started')
         while child.poll() is None and time.monotonic() < deadline and not stop.is_set():
             drain_windows()
@@ -295,7 +296,7 @@ def main():
             raise TimeoutError('native deadline')
         code = child.wait()
         groups.pop(child.pid, None)
-        reader.join(timeout=2)
+        native_reader.join(timeout=2)
         signal_group(producer, 'TERM')
         try:
             producer.wait(timeout=5)
@@ -327,9 +328,27 @@ def main():
                 proc.wait(timeout=5)
             except (OSError, subprocess.TimeoutExpired):
                 pass
+        if native_reader is not None:
+            native_reader.join(timeout=2)
         for stderr_reader in stderr_readers:
             stderr_reader.join(timeout=2)
         if check_id is not None and not completed:
+            try:
+                record = fit_record({'type': 'ktrace-diagnostic-v1',
+                    'window': {'sequence': next_window, 'stop_reason': 'diagnostic', 'input_bytes': 0, 'raw_lines': []},
+                    'native_output': tail.read(), 'transport_missing_window_sequences': list(missing_windows),
+                    'stderr': {name: value.read() for name, value in stderr_tails.items()},
+                    'readers_pending': {'native': native_reader is not None and native_reader.is_alive(),
+                                        'stderr': sum(reader.is_alive() for reader in stderr_readers)},
+                    'error': failure or 'interrupted', 'parent_send_preparation': clock.read(), **public_state()})
+                candidate = {'sequence': next_window, **encrypt_record(record, public, env)}
+                summary = json.dumps({'phase': 'failed', 'run_id': run, **public_state(), 'error': failure, 'snapshot': candidate}, separators=(',', ':'), ensure_ascii=True)
+                if len(summary.encode()) > MAX_SUMMARY:
+                    raise SnapshotTooLarge('encrypted diagnostic exceeds Check summary limit')
+                (artifacts / 'diagnostic-final.json').write_text(json.dumps(candidate, separators=(',', ':')))
+                last = candidate
+            except Exception as exc:
+                print('kernel trace diagnostic failed: ' + type(exc).__name__, file=sys.stderr)
             try: publish('failed', 'failure')
             except Exception: pass
         guard.terminate()

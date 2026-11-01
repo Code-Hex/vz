@@ -36,6 +36,7 @@ def status(directory, env):
 
 def main():
     token = os.environ.pop('GITHUB_TOKEN')
+    receiver = os.environ.pop('CI306_OBSERVER_RECEIVER', None) or None
     repo, ref, sha, run_id = (os.environ[name] for name in ('GITHUB_REPOSITORY', 'GITHUB_REF', 'GITHUB_SHA', 'GITHUB_RUN_ID'))
     env = observer.clean_environment()
     for name in ('GITHUB_REPOSITORY', 'GITHUB_REF', 'GITHUB_SHA', 'GITHUB_RUN_ID', 'RUNNER_TEMP'):
@@ -43,6 +44,7 @@ def main():
     controller = subprocess.Popen(['/usr/bin/python3', str(HERE / 'launchd-fbt-gate-ci306.py')], env=env, stdin=subprocess.PIPE, start_new_session=True)
     directory = label = None
     activated = orderly = False
+    receiver_observer_created = False
     oldterm = signal.getsignal(signal.SIGTERM)
     def terminate(_signum, _frame):
         raise SystemExit(1)
@@ -55,6 +57,8 @@ def main():
         starts = {str(item['pid']): item['lstart'] for item in initial if item['present']}
         data = {'repo': repo, 'ref': ref, 'sha': sha, 'run_id': run_id, 'token': token, 'pids': pids,
                 'initial_lstarts': starts, 'helper_pid': controller.pid, 'duration': 260}
+        if receiver is not None:
+            data['receiver_url'] = receiver
         observer.validate_config(data)
         installed = subprocess.run(['/usr/bin/sudo', '-n', '/usr/bin/python3', str(HERE / 'launchd-observer-ci306.py'), '--install'],
                                    input=json.dumps(data, separators=(',', ':')).encode(), env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=25, check=True)
@@ -67,6 +71,7 @@ def main():
             if controller.poll() is not None:
                 raise RuntimeError('gated controller exited before observer readiness')
             first = status(directory, env)
+            receiver_observer_created |= receiver is not None and first is not None and first.get('check_created', False)
             if first and first['parent_pid'] == 1 and first['observed_helper_alive']:
                 break
             time.sleep(0.5)
@@ -98,7 +103,7 @@ def main():
                     try: os.killpg(controller.pid, signal.SIGKILL)
                     except ProcessLookupError: pass
                     controller.wait(timeout=5)
-        if directory and label and (orderly or not activated):
+        if directory and label and (orderly or (not activated and not receiver_observer_created)):
             action = '--finish' if orderly else '--cleanup'
             result = subprocess.run(['/usr/bin/sudo', '-n', '/usr/bin/python3', str(HERE / 'launchd-observer-ci306.py'), action, directory, label], env=env, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=25, check=False)
             preflight.verify_cleanup(directory, label, env)

@@ -32,6 +32,49 @@ CHECK_NAME = 'ci306-launchd-observer'
 PREFIX = 'ci306-launchd-'
 
 
+RECEIVER_URL_PATTERN = re.compile(r'https://[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.trycloudflare\.com/[0-9a-f]{64}\Z')
+
+
+def valid_receiver_url(value):
+    return isinstance(value, str) and RECEIVER_URL_PATTERN.fullmatch(value) is not None
+
+
+class ReceiverError(Exception):
+    def __init__(self, status):
+        self.status = status
+        super().__init__('receiver request failed')
+
+
+def post_receiver(url, body, root, env):
+    fd, path = tempfile.mkstemp(prefix='receiver-body-', dir=root)
+    try:
+        with os.fdopen(fd, 'wb') as stream:
+            stream.write(json.dumps(body, separators=(',', ':')).encode())
+        config = ('url = "' + url + '"\nsilent\nshow-error\nfail\n').encode('ascii')
+        result = subprocess.run(['/usr/bin/curl', '--config', '-', '--request', 'POST', '--header', 'Content-Type: application/json', '--data-binary', '@' + path,
+                                 '--connect-timeout', '2', '--max-time', '4', '--output', '/dev/null', '--write-out', '%{http_code}'],
+                                input=config, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env, timeout=6, check=False)
+        status = int(result.stdout) if re.fullmatch(rb'[0-9]{3}', result.stdout) else None
+        if status is not None and not 100 <= status <= 599:
+            status = None
+        if result.returncode != 0 or status is None or not 200 <= status < 300:
+            raise ReceiverError(status)
+        return status
+    finally:
+        os.unlink(path)
+
+
+def channel_failure(exc):
+    stderr = getattr(exc, 'stderr', b'') or b''
+    if isinstance(stderr, str):
+        stderr = stderr.encode('utf-8', 'replace')
+    match = re.search(rb'error: ([0-9]{3})', stderr)
+    http = getattr(exc, 'status', None)
+    if http is None and match:
+        http = int(match.group(1))
+    return {'outcome': 'error', 'error_type': type(exc).__name__, 'http_status': http}
+
+
 def process_snapshot(pid, env):
     result = subprocess.run(['/bin/ps', '-p', str(pid), '-o', 'pid=', '-o', 'ppid=', '-o', 'pgid=', '-o', 'sess=', '-o', 'stat=', '-o', 'lstart=', '-o', 'comm='], env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=3, check=False)
     if result.returncode != 0:
@@ -57,6 +100,8 @@ def validate_config(data):
         raise ValueError('wrong repository or branch')
     if not (bootstrap.SAFE_TOKEN.fullmatch(data.get('token', '')) and bootstrap.SHA.fullmatch(data.get('sha', '')) and bootstrap.RUN_ID.fullmatch(data.get('run_id', ''))):
         raise ValueError('invalid GitHub metadata')
+    if data.get('receiver_url') is not None and not valid_receiver_url(data['receiver_url']):
+        raise ValueError('invalid receiver URL')
     pids = data.get('pids')
     if not isinstance(pids, list) or not 1 <= len(pids) <= 16 or any(type(pid) is not int or pid <= 1 for pid in pids):
         raise ValueError('invalid monitored PIDs')
@@ -117,6 +162,10 @@ def daemon(directory):
     sequence = 0
     token = None
     data = {}
+    receiver_url = None
+    clock = None
+    last_record = None
+    channel_state = {'github': {'outcome': 'not_attempted'}, 'receiver': {'outcome': 'disabled'}}
     label = plistlib.loads((root / 'observer.plist').read_bytes())['Label']
     if not re.fullmatch(r'org\.codex\.ci306\.[a-f0-9]{24}', label):
         raise ValueError('invalid launchd label')
@@ -140,6 +189,9 @@ def daemon(directory):
         validate_config(data)
         if data['label'] != label: raise ValueError('launchd label mismatch')
         token = data.pop('token')
+        receiver_url = data.pop('receiver_url', None)
+        if receiver_url is not None:
+            channel_state['receiver'] = {'outcome': 'not_attempted'}
         api = 'https://api.github.com/repos/' + data['repo'] + '/check-runs'
         clock = ParentClock()
         deadline = time.monotonic() + data['duration']
@@ -148,6 +200,11 @@ def daemon(directory):
         was_gone = False
         created = bootstrap.check_request('POST', api, {'name': CHECK_NAME, 'head_sha': data['sha'], 'status': 'in_progress', 'output': {'title': CHECK_NAME, 'summary': json.dumps({'phase':'initializing','run_id':data['run_id']})}}, token, root, env)
         check_id = int(created['id'])
+        initial_status = {'parent_pid': os.getppid(), 'check_id': check_id, 'sequence': -1,
+                          'observed_helper_alive': False, 'observed_helper_gone': False, 'check_created': True}
+        temporary = root / 'status.tmp'
+        temporary.write_text(json.dumps(initial_status, separators=(',', ':')))
+        os.replace(temporary, root / 'status.json')
         next_time = time.monotonic()
         while time.monotonic() < deadline and not interrupted and not (root / 'finish').exists():
             record = make_snapshot(sequence, data['pids'], data['helper_pid'], clock)
@@ -164,25 +221,52 @@ def daemon(directory):
             was_gone |= was_alive and not identity_matches
             record.update(controlled_helper_original_lstart=initial_lstart, controlled_helper_identity_matches=identity_matches,
                           observed_helper_alive=was_alive, observed_helper_gone=was_gone,
-                          run_id=data['run_id'], root_euid=os.geteuid(), config_security=config_security)
+                          run_id=data['run_id'], root_euid=os.geteuid(), config_security=config_security,
+                          phase='observing', prior_channels=channel_state.copy())
+            last_record = record
             envelope = {'sequence': sequence, **encrypt_record(record, root / 'observer-public.pem', env)}
             summary = json.dumps({'phase':'observing','run_id':data['run_id'],'snapshot':envelope}, separators=(',', ':'))
             message = json.dumps(envelope, separators=(',', ':'))
             if len(summary.encode()) > 64000 or len(message.encode()) > 64000:
                 raise ValueError('encrypted observation exceeds limit')
             output = {'title': CHECK_NAME, 'summary': summary, 'annotations': [{'path': '.github/scripts/launchd-observer-ci306.py', 'start_line':1, 'end_line':1, 'annotation_level':'notice', 'message':message}]}
-            bootstrap.check_request('PATCH', api + '/' + str(check_id), {'output':output}, token, root, env)
+            receiver_ok = receiver_url is None
+            if receiver_url is not None:
+                try:
+                    code = post_receiver(receiver_url, {'run_id': data['run_id'], 'snapshot': envelope}, root, env)
+                    channel_state['receiver'] = {'outcome': 'success', 'http_status': code}
+                    receiver_ok = True
+                except Exception as exc:
+                    channel_state['receiver'] = channel_failure(exc)
+            check_ok = False
+            try:
+                bootstrap.check_request('PATCH', api + '/' + str(check_id), {'output':output}, token, root, env)
+                channel_state['github'] = {'outcome': 'success'}
+                check_ok = True
+            except Exception as exc:
+                channel_state['github'] = channel_failure(exc)
             status = {'parent_pid': own_parent(record), 'check_id': check_id, 'sequence': sequence,
-                      'observed_helper_alive': was_alive, 'observed_helper_gone': was_gone}
-            temporary = root / 'status.tmp'
-            temporary.write_text(json.dumps(status, separators=(',', ':')))
-            os.replace(temporary, root / 'status.json')
+                      'observed_helper_alive': was_alive, 'observed_helper_gone': was_gone, 'check_created': True}
+            if check_ok and receiver_ok:
+                temporary = root / 'status.tmp'
+                temporary.write_text(json.dumps(status, separators=(',', ':')))
+                os.replace(temporary, root / 'status.json')
             sequence += 1
             next_time += 3
             while time.monotonic() < min(next_time, deadline) and not interrupted and not (root / 'finish').exists():
                 time.sleep(min(0.2, max(0, min(next_time, deadline) - time.monotonic())))
         completed = not interrupted and sequence > 0
     finally:
+        if receiver_url is not None and clock is not None:
+            try:
+                final_record = dict(last_record) if last_record is not None else {'type': 'launchd-observation-v1', 'run_id': data['run_id']}
+                final_record.update(sequence=sequence, phase='finished',
+                                    outcome='completed' if completed else ('interrupted' if interrupted else 'error'),
+                                    clock=clock.read(), prior_channels=channel_state.copy())
+                final_envelope = {'sequence': sequence, **encrypt_record(final_record, root / 'observer-public.pem', env)}
+                post_receiver(receiver_url, {'run_id': data['run_id'], 'snapshot': final_envelope}, root, env)
+            except Exception:
+                pass
         if check_id is not None:
             try:
                 bootstrap.check_request('PATCH', api + '/' + str(check_id), {'status':'completed','conclusion':'success' if completed else 'failure','output':{'title':CHECK_NAME,'summary':json.dumps({'phase':'finished' if completed else 'interrupted','run_id':data['run_id'],'observations':sequence})}}, token, root, env)

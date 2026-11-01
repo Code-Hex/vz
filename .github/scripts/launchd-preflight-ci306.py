@@ -46,6 +46,10 @@ def verify_cleanup(directory, label, env, timeout=15):
 
 def main():
     token = os.environ.pop('GITHUB_TOKEN')
+    receiver = os.environ.pop('CI306_OBSERVER_RECEIVER', None) or None
+    require_receiver = os.environ.pop('CI306_REQUIRE_RECEIVER', '') == '1'
+    if require_receiver and receiver is None:
+        raise ValueError('receiver secret required')
     repo = os.environ['GITHUB_REPOSITORY']
     ref = os.environ['GITHUB_REF']
     sha = os.environ['GITHUB_SHA']
@@ -53,10 +57,14 @@ def main():
     env = observer.clean_environment()
     helper = subprocess.Popen(['/usr/bin/python3', '-c', 'import time; time.sleep(60)'], env=env, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     directory = label = check_id = None
+    receiver_observer_created = False
+    finished = False
     try:
         parent = observer.process_snapshot(os.getppid(), env)
         pids = list(dict.fromkeys(pid for pid in (helper.pid, os.getpid(), os.getppid(), parent.get('ppid')) if isinstance(pid, int) and pid > 1))
         data = {'repo':repo, 'ref':ref, 'sha':sha, 'run_id':run_id, 'token':token, 'pids':pids, 'helper_pid':helper.pid, 'duration':30}
+        if receiver is not None:
+            data['receiver_url'] = receiver
         observer.validate_config(data)
         installed = subprocess.run(['/usr/bin/sudo','-n','/usr/bin/python3',str(HERE / 'launchd-observer-ci306.py'),'--install'], input=json.dumps(data, separators=(',', ':')).encode(), env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=25, check=True)
         del data['token']
@@ -68,6 +76,7 @@ def main():
             value = subprocess.run(['/usr/bin/sudo','-n','/usr/bin/python3',str(HERE / 'launchd-observer-ci306.py'),'--status',directory], env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, timeout=5, check=False)
             if value.returncode == 0:
                 initial = json.loads(value.stdout)
+                receiver_observer_created |= receiver is not None and initial.get('check_created', False)
                 if initial['parent_pid'] == 1 and initial['observed_helper_alive']:
                     break
             time.sleep(0.5)
@@ -95,6 +104,7 @@ def main():
                 if result.get('conclusion') != 'success': raise RuntimeError('observer Check failed')
                 verify_cleanup(directory, label, env)
                 print(json.dumps({'status':'passed','parent_pid':1,'check_id':check_id,'alive_sequence':initial['sequence'],'gone_sequence':gone['sequence']}))
+                finished = True
                 return
             time.sleep(1)
         raise TimeoutError('observer Check did not finish')
@@ -103,7 +113,7 @@ def main():
             helper.terminate()
             try: helper.wait(timeout=5)
             except subprocess.TimeoutExpired: helper.kill(); helper.wait()
-        if directory and label:
+        if directory and label and (receiver is None or not receiver_observer_created or finished):
             subprocess.run(['/usr/bin/sudo','-n','/usr/bin/python3',str(HERE / 'launchd-observer-ci306.py'),'--cleanup',directory,label], env=env, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=25, check=False)
 
 if __name__ == '__main__':

@@ -60,6 +60,7 @@ def read_output(stream, path, observations):
             log.write(line)
             log.flush()
             observations.record(line)
+            print(line.rstrip(), flush=True)
 
 
 def watchdog(process, finished, timeout=360):
@@ -107,20 +108,22 @@ def write_ack(directory, checkpoint_id):
 
 
 def check_request(method, url, token, body):
-    data = json.dumps(body, ensure_ascii=False).encode("utf-8")
-    request = urllib.request.Request(
-        url,
-        data=data,
-        method=method,
-        headers={
-            "Authorization": "Bearer " + token,
-            "Accept": "application/vnd.github+json",
-            "Content-Type": "application/json",
-            "X-GitHub-Api-Version": "2022-11-28",
-        },
-    )
-    with urllib.request.urlopen(request, timeout=5) as response:
-        return json.load(response)
+    configuration = '\n'.join([
+        'header = "Authorization: Bearer ' + token + '"',
+        'header = "Accept: application/vnd.github+json"',
+        'header = "Content-Type: application/json"',
+        'header = "X-GitHub-Api-Version: 2022-11-28"',
+    ])
+    response = subprocess.run([
+        '/usr/bin/curl', '--silent', '--show-error', '--fail',
+        '--connect-timeout', '3', '--max-time', '6',
+        '--request', method, '--config', '-',
+        '--data-binary', json.dumps(body, ensure_ascii=False), url,
+    ], input=configuration, text=True, stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE, timeout=8)
+    if response.returncode:
+        raise OSError('Check request failed with curl exit ' + str(response.returncode))
+    return json.loads(response.stdout)
 
 
 def report_error(context, error):

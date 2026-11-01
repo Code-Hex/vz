@@ -1,4 +1,4 @@
-name: Compare two-VM network and console conditions
+name: Compare two-VM network and overlap conditions
 on:
   push:
     branches: [codex/diagnose-ci306-intel]
@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mode: ['original', 'nat-only', 'no-network', 'console-off']
+        mode: ['original', 'nat-only', 'no-network', 'sequential']
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -47,19 +47,16 @@ jobs:
           if mode in ('nat-only', 'no-network'):
               old = '\trun(peer, "ip addr add 192.0.2.2/24 dev eth1 && ip link set eth1 up && ip addr add 198.51.100.2/24 dev eth2 && ip link set eth2 up")'
               assert s.count(old) == 1
-              s = s.replace(old, '')
+              s = s.replace(old, '\t_ = peer')
               old = '\t\t\tattachments = append([]vz.NetworkDeviceAttachment{nat}, attachments...)'
               assert s.count(old) == 1
               s = s.replace(old, '\t\t\tattachments = []vz.NetworkDeviceAttachment{nat}')
           if mode == 'no-network':
               s = s.replace('config.SetNetworkDevicesVirtualMachineConfiguration(devices)', 'config.SetNetworkDevicesVirtualMachineConfiguration(nil)')
           p.write_text(s)
-          if mode == 'console-off':
-              p = Path('source/virtualization_test.go')
-              s = p.read_text()
-              old = 'func setupConsoleConfig(config *vz.VirtualMachineConfiguration) error {'
-              assert s.count(old) == 1
-              s = s.replace(old, old + '\n\tif os.Getenv("NETWORK_MODE") == "console-off" { return nil }')
+          if mode == 'sequential':
+              old = '\tclient := start(clientAttachments[0])'
+              s = s.replace(old, '\tif err := peer.Shutdown(); err != nil { t.Fatal(err) }\n' + old)
               p.write_text(s)
           PYCODE
           gofmt -w source/network_device_integration_test.go source/virtualization_test.go
@@ -73,4 +70,4 @@ jobs:
           TRACE_COUNT: '5'
           CI306_NO_BARRIERS: '1'
           NETWORK_MODE: ${{ matrix.mode }}
-        run: python3 .github/scripts/probe-ci306.py
+        run: python3 -u .github/scripts/probe-ci306.py

@@ -492,6 +492,12 @@ func (p *tcpPacket) emitSegments(limit int, emit func([]byte) error) error {
 	}
 	headers := ethernetHeaderSize + p.ipHeader + p.tcpHeader
 	buffer := make([]byte, headers+limit)
+	if p.payload() == 0 {
+		frame := buffer[:headers]
+		copy(frame, p.frame[:headers])
+		p.updateSegmentHeaders(frame[ethernetHeaderSize:], 0)
+		return emit(frame)
+	}
 	sequence := binary.BigEndian.Uint32(p.tcp[tcpSequenceOffset:])
 	for offset := 0; offset < p.payload(); offset += limit {
 		end := min(offset+limit, p.payload())

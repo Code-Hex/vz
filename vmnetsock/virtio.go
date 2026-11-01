@@ -12,6 +12,7 @@ const virtioHeaderSize = 12
 
 const (
 	virtioNeedsChecksum byte = 1
+	virtioDataValid     byte = 2
 	virtioRSCInfo       byte = 4
 	virtioGSOTCPv4      byte = 1
 	virtioGSOTCPv6      byte = 4
@@ -71,7 +72,8 @@ func (s *tcpSegmentation) forwardVirtio(packet []byte, now time.Time, emit func(
 	if len(packet) < virtioHeaderSize+ethernetHeaderSize {
 		return fmt.Errorf("virtio packet is shorter than its header and Ethernet frame")
 	}
-	if packet[1] == 0 {
+	rsc := packet[0]&virtioRSCInfo != 0
+	if packet[1] == 0 && !rsc {
 		frame, err := virtioEthernetPacket(packet)
 		if err != nil {
 			return err
@@ -81,6 +83,10 @@ func (s *tcpSegmentation) forwardVirtio(packet []byte, now time.Time, emit func(
 
 	var expectedVersion int
 	switch packet[1] &^ virtioGSOECN {
+	case 0:
+		if packet[1] != 0 {
+			return fmt.Errorf("unsupported virtio GSO type %#x", packet[1])
+		}
 	case virtioGSOTCPv4:
 		expectedVersion = ipv4Version
 	case virtioGSOTCPv6:
@@ -88,11 +94,8 @@ func (s *tcpSegmentation) forwardVirtio(packet []byte, now time.Time, emit func(
 	default:
 		return fmt.Errorf("unsupported virtio GSO type %#x", packet[1])
 	}
-	if packet[0]&virtioNeedsChecksum == 0 || packet[0]&virtioRSCInfo != 0 {
-		return fmt.Errorf("virtio TCP GSO requires partial checksum metadata without RSC")
-	}
 	size := int(binary.LittleEndian.Uint16(packet[4:6]))
-	if size == 0 {
+	if expectedVersion != 0 && size == 0 {
 		return fmt.Errorf("virtio TCP GSO segment size is zero")
 	}
 	frame := packet[virtioHeaderSize:]
@@ -100,21 +103,50 @@ func (s *tcpSegmentation) forwardVirtio(packet []byte, now time.Time, emit func(
 	if err != nil {
 		return err
 	}
-	if p.tcp == nil || p.payload() == 0 {
+	if p.tcp == nil {
+		// vmnet also marks ordinary non-TCP packets with RSC_INFO. Keep the
+		// existing Ethernet path, which ignores counters without NEEDS_CSUM.
+		if rsc && expectedVersion == 0 {
+			frame, err := virtioEthernetPacket(packet)
+			if err != nil {
+				return err
+			}
+			return s.forwardNative(frame, now, emit)
+		}
 		return fmt.Errorf("virtio TCP GSO requires TCP payload")
+	}
+	if p.payload() == 0 && (!rsc || expectedVersion != 0) {
+		return fmt.Errorf("virtio TCP GSO requires TCP payload")
+	}
+	if rsc {
+		if packet[0]&(virtioNeedsChecksum|virtioDataValid) == 0 {
+			return fmt.Errorf("virtio TCP RSC requires checksum validation metadata")
+		}
+		// RSC reuses csum_offset for a duplicate ACK count. One TCP header
+		// cannot reconstruct those ACKs, so do not silently discard them.
+		// See Virtio 1.2 section 5.1.6.4.
+		// https://docs.oasis-open.org/virtio/virtio/v1.2/virtio-v1.2.html
+		if binary.LittleEndian.Uint16(packet[8:10]) != 0 {
+			return fmt.Errorf("virtio TCP RSC duplicate ACKs are not supported")
+		}
+	}
+	if (!rsc || expectedVersion != 0) && packet[0]&virtioNeedsChecksum == 0 {
+		return fmt.Errorf("virtio TCP GSO requires partial checksum metadata")
 	}
 	padding := len(frame) - len(p.frame)
 	maxPadding := max(0, ethernetMinimumFrameSize-len(p.frame))
 	if padding > maxPadding {
 		return fmt.Errorf("virtio TCP GSO frame length does not match the IP length")
 	}
-	if p.version != expectedVersion {
+	if expectedVersion != 0 && p.version != expectedVersion {
 		return fmt.Errorf("virtio GSO type does not match the IP version")
 	}
-	start := int(binary.LittleEndian.Uint16(packet[6:8]))
-	offset := int(binary.LittleEndian.Uint16(packet[8:10]))
-	if start != ethernetHeaderSize+p.ipHeader || offset != tcpChecksumOffset {
-		return fmt.Errorf("virtio TCP GSO checksum metadata does not match the TCP header")
+	if !rsc {
+		start := int(binary.LittleEndian.Uint16(packet[6:8]))
+		offset := int(binary.LittleEndian.Uint16(packet[8:10]))
+		if start != ethernetHeaderSize+p.ipHeader || offset != tcpChecksumOffset {
+			return fmt.Errorf("virtio TCP GSO checksum metadata does not match the TCP header")
+		}
 	}
 
 	mss, err := s.observe(&p, false, now)
@@ -125,7 +157,16 @@ func (s *tcpSegmentation) forwardVirtio(packet []byte, now time.Time, emit func(
 	// hdr_len is only a hint; use the parsed headers for bounds and checksums.
 	// See Virtio 1.1 sections 5.1.6.2 and 5.1.6.4.
 	// https://docs.oasis-open.org/virtio/virtio/v1.1/virtio-v1.1.html
-	limit := min(size, s.mtu-p.ipHeader-p.tcpHeader, mss-(p.tcpHeader-tcpHeaderSize))
+	// RSC counters do not describe the original segment boundaries. In
+	// particular, vmnet can return RSC with GSO_NONE and no segment size.
+	// Repacketize using the observed receiver MSS and the interface MTU.
+	limit := s.mtu - p.ipHeader - p.tcpHeader
+	if p.payload() != 0 {
+		limit = min(limit, mss-(p.tcpHeader-tcpHeaderSize))
+	}
+	if expectedVersion != 0 {
+		limit = min(limit, size)
+	}
 	if limit <= 0 {
 		return fmt.Errorf("TCP headers leave no payload within GSO, MSS and MTU limits")
 	}

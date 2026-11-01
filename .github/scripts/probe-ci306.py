@@ -18,6 +18,7 @@ class Observations:
         self.lock = threading.Lock()
         self.last_test = "なし"
         self.lines = collections.deque(maxlen=12)
+        self.checkpoint = "なし"
 
     def record(self, line):
         match = re.match(r"^=== RUN\s+([^/\s]+)\s*$", line)
@@ -30,6 +31,14 @@ class Observations:
     def snapshot(self):
         with self.lock:
             return self.last_test, list(self.lines)
+
+    def set_checkpoint(self, request):
+        with self.lock:
+            self.checkpoint = f"VZTRACE checkpoint {request['id']} {request['label']}"
+
+    def get_checkpoint(self):
+        with self.lock:
+            return self.checkpoint
 
 
 def read_output(stream, path, observations):
@@ -50,7 +59,7 @@ def watchdog(process, finished, timeout=360):
 
 def summary(observations, started, exit_code=None):
     last_test, lines = observations.snapshot()
-    result = f"経過: {int(time.monotonic() - started)} 秒\n最後のトップレベルテスト: {last_test}"
+    result = f"経過: {int(time.monotonic() - started)} 秒\n最後のトップレベルテスト: {last_test}\n{observations.get_checkpoint()}"
     if exit_code is not None:
         result += f"\n終了コード: {exit_code}"
     if lines:
@@ -59,6 +68,24 @@ def summary(observations, started, exit_code=None):
     if len(encoded) > 8192:
         result = encoded[:8192].decode("utf-8", errors="ignore")
     return result
+
+
+def read_checkpoint(directory):
+    try:
+        with open(os.path.join(directory, "request.json"), encoding="utf-8") as request_file:
+            request = json.load(request_file)
+    except FileNotFoundError:
+        return None
+    if not isinstance(request.get("id"), int) or not isinstance(request.get("label"), str):
+        raise ValueError("invalid checkpoint request")
+    return request
+
+
+def write_ack(directory, checkpoint_id):
+    tmp = os.path.join(directory, f"ack-{checkpoint_id}.tmp")
+    with open(tmp, "w", encoding="utf-8") as ack:
+        ack.write(str(checkpoint_id))
+    os.replace(tmp, os.path.join(directory, "ack"))
 
 
 def check_request(method, url, token, body):
@@ -112,15 +139,16 @@ def main():
         if key in ("GITHUB_TOKEN", "GH_TOKEN", "ACTIONS_RUNTIME_TOKEN") or value == token:
             child_env.pop(key, None)
     child_env["PWD"] = cwd
+    log_dir = os.environ.get("RUNNER_TEMP") or tempfile.gettempdir()
+    barrier_dir = tempfile.mkdtemp(prefix="ci306-barrier-", dir=log_dir)
+    child_env["CI306_BARRIER_DIR"] = barrier_dir
     command = ["go", "test", "-p", "1", "-exec", "go run " + os.path.join(cwd, "cmd/codesign"),
-               ".", "-timeout", "5m", "-v", "-run", os.environ.get('TRACE_PATTERN', '^TestRuntimeNetworkConnection$'),
-               "-count=" + os.environ.get('TRACE_COUNT', '5')]
+               ".", "-timeout", "5m", "-v", "-run", "^TestRuntimeNetworkConnection$", "-count=3"]
     if os.environ.get('TRACE_NATIVE') == '1':
         command = ['/bin/bash', '-c', 'for ((i=1;i<=10;i++)); do "$1" "$2" "$3" || exit $?; done', 'native-probe',
                    os.path.join(os.environ['RUNNER_TEMP'], 'native-ci306'), os.path.join(cwd, 'testdata/Image'),
                    os.path.join(cwd, 'testdata/initramfs.cpio.gz')]
     finished = threading.Event()
-    log_dir = os.environ.get("RUNNER_TEMP") or tempfile.gettempdir()
     log_fd, log_path = tempfile.mkstemp(prefix="ci306-", suffix=".log", dir=log_dir)
     os.close(log_fd)
     try:
@@ -142,7 +170,20 @@ def main():
     killer.start()
     last_snapshot = ("なし", [])
     last_update = time.monotonic()
+    acknowledged = 0
     while process.poll() is None:
+        try:
+            checkpoint = read_checkpoint(barrier_dir)
+            if checkpoint is not None and checkpoint["id"] > acknowledged:
+                observations.set_checkpoint(checkpoint)
+                check_request("PATCH", check_url, token, {"output": {"title": "テスト診断",
+                              "summary": summary(observations, started)}})
+                write_ack(barrier_dir, checkpoint["id"])
+                acknowledged = checkpoint["id"]
+                last_snapshot = observations.snapshot()
+                last_update = time.monotonic()
+        except (OSError, ValueError, urllib.error.URLError):
+            print("診断バリアの Check Run 更新または ack に失敗しました。ack は保留します。", file=sys.stderr)
         now = time.monotonic()
         current = observations.snapshot()
         if now - last_update >= 10 or (current != last_snapshot and now - last_update >= 1):

@@ -102,6 +102,9 @@ def validate_config(data):
         raise ValueError('invalid GitHub metadata')
     if data.get('receiver_url') is not None and not valid_receiver_url(data['receiver_url']):
         raise ValueError('invalid receiver URL')
+    variant = data.get('diagnostic_variant')
+    if variant is not None and (type(variant) is not int or variant not in (0, 1)):
+        raise ValueError('invalid diagnostic variant')
     pids = data.get('pids')
     if not isinstance(pids, list) or not 1 <= len(pids) <= 16 or any(type(pid) is not int or pid <= 1 for pid in pids):
         raise ValueError('invalid monitored PIDs')
@@ -198,7 +201,7 @@ def daemon(directory):
         initial_lstart = data.get('initial_lstarts', {}).get(str(data['helper_pid']))
         was_alive = False
         was_gone = False
-        created = bootstrap.check_request('POST', api, {'name': CHECK_NAME, 'head_sha': data['sha'], 'status': 'in_progress', 'output': {'title': CHECK_NAME, 'summary': json.dumps({'phase':'initializing','run_id':data['run_id']})}}, token, root, env)
+        created = bootstrap.check_request('POST', api, {'name': CHECK_NAME, 'head_sha': data['sha'], 'status': 'in_progress', 'output': {'title': CHECK_NAME, 'summary': json.dumps({'phase':'initializing','run_id':data['run_id'],'diagnostic_variant':data.get('diagnostic_variant')})}}, token, root, env)
         check_id = int(created['id'])
         initial_status = {'parent_pid': os.getppid(), 'check_id': check_id, 'sequence': -1,
                           'observed_helper_alive': False, 'observed_helper_gone': False, 'check_created': True}
@@ -222,10 +225,11 @@ def daemon(directory):
             record.update(controlled_helper_original_lstart=initial_lstart, controlled_helper_identity_matches=identity_matches,
                           observed_helper_alive=was_alive, observed_helper_gone=was_gone,
                           run_id=data['run_id'], root_euid=os.geteuid(), config_security=config_security,
-                          phase='observing', prior_channels=channel_state.copy())
+                          phase='observing', prior_channels=channel_state.copy(),
+                          diagnostic_variant=data.get('diagnostic_variant'), observer_instance=label)
             last_record = record
             envelope = {'sequence': sequence, **encrypt_record(record, root / 'observer-public.pem', env)}
-            summary = json.dumps({'phase':'observing','run_id':data['run_id'],'snapshot':envelope}, separators=(',', ':'))
+            summary = json.dumps({'phase':'observing','run_id':data['run_id'],'diagnostic_variant':data.get('diagnostic_variant'),'snapshot':envelope}, separators=(',', ':'))
             message = json.dumps(envelope, separators=(',', ':'))
             if len(summary.encode()) > 64000 or len(message.encode()) > 64000:
                 raise ValueError('encrypted observation exceeds limit')
@@ -259,7 +263,7 @@ def daemon(directory):
     finally:
         if receiver_url is not None and clock is not None:
             try:
-                final_record = dict(last_record) if last_record is not None else {'type': 'launchd-observation-v1', 'run_id': data['run_id']}
+                final_record = dict(last_record) if last_record is not None else {'type': 'launchd-observation-v1', 'run_id': data['run_id'], 'diagnostic_variant': data.get('diagnostic_variant'), 'observer_instance': label}
                 final_record.update(sequence=sequence, phase='finished',
                                     outcome='completed' if completed else ('interrupted' if interrupted else 'error'),
                                     clock=clock.read(), prior_channels=channel_state.copy())
@@ -269,7 +273,7 @@ def daemon(directory):
                 pass
         if check_id is not None:
             try:
-                bootstrap.check_request('PATCH', api + '/' + str(check_id), {'status':'completed','conclusion':'success' if completed else 'failure','output':{'title':CHECK_NAME,'summary':json.dumps({'phase':'finished' if completed else 'interrupted','run_id':data['run_id'],'observations':sequence})}}, token, root, env)
+                bootstrap.check_request('PATCH', api + '/' + str(check_id), {'status':'completed','conclusion':'success' if completed else 'failure','output':{'title':CHECK_NAME,'summary':json.dumps({'phase':'finished' if completed else 'interrupted','run_id':data['run_id'],'diagnostic_variant':data.get('diagnostic_variant'),'observations':sequence})}}, token, root, env)
             except Exception:
                 pass
         shutil.rmtree(root, ignore_errors=True)

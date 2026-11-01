@@ -44,6 +44,10 @@ jobs:
               ('kernel-log', ['/usr/bin/sudo', '-n', '/usr/bin/log', 'show', '--last', '20s', '--style', 'compact', '--predicate', 'process == "kernel"']),
               ('console', ['/bin/ls', '-l', '/dev/console', '/Library/Logs/DiagnosticReports']),
               ('ktrace-help', ['/usr/bin/sudo', '-n', '/usr/bin/ktrace', '-h']),
+              ('trace-info', ['/usr/bin/sudo', '-n', '/usr/bin/ktrace', 'info']),
+              ('stackshot-before-trace', ['/usr/bin/sudo', '-n', '/usr/bin/python3', '.github/scripts/stackshot-stats-ci306.py']),
+              ('trace-events', ['/usr/bin/sudo', '-n', '/usr/bin/ktrace', 'trace', '-N', '-t', '-f', 'S0x01ac,S0x0140,S0x0105,S0x0109,S0x0180', '-b', '16', '-T', '5s', '--ndjson']),
+              ('stackshot-after-trace', ['/usr/bin/sudo', '-n', '/usr/bin/python3', '.github/scripts/stackshot-stats-ci306.py']),
           ]
           results = []
           for name, argv in commands:

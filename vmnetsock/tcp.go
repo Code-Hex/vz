@@ -529,7 +529,7 @@ func (p *tcpPacket) updateSegmentHeaders(ip []byte, segmentIndex int) {
 		id := binary.BigEndian.Uint16(p.ip[ipv4IdentificationOffset:]) + uint16(segmentIndex)
 		binary.BigEndian.PutUint16(ip[ipv4IdentificationOffset:], id)
 		binary.BigEndian.PutUint16(ip[ipv4ChecksumOffset:], 0)
-		binary.BigEndian.PutUint16(ip[ipv4ChecksumOffset:], tcpChecksum(ip[:ipv4HeaderSize], 0))
+		binary.BigEndian.PutUint16(ip[ipv4ChecksumOffset:], packetChecksum(ip[:ipv4HeaderSize], 0))
 	} else {
 		binary.BigEndian.PutUint16(ip[ipv6PayloadLengthOffset:], uint16(len(tcp)))
 	}
@@ -538,28 +538,9 @@ func (p *tcpPacket) updateSegmentHeaders(ip []byte, segmentIndex int) {
 	binary.BigEndian.PutUint16(tcp[tcpChecksumOffset:], 0)
 	sum := uint64(ipProtocolTCP + len(tcp))
 	if p.version == ipv4Version {
-		sum = tcpSum(ip[ipv4SourceOffset:ipv4HeaderSize], sum)
+		sum = packetSum(ip[ipv4SourceOffset:ipv4HeaderSize], sum)
 	} else {
-		sum = tcpSum(ip[ipv6SourceOffset:ipv6HeaderSize], sum)
+		sum = packetSum(ip[ipv6SourceOffset:ipv6HeaderSize], sum)
 	}
-	binary.BigEndian.PutUint16(tcp[tcpChecksumOffset:], tcpChecksum(tcp, sum))
-}
-
-func tcpSum(data []byte, sum uint64) uint64 {
-	for len(data) >= 2 {
-		sum += uint64(binary.BigEndian.Uint16(data))
-		data = data[2:]
-	}
-	if len(data) > 0 {
-		sum += uint64(data[0]) << 8
-	}
-	return sum
-}
-
-func tcpChecksum(data []byte, sum uint64) uint16 {
-	sum = tcpSum(data, sum)
-	for sum>>16 != 0 {
-		sum = sum&0xffff + sum>>16
-	}
-	return ^uint16(sum)
+	binary.BigEndian.PutUint16(tcp[tcpChecksumOffset:], packetChecksum(tcp, sum))
 }

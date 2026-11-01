@@ -18,7 +18,7 @@ import time
 PORT = 8765
 CHECK_NAME = 'ci306-external-control'
 TUNNEL_URL = re.compile(r'(?<![A-Za-z0-9.-])(https://[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.trycloudflare\.com)(?![A-Za-z0-9.-])')
-SAFE_TOKEN = re.compile(r'[A-Za-z0-9_]+\Z')
+SAFE_TOKEN = re.compile(r'[A-Za-z0-9._~+/-]+={0,2}\Z')
 REPOSITORY = re.compile(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\Z')
 SHA = re.compile(r'[a-fA-F0-9]{40}\Z')
 RUN_ID = re.compile(r'[0-9]+\Z')
@@ -133,6 +133,8 @@ def main():
     tempdir = Path(os.environ['RUNNER_TEMP']).resolve(strict=True)
     if not (SAFE_TOKEN.fullmatch(token_github) and REPOSITORY.fullmatch(repo) and
             SHA.fullmatch(sha) and RUN_ID.fullmatch(run_id)):
+        rejected = [name for name, valid in [('token_header', SAFE_TOKEN.fullmatch(token_github)), ('repo', REPOSITORY.fullmatch(repo)), ('sha', SHA.fullmatch(sha)), ('run_id', RUN_ID.fullmatch(run_id))] if not valid]
+        print('bootstrap invalid fields: ' + ','.join(rejected), file=sys.stderr)
         raise ValueError('invalid GitHub configuration')
     here = Path(__file__).resolve().parent
     server_script = here / 'external-control.py'
@@ -171,6 +173,7 @@ def main():
                                    '--token-file', token_file, '--', str(native), str(kernel), str(initramfs)],
                                   stdin=subprocess.DEVNULL, stdout=server_log, stderr=subprocess.STDOUT,
                                   env=env, start_new_session=True, close_fds=True)
+        print('bootstrap phase=server-health', file=sys.stderr)
         await_server(server, token)
         tunnel_log = open(tempdir / 'ci306-control-tunnel.log', 'wb')
         tunnel = subprocess.Popen([str(tunnel_bin), 'tunnel', '--no-autoupdate', '--url',
@@ -180,9 +183,12 @@ def main():
         results = queue.Queue(maxsize=1)
         tunnel_reader = threading.Thread(target=drain_tunnel, args=(tunnel.stderr, tunnel_log, results), daemon=True)
         tunnel_reader.start()
+        print('bootstrap phase=tunnel', file=sys.stderr)
         public_url = await_tunnel(tunnel, results)
+        print('bootstrap phase=encrypt', file=sys.stderr)
         encrypted = encrypt_token(token, public_key, env)
         summary = json.dumps({'url': public_url, 'ciphertext': encrypted, 'run_id': run_id}, separators=(',', ':'))
+        print('bootstrap phase=publish', file=sys.stderr)
         created = check_request('POST', api_url, {'name': CHECK_NAME, 'head_sha': sha, 'status': 'in_progress',
                                 'output': {'title': CHECK_NAME, 'summary': summary}}, token_github, tempdir, env)
         check_id = int(created['id'])

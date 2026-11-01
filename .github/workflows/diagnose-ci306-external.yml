@@ -1,4 +1,4 @@
-name: Observe native execution through an external control path
+name: Observe native execution through authenticated external control
 on:
   push:
     branches: [codex/diagnose-ci306-intel]

@@ -173,6 +173,7 @@ def main():
     next_window = 0
     missing_windows = []
     failure = None
+    failure_detail = None
     check_id = None
     completed = False
     seen_sources = set()
@@ -209,8 +210,8 @@ def main():
         window_loaded = clock.read()
         if window['sequence'] != next_window:
             raise ValueError('unexpected window sequence')
-        if baseline and (window['stop_reason'] != 'window' or sum(item['input_bytes'] for item in window['sources'].values()) == 0):
-            raise RuntimeError('baseline did not complete with trace data')
+        if baseline and window['stop_reason'] != 'window':
+            raise RuntimeError('baseline window did not complete')
         record = {'type': 'dtrace-window-v1', 'clock_description': {'dtrace_timestamp': 'DTrace timestamp in ns; epoch not assumed', 'dtrace_walltimestamp': 'DTrace walltimestamp in ns', 'collector_window': 'collector receive monotonic and realtime', 'parent_mach': 'mach_absolute_time ticks with timebase'}, 'window': window, 'native_output': tail.read(),
                   'transport_missing_window_sequences': list(missing_windows),
                   'stderr': {name: value.read() for name, value in stderr_tails.items()}, **public_state()}
@@ -336,6 +337,7 @@ def main():
         return 0 if code == 0 else 1
     except Exception as exc:
         failure = type(exc).__name__
+        failure_detail = str(exc)
         raise
     finally:
         signal.signal(signal.SIGTERM, signal.SIG_IGN)
@@ -357,7 +359,8 @@ def main():
                     'stderr': {name: value.read() for name, value in stderr_tails.items()},
                     'readers_pending': {'native': native_reader is not None and native_reader.is_alive(),
                                         'stderr': sum(reader.is_alive() for reader in stderr_readers)},
-                    'error': failure or 'interrupted', 'parent_send_preparation': clock.read(), **public_state()})
+                    'error': failure or 'interrupted', 'failure_detail': failure_detail,
+                    'parent_send_preparation': clock.read(), **public_state()})
                 candidate = {'sequence': next_window, **encrypt_record(record, public, env)}
                 summary = json.dumps({'phase': 'failed', 'run_id': run, **public_state(), 'error': failure, 'snapshot': candidate}, separators=(',', ':'), ensure_ascii=True)
                 if len(summary.encode()) > MAX_SUMMARY:

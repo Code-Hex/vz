@@ -1,0 +1,44 @@
+name: Stress the single VM network fixture
+on:
+  push:
+    branches: [codex/diagnose-ci306-intel]
+    paths: ['.github/workflows/diagnose-ci306-fixture.yml']
+permissions:
+  contents: read
+  checks: write
+env:
+  GOTOOLCHAIN: local
+jobs:
+  reproduce:
+    name: fixed fixture Intel Go ${{ matrix.go }}
+    runs-on: macos-15-intel
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.26.x', '1.27.x']
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: 81e8c25a739497606bcecc2f3cc2cff0d96f72ff
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-go@v7.0.0
+        with:
+          go-version: ${{ matrix.go }}
+          check-latest: true
+          cache-dependency-path: source/go.sum
+      - run: make -C source download_kernel
+      - name: Repeat the new guest test twenty times
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TRACE_NAME: ci306-fixed-network-${{ matrix.go }}
+          TRACE_SOURCE_DIR: ${{ github.workspace }}/source
+          TRACE_PATTERN: '^TestRuntimeNetworkConnection$'
+          TRACE_COUNT: '20'
+          CI306_NO_BARRIERS: '1'
+          GOGC: '10'
+        run: python3 -u .github/scripts/probe-ci306.py

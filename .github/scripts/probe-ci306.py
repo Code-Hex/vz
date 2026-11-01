@@ -38,7 +38,7 @@ class Observations:
                 self.last_test = f"{name} #{self.test_counts[name]}"
             if re.match(r"^(?:ok\s|FAIL(?:\s|$)|--- FAIL:)", line):
                 self.last_result = line.rstrip().encode("utf-8")[-500:].decode("utf-8", errors="ignore")
-            if "VZTRACE" in line or re.match(r"^\s*(?:--- FAIL:|FAIL(?:\s|$)|panic:|fatal error:)", line):
+            if "VZTRACE" in line or "network_device_integration_test.go:" in line or "virtualization_test.go:" in line or re.match(r"^\s*(?:--- FAIL:|FAIL(?:\s|$)|panic:|fatal error:)", line):
                 self.lines.append(line.rstrip().encode("utf-8")[-500:].decode("utf-8", errors="ignore"))
 
     def snapshot(self):

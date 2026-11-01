@@ -1,4 +1,4 @@
-name: Compare original shutdown ordering
+name: Bisect original network test stages
 on:
   push:
     branches: [codex/diagnose-ci306-intel]
@@ -9,13 +9,13 @@ env:
   GOTOOLCHAIN: local
 jobs:
   reproduce:
-    name: original source close-first=${{ matrix.close }}
+    name: original network stage=${{ matrix.stage }}
     runs-on: macos-15-intel
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        close: ['0', '1']
+        stage: ['boot', 'peer-up', 'pair', 'full']
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -31,25 +31,36 @@ jobs:
           check-latest: true
           cache-dependency-path: source/go.sum
       - run: make -C source download_kernel
-      - name: Close SSH before VM shutdown
-        if: matrix.close == '1'
+      - name: Limit the test to its selected prefix
+        env:
+          NETWORK_STAGE: ${{ matrix.stage }}
         run: |
           python3 - <<'PYCODE'
           from pathlib import Path
-          p = Path('source/virtualization_test.go')
-          old = '\tdefer func() {\n\t\tlog.Println("shutdown done")\n\t\tc.Client.Close()\n\t}()'
-          new = '\tdefer log.Println("shutdown done")\n\tc.Client.Close()'
+          import os
+          p = Path('source/network_device_integration_test.go')
           s = p.read_text()
-          assert s.count(old) == 1
-          p.write_text(s.replace(old, new))
+          stage = os.environ['NETWORK_STAGE']
+          markers = {
+              'boot': 'peer := start(peerAttachments...)',
+              'peer-up': 'run(peer, "ip addr add 192.0.2.2/24 dev eth1 && ip link set eth1 up && ip addr add 198.51.100.2/24 dev eth2 && ip link set eth2 up")',
+              'pair': 'client := start(clientAttachments[0])',
+          }
+          if stage in markers:
+              old = '\t' + markers[stage]
+              assert s.count(old) == 1
+              s = s.replace(old, old + '\n\tif os.Getenv("NETWORK_STAGE") != "full" { return }')
+              p.write_text(s)
           PYCODE
+          gofmt -w source/network_device_integration_test.go
           git -C source diff --check
       - name: Compare the original guest test
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          TRACE_NAME: ci306-original-close-${{ matrix.close }}
+          TRACE_NAME: ci306-network-stage-${{ matrix.stage }}
           TRACE_SOURCE_DIR: ${{ github.workspace }}/source
           TRACE_PATTERN: '^TestRuntimeNetworkConnection$'
-          TRACE_COUNT: '20'
+          TRACE_COUNT: '5'
           CI306_NO_BARRIERS: '1'
+          NETWORK_STAGE: ${{ matrix.stage }}
         run: python3 .github/scripts/probe-ci306.py

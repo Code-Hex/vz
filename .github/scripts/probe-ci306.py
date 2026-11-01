@@ -183,6 +183,9 @@ def main():
     if os.environ.get('TRACE_NATIVE_PAIR') == '1':
         command = [os.path.join(os.environ['RUNNER_TEMP'], 'native-pair-ci306'),
                    os.path.join(cwd, 'testdata/Image'), os.path.join(cwd, 'testdata/initramfs.cpio.gz')]
+    if os.environ.get('TRACE_SUPERVISOR') == '1':
+        command = [os.path.join(os.environ['RUNNER_TEMP'], 'ci306-supervisor'), '180',
+                   os.path.join(os.environ['RUNNER_TEMP'], 'ci306-watch.journal')] + command
     finished = threading.Event()
     log_fd, log_path = tempfile.mkstemp(prefix="ci306-", suffix=".log", dir=log_dir)
     os.close(log_fd)

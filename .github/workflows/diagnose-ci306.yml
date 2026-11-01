@@ -7,22 +7,27 @@ permissions:
   checks: write
 jobs:
   reproduce:
-    name: native NAT=${{ matrix.nat }} DGRAM=${{ matrix.dgram }}
+    name: native early=${{ matrix.early }} nonblock=${{ matrix.nonblock }}
     runs-on: macos-15-intel
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
         include:
-          - nat: '1'
-            dgram: '0'
-          - nat: '1'
-            dgram: '2'
-          - nat: '0'
-            dgram: '2'
+          - early: '0'
+            nonblock: '0'
+          - early: '1'
+            nonblock: '0'
+          - early: '0'
+            nonblock: '1'
+          - early: '1'
+            nonblock: '1'
     env:
-      NAT: ${{ matrix.nat }}
-      DGRAM: ${{ matrix.dgram }}
+      NAT: '1'
+      DGRAM: '2'
+      CONSOLE: '0'
+      EARLY_RELEASE: ${{ matrix.early }}
+      NONBLOCK: ${{ matrix.nonblock }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -40,6 +45,6 @@ jobs:
       - name: Record native lifecycle outside the runner
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          TRACE_NAME: ci306-native-nat-${{ matrix.nat }}-dgram-${{ matrix.dgram }}
+          TRACE_NAME: ci306-native-early-${{ matrix.early }}-nonblock-${{ matrix.nonblock }}
           TRACE_NATIVE: '1'
         run: python3 .github/scripts/probe-ci306.py

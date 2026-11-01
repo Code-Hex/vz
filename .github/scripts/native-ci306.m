@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import <Virtualization/Virtualization.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <poll.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -18,6 +19,8 @@ typedef struct {
     int sockets[4];
     unsigned attempts;
     uint32_t port;
+    int nonblock;
+    int earlyRelease;
     int result;
 } Probe;
 
@@ -50,11 +53,15 @@ static void finish(Probe *probe, int result)
 
 static void stop(Probe *probe, int result)
 {
-    trace("connection close before");
-    [probe->connection close];
-    [probe->connection release];
-    probe->connection = nil;
-    trace("connection close after; stop before state=%ld", (long)probe->vm.state);
+    if (probe->connection) {
+        trace("connection close before connection=%p", probe->connection);
+        [probe->connection close];
+        trace("connection release before connection=%p", probe->connection);
+        [probe->connection release];
+        probe->connection = nil;
+        trace("connection release after");
+    }
+    trace("stop before state=%ld", (long)probe->vm.state);
     if (probe->vm.state == VZVirtualMachineStateStopped) {
         finish(probe, result);
         return;
@@ -97,7 +104,7 @@ static int readBanner(int fd)
             return 1;
         }
         ssize_t count = read(fd, buffer + used, sizeof(buffer) - used - 1);
-        if (count < 0 && errno == EINTR)
+        if (count < 0 && (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK))
             continue;
         if (count <= 0) {
             trace("banner read count=%zd errno=%d events=%d", count, count < 0 ? errno : 0, event.revents);
@@ -146,6 +153,28 @@ static void connectGuest(Probe *probe)
                 stop(probe, 1);
                 return;
             }
+            if (probe->nonblock) {
+                int flags = fcntl(fd, F_GETFL);
+                if (flags < 0 || fcntl(fd, F_SETFL, flags | O_NONBLOCK) < 0) {
+                    trace("nonblock failed errno=%d", errno);
+                    close(fd);
+                    stop(probe, 1);
+                    return;
+                }
+                trace("nonblock set duplicate=%d original_flags=%d", fd, fcntl(connection.fileDescriptor, F_GETFL));
+            }
+            if (probe->earlyRelease) {
+                void *owned = probe->connection;
+                probe->connection = nil;
+                trace("early release enqueue connection=%p", owned);
+                dispatch_async(probe->queue, ^{
+                    @autoreleasepool {
+                        trace("early release before connection=%p", owned);
+                        [(VZVirtioSocketConnection *)owned release];
+                        trace("early release after connection=%p", owned);
+                    }
+                });
+            }
             dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0), ^{
                 int result = readBanner(fd);
                 close(fd);
@@ -174,17 +203,21 @@ int main(int argc, char **argv)
 {
     @autoreleasepool {
         if (argc != 3) {
-            fprintf(stderr, "Usage: NAT=0|1 DGRAM=0|2 %s kernel initramfs\n", argv[0]);
+            fprintf(stderr, "Usage: NAT=0|1 DGRAM=0|2 CONSOLE=0|1 NONBLOCK=0|1 EARLY_RELEASE=0|1 %s kernel initramfs\n", argv[0]);
             return 2;
         }
         int nat = option("NAT", 1), datagrams = option("DGRAM", 2);
+        int consoleEnabled = option("CONSOLE", 1);
         Probe probe = { .sockets = {-1, -1, -1, -1}, .port = 22222, .result = 1 };
         Probe *p = &probe;
+        p->nonblock = option("NONBLOCK", 1);
+        p->earlyRelease = option("EARLY_RELEASE", 1);
         p->queue = dispatch_queue_create("com.codehex.vz.native-only", DISPATCH_QUEUE_SERIAL);
         p->done = dispatch_semaphore_create(0);
         NSString *kernel = [NSString stringWithUTF8String:argv[1]];
         NSString *initramfs = [NSString stringWithUTF8String:argv[2]];
-        trace("begin nat=%d dgram=%d pid=%d", nat, datagrams, getpid());
+        trace("begin nat=%d dgram=%d console=%d nonblock=%d early_release=%d pid=%d",
+              nat, datagrams, consoleEnabled, p->nonblock, p->earlyRelease, getpid());
         dispatch_async(p->queue, ^{
             @autoreleasepool {
                 VZLinuxBootLoader *loader = [[[VZLinuxBootLoader alloc] initWithKernelURL:[NSURL fileURLWithPath:kernel]] autorelease];
@@ -197,12 +230,14 @@ int main(int argc, char **argv)
                 config.entropyDevices = @[[[[VZVirtioEntropyDeviceConfiguration alloc] init] autorelease]];
                 config.memoryBalloonDevices = @[[[[VZVirtioTraditionalMemoryBalloonDeviceConfiguration alloc] init] autorelease]];
                 config.socketDevices = @[[[[VZVirtioSocketDeviceConfiguration alloc] init] autorelease]];
-                int consoleFD = dup(STDERR_FILENO);
-                if (consoleFD < 0) { trace("console dup errno=%d", errno); finish(p, 1); return; }
-                NSFileHandle *console = [[[NSFileHandle alloc] initWithFileDescriptor:consoleFD closeOnDealloc:YES] autorelease];
-                VZVirtioConsoleDeviceSerialPortConfiguration *serial = [[[VZVirtioConsoleDeviceSerialPortConfiguration alloc] init] autorelease];
-                serial.attachment = [[[VZFileHandleSerialPortAttachment alloc] initWithFileHandleForReading:nil fileHandleForWriting:console] autorelease];
-                config.serialPorts = @[serial];
+                if (consoleEnabled) {
+                    int consoleFD = dup(STDERR_FILENO);
+                    if (consoleFD < 0) { trace("console dup errno=%d", errno); finish(p, 1); return; }
+                    NSFileHandle *console = [[[NSFileHandle alloc] initWithFileDescriptor:consoleFD closeOnDealloc:YES] autorelease];
+                    VZVirtioConsoleDeviceSerialPortConfiguration *serial = [[[VZVirtioConsoleDeviceSerialPortConfiguration alloc] init] autorelease];
+                    serial.attachment = [[[VZFileHandleSerialPortAttachment alloc] initWithFileHandleForReading:nil fileHandleForWriting:console] autorelease];
+                    config.serialPorts = @[serial];
+                }
                 NSMutableArray *networks = [NSMutableArray array];
                 if (nat) {
                     trace("nat create before");

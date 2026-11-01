@@ -19,6 +19,7 @@ var ci306CheckpointSequence atomic.Uint64
 
 func ci306Checkpoint(t *testing.T, label string) {
 	t.Helper()
+	t.Logf("VZTRACE %s", label)
 	dir := os.Getenv("CI306_BARRIER_DIR")
 	if dir == "" {
 		return

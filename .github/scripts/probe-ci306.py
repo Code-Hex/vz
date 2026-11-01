@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import collections
+import http.client
 import json
 import os
 import re
@@ -105,6 +106,13 @@ def check_request(method, url, token, body):
         return json.load(response)
 
 
+def report_error(context, error):
+    detail = type(error).__name__
+    if isinstance(error, urllib.error.HTTPError):
+        detail += f" status={error.code}"
+    print(f"{context}: {detail}", file=sys.stderr)
+
+
 def main():
     required = ("GITHUB_TOKEN", "GITHUB_REPOSITORY", "GITHUB_SHA", "GITHUB_RUN_ID", "TRACE_NAME")
     if any(not os.environ.get(key) for key in required):
@@ -129,8 +137,8 @@ def main():
             "output": {"title": "テスト診断", "summary": summary(observations, started)},
         })
         check_url = api + "/" + str(check["id"])
-    except (OSError, ValueError, KeyError, urllib.error.URLError):
-        print("Check Run を作成できません。テストを開始しません。", file=sys.stderr)
+    except (OSError, ValueError, KeyError, urllib.error.URLError, http.client.HTTPException) as error:
+        report_error("Check Run 作成失敗。テスト未開始", error)
         return 1
 
     cwd = os.path.realpath(os.getcwd())
@@ -140,10 +148,14 @@ def main():
             child_env.pop(key, None)
     child_env["PWD"] = cwd
     log_dir = os.environ.get("RUNNER_TEMP") or tempfile.gettempdir()
-    barrier_dir = tempfile.mkdtemp(prefix="ci306-barrier-", dir=log_dir)
-    child_env["CI306_BARRIER_DIR"] = barrier_dir
+    child_env.pop("CI306_BARRIER_DIR", None)
+    barrier_dir = None
+    if os.environ.get("CI306_NO_BARRIERS") != "1":
+        barrier_dir = tempfile.mkdtemp(prefix="ci306-barrier-", dir=log_dir)
+        child_env["CI306_BARRIER_DIR"] = barrier_dir
     command = ["go", "test", "-p", "1", "-exec", "go run " + os.path.join(cwd, "cmd/codesign"),
-               ".", "-timeout", "5m", "-v", "-run", "^TestRuntimeNetworkConnection$", "-count=3"]
+               ".", "-timeout", "5m", "-v", "-run", os.environ.get("TRACE_PATTERN", "^TestRuntimeNetworkConnection$"),
+               "-count=" + os.environ.get("TRACE_COUNT", "5")]
     if os.environ.get('TRACE_NATIVE') == '1':
         command = ['/bin/bash', '-c', 'for ((i=1;i<=10;i++)); do "$1" "$2" "$3" || exit $?; done', 'native-probe',
                    os.path.join(os.environ['RUNNER_TEMP'], 'native-ci306'), os.path.join(cwd, 'testdata/Image'),
@@ -155,61 +167,83 @@ def main():
         process = subprocess.Popen(command, cwd=cwd, env=child_env, stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT, text=True, encoding="utf-8", errors="replace",
                                    bufsize=1, start_new_session=True)
-    except OSError:
-        print("テストプロセスを開始できません。", file=sys.stderr)
+    except OSError as error:
+        report_error("テストプロセス開始失敗", error)
         try:
             check_request("PATCH", check_url, token, {"status": "completed", "conclusion": "failure",
                           "output": {"title": "テスト診断", "summary": "テストプロセスを開始できません。"}})
-        except (OSError, ValueError, urllib.error.URLError):
-            print("Check Run を更新できません。", file=sys.stderr)
+        except (OSError, ValueError, urllib.error.URLError, http.client.HTTPException) as error:
+            report_error("Check Run 更新失敗", error)
         return 1
 
-    reader = threading.Thread(target=read_output, args=(process.stdout, log_path, observations), daemon=True)
-    killer = threading.Thread(target=watchdog, args=(process, finished), daemon=True)
-    reader.start()
-    killer.start()
-    last_snapshot = ("なし", [])
-    last_update = time.monotonic()
-    acknowledged = 0
-    while process.poll() is None:
-        try:
-            checkpoint = read_checkpoint(barrier_dir)
-            if checkpoint is not None and checkpoint["id"] > acknowledged:
-                observations.set_checkpoint(checkpoint)
-                check_request("PATCH", check_url, token, {"output": {"title": "テスト診断",
-                              "summary": summary(observations, started)}})
-                write_ack(barrier_dir, checkpoint["id"])
-                acknowledged = checkpoint["id"]
-                last_snapshot = observations.snapshot()
-                last_update = time.monotonic()
-        except (OSError, ValueError, urllib.error.URLError):
-            print("診断バリアの Check Run 更新または ack に失敗しました。ack は保留します。", file=sys.stderr)
-        now = time.monotonic()
-        current = observations.snapshot()
-        if now - last_update >= 10 or (current != last_snapshot and now - last_update >= 1):
-            try:
-                check_request("PATCH", check_url, token, {"output": {"title": "テスト診断",
-                              "summary": summary(observations, started)}})
-                last_snapshot = current
-            except (OSError, ValueError, urllib.error.URLError):
-                print("Check Run を更新できません。", file=sys.stderr)
-            last_update = time.monotonic()
-        time.sleep(0.2)
-
-    finished.set()
-    reader.join(timeout=2)
-    killer.join(timeout=1)
-    exit_code = process.returncode if process.returncode >= 0 else 128 - process.returncode
-    final_summary = summary(observations, started, exit_code)
+    reader = None
+    killer = None
     try:
-        check_request("PATCH", check_url, token, {"status": "completed",
-                      "conclusion": "success" if exit_code == 0 else "failure",
-                      "output": {"title": "テスト診断", "summary": final_summary}})
-    except (OSError, ValueError, urllib.error.URLError):
-        print("Check Run の最終更新が失敗しました。", file=sys.stderr)
-    print(final_summary)
-    return exit_code
+        reader = threading.Thread(target=read_output, args=(process.stdout, log_path, observations), daemon=True)
+        killer = threading.Thread(target=watchdog, args=(process, finished), daemon=True)
+        reader.start()
+        killer.start()
+        last_snapshot = ("なし", [])
+        last_update = time.monotonic()
+        acknowledged = 0
+        while process.poll() is None:
+            try:
+                checkpoint = read_checkpoint(barrier_dir) if barrier_dir is not None else None
+                if checkpoint is not None and checkpoint["id"] > acknowledged:
+                    observations.set_checkpoint(checkpoint)
+                    check_request("PATCH", check_url, token, {"output": {"title": "テスト診断",
+                                  "summary": summary(observations, started)}})
+                    write_ack(barrier_dir, checkpoint["id"])
+                    acknowledged = checkpoint["id"]
+                    last_snapshot = observations.snapshot()
+                    last_update = time.monotonic()
+            except (OSError, ValueError, urllib.error.URLError, http.client.HTTPException) as error:
+                report_error("診断バリア更新失敗。ack 保留", error)
+            now = time.monotonic()
+            current = observations.snapshot()
+            if now - last_update >= 10 or (current != last_snapshot and now - last_update >= 1):
+                try:
+                    check_request("PATCH", check_url, token, {"output": {"title": "テスト診断",
+                                  "summary": summary(observations, started)}})
+                    last_snapshot = current
+                except (OSError, ValueError, urllib.error.URLError, http.client.HTTPException) as error:
+                    report_error("Check Run 更新失敗", error)
+                last_update = time.monotonic()
+            time.sleep(0.2)
+
+        finished.set()
+        reader.join(timeout=2)
+        killer.join(timeout=1)
+        exit_code = process.returncode if process.returncode >= 0 else 128 - process.returncode
+        final_summary = summary(observations, started, exit_code)
+        try:
+            check_request("PATCH", check_url, token, {"status": "completed",
+                          "conclusion": "success" if exit_code == 0 else "failure",
+                          "output": {"title": "テスト診断", "summary": final_summary}})
+        except (OSError, ValueError, urllib.error.URLError, http.client.HTTPException) as error:
+            report_error("Check Run 最終更新失敗", error)
+        print(final_summary)
+        return exit_code
+    finally:
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        try:
+            process.wait(timeout=2)
+        except subprocess.TimeoutExpired:
+            print("診断子プロセスの終了待機がタイムアウトしました。", file=sys.stderr)
+        finished.set()
+        if reader is not None and reader.ident is not None:
+            reader.join(timeout=2)
+        if killer is not None and killer.ident is not None:
+            killer.join(timeout=1)
+
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except Exception as error:
+        report_error("予期しない診断エラー", error)
+        sys.exit(1)

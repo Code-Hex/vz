@@ -9,7 +9,24 @@ env:
   GOTOOLCHAIN: local
 jobs:
   reproduce:
+    name: Go retain=${{ matrix.retain }} close-first=${{ matrix.close }}
     runs-on: macos-15-intel
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - retain: '0'
+            close: '0'
+          - retain: '1'
+            close: '0'
+          - retain: '0'
+            close: '1'
+          - retain: '1'
+            close: '1'
+    env:
+      CI306_RETAIN_NATIVE: ${{ matrix.retain }}
+      CI306_CLOSE_FIRST: ${{ matrix.close }}
+      CI306_NO_BARRIERS: '1'
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7.0.1
@@ -23,7 +40,7 @@ jobs:
       - name: Acknowledge each network operation before executing it
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          TRACE_NAME: ci306-network-acknowledged
+          TRACE_NAME: ci306-go-retain-${{ matrix.retain }}-close-${{ matrix.close }}
           TRACE_PATTERN: '^TestRuntimeNetworkConnection$'
-          TRACE_COUNT: '3'
+          TRACE_COUNT: '5'
         run: python3 .github/scripts/probe-ci306.py

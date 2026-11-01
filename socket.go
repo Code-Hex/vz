@@ -312,13 +312,10 @@ func (a *VirtioSocketListenerAddr) String() string { return fmt.Sprintf("%d:%d",
 // You will notice that this is not vsock in using this library. However, all data this connection goes through to the vsock
 // connection to which the Guest OS is connected.
 //
-// This struct does not have any pointers for objects of the Objective-C. Because the various values
-// of the VZVirtioSocketConnection object handled by Objective-C are no longer needed after the conversion
-// to the Go struct.
-//
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketconnection?language=objc
 type VirtioSocketConnection struct {
 	rawConn         net.Conn
+	native          *objc.Pointer
 	destinationPort uint32
 	sourcePort      uint32
 }
@@ -330,7 +327,12 @@ func newVirtioSocketConnection(ptr *objc.Pointer) (*VirtioSocketConnection, erro
 	if ptr == nil || objc.Ptr(ptr) == nil {
 		return nil, fmt.Errorf("socket completion returned no connection")
 	}
-	defer objc.Release(ptr)
+	owned := true
+	defer func() {
+		if owned {
+			objc.Release(ptr)
+		}
+	}()
 	var nativeError unsafe.Pointer
 	fmt.Fprintf(os.Stderr, "VZTRACE go dup before connection=%p\n", objc.Ptr(ptr))
 	descriptor := vzbridge.SocketConnectionDuplicatedFileDescriptor(ptr, &nativeError)
@@ -354,23 +356,37 @@ func newVirtioSocketConnection(ptr *objc.Pointer) (*VirtioSocketConnection, erro
 	fmt.Fprintf(os.Stderr, "VZTRACE go source getter before connection=%p\n", objc.Ptr(ptr))
 	sourcePort := vzbridge.VZVirtioSocketConnection_SourcePort(ptr)
 	fmt.Fprintf(os.Stderr, "VZTRACE go port getters after connection=%p dst=%d src=%d\n", objc.Ptr(ptr), destinationPort, sourcePort)
-	return &VirtioSocketConnection{
+	result := &VirtioSocketConnection{
 		rawConn:         connection,
 		destinationPort: destinationPort,
 		sourcePort:      sourcePort,
-	}, nil
+	}
+	if os.Getenv("CI306_RETAIN_NATIVE") == "1" {
+		result.native = ptr
+		owned = false
+	}
+	return result, nil
 }
 
 // Read reads data from connection of the vsock protocol.
-func (v *VirtioSocketConnection) Read(b []byte) (n int, err error) { return v.rawConn.Read(b) }
+func (v *VirtioSocketConnection) Read(b []byte) (n int, err error) {
+	defer runtime.KeepAlive(v)
+	return v.rawConn.Read(b)
+}
 
 // Write writes data to the connection of the vsock protocol.
-func (v *VirtioSocketConnection) Write(b []byte) (n int, err error) { return v.rawConn.Write(b) }
+func (v *VirtioSocketConnection) Write(b []byte) (n int, err error) {
+	defer runtime.KeepAlive(v)
+	return v.rawConn.Write(b)
+}
 
 // Close will be called when caused something error in socket.
 func (v *VirtioSocketConnection) Close() error {
 	fmt.Fprintf(os.Stderr, "VZTRACE go Close before raw=%p\n", v.rawConn)
 	err := v.rawConn.Close()
+	if v.native != nil {
+		objc.Release(v.native)
+	}
 	fmt.Fprintf(os.Stderr, "VZTRACE go Close after raw=%p err=%v\n", v.rawConn, err)
 	return err
 }

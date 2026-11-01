@@ -120,6 +120,9 @@ func (c *Container) Shutdown() error {
 		c.Client.Close()
 	}()
 
+	if os.Getenv("CI306_CLOSE_FIRST") == "1" {
+		c.Client.Close()
+	}
 	vm := c.VirtualMachine
 
 	if got := vm.State(); vz.VirtualMachineStateStopped == got {

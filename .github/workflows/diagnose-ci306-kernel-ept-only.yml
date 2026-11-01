@@ -1,0 +1,38 @@
+name: Capture DTrace kernel observations with startup allowance
+on:
+  push:
+    branches: [codex/diagnose-ci306-intel]
+    paths: ['.github/workflows/diagnose-ci306-kernel-ept-only.yml']
+permissions:
+  contents: read
+  checks: write
+jobs:
+  observe:
+    runs-on: macos-15-intel
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - run: make download_kernel
+      - name: Build unchanged native probe
+        run: |
+          xcrun clang -fno-objc-arc -fblocks -Wall -Wextra -Werror -mmacosx-version-min=12.0 -framework Foundation -framework Virtualization .github/scripts/native-pair-no-connect-ci306.m -o "$RUNNER_TEMP/native-pair-control"
+          python3 - <<'PYCODE'
+          import os
+          from pathlib import Path
+          Path(os.environ['RUNNER_TEMP'], 'native.entitlements').write_text('<?xml version="1.0"?><plist version="1.0"><dict><key>com.apple.security.virtualization</key><true/></dict></plist>')
+          PYCODE
+          codesign --force --entitlements "$RUNNER_TEMP/native.entitlements" -s - "$RUNNER_TEMP/native-pair-control"
+      - name: Capture encrypted DTrace windows
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/kernel-fbt-stream.py
+      - name: Upload encrypted snapshots only
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: ci306-kernel-fbt-encrypted
+          if-no-files-found: warn
+          retention-days: 7
+          path: ${{ runner.temp }}/ci306-kernel-fbt-encrypted/*.json

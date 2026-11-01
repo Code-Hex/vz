@@ -7,6 +7,7 @@ import hmac
 import importlib.util
 import json
 import os
+import platform
 import re
 from pathlib import Path
 import secrets
@@ -269,6 +270,8 @@ def main():
     try:
         created = bootstrap.check_request('POST', api, {'name': NAME, 'head_sha': sha, 'status': 'in_progress', 'output': {'title': NAME, 'summary': json.dumps({'phase': 'initializing', 'run_id': run})}}, token, temp, env)
         check_id = int(created['id'])
+        if platform.machine() != 'x86_64':
+            raise RuntimeError('unexpected kernel architecture')
         result = subprocess.run(['/usr/bin/xcrun', 'dwarfdump', '--uuid', '/System/Library/Kernels/kernel'], env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=15, check=True)
         if b'F6A1B3D4-1EBB-3628-A1C5-89506C51DDEC' not in result.stdout.upper():
             raise RuntimeError('unexpected kernel UUID')

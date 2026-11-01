@@ -2,7 +2,6 @@ package vz_test
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"net"
 	"net/netip"
@@ -14,14 +13,14 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-type icmpPeer struct {
+type networkPeer struct {
 	attachment *vz.FileHandleNetworkDeviceAttachment
 	ip         netip.Addr
 	mac        [6]byte
 	done       chan error
 }
 
-func newICMPPeer(t *testing.T, ip netip.Addr, mac [6]byte) *icmpPeer {
+func newNetworkPeer(t *testing.T, ip netip.Addr, mac [6]byte) *networkPeer {
 	t.Helper()
 	fds, err := unix.Socketpair(unix.AF_UNIX, unix.SOCK_DGRAM, 0)
 	if err != nil {
@@ -40,34 +39,37 @@ func newICMPPeer(t *testing.T, ip netip.Addr, mac [6]byte) *icmpPeer {
 	if err != nil {
 		t.Fatal(err)
 	}
-	peer := &icmpPeer{attachment: attachment, ip: ip, mac: mac, done: make(chan error, 1)}
+	peer := &networkPeer{attachment: attachment, ip: ip, mac: mac, done: make(chan error, 1)}
 	go func() {
-		peer.done <- serveICMP(conn, ip, mac)
+		peer.done <- serveNetworkPeer(conn, ip, mac)
 	}()
 	t.Cleanup(func() {
 		if err := conn.Close(); err != nil && !errors.Is(err, net.ErrClosed) {
-			t.Errorf("close ICMP peer: %v", err)
+			t.Errorf("close network peer: %v", err)
 		}
 		select {
 		case err := <-peer.done:
 			if !errors.Is(err, net.ErrClosed) {
-				t.Errorf("ICMP peer stopped: %v", err)
+				t.Errorf("network peer stopped: %v", err)
 			}
 		case <-time.After(5 * time.Second):
-			t.Error("ICMP peer did not stop")
+			t.Error("network peer did not stop")
 		}
 	})
 	return peer
 }
 
-func serveICMP(conn net.Conn, ip netip.Addr, mac [6]byte) error {
+func serveNetworkPeer(conn net.Conn, ip netip.Addr, mac [6]byte) error {
 	buffer := make([]byte, 65536)
 	for {
 		n, err := conn.Read(buffer)
 		if err != nil {
 			return err
 		}
-		reply := echoReply(buffer[:n], ip, mac)
+		reply := arpReply(buffer[:n], ip, mac)
+		if reply == nil {
+			reply = echoReply(buffer[:n], ip, mac)
+		}
 		if reply == nil {
 			continue
 		}
@@ -84,17 +86,12 @@ func serveICMP(conn net.Conn, ip netip.Addr, mac [6]byte) error {
 	}
 }
 
-func checkICMPPeer(t *testing.T, peer *icmpPeer) {
+func checkNetworkPeer(t *testing.T, peer *networkPeer) {
 	t.Helper()
 	select {
 	case err := <-peer.done:
 		peer.done <- err
-		t.Fatalf("ICMP peer stopped before cleanup: %v", err)
+		t.Fatalf("network peer stopped before cleanup: %v", err)
 	default:
 	}
-}
-
-func (p *icmpPeer) staticARP() string {
-	return fmt.Sprintf("arp -i eth1 -s %s %02x:%02x:%02x:%02x:%02x:%02x", p.ip,
-		p.mac[0], p.mac[1], p.mac[2], p.mac[3], p.mac[4], p.mac[5])
 }

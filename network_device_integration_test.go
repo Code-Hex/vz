@@ -18,8 +18,8 @@ func TestRuntimeNetworkConnection(t *testing.T) {
 	if vz.Available(12) {
 		t.Skip("requires macOS 12")
 	}
-	a := newICMPPeer(t, netip.MustParseAddr("192.0.2.2"), [6]byte{2, 0, 0, 0, 0, 10})
-	b := newICMPPeer(t, netip.MustParseAddr("198.51.100.2"), [6]byte{2, 0, 0, 0, 0, 11})
+	a := newNetworkPeer(t, netip.MustParseAddr("192.0.2.2"), [6]byte{2, 0, 0, 0, 0, 10})
+	b := newNetworkPeer(t, netip.MustParseAddr("198.51.100.2"), [6]byte{2, 0, 0, 0, 0, 11})
 	vm := newVirtualizationMachine(t, func(config *vz.VirtualMachineConfiguration) error {
 		device, err := vz.NewVirtioNetworkDeviceConfiguration(a.attachment)
 		if err != nil {
@@ -54,11 +54,11 @@ func TestRuntimeNetworkConnection(t *testing.T) {
 			t.Fatalf("%s: %v\n%s", command, err, output)
 		}
 	}
-	ping := func(peer *icmpPeer, reachable bool) {
+	ping := func(peer *networkPeer, reachable bool) {
 		t.Helper()
-		checkICMPPeer(t, peer)
+		checkNetworkPeer(t, peer)
 		output, err := run(fmt.Sprintf("ping %s", peer.ip))
-		checkICMPPeer(t, peer)
+		checkNetworkPeer(t, peer)
 		if reachable {
 			if err != nil {
 				t.Fatalf("ping %s: %v\n%s", peer.ip, err, output)
@@ -70,7 +70,7 @@ func TestRuntimeNetworkConnection(t *testing.T) {
 			t.Fatalf("disconnected ping %s: got %v, output %q", peer.ip, err, output)
 		}
 	}
-	configure("ip addr add 192.0.2.1/24 dev eth1 && ip link set eth1 up && " + a.staticARP())
+	configure("ip addr add 192.0.2.1/24 dev eth1 && ip link set eth1 up")
 	ping(a, true)
 	devices := vm.NetworkDevices()
 	if len(devices) != 2 {
@@ -80,7 +80,7 @@ func TestRuntimeNetworkConnection(t *testing.T) {
 	if err := device.SetAttachment(b.attachment); err != nil {
 		t.Fatal(err)
 	}
-	configure("ip addr del 192.0.2.1/24 dev eth1 && ip addr add 198.51.100.1/24 dev eth1 && " + b.staticARP())
+	configure("ip addr del 192.0.2.1/24 dev eth1 && ip addr add 198.51.100.1/24 dev eth1")
 	ping(b, true)
 	if err := device.SetAttachment(nil); err != nil {
 		t.Fatal(err)

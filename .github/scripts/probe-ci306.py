@@ -113,7 +113,7 @@ def main():
             child_env.pop(key, None)
     child_env["PWD"] = cwd
     command = ["go", "test", "-p", "1", "-exec", "go run " + os.path.join(cwd, "cmd/codesign"),
-               ".", "-timeout", "5m", "-v", "-count=2"]
+               ".", "-timeout", "5m", "-v", "-run", "^TestRuntimeNetworkConnection$", "-count=5"]
     finished = threading.Event()
     log_dir = os.environ.get("RUNNER_TEMP") or tempfile.gettempdir()
     log_fd, log_path = tempfile.mkstemp(prefix="ci306-", suffix=".log", dir=log_dir)
@@ -135,15 +135,19 @@ def main():
     killer = threading.Thread(target=watchdog, args=(process, finished), daemon=True)
     reader.start()
     killer.start()
-    next_update = time.monotonic() + 10
+    last_snapshot = ("なし", [])
+    last_update = time.monotonic()
     while process.poll() is None:
-        if time.monotonic() >= next_update:
+        now = time.monotonic()
+        current = observations.snapshot()
+        if now - last_update >= 10 or (current != last_snapshot and now - last_update >= 1):
             try:
                 check_request("PATCH", check_url, token, {"output": {"title": "テスト診断",
                               "summary": summary(observations, started)}})
+                last_snapshot = current
             except (OSError, ValueError, urllib.error.URLError):
                 print("Check Run を更新できません。", file=sys.stderr)
-            next_update = time.monotonic() + 10
+            last_update = time.monotonic()
         time.sleep(0.2)
 
     finished.set()

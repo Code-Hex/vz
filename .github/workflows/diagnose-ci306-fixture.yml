@@ -1,4 +1,4 @@
-name: Stress the single VM network fixture
+name: Trace the first fixture reconnect
 on:
   push:
     branches: [codex/diagnose-ci306-intel]
@@ -10,13 +10,13 @@ env:
   GOTOOLCHAIN: local
 jobs:
   reproduce:
-    name: fixed fixture Intel Go ${{ matrix.go }}
+    name: trace reconnect Intel Go ${{ matrix.go }}
     runs-on: macos-15-intel
     timeout-minutes: 8
     strategy:
       fail-fast: false
       matrix:
-        go: ['1.26.x', '1.27.x']
+        go: ['1.26.x']
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -32,10 +32,31 @@ jobs:
           check-latest: true
           cache-dependency-path: source/go.sum
       - run: make -C source download_kernel
+      - name: Capture host frames and failed guest state
+        run: |
+          python3 - <<'PYCODE'
+          from pathlib import Path
+          p = Path('source/network_icmp_peer_test.go')
+          s = p.read_text()
+          old = '\t\treply := echoReply(buffer[:n], ip, mac)'
+          assert s.count(old) == 1
+          s = s.replace(old, '\t\tfmt.Fprintf(os.Stderr, "VZTRACE peer=%s received=%d frame=%x\\n", ip, n, buffer[:min(n, 96)])\n' + old)
+          old = '\t\tif written != len(reply) {'
+          s = s.replace(old, '\t\tfmt.Fprintf(os.Stderr, "VZTRACE peer=%s replied=%d frame=%x\\n", ip, written, reply[:min(len(reply), 96)])\n' + old)
+          p.write_text(s)
+          p = Path('source/network_device_integration_test.go')
+          s = p.read_text()
+          old = '\t\t\t\tt.Fatalf("ping %s: %v\\n%s", peer.ip, err, output)'
+          assert s.count(old) == 1
+          s = s.replace(old, '\t\t\t\tstate, stateErr := run("cat /sys/class/net/eth1/carrier; ip link show eth1; arp -n -i eth1; cat /sys/class/net/eth1/statistics/tx_packets /sys/class/net/eth1/statistics/rx_packets /sys/class/net/eth1/statistics/tx_dropped /sys/class/net/eth1/statistics/rx_dropped")\n\t\t\t\tt.Logf("VZTRACE failed peer=%s state=%q err=%v", peer.ip, state, stateErr)\n' + old)
+          p.write_text(s)
+          PYCODE
+          gofmt -w source/network_icmp_peer_test.go source/network_device_integration_test.go
+          git -C source diff --check
       - name: Repeat the new guest test twenty times
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          TRACE_NAME: ci306-fixed-network-${{ matrix.go }}
+          TRACE_NAME: ci306-reconnect-frame-trace-${{ matrix.go }}
           TRACE_SOURCE_DIR: ${{ github.workspace }}/source
           TRACE_PATTERN: '^TestRuntimeNetworkConnection$'
           TRACE_COUNT: '20'

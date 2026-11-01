@@ -1,0 +1,50 @@
+name: Capture reconnect failures with a reused VM
+on:
+  push:
+    branches: [codex/diagnose-ci306-intel]
+    paths: ['.github/workflows/diagnose-ci306-ping-reuse.yml']
+permissions:
+  contents: read
+  checks: write
+env:
+  GOTOOLCHAIN: local
+jobs:
+  capture:
+    name: reconnect reuse Intel Go 1.26
+    runs-on: macos-15-intel
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: 81e8c25a739497606bcecc2f3cc2cff0d96f72ff
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-go@v7.0.0
+        with:
+          go-version: '1.26.x'
+          check-latest: true
+          cache-dependency-path: source/go.sum
+      - run: make -C source download_kernel
+      - name: Instrument the fixture and repeat only reconnect
+        run: |
+          python3 .github/scripts/ping-ring-inject.py source
+          gofmt -w source/network_icmp_peer_test.go source/network_device_integration_test.go source/virtualization_test.go
+          python3 .github/scripts/ping-reuse-inject.py source
+          gofmt -w source/network_icmp_peer_test.go source/network_device_integration_test.go
+          git -C source diff --check
+      - name: Repeat reconnect on a single VM
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TRACE_NAME: ci306-reconnect-reused-vm
+          TRACE_SOURCE_DIR: ${{ github.workspace }}/source
+          TRACE_PATTERN: '^TestRuntimeNetworkConnection$'
+          TRACE_COUNT: '1'
+          VZ_TRACE_RECONNECT_COUNT: '60'
+          CI306_NO_BARRIERS: '1'
+          GOGC: '10'
+        run: |
+          sed -e 's/timeout=360/timeout=960/' -e 's/"5m"/"15m"/' .github/scripts/probe-ci306.py > "$RUNNER_TEMP/probe-ci306-ping-reuse.py"
+          python3 -u "$RUNNER_TEMP/probe-ci306-ping-reuse.py"

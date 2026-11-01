@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded encrypted ktrace windows for an isolated CI diagnostic."""
+"""Bounded encrypted DTrace windows for an isolated CI diagnostic."""
 import base64
 import ctypes
 import gzip
@@ -282,7 +282,7 @@ def main():
                 stderr_readers.append(reader)
             fbt_fd = producers['fbt'].stdout.fileno()
             profile_fd = producers['profile'].stdout.fileno()
-            collector = spawn([sys.executable, str(collector_script), '--output-dir', str(private), '--fbt-fd', str(fbt_fd), '--profile-fd', str(profile_fd), '--window-seconds', '3', '--duration-seconds', '145'], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, pass_fds=(fbt_fd, profile_fd), bufsize=0)
+            collector = spawn([sys.executable, str(collector_script), '--output-dir', str(private), '--fbt-fd', str(fbt_fd), '--profile-fd', str(profile_fd), '--window-seconds', '3', '--duration-seconds', '205'], stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, pass_fds=(fbt_fd, profile_fd), bufsize=0)
             collector_reader = threading.Thread(target=stderr_tails['collector'].drain, args=(collector.stderr,), daemon=True)
             collector_reader.start()
             stderr_readers.append(collector_reader)

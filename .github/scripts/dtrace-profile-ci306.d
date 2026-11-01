@@ -21,7 +21,7 @@ profile:::profile-10
 }
 
 profile:::tick-1s
-/timestamp - started >= 120000000000/
+/timestamp - started >= 180000000000/
 {
     exit(0);
 }

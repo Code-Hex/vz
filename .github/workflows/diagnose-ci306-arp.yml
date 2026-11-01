@@ -23,7 +23,7 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@v7.0.1
         with:
-          ref: 97efcbc8b611dd1e0d15beb65bf81376a4288c72
+          ref: 18c55f6f6505d530ea11b9de3137090404fac3e8
           path: source
           persist-credentials: false
       - uses: actions/setup-go@v7.0.0

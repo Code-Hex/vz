@@ -15,9 +15,14 @@ import urllib.request
 
 
 class Observations:
-    def __init__(self):
+    def __init__(self, started=None):
         self.lock = threading.Lock()
+        self.started = time.monotonic() if started is None else started
         self.last_test = "なし"
+        self.test_counts = collections.Counter()
+        self.test_total = 0
+        self.first_test_elapsed = None
+        self.last_result = "なし"
         self.lines = collections.deque(maxlen=12)
         self.checkpoint = "なし"
 
@@ -25,13 +30,20 @@ class Observations:
         match = re.match(r"^=== RUN\s+([^/\s]+)\s*$", line)
         with self.lock:
             if match:
-                self.last_test = match.group(1)[:160]
+                name = match.group(1)[:160]
+                self.test_counts[name] += 1
+                self.test_total += 1
+                if self.first_test_elapsed is None:
+                    self.first_test_elapsed = time.monotonic() - self.started
+                self.last_test = f"{name} #{self.test_counts[name]}"
+            if re.match(r"^(?:ok\s|FAIL(?:\s|$)|--- FAIL:)", line):
+                self.last_result = line.rstrip().encode("utf-8")[-500:].decode("utf-8", errors="ignore")
             if "VZTRACE" in line or re.match(r"^\s*(?:--- FAIL:|FAIL(?:\s|$)|panic:|fatal error:)", line):
                 self.lines.append(line.rstrip().encode("utf-8")[-500:].decode("utf-8", errors="ignore"))
 
     def snapshot(self):
         with self.lock:
-            return self.last_test, list(self.lines)
+            return self.last_test, list(self.lines), self.test_total, self.first_test_elapsed, self.last_result
 
     def set_checkpoint(self, request):
         with self.lock:
@@ -59,11 +71,16 @@ def watchdog(process, finished, timeout=360):
 
 
 def summary(observations, started, exit_code=None):
-    last_test, lines = observations.snapshot()
-    result = f"経過: {int(time.monotonic() - started)} 秒\n最後のトップレベルテスト: {last_test}\n{observations.get_checkpoint()}"
+    last_test, lines, total, first_elapsed, last_result = observations.snapshot()
+    first = "未観測" if first_elapsed is None else f"{first_elapsed:.1f} 秒"
+    result = (f"経過: {int(time.monotonic() - started)} 秒\n最初のテスト開始: {first}\n"
+              f"トップレベルテスト開始回数: {total}\n最後のトップレベルテスト: {last_test}\n"
+              f"最後の ok/FAIL 行: {last_result}")
+    if exit_code != 0:
+        result += f"\n{observations.get_checkpoint()}"
     if exit_code is not None:
         result += f"\n終了コード: {exit_code}"
-    if lines:
+    if lines and exit_code != 0:
         result += "\n直近の診断行:\n" + "\n".join(lines)
     encoded = result.encode("utf-8")
     if len(encoded) > 8192:
@@ -126,8 +143,8 @@ def main():
     repository = os.environ["GITHUB_REPOSITORY"]
     api = "https://api.github.com/repos/" + repository + "/check-runs"
     run_url = "https://github.com/" + repository + "/actions/runs/" + os.environ["GITHUB_RUN_ID"]
-    observations = Observations()
     started = time.monotonic()
+    observations = Observations(started)
     try:
         check = check_request("POST", api, token, {
             "name": os.environ["TRACE_NAME"],
@@ -141,7 +158,7 @@ def main():
         report_error("Check Run 作成失敗。テスト未開始", error)
         return 1
 
-    cwd = os.path.realpath(os.getcwd())
+    cwd = os.path.realpath(os.environ.get("TRACE_SOURCE_DIR") or os.getcwd())
     child_env = os.environ.copy()
     for key, value in list(child_env.items()):
         if key in ("GITHUB_TOKEN", "GH_TOKEN", "ACTIONS_RUNTIME_TOKEN") or value == token:
@@ -183,7 +200,7 @@ def main():
         killer = threading.Thread(target=watchdog, args=(process, finished), daemon=True)
         reader.start()
         killer.start()
-        last_snapshot = ("なし", [])
+        last_snapshot = None
         last_update = time.monotonic()
         acknowledged = 0
         while process.poll() is None:

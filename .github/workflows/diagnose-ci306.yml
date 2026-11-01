@@ -1,4 +1,4 @@
-name: Diagnose acknowledged network transitions
+name: Compare original shutdown ordering
 on:
   push:
     branches: [codex/diagnose-ci306-intel]
@@ -9,38 +9,47 @@ env:
   GOTOOLCHAIN: local
 jobs:
   reproduce:
-    name: Go retain=${{ matrix.retain }} close-first=${{ matrix.close }}
+    name: original source close-first=${{ matrix.close }}
     runs-on: macos-15-intel
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - retain: '0'
-            close: '0'
-          - retain: '1'
-            close: '0'
-          - retain: '0'
-            close: '1'
-          - retain: '1'
-            close: '1'
-    env:
-      CI306_RETAIN_NATIVE: ${{ matrix.retain }}
-      CI306_CLOSE_FIRST: ${{ matrix.close }}
-      CI306_NO_BARRIERS: '1'
-    timeout-minutes: 10
+        close: ['0', '1']
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          persist-credentials: false
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: 0f8b230847c7769663b8c2347f4f2c5f9940cc29
+          path: source
           persist-credentials: false
       - uses: actions/setup-go@v7.0.0
         with:
           go-version: '1.26.x'
           check-latest: true
-      - run: make download_kernel
-      - name: Acknowledge each network operation before executing it
+          cache-dependency-path: source/go.sum
+      - run: make -C source download_kernel
+      - name: Close SSH before VM shutdown
+        if: matrix.close == '1'
+        run: |
+          python3 - <<'PYCODE'
+          from pathlib import Path
+          p = Path('source/virtualization_test.go')
+          old = '\tdefer func() {\n\t\tlog.Println("shutdown done")\n\t\tc.Client.Close()\n\t}()'
+          new = '\tdefer log.Println("shutdown done")\n\tc.Client.Close()'
+          s = p.read_text()
+          assert s.count(old) == 1
+          p.write_text(s.replace(old, new))
+          PYCODE
+          git -C source diff --check
+      - name: Compare the original guest test
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          TRACE_NAME: ci306-go-retain-${{ matrix.retain }}-close-${{ matrix.close }}
+          TRACE_NAME: ci306-original-close-${{ matrix.close }}
+          TRACE_SOURCE_DIR: ${{ github.workspace }}/source
           TRACE_PATTERN: '^TestRuntimeNetworkConnection$'
-          TRACE_COUNT: '5'
+          TRACE_COUNT: '20'
+          CI306_NO_BARRIERS: '1'
         run: python3 .github/scripts/probe-ci306.py

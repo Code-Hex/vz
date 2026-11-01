@@ -4,6 +4,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import time
@@ -21,6 +22,26 @@ def get_check(url, token, env):
     result = subprocess.run(['/usr/bin/curl', '--config', '-', '--connect-timeout', '3', '--max-time', '6', url],
                             input=config, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=8, check=True)
     return json.loads(result.stdout)
+
+
+def verify_cleanup(directory, label, env, timeout=15):
+    if not re.fullmatch(r'org\.codex\.ci306\.[a-f0-9]{24}', label):
+        raise ValueError('invalid launchd label')
+    limited_env = dict(env)
+    limited_env['LC_ALL'] = 'C'
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        directory_status = subprocess.run(['/usr/bin/sudo', '-n', '/bin/test', '-e', directory], env=limited_env,
+                                          stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=5, check=False)
+        service = subprocess.run(['/usr/bin/sudo', '-n', '/bin/launchctl', 'print', 'system/' + label], env=limited_env,
+                                 stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=5, check=False)
+        if directory_status.returncode not in (0, 1) or (directory_status.returncode == 1 and directory_status.stderr):
+            raise RuntimeError('observer directory check failed')
+        service_missing = service.returncode != 0 and b'Could not find service' in service.stderr
+        if directory_status.returncode == 1 and service_missing:
+            return
+        time.sleep(0.25)
+    raise RuntimeError('observer directory or launchd service remains')
 
 
 def main():
@@ -72,6 +93,7 @@ def main():
             result = get_check(api, token, env)
             if result.get('status') == 'completed':
                 if result.get('conclusion') != 'success': raise RuntimeError('observer Check failed')
+                verify_cleanup(directory, label, env)
                 print(json.dumps({'status':'passed','parent_pid':1,'check_id':check_id,'alive_sequence':initial['sequence'],'gone_sequence':gone['sequence']}))
                 return
             time.sleep(1)

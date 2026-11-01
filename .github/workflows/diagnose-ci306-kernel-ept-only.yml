@@ -24,10 +24,10 @@ jobs:
           Path(os.environ['RUNNER_TEMP'], 'native.entitlements').write_text('<?xml version="1.0"?><plist version="1.0"><dict><key>com.apple.security.virtualization</key><true/></dict></plist>')
           PYCODE
           codesign --force --entitlements "$RUNNER_TEMP/native.entitlements" -s - "$RUNNER_TEMP/native-pair-control"
-      - name: Capture encrypted DTrace windows
+      - name: Capture encrypted DTrace windows with independent observer
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: python3 .github/scripts/kernel-fbt-stream.py
+        run: python3 .github/scripts/launchd-fbt-wrapper-ci306.py
       - name: Upload encrypted snapshots only
         if: always()
         uses: actions/upload-artifact@v7.0.2

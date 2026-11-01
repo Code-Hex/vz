@@ -62,8 +62,11 @@ def validate_config(data):
         raise ValueError('invalid monitored PIDs')
     if type(data.get('helper_pid')) is not int or data['helper_pid'] not in pids:
         raise ValueError('invalid helper PID')
-    if type(data.get('duration')) is not int or not 15 <= data['duration'] <= 180:
+    if type(data.get('duration')) is not int or not 15 <= data['duration'] <= 300:
         raise ValueError('invalid duration')
+    initial = data.get('initial_lstarts', {})
+    if not isinstance(initial, dict) or any(key not in {str(pid) for pid in pids} or not isinstance(value, str) or not 1 <= len(value) <= 128 for key, value in initial.items()):
+        raise ValueError('invalid initial process identities')
 
 
 def root_directory(value):
@@ -140,14 +143,19 @@ def daemon(directory):
         api = 'https://api.github.com/repos/' + data['repo'] + '/check-runs'
         clock = ParentClock()
         deadline = time.monotonic() + data['duration']
-        initial_lstart = None
+        initial_lstart = data.get('initial_lstarts', {}).get(str(data['helper_pid']))
         was_alive = False
         was_gone = False
         created = bootstrap.check_request('POST', api, {'name': CHECK_NAME, 'head_sha': data['sha'], 'status': 'in_progress', 'output': {'title': CHECK_NAME, 'summary': json.dumps({'phase':'initializing','run_id':data['run_id']})}}, token, root, env)
         check_id = int(created['id'])
         next_time = time.monotonic()
-        while time.monotonic() < deadline and not interrupted:
+        while time.monotonic() < deadline and not interrupted and not (root / 'finish').exists():
             record = make_snapshot(sequence, data['pids'], data['helper_pid'], clock)
+            initial_lstarts = data.get('initial_lstarts', {})
+            for item in record['targets']:
+                expected = initial_lstarts.get(str(item['pid']))
+                item['initial_lstart'] = expected
+                item['initial_identity_matches'] = None if expected is None else item['present'] and item.get('lstart') == expected
             helper = next(item for item in record['targets'] if item['pid'] == data['helper_pid'])
             if helper['present'] and initial_lstart is None:
                 initial_lstart = helper['lstart']
@@ -171,7 +179,7 @@ def daemon(directory):
             os.replace(temporary, root / 'status.json')
             sequence += 1
             next_time += 3
-            while time.monotonic() < min(next_time, deadline) and not interrupted:
+            while time.monotonic() < min(next_time, deadline) and not interrupted and not (root / 'finish').exists():
                 time.sleep(min(0.2, max(0, min(next_time, deadline) - time.monotonic())))
         completed = not interrupted and sequence > 0
     finally:
@@ -194,6 +202,15 @@ def status(directory):
     print((root / 'status.json').read_text())
 
 
+def finish(directory, label):
+    if not re.fullmatch(r'org\.codex\.ci306\.[a-f0-9]{24}', label): raise ValueError('invalid label')
+    root = root_directory(directory)
+    if plistlib.loads((root / 'observer.plist').read_bytes()).get('Label') != label:
+        raise ValueError('label does not belong to observer')
+    fd = os.open(root / 'finish', os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+    os.close(fd)
+
+
 def cleanup(directory, label):
     if not re.fullmatch(r'org\.codex\.ci306\.[a-f0-9]{24}', label): raise ValueError('invalid label')
     root = root_directory(directory)
@@ -211,6 +228,7 @@ if __name__ == '__main__':
         if sys.argv[1:] == ['--install']: install()
         elif len(sys.argv) == 3 and sys.argv[1] == '--daemon': daemon(sys.argv[2])
         elif len(sys.argv) == 3 and sys.argv[1] == '--status': status(sys.argv[2])
+        elif len(sys.argv) == 4 and sys.argv[1] == '--finish': finish(sys.argv[2], sys.argv[3])
         elif len(sys.argv) == 4 and sys.argv[1] == '--cleanup': cleanup(sys.argv[2], sys.argv[3])
         else: raise ValueError('invalid arguments')
     except Exception as exc:

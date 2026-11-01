@@ -1,0 +1,47 @@
+name: Compare the crypto update against main
+on:
+  push:
+    branches: [codex/diagnose-ci306-intel]
+    paths: ['.github/workflows/diagnose-ci306-crypto.yml']
+permissions:
+  contents: read
+  checks: write
+env:
+  GOTOOLCHAIN: local
+jobs:
+  reproduce:
+    name: crypto baseline=${{ matrix.source.name }}
+    runs-on: macos-15-intel
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        source:
+          - name: main-crypto053
+            ref: 659cec89b6f2c4b781caaa6be1fdee1311bd4847
+          - name: pr306-crypto058
+            ref: 0f8b230847c7769663b8c2347f4f2c5f9940cc29
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ matrix.source.ref }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-go@v7.0.0
+        with:
+          go-version: '1.26.x'
+          check-latest: true
+          cache-dependency-path: source/go.sum
+      - run: make -C source download_kernel
+      - name: Run the original network test five times
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TRACE_NAME: ci306-crypto-${{ matrix.source.name }}
+          TRACE_SOURCE_DIR: ${{ github.workspace }}/source
+          TRACE_PATTERN: '^TestRuntimeNetworkConnection$'
+          TRACE_COUNT: '5'
+          CI306_NO_BARRIERS: '1'
+        run: python3 -u .github/scripts/probe-ci306.py

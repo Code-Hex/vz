@@ -1,0 +1,79 @@
+name: Observe the original Go network test through external control
+on:
+  push:
+    branches: [codex/diagnose-ci306-intel]
+    paths: ['.github/workflows/diagnose-ci306-original-go-control.yml']
+permissions:
+  contents: read
+  checks: write
+env:
+  GOTOOLCHAIN: local
+jobs:
+  observe:
+    runs-on: macos-15-intel
+    timeout-minutes: 15
+    steps:
+      - name: Check out the diagnostic control
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Go 1.26
+        uses: actions/setup-go@v7.0.0
+        with:
+          go-version: '1.26.x'
+          check-latest: true
+          cache: false
+      - name: Check out the original test source
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: 0f8b230847c7769663b8c2347f4f2c5f9940cc29
+          path: original-source
+          persist-credentials: false
+      - name: Build the unchanged original network test
+        working-directory: original-source
+        run: |
+          test "$(git rev-parse HEAD)" = 0f8b230847c7769663b8c2347f4f2c5f9940cc29
+          go version
+          make download_kernel
+          go test -c -o "$RUNNER_TEMP/original-network.test" .
+      - name: Sign the binary and prepare the fixed command
+        run: |
+          python3 - <<'PYCODE'
+          import os
+          from pathlib import Path
+          import shlex
+          import shutil
+          temp = Path(os.environ['RUNNER_TEMP']).resolve(strict=True)
+          source = (Path(os.environ['GITHUB_WORKSPACE']) / 'original-source').resolve(strict=True)
+          binary = (temp / 'original-network.test').resolve(strict=True)
+          (temp / 'original-network.entitlements').write_text('<?xml version="1.0"?><plist version="1.0"><dict><key>com.apple.security.virtualization</key><true/></dict></plist>')
+          command = temp / 'native-pair-control'
+          command.write_text('\n'.join([
+              '#!/bin/sh',
+              'set -eu',
+              'cd ' + shlex.quote(str(source)),
+              'export GOGC=10',
+              'exec ' + shlex.join([str(binary), '-test.v', '-test.run=^TestRuntimeNetworkConnection$', '-test.count=10', '-test.timeout=5m']),
+              '',
+          ]))
+          command.chmod(0o700)
+          for name in ('Image', 'initramfs.cpio.gz'):
+              shutil.copyfile(source / 'testdata' / name, Path('testdata') / name)
+          PYCODE
+          codesign --force --entitlements "$RUNNER_TEMP/original-network.entitlements" -s - "$RUNNER_TEMP/original-network.test"
+          codesign --verify "$RUNNER_TEMP/original-network.test"
+          shasum -a 256 original-source/testdata/Image original-source/testdata/initramfs.cpio.gz "$RUNNER_TEMP/original-network.test"
+      - name: Prepare the temporary authenticated transport
+        run: |
+          curl --fail --location --output "$RUNNER_TEMP/cloudflared.tgz" https://github.com/cloudflare/cloudflared/releases/download/2026.10.7/cloudflared-darwin-amd64.tgz
+          python3 - <<'PYCODE'
+          import hashlib, os
+          from pathlib import Path
+          p = Path(os.environ['RUNNER_TEMP'], 'cloudflared.tgz')
+          assert hashlib.sha256(p.read_bytes()).hexdigest() == '02f3edfd87684dd5b705607688e4eb4b323f6e777b81e7b3a85af556aa356848'
+          PYCODE
+          tar -xzf "$RUNNER_TEMP/cloudflared.tgz" -C "$RUNNER_TEMP" cloudflared
+      - name: Wait for external observation commands
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/external-bootstrap.py

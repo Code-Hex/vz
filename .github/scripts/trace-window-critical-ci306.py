@@ -56,7 +56,7 @@ class Window:
                 self.event_counts[key] = self.event_counts.get(key, 0) + 1
             else:
                 self.count_overflow += 1
-            if (normalized & 0xffff0000) in (0x01700000, 0x01900000, 0x01a10000):
+            if (normalized & 0xffff0000) in (0x01700000, 0x01900000, 0x01a10000) or normalized == 0x07020008:
                 if key in self.rare_counts or len(self.rare_counts) < 256:
                     self.rare_counts[key] = self.rare_counts.get(key, 0) + 1
                 else:

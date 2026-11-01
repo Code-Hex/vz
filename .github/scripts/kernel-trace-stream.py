@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Bounded encrypted ktrace windows for an isolated CI diagnostic."""
 import base64
+import ctypes
 import gzip
 import hmac
 import importlib.util
@@ -21,6 +22,24 @@ MAX_SUMMARY = 64000
 OUTPUT_LIMIT = 65536
 class SnapshotTooLarge(Exception):
     pass
+
+
+class ParentClock:
+    def __init__(self):
+        self.lib = ctypes.CDLL('/usr/lib/libSystem.B.dylib')
+        self.lib.mach_absolute_time.argtypes = []
+        self.lib.mach_absolute_time.restype = ctypes.c_uint64
+        class Timebase(ctypes.Structure):
+            _fields_ = [('numer', ctypes.c_uint32), ('denom', ctypes.c_uint32)]
+        self.lib.mach_timebase_info.argtypes = [ctypes.POINTER(Timebase)]
+        self.lib.mach_timebase_info.restype = ctypes.c_int
+        info = Timebase()
+        if self.lib.mach_timebase_info(ctypes.byref(info)) != 0 or not info.numer or not info.denom:
+            raise RuntimeError('mach timebase unavailable')
+        self.timebase = {'numer': info.numer, 'denom': info.denom}
+    def read(self):
+        return {'mach_absolute_ticks': self.lib.mach_absolute_time(), 'wall_ns': time.time_ns(),
+                'mach_timebase': self.timebase}
 
 def helpers():
     p = Path(__file__).resolve().parent / 'external-bootstrap-observed.py'
@@ -96,6 +115,8 @@ def fit_record(record):
     record['transport_dropped_lines'] = 0
     record['transport_dropped_bytes'] = 0
     record['transport_dropped_native_bytes'] = 0
+    record['stderr'] = {name: dict(value) for name, value in record.get('stderr', {}).items()}
+    record['transport_dropped_stderr_bytes'] = {name: 0 for name in record['stderr']}
     while len(gzip.compress(json.dumps(record, separators=(',', ':'), ensure_ascii=True).encode(), mtime=0)) > 44000:
         lines = record['window']['raw_lines']
         if lines:
@@ -109,6 +130,12 @@ def fit_record(record):
             cut = max(1, len(tail) // 2)
             record['transport_dropped_native_bytes'] += len(tail[:cut].encode('utf-8'))
             record['native_output']['tail'] = tail[cut:]
+        elif any(value['tail'] for value in record['stderr'].values()):
+            name = max(record['stderr'], key=lambda n: len(record['stderr'][n]['tail']))
+            tail = record['stderr'][name]['tail']
+            cut = max(1, len(tail) // 2)
+            record['transport_dropped_stderr_bytes'][name] += len(tail[:cut].encode('utf-8'))
+            record['stderr'][name]['tail'] = tail[cut:]
         else:
             raise SnapshotTooLarge('metadata exceeds compressed budget')
     return record
@@ -136,6 +163,9 @@ def main():
     groups = {}
     child = producer = collector = None
     tail = Tail()
+    stderr_tails = {'producer': Tail(), 'collector': Tail()}
+    stderr_readers = []
+    clock = ParentClock()
     last = None
     next_window = 0
     missing_windows = []
@@ -155,7 +185,7 @@ def main():
         code = proc.poll()
         return {'status': 'running' if code is None else 'exited', 'returncode': code}
     def public_state():
-        return {'native': state(child), 'producer': state(producer), 'collector': state(collector), 'native_output_bytes': tail.read()['total_bytes']}
+        return {'native': state(child), 'producer': state(producer), 'collector': state(collector), 'native_output_bytes': tail.read()['total_bytes'], 'pending_window_sequences': [int(p.name[7:13]) for p in sorted(private.glob('window-*.json.gz'))]}
     def publish(phase, conclusion=None):
         body = {'phase': phase, 'run_id': run, **public_state(), 'error': failure, 'snapshot': last}
         summary = json.dumps(body, separators=(',', ':'), ensure_ascii=True)
@@ -168,20 +198,24 @@ def main():
     def send_window(path, baseline=False):
         nonlocal last, next_window
         window = json.loads(gzip.decompress(path.read_bytes()))
+        window_loaded = clock.read()
         if window['sequence'] != next_window:
             raise ValueError('unexpected window sequence')
         if baseline and (window['stop_reason'] != 'window' or window['input_bytes'] == 0):
             raise RuntimeError('baseline did not complete with trace data')
         record = {'type': 'ktrace-window-v1', 'window': window, 'native_output': tail.read(),
-                  'transport_missing_window_sequences': list(missing_windows), **public_state()}
+                  'transport_missing_window_sequences': list(missing_windows),
+                  'stderr': {name: value.read() for name, value in stderr_tails.items()}, **public_state()}
         if baseline:
-            classes = {0x01ac0000, 0x01400000, 0x01050000, 0x01090000, 0x01800000, 0x01a10000, 0x01700000, 0x01900000}
+            classes = {0x01ac0000, 0x01090000, 0x01a10000, 0x01700000, 0x01900000}
             with open('/usr/share/misc/trace.codes', encoding='utf-8') as source:
                 lines = source.readlines()
             record['trace_codes'] = [line.rstrip('\n') for line in lines
                 if (match := re.match(r'^\s*(0x[0-9a-fA-F]+)\b', line)) and (int(match.group(1), 16) & 0xffff0000) in classes]
             if not record['trace_codes']:
                 raise ValueError('no trace code metadata')
+        record['parent_window_loaded'] = window_loaded
+        record['parent_send_preparation'] = clock.read()
         record = fit_record(record)
         envelope = encrypt_record(record, public, env)
         candidate = {'sequence': next_window, **envelope}
@@ -215,6 +249,7 @@ def main():
                     break
             send_window(path, baseline=baseline and sent == 0)
             sent += 1
+            break
         return sent
     def terminate(_signum, _frame):
         stop.set()
@@ -227,9 +262,15 @@ def main():
     try:
         created = bootstrap.check_request('POST', api, {'name': NAME, 'head_sha': sha, 'status': 'in_progress', 'output': {'title': NAME, 'summary': json.dumps({'phase': 'initializing', 'run_id': run})}}, token, temp, env)
         check_id = int(created['id'])
-        producer = spawn(['/usr/bin/sudo','-n','/usr/bin/ktrace','trace','-N','-t','-f','S0x01ac,S0x0140,S0x0105,S0x0109,S0x0180,S0x01a1,S0x0170,S0x0190','-b','16','-T','180s','--ndjson'], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        producer = spawn(['/usr/bin/sudo','-n','/usr/bin/ktrace','trace','-N','-t','-f','S0x01ac,S0x0170,S0x0190,S0x01a1,S0x0109','-b','16','-T','180s','--ndjson'], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
+        producer_reader = threading.Thread(target=stderr_tails['producer'].drain, args=(producer.stderr,), daemon=True)
+        producer_reader.start()
+        stderr_readers.append(producer_reader)
         try:
-            collector = spawn([sys.executable, str(collector_script), '--output-dir', str(private), '--window-seconds', '5', '--duration-seconds', '200', '--retained-bytes', '196608'], stdin=producer.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            collector = spawn([sys.executable, str(collector_script), '--output-dir', str(private), '--window-seconds', '1', '--duration-seconds', '200', '--retained-bytes', '196608'], stdin=producer.stdout, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, bufsize=0)
+            collector_reader = threading.Thread(target=stderr_tails['collector'].drain, args=(collector.stderr,), daemon=True)
+            collector_reader.start()
+            stderr_readers.append(collector_reader)
         finally:
             producer.stdout.close()
         publish('baseline_collecting')
@@ -249,7 +290,7 @@ def main():
             drain_windows()
             if producer.poll() is not None or collector.poll() is not None:
                 raise RuntimeError('trace pipeline stopped during native execution')
-            stop.wait(min(2, max(0, deadline - time.monotonic())))
+            stop.wait(min(0.2, max(0, deadline - time.monotonic())))
         if child.poll() is None:
             raise TimeoutError('native deadline')
         code = child.wait()
@@ -266,7 +307,12 @@ def main():
         if collector.returncode != 0:
             raise RuntimeError('collector failed')
         groups.pop(collector.pid, None)
-        drain_windows()
+        for stderr_reader in stderr_readers:
+            stderr_reader.join(timeout=2)
+        while time.monotonic() < deadline and drain_windows():
+            pass
+        if list(private.glob('window-*.json.gz')):
+            raise TimeoutError('deadline with unsent trace windows')
         publish('finished', 'success' if code == 0 else 'failure')
         completed = True
         return 0 if code == 0 else 1
@@ -281,6 +327,8 @@ def main():
                 proc.wait(timeout=5)
             except (OSError, subprocess.TimeoutExpired):
                 pass
+        for stderr_reader in stderr_readers:
+            stderr_reader.join(timeout=2)
         if check_id is not None and not completed:
             try: publish('failed', 'failure')
             except Exception: pass

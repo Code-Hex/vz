@@ -12,7 +12,7 @@ jobs:
   capture:
     name: reconnect ring Intel Go 1.26
     runs-on: macos-15-intel
-    timeout-minutes: 8
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -39,7 +39,9 @@ jobs:
           TRACE_NAME: ci306-reconnect-memory-ring
           TRACE_SOURCE_DIR: ${{ github.workspace }}/source
           TRACE_PATTERN: '^TestRuntimeNetworkConnection$'
-          TRACE_COUNT: '20'
+          TRACE_COUNT: '60'
           CI306_NO_BARRIERS: '1'
           GOGC: '10'
-        run: python3 -u .github/scripts/probe-ci306.py
+        run: |
+          sed -e 's/timeout=360/timeout=960/' -e 's/"5m"/"15m"/' .github/scripts/probe-ci306.py > "$RUNNER_TEMP/probe-ci306-ping60.py"
+          python3 -u "$RUNNER_TEMP/probe-ci306-ping60.py"

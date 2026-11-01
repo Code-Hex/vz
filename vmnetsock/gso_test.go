@@ -163,7 +163,7 @@ func TestVirtioTCPGSOInvalidMetadata(t *testing.T) {
 	}{
 		{"zero segment size", func(p []byte) { clear(p[4:6]) }},
 		{"missing checksum flag", func(p []byte) { p[0] = 0 }},
-		{"RSC duplicate ACKs", func(p []byte) { p[0] = 5 }},
+		{"RSC duplicate ACKs", func(p []byte) { p[0] = virtioRSCInfo | virtioNeedsChecksum }},
 		{"wrong IP version", func(p []byte) { p[1] = 4 }},
 		{"wrong checksum start", func(p []byte) { p[6]++ }},
 		{"wrong checksum offset", func(p []byte) { p[8]++ }},

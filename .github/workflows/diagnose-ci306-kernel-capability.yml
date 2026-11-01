@@ -1,0 +1,77 @@
+name: Verify Intel kernel stack collection
+on:
+  push:
+    branches: [codex/diagnose-ci306-intel]
+    paths: ['.github/workflows/diagnose-ci306-kernel-capability.yml']
+permissions:
+  contents: read
+jobs:
+  capture:
+    runs-on: macos-15-intel
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Collect bounded kernel diagnostics without starting a VM
+        run: |
+          python3 - <<'PYCODE'
+          import hashlib, json, os, secrets, signal, subprocess, tarfile, time
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP']) / 'kernel-capability'
+          raw = root / 'raw'
+          raw.mkdir(parents=True, mode=0o700)
+          commands = [
+              ('identity', ['/usr/bin/id']),
+              ('os', ['/usr/bin/sw_vers']),
+              ('sudo', ['/usr/bin/sudo', '-n', '/usr/bin/id']),
+              ('sip', ['/usr/bin/csrutil', 'status']),
+              ('boot', ['/usr/sbin/sysctl', 'kern.bootargs', 'kern.hv_support', 'kern.hv_vmm_present']),
+              ('entitlements', ['/usr/bin/codesign', '-d', '--entitlements', ':-', '/usr/sbin/spindump']),
+              ('spindump-help', ['/usr/sbin/spindump', '-h']),
+              ('spindump', ['/usr/bin/sudo', '-n', '/usr/sbin/spindump', '-noTarget', '1', '100', '-noSymbolicate', '-noBinary', '-o', str(raw / 'kernel-stack.txt')]),
+              ('kernel-log', ['/usr/bin/sudo', '-n', '/usr/bin/log', 'show', '--last', '20s', '--style', 'compact', '--predicate', 'process == "kernel"']),
+              ('console', ['/bin/ls', '-l', '/dev/console', '/Library/Logs/DiagnosticReports']),
+              ('ktrace-help', ['/usr/bin/sudo', '-n', '/usr/bin/ktrace', '-h']),
+          ]
+          results = []
+          for name, argv in commands:
+              began = time.monotonic()
+              with (raw / (name + '.log')).open('wb') as output:
+                  child = subprocess.Popen(argv, stdout=output, stderr=subprocess.STDOUT, start_new_session=True)
+                  try:
+                      code = child.wait(timeout=45)
+                      status = 'exited'
+                  except subprocess.TimeoutExpired:
+                      subprocess.run(['/usr/bin/sudo', '-n', '/bin/kill', '-KILL', '--', '-' + str(child.pid)], timeout=5, check=False)
+                      code = child.wait(timeout=5)
+                      status = 'timed_out'
+              results.append({'name': name, 'status': status, 'returncode': code, 'seconds': round(time.monotonic() - began, 3)})
+          stack = raw / 'kernel-stack.txt'
+          content = stack.read_bytes() if stack.exists() else b''
+          summary = {'results': results, 'stack_bytes': len(content),
+                     'kernel_task': b'kernel_task' in content,
+                     'kernel_image': b'/System/Library/Kernels/kernel' in content,
+                     'kernel_frame_marker': b'(kernel' in content}
+          (raw / 'summary.json').write_text(json.dumps(summary, indent=2))
+          print(json.dumps(summary))
+          archive = root / 'raw.tar.gz'
+          with tarfile.open(archive, 'w:gz') as out:
+              out.add(raw, arcname='raw')
+          password = root / 'password'
+          password.write_text(secrets.token_hex(32))
+          password.chmod(0o600)
+          subprocess.run(['/usr/bin/openssl', 'enc', '-aes-256-cbc', '-pbkdf2', '-iter', '100000', '-salt', '-in', str(archive), '-out', str(root / 'capture.enc'), '-pass', 'file:' + str(password)], check=True)
+          subprocess.run(['/usr/bin/openssl', 'pkeyutl', '-encrypt', '-pubin', '-inkey', '.github/scripts/observer-public.pem', '-pkeyopt', 'rsa_padding_mode:oaep', '-in', str(password), '-out', str(root / 'password.enc')], check=True)
+          password.unlink()
+          print('encrypted_capture_sha256=' + hashlib.sha256((root / 'capture.enc').read_bytes()).hexdigest())
+          PYCODE
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: ci306-kernel-capability-encrypted
+          retention-days: 7
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/kernel-capability/capture.enc
+            ${{ runner.temp }}/kernel-capability/password.enc

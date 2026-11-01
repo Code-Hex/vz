@@ -1,0 +1,40 @@
+name: Observe native execution through an external control path
+on:
+  push:
+    branches: [codex/diagnose-ci306-intel]
+    paths: ['.github/workflows/diagnose-ci306-external.yml']
+permissions:
+  contents: read
+  checks: write
+jobs:
+  observe:
+    runs-on: macos-15-intel
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - run: make download_kernel
+      - name: Build the unchanged native no-socket reproduction
+        run: |
+          xcrun clang -fno-objc-arc -fblocks -Wall -Wextra -Werror -mmacosx-version-min=12.0 -framework Foundation -framework Virtualization .github/scripts/native-pair-no-connect-ci306.m -o "$RUNNER_TEMP/native-pair-control"
+          python3 - <<'PYCODE'
+          import os
+          from pathlib import Path
+          Path(os.environ['RUNNER_TEMP'], 'native.entitlements').write_text('<?xml version="1.0"?><plist version="1.0"><dict><key>com.apple.security.virtualization</key><true/></dict></plist>')
+          PYCODE
+          codesign --force --entitlements "$RUNNER_TEMP/native.entitlements" -s - "$RUNNER_TEMP/native-pair-control"
+      - name: Prepare the temporary authenticated transport
+        run: |
+          curl --fail --location --output "$RUNNER_TEMP/cloudflared.tgz" https://github.com/cloudflare/cloudflared/releases/download/2026.10.7/cloudflared-darwin-amd64.tgz
+          python3 - <<'PYCODE'
+          import hashlib, os
+          from pathlib import Path
+          p = Path(os.environ['RUNNER_TEMP'], 'cloudflared.tgz')
+          assert hashlib.sha256(p.read_bytes()).hexdigest() == '02f3edfd87684dd5b705607688e4eb4b323f6e777b81e7b3a85af556aa356848'
+          PYCODE
+          tar -xzf "$RUNNER_TEMP/cloudflared.tgz" -C "$RUNNER_TEMP" cloudflared
+      - name: Wait for external observation commands
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/external-bootstrap.py

@@ -94,7 +94,7 @@ func TestVirtioTCPGSO(t *testing.T) {
 			var sizes []int
 			var joined []byte
 			batches := 0
-			err := state.forwardTCPPackets([][]byte{packet}, buffers, false, func(frames [][]byte) error {
+			err := state.forwardVirtioPackets([][]byte{packet}, buffers, false, func(frames [][]byte) error {
 				batches++
 				if len(frames) > 2 {
 					t.Fatal("output exceeded the available batch buffers")
@@ -168,7 +168,7 @@ func TestVirtioTCPGSOInvalidMetadata(t *testing.T) {
 		{"wrong checksum start", func(p []byte) { p[6]++ }},
 		{"wrong checksum offset", func(p []byte) { p[8]++ }},
 		{"UFO", func(p []byte) { p[1] = 3 }},
-		{"UDP L4", func(p []byte) { p[1] = 5 }},
+		{"UDP L4 with TCP payload", func(p []byte) { p[1] = virtioGSOUDPL4 }},
 		{"ECN alone", func(p []byte) { p[1] = 0x80 }},
 		{"unknown GSO", func(p []byte) { p[1] = 0x41 }},
 	} {
@@ -177,7 +177,7 @@ func TestVirtioTCPGSOInvalidMetadata(t *testing.T) {
 			packet := gsoTestPacket(false, false, 701, 250)
 			test.edit(packet)
 			written := 0
-			err := state.forwardTCPPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func(frames [][]byte) error {
+			err := state.forwardVirtioPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func(frames [][]byte) error {
 				written += len(frames)
 				return nil
 			})
@@ -189,7 +189,7 @@ func TestVirtioTCPGSOInvalidMetadata(t *testing.T) {
 	state := gsoTestState(t, false, 1460)
 	valid := gsoTestPacket(false, false, 701, 250)
 	for _, packet := range [][]byte{nil, valid[:1], valid[:25], valid[:26], gsoTestPacket(false, false, 0, 250)} {
-		if err := state.forwardTCPPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func([][]byte) error {
+		if err := state.forwardVirtioPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func([][]byte) error {
 			t.Fatal("short or empty GSO emitted data")
 			return nil
 		}); err == nil {
@@ -199,7 +199,7 @@ func TestVirtioTCPGSOInvalidMetadata(t *testing.T) {
 	state = &adapterState{
 		tcp: newTCPSegmentation(1500),
 	}
-	if err := state.forwardTCPPackets([][]byte{gsoTestPacket(false, false, 701, 250)}, [][]byte{make([]byte, 1514)}, false, func([][]byte) error {
+	if err := state.forwardVirtioPackets([][]byte{gsoTestPacket(false, false, 701, 250)}, [][]byte{make([]byte, 1514)}, false, func([][]byte) error {
 		t.Fatal("unobserved connection emitted data")
 		return nil
 	}); err == nil {
@@ -211,7 +211,7 @@ func TestVirtioTCPGSOWriteError(t *testing.T) {
 	state := gsoTestState(t, false, 1460)
 	want := errors.New("peer closed")
 	calls := 0
-	err := state.forwardTCPPackets([][]byte{gsoTestPacket(false, false, 2101, 60)}, [][]byte{make([]byte, 1514), make([]byte, 1514)}, false, func([][]byte) error {
+	err := state.forwardVirtioPackets([][]byte{gsoTestPacket(false, false, 2101, 60)}, [][]byte{make([]byte, 1514), make([]byte, 1514)}, false, func([][]byte) error {
 		calls++
 		return want
 	})
@@ -238,7 +238,7 @@ func TestVirtioTCPGSOFrameLength(t *testing.T) {
 			length := binary.BigEndian.Uint16(packet[lengthOffset:])
 			binary.BigEndian.PutUint16(packet[lengthOffset:], length-64)
 			written := 0
-			err := state.forwardTCPPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func(frames [][]byte) error {
+			err := state.forwardVirtioPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func(frames [][]byte) error {
 				written += len(frames)
 				return nil
 			})
@@ -258,7 +258,7 @@ func TestVirtioTCPGSOFrameLength(t *testing.T) {
 	binary.LittleEndian.PutUint16(packet[6:], 34)
 	binary.LittleEndian.PutUint16(packet[8:], 16)
 	written := 0
-	err := state.forwardTCPPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func(frames [][]byte) error {
+	err := state.forwardVirtioPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func(frames [][]byte) error {
 		for _, frame := range frames {
 			written++
 			if len(frame) != 55 || frame[54] != 20 || wireSum(frame[14:34]) != 65535 {

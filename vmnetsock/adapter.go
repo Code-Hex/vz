@@ -52,7 +52,13 @@ const (
 // With TSO enabled, the adapter tracks TCP handshakes and splits complete-checksum
 // TCP frames using the peer's MSS and the interface MTU. It also converts standard
 // Virtio TCPv4 and TCPv6 GSO, including ECN, using gso_size as a payload limit.
-// GSO conversion requires TSO on iface. UDP GSO is not supported.
+// Virtio UDP_L4 GSO is split into complete UDP datagrams at gso_size boundaries,
+// with a shorter final datagram when needed. It requires no TCP handshake.
+// GSO conversion requires TSO on iface for the aggregate input and output buffers.
+// Aggregate input is bounded by iface.MaxPacketSize(); each output must fit MTU.
+// UDP gso_size plus IP and UDP headers must fit MTU.
+// UDP supports fixed IPv4/IPv6 headers without fragments, extensions, or VLANs.
+// Legacy UFO (IP fragmentation), UDP RSC, and UDP ECN GSO modifiers are unsupported.
 // TCP RSC normalization also requires TSO. It splits checksum-validated packets
 // and recalculates their checksums, including when vmnet supplies no GSO size.
 // RSC metadata that reports duplicate ACKs is not supported.
@@ -72,7 +78,7 @@ func WithVirtioHeaderConversion() Option {
 	}
 }
 
-// WithPeerVirtioHeaderNormalization completes partial checksums and splits TCP
+// WithPeerVirtioHeaderNormalization completes partial checksums and splits TCP/UDP
 // GSO received from the socket peer before sending packets to iface. Both ends
 // exchange 12-byte little-endian Virtio network headers. Start iface with
 // vmnet.WithInterfaceVirtioHeader(true). Normalized packets have zeroed headers.
@@ -82,9 +88,13 @@ func WithVirtioHeaderConversion() Option {
 // from the socket peer require TSO and a supported TCP packet. Close returns
 // the forwarding error for unsupported RSC metadata, including duplicate ACKs.
 //
-// Checksum completion works without TSO. TCPv4 and TCPv6 GSO, including ECN,
-// require TSO on iface. Output is limited by gso_size, the interface MTU, and
-// the iface-side receiver's advertised MSS. UDP GSO is not supported.
+// Checksum completion works without TSO. GSO requires TSO on iface for the
+// aggregate input and output buffers. TCPv4 and TCPv6 GSO support ECN, with output
+// limited by gso_size, the interface MTU, and the iface-side receiver's advertised
+// MSS. UDP_L4 GSO preserves gso_size datagram boundaries without a handshake.
+// UDP gso_size plus IP and UDP headers must fit MTU. Aggregate input is bounded by
+// iface.MaxPacketSize(). UDP has the packet layout and metadata restrictions of
+// [WithVirtioHeaderConversion], including no legacy UFO support.
 // TCP RSC uses the same MTU and MSS limits and recalculates checksums from the
 // packet instead of interpreting its coalescing counters as checksum offsets.
 //
@@ -353,7 +363,7 @@ func (s *adapterState) forwardToPeer(ctx context.Context, iface *vmnet.Interface
 			continue
 		}
 		if config.mode == packetEthernet && s.tcp != nil {
-			if err := s.forwardTCPPackets(packets, peerFrames, false, writePackets); err != nil {
+			if err := s.forwardVirtioPackets(packets, peerFrames, false, writePackets); err != nil {
 				return err
 			}
 			continue
@@ -392,7 +402,7 @@ func (s *adapterState) normalizePeerPackets(packets, output [][]byte, writePacke
 		}
 	}
 	if s.tcp != nil {
-		return s.forwardTCPPackets(packets, output, true, writePackets)
+		return s.forwardVirtioPackets(packets, output, true, writePackets)
 	}
 	for _, packet := range packets {
 		if _, err := virtioEthernetPacket(packet); err != nil {
@@ -415,9 +425,9 @@ func (s *adapterState) forwardObservedPackets(packets [][]byte, writePackets fun
 	return writePackets(packets)
 }
 
-// forwardTCPPackets copies each borrowed segment before its scratch buffer is reused.
-// Flush full batches so a large frame with a small MSS does not grow the batch.
-func (s *adapterState) forwardTCPPackets(packets, peerFrames [][]byte, virtioOutput bool, writePackets func([][]byte) error) error {
+// forwardVirtioPackets copies each borrowed segment before its scratch buffer is reused.
+// Flush full batches so a large GSO frame does not grow the batch.
+func (s *adapterState) forwardVirtioPackets(packets, peerFrames [][]byte, virtioOutput bool, writePackets func([][]byte) error) error {
 	prefix := 0
 	if virtioOutput {
 		prefix = virtioHeaderSize
@@ -442,6 +452,12 @@ func (s *adapterState) forwardTCPPackets(packets, peerFrames [][]byte, virtioOut
 		return nil
 	}
 	for _, frame := range packets {
+		if len(frame) >= 2 && frame[1]&^virtioGSOECN == virtioGSOUDPL4 {
+			if err := forwardVirtioUDPGSO(frame, s.tcp.mtu, emit); err != nil {
+				return err
+			}
+			continue
+		}
 		if err := s.tcp.forwardVirtio(frame, time.Now(), emit); err != nil {
 			return err
 		}

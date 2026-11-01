@@ -107,7 +107,7 @@ func TestVirtioTCPRSCRejectsUnsupportedMetadata(t *testing.T) {
 			state := gsoTestState(t, false, 1460)
 			packet := rscTestPacket(false, 0, 37, 0)
 			test.edit(packet)
-			err := state.forwardTCPPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func([][]byte) error {
+			err := state.forwardVirtioPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func([][]byte) error {
 				t.Fatal("unsupported RSC metadata emitted a packet")
 				return nil
 			})
@@ -123,7 +123,7 @@ func TestVirtioTCPRSCAcknowledgmentAndErrors(t *testing.T) {
 	packet := rscTestPacket(false, 0, 0, 0)
 	packet[virtioHeaderSize+ethernetHeaderSize+ipv4HeaderSize+tcpFlagsOffset] = 0x10
 	calls := 0
-	if err := state.forwardTCPPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func(frames [][]byte) error {
+	if err := state.forwardVirtioPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func(frames [][]byte) error {
 		calls++
 		if len(frames) != 1 || len(frames[0]) != 66 {
 			t.Fatalf("ACK-only RSC output = %d frames", len(frames))
@@ -140,7 +140,7 @@ func TestVirtioTCPRSCAcknowledgmentAndErrors(t *testing.T) {
 	}
 	packet = rscTestPacket(false, 0, 3001, 0)
 	state = &adapterState{tcp: newTCPSegmentation(1500)}
-	if err := state.forwardTCPPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func([][]byte) error {
+	if err := state.forwardVirtioPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func([][]byte) error {
 		t.Fatal("unknown connection emitted RSC data")
 		return nil
 	}); err == nil {
@@ -149,7 +149,7 @@ func TestVirtioTCPRSCAcknowledgmentAndErrors(t *testing.T) {
 	state = gsoTestState(t, false, 1460)
 	want := errors.New("receiver closed")
 	calls = 0
-	err := state.forwardTCPPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func([][]byte) error {
+	err := state.forwardVirtioPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func([][]byte) error {
 		calls++
 		return want
 	})
@@ -165,7 +165,7 @@ func TestVirtioRSCNonTCPIsUnchanged(t *testing.T) {
 	binary.LittleEndian.PutUint16(packet[virtioRSCSegmentsOffset:], 65535)
 	want := bytes.Clone(packet[virtioHeaderSize:])
 	calls := 0
-	if err := state.forwardTCPPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func(frames [][]byte) error {
+	if err := state.forwardVirtioPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func(frames [][]byte) error {
 		calls++
 		if len(frames) != 1 || !bytes.Equal(frames[0], want) {
 			t.Fatal("non-TCP RSC Ethernet bytes changed")

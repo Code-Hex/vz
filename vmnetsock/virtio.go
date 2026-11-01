@@ -16,10 +16,15 @@ const (
 	virtioRSCInfo       byte = 4
 	virtioGSOTCPv4      byte = 1
 	virtioGSOTCPv6      byte = 4
+	virtioGSOUDPL4      byte = 5
 	virtioGSOECN        byte = 0x80
 )
 
 const (
+	virtioGSOSizeOffset       = 4
+	virtioChecksumStartOffset = 6
+	virtioChecksumFieldOffset = 8
+
 	virtioRSCSegmentsOffset      = 6
 	virtioRSCDuplicateACKsOffset = 8
 )
@@ -44,8 +49,8 @@ func virtioEthernetPacket(packet []byte) ([]byte, error) {
 	if flags&virtioRSCInfo != 0 {
 		return nil, fmt.Errorf("cannot complete virtio checksum with RSC metadata")
 	}
-	start := int(binary.LittleEndian.Uint16(packet[6:8]))
-	offset := int(binary.LittleEndian.Uint16(packet[8:10]))
+	start := int(binary.LittleEndian.Uint16(packet[virtioChecksumStartOffset:]))
+	offset := int(binary.LittleEndian.Uint16(packet[virtioChecksumFieldOffset:]))
 	if start+offset+2 > len(frame) {
 		return nil, fmt.Errorf("virtio checksum field lies outside the Ethernet frame")
 	}
@@ -71,6 +76,34 @@ func virtioEthernetPacket(packet []byte) ([]byte, error) {
 	}
 	binary.BigEndian.PutUint16(frame[start+offset:], checksum)
 	return frame, nil
+}
+
+func forwardVirtioUDPGSO(packet []byte, mtu int, emit func([]byte) error) error {
+	if len(packet) < virtioHeaderSize+ethernetHeaderSize {
+		return fmt.Errorf("virtio packet is shorter than its header and Ethernet frame")
+	}
+	if packet[1] != virtioGSOUDPL4 || packet[0]&virtioRSCInfo != 0 {
+		return fmt.Errorf("unsupported virtio UDP GSO metadata")
+	}
+	if packet[0]&virtioNeedsChecksum == 0 {
+		return fmt.Errorf("virtio UDP GSO requires partial checksum metadata")
+	}
+	p, err := parseUDPPacket(packet[virtioHeaderSize:])
+	if err != nil {
+		return err
+	}
+	start := int(binary.LittleEndian.Uint16(packet[virtioChecksumStartOffset:]))
+	offset := int(binary.LittleEndian.Uint16(packet[virtioChecksumFieldOffset:]))
+	if start != ethernetHeaderSize+p.ipHeader || offset != udpChecksumOffset {
+		return fmt.Errorf("virtio UDP GSO checksum metadata does not match the UDP header")
+	}
+	size := int(binary.LittleEndian.Uint16(packet[virtioGSOSizeOffset:]))
+	// UDP L4 GSO describes datagram boundaries. Reducing size to fit the MTU
+	// would change those boundaries, unlike a TCP stream's segmentation.
+	if size == 0 || size+p.ipHeader+udpHeaderSize > mtu {
+		return fmt.Errorf("virtio UDP GSO segment size does not fit the MTU")
+	}
+	return p.emitSegments(size, emit)
 }
 
 func (s *tcpSegmentation) forwardVirtio(packet []byte, now time.Time, emit func([]byte) error) error {
@@ -99,7 +132,7 @@ func (s *tcpSegmentation) forwardVirtio(packet []byte, now time.Time, emit func(
 	default:
 		return fmt.Errorf("unsupported virtio GSO type %#x", packet[1])
 	}
-	size := int(binary.LittleEndian.Uint16(packet[4:6]))
+	size := int(binary.LittleEndian.Uint16(packet[virtioGSOSizeOffset:]))
 	if expectedVersion != 0 && size == 0 {
 		return fmt.Errorf("virtio TCP GSO segment size is zero")
 	}
@@ -147,8 +180,8 @@ func (s *tcpSegmentation) forwardVirtio(packet []byte, now time.Time, emit func(
 		return fmt.Errorf("virtio GSO type does not match the IP version")
 	}
 	if !rsc {
-		start := int(binary.LittleEndian.Uint16(packet[6:8]))
-		offset := int(binary.LittleEndian.Uint16(packet[8:10]))
+		start := int(binary.LittleEndian.Uint16(packet[virtioChecksumStartOffset:]))
+		offset := int(binary.LittleEndian.Uint16(packet[virtioChecksumFieldOffset:]))
 		if start != ethernetHeaderSize+p.ipHeader || offset != tcpChecksumOffset {
 			return fmt.Errorf("virtio TCP GSO checksum metadata does not match the TCP header")
 		}

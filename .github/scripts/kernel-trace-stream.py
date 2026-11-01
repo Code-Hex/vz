@@ -262,7 +262,7 @@ def main():
     try:
         created = bootstrap.check_request('POST', api, {'name': NAME, 'head_sha': sha, 'status': 'in_progress', 'output': {'title': NAME, 'summary': json.dumps({'phase': 'initializing', 'run_id': run})}}, token, temp, env)
         check_id = int(created['id'])
-        producer = spawn(['/usr/bin/sudo','-n','/usr/bin/ktrace','trace','-N','-t','-f','S0x01ac,S0x0170,S0x0190,S0x01a1,S0x0109','-b','16','-T','180s','--ndjson'], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
+        producer = spawn(['/usr/bin/sudo','-n','/usr/bin/ktrace','trace','-N','-t','-f','D0x01700040,S0x0190,S0x01a1,D0x01090040','-b','16','-T','180s','--ndjson'], stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
         producer_reader = threading.Thread(target=stderr_tails['producer'].drain, args=(producer.stderr,), daemon=True)
         producer_reader.start()
         stderr_readers.append(producer_reader)

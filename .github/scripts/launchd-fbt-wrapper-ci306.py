@@ -102,8 +102,13 @@ def main():
             action = '--finish' if orderly else '--cleanup'
             result = subprocess.run(['/usr/bin/sudo', '-n', '/usr/bin/python3', str(HERE / 'launchd-observer-ci306.py'), action, directory, label], env=env, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=25, check=False)
             preflight.verify_cleanup(directory, label, env)
-            if orderly and result.returncode != 0:
-                raise RuntimeError('observer finish request failed')
+            if orderly:
+                if result.returncode != 0:
+                    raise RuntimeError('observer finish request failed')
+                api = 'https://api.github.com/repos/' + repo + '/check-runs/' + str(int(first['check_id']))
+                observed_check = preflight.get_check(api, token, env)
+                if observed_check.get('status') != 'completed' or observed_check.get('conclusion') != 'success':
+                    raise RuntimeError('observer Check did not complete successfully')
         signal.signal(signal.SIGTERM, oldterm)
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-name: Observe native execution through authenticated external control
+name: Compare native execution without host NAT
 on:
   push:
     branches: [codex/diagnose-ci306-intel]
@@ -37,4 +37,13 @@ jobs:
       - name: Wait for external observation commands
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: python3 .github/scripts/external-bootstrap.py
+        run: |
+          python3 - <<'PYCODE'
+          from pathlib import Path
+          path = Path('.github/scripts/external-bootstrap.py')
+          source = path.read_text()
+          assert source.count("'NAT': '1'") == 1
+          assert source.count("'COUNT': '10'") == 1
+          path.write_text(source.replace("'NAT': '1'", "'NAT': '0'").replace("'COUNT': '10'", "'COUNT': '20'"))
+          PYCODE
+          python3 .github/scripts/external-bootstrap.py

@@ -249,7 +249,7 @@ def daemon(directory):
                 check_ok = True
             except Exception as exc:
                 channel_state['github'] = channel_failure(exc)
-            status = {'parent_pid': own_parent(record), 'check_id': check_id, 'sequence': sequence,
+            status = {'parent_pid': own_parent(record), 'observer_pid':record['observer']['pid'], 'observer_pgid':record['observer']['pgid'], 'observer_euid':os.geteuid(), 'check_id': check_id, 'sequence': sequence,
                       'observed_helper_alive': was_alive, 'observed_helper_gone': was_gone, 'check_created': True}
             if check_ok and receiver_ok:
                 temporary = root / 'status.tmp'

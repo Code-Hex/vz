@@ -206,7 +206,7 @@ def daemon(directory):
                 code = send_once(host, path, addresses, context, data['run_id'], item)
                 last_send = {'outcome':'success','http_status':code}
                 if not status_written:
-                    (root/'status.json').write_text(json.dumps({'parent_pid':startup['ppid'],'check_id':check_id,'instance':instance,'first_post':True}))
+                    (root/'status.json').write_text(json.dumps({'parent_pid':startup['ppid'],'observer_pid':startup['pid'],'observer_pgid':startup['pgid'],'observer_euid':startup['euid'],'check_id':check_id,'instance':instance,'first_post':True}))
                     status_written = True
             except Exception as exc:
                 last_send = {'outcome':'error','error_type':type(exc).__name__}

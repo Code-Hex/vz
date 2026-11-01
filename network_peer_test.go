@@ -16,7 +16,6 @@ import (
 type networkPeer struct {
 	attachment *vz.FileHandleNetworkDeviceAttachment
 	ip         netip.Addr
-	mac        [6]byte
 	done       chan error
 }
 
@@ -39,7 +38,7 @@ func newNetworkPeer(t *testing.T, ip netip.Addr, mac [6]byte) *networkPeer {
 	if err != nil {
 		t.Fatal(err)
 	}
-	peer := &networkPeer{attachment: attachment, ip: ip, mac: mac, done: make(chan error, 1)}
+	peer := &networkPeer{attachment: attachment, ip: ip, done: make(chan error, 1)}
 	go func() {
 		peer.done <- serveNetworkPeer(conn, ip, mac)
 	}()

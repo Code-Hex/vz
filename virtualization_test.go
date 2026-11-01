@@ -33,6 +33,9 @@ func setupConsoleConfig(config *vz.VirtualMachineConfiguration) error {
 }
 
 func setupNetworkConfig(config *vz.VirtualMachineConfiguration) error {
+	if os.Getenv("CI306_SKIP_NAT") == "1" {
+		return nil
+	}
 	natAttachment, err := vz.NewNATNetworkDeviceAttachment()
 	if err != nil {
 		return fmt.Errorf("failed to create NAT network device attachment: %w", err)

@@ -113,7 +113,8 @@ def main():
             child_env.pop(key, None)
     child_env["PWD"] = cwd
     command = ["go", "test", "-p", "1", "-exec", "go run " + os.path.join(cwd, "cmd/codesign"),
-               ".", "-timeout", "5m", "-v", "-run", "^TestRuntimeNetworkConnection$", "-count=5"]
+               ".", "-timeout", "5m", "-v", "-run", os.environ.get('TRACE_PATTERN', '^TestRuntimeNetworkConnection$'),
+               "-count=" + os.environ.get('TRACE_COUNT', '5')]
     finished = threading.Event()
     log_dir = os.environ.get("RUNNER_TEMP") or tempfile.gettempdir()
     log_fd, log_path = tempfile.mkstemp(prefix="ci306-", suffix=".log", dir=log_dir)

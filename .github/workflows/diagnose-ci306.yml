@@ -9,8 +9,19 @@ env:
   GOTOOLCHAIN: local
 jobs:
   reproduce:
+    name: vsock NAT ${{ matrix.nat }}
     runs-on: macos-15-intel
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - nat: 'on'
+            skip_nat: '0'
+          - nat: 'off'
+            skip_nat: '1'
+    env:
+      CI306_SKIP_NAT: ${{ matrix.skip_nat }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -23,5 +34,7 @@ jobs:
       - name: Record socket lifecycle outside the runner
         env:
           GITHUB_TOKEN: ${{ github.token }}
-          TRACE_NAME: ci306-intel-go126-progress
+          TRACE_NAME: ci306-vsock-nat-${{ matrix.nat }}
+          TRACE_PATTERN: '^TestVirtioSocketListener$'
+          TRACE_COUNT: '20'
         run: python3 .github/scripts/probe-ci306.py

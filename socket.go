@@ -108,15 +108,20 @@ func (v *VirtioSocketDevice) Listen(port uint32) (*VirtioSocketListener, error) 
 func (v *VirtioSocketDevice) Connect(port uint32) (*VirtioSocketConnection, error) {
 	ch := make(chan connResults, 1)
 	request := registerNativeRequest(func(kind uint32, first, second unsafe.Pointer, value uint64) uint64 {
+		fmt.Fprintf(os.Stderr, "VZTRACE go connect callback enter connection=%p error=%p kind=%d\n", first, second, kind)
 		if second != nil {
 			if first != nil {
 				vzbridge.ReleaseObject(first)
 			}
+			fmt.Fprintf(os.Stderr, "VZTRACE go connect callback error send-before connection=%p\n", first)
 			ch <- connResults{err: objcutil.NewNSError(second)}
+			fmt.Fprintf(os.Stderr, "VZTRACE go connect callback error send-after connection=%p\n", first)
 			return 0
 		}
 		connection, err := newVirtioSocketConnection(objc.NewManagedPointer(first, vzbridge.ReleaseObject))
+		fmt.Fprintf(os.Stderr, "VZTRACE go connect callback send-before connection=%p err=%v\n", first, err)
 		ch <- connResults{connection, err}
+		fmt.Fprintf(os.Stderr, "VZTRACE go connect callback send-after connection=%p\n", first)
 		return 0
 	})
 	vzbridge.VZVirtioSocketDevice_connectToPort(v, port, request)
@@ -321,12 +326,15 @@ type VirtioSocketConnection struct {
 var _ net.Conn = (*VirtioSocketConnection)(nil)
 
 func newVirtioSocketConnection(ptr *objc.Pointer) (*VirtioSocketConnection, error) {
+	fmt.Fprintf(os.Stderr, "VZTRACE go new enter connection=%p\n", objc.Ptr(ptr))
 	if ptr == nil || objc.Ptr(ptr) == nil {
 		return nil, fmt.Errorf("socket completion returned no connection")
 	}
 	defer objc.Release(ptr)
 	var nativeError unsafe.Pointer
+	fmt.Fprintf(os.Stderr, "VZTRACE go dup before connection=%p\n", objc.Ptr(ptr))
 	descriptor := vzbridge.SocketConnectionDuplicatedFileDescriptor(ptr, &nativeError)
+	fmt.Fprintf(os.Stderr, "VZTRACE go dup after connection=%p fd=%d error=%p\n", objc.Ptr(ptr), descriptor, nativeError)
 	if nativeError != nil {
 		return nil, objcutil.NewNSError(nativeError)
 	}
@@ -335,14 +343,21 @@ func newVirtioSocketConnection(ptr *objc.Pointer) (*VirtioSocketConnection, erro
 	}
 	file := os.NewFile(uintptr(descriptor), "vsock")
 	defer file.Close()
+	fmt.Fprintf(os.Stderr, "VZTRACE go FileConn before connection=%p fd=%d\n", objc.Ptr(ptr), descriptor)
 	connection, err := net.FileConn(file)
+	fmt.Fprintf(os.Stderr, "VZTRACE go FileConn after connection=%p fd=%d raw=%p err=%v\n", objc.Ptr(ptr), descriptor, connection, err)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Fprintf(os.Stderr, "VZTRACE go destination getter before connection=%p\n", objc.Ptr(ptr))
+	destinationPort := vzbridge.VZVirtioSocketConnection_DestinationPort(ptr)
+	fmt.Fprintf(os.Stderr, "VZTRACE go source getter before connection=%p\n", objc.Ptr(ptr))
+	sourcePort := vzbridge.VZVirtioSocketConnection_SourcePort(ptr)
+	fmt.Fprintf(os.Stderr, "VZTRACE go port getters after connection=%p dst=%d src=%d\n", objc.Ptr(ptr), destinationPort, sourcePort)
 	return &VirtioSocketConnection{
 		rawConn:         connection,
-		destinationPort: vzbridge.VZVirtioSocketConnection_DestinationPort(ptr),
-		sourcePort:      vzbridge.VZVirtioSocketConnection_SourcePort(ptr),
+		destinationPort: destinationPort,
+		sourcePort:      sourcePort,
 	}, nil
 }
 
@@ -354,7 +369,10 @@ func (v *VirtioSocketConnection) Write(b []byte) (n int, err error) { return v.r
 
 // Close will be called when caused something error in socket.
 func (v *VirtioSocketConnection) Close() error {
-	return v.rawConn.Close()
+	fmt.Fprintf(os.Stderr, "VZTRACE go Close before raw=%p\n", v.rawConn)
+	err := v.rawConn.Close()
+	fmt.Fprintf(os.Stderr, "VZTRACE go Close after raw=%p err=%v\n", v.rawConn, err)
+	return err
 }
 
 // LocalAddr returns the local network address.

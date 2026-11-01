@@ -4,6 +4,7 @@
 #import <errno.h>
 #import <objc/runtime.h>
 #import <stdatomic.h>
+#import <stdio.h>
 #import <unistd.h>
 
 static dispatch_queue_t bridgeQueue;
@@ -152,7 +153,10 @@ void vz_releaseObject(void *object)
         // A void pointer keeps the block from taking an extra Objective-C reference.
         dispatch_group_async(pendingReleases(), target, ^{
             @autoreleasepool {
+                BOOL traceSocket = [(id)object isKindOfClass:[VZVirtioSocketConnection class]];
+                if (traceSocket) dprintf(2, "VZTRACE native release before connection=%p\n", object);
                 [(id)object release];
+                if (traceSocket) dprintf(2, "VZTRACE native release after connection=%p\n", object);
             }
             dispatch_release(target);
         });
@@ -453,6 +457,37 @@ void vz_startWithOptionsCompletionHandler(void *machine, void *options, uint64_t
     unavailable(VZBridgeCallbackCompletion, context);
 }
 
+static char socketTraceSentinelKey;
+
+@interface VZTraceSocketSentinel : NSObject {
+    uintptr_t connectionAddress;
+}
+- (instancetype)initWithConnection:(uintptr_t)address;
+@end
+
+@implementation VZTraceSocketSentinel
+- (instancetype)initWithConnection:(uintptr_t)address
+{
+    self = [super init];
+    if (self) connectionAddress = address;
+    return self;
+}
+- (void)dealloc
+{
+    dprintf(2, "VZTRACE native sentinel dealloc connection=%p\n", (void *)connectionAddress);
+    [super dealloc];
+}
+@end
+
+static void traceSocketLifetime(VZVirtioSocketConnection *connection)
+{
+    if (!connection) return;
+    VZTraceSocketSentinel *sentinel = [[VZTraceSocketSentinel alloc] initWithConnection:(uintptr_t)connection];
+    objc_setAssociatedObject(connection, &socketTraceSentinelKey, sentinel, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    [sentinel release];
+    dprintf(2, "VZTRACE native sentinel attached connection=%p\n", connection);
+}
+
 @interface VZBridgeSocketListener : VZVirtioSocketListener <VZVirtioSocketListenerDelegate> {
     uint64_t _context;
 }
@@ -474,7 +509,11 @@ void vz_startWithOptionsCompletionHandler(void *machine, void *options, uint64_t
     if (!_context)
         return NO;
     vz_inheritObjectQueue(connection, device);
-    return emit(VZBridgeCallbackSocketAccepted, _context, [connection retain], device, 0) != 0;
+    traceSocketLifetime(connection);
+    dprintf(2, "VZTRACE native accepted emit-before connection=%p device=%p\n", connection, device);
+    uint64_t result = emit(VZBridgeCallbackSocketAccepted, _context, [connection retain], device, 0);
+    dprintf(2, "VZTRACE native accepted emit-after connection=%p result=%llu\n", connection, (unsigned long long)result);
+    return result != 0;
 }
 - (void)invalidate
 {
@@ -504,14 +543,20 @@ void vz_VZVirtioSocketDevice_connectToPort(void *pointer, uint32_t port, uint64_
     [device connectToPort:port
         completionHandler:^(VZVirtioSocketConnection *connection, NSError *error) {
             vz_inheritObjectQueue(connection, device);
+            traceSocketLifetime(connection);
+            dprintf(2, "VZTRACE native connect emit-before connection=%p error=%p\n", connection, error);
             emit(VZBridgeCallbackSocketConnected, context, [connection retain], [error retain], 0);
+            dprintf(2, "VZTRACE native connect emit-after connection=%p\n", connection);
             [device self];
         }];
 }
 int32_t vz_socketConnectionDuplicatedFileDescriptor(void *connection, void **output)
 {
+    dprintf(2, "VZTRACE native dup before connection=%p\n", connection);
     int descriptor = dup([(VZVirtioSocketConnection *)connection fileDescriptor]);
-    fail(descriptor < 0 ? posixError(errno) : nil, output);
+    int savedErrno = errno;
+    dprintf(2, "VZTRACE native dup after connection=%p fd=%d errno=%d\n", connection, descriptor, descriptor < 0 ? savedErrno : 0);
+    fail(descriptor < 0 ? posixError(savedErrno) : nil, output);
     return descriptor;
 }
 

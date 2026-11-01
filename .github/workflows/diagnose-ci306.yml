@@ -1,94 +1,27 @@
-name: Diagnose Intel test lifecycle
+name: Diagnose Intel socket lifetime
 on:
   push:
     branches: [codex/diagnose-ci306-intel]
 permissions:
   contents: read
+  checks: write
 env:
   GOTOOLCHAIN: local
 jobs:
   reproduce:
-    name: root (${{ matrix.go }}, GOGC=${{ matrix.gc }})
     runs-on: macos-15-intel
     timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - go: '1.26.x'
-            gc: '100'
-          - go: '1.26.x'
-            gc: '1'
-          - go: '1.27.x'
-            gc: '100'
-    env:
-      GOGC: ${{ matrix.gc }}
     steps:
       - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-go@v7.0.0
         with:
-          go-version: ${{ matrix.go }}
+          go-version: '1.26.x'
           check-latest: true
       - run: make download_kernel
-      - name: Repeat VM tests with process sampling
-        shell: python3 {0}
-        run: |
-          import os
-          import pathlib
-          import re
-          import shutil
-          import signal
-          import subprocess
-          import sys
-          import time
-
-          os.environ['PWD'] = os.getcwd()
-          subprocess.run(['go', 'version'], check=True)
-          command = ['go', 'test', '-p', '1', '-exec', 'go run ' + os.getcwd() + '/cmd/codesign', '.', '-timeout', '5m', '-v', '-count=2']
-          print(command, flush=True)
-          process = subprocess.Popen(command, start_new_session=True)
-          start = time.monotonic()
-          sample_at = 90
-          while process.poll() is None:
-              elapsed = time.monotonic() - start
-              if elapsed >= sample_at:
-                  print('DIAGNOSTIC elapsed=' + str(int(elapsed)), flush=True)
-                  listing = subprocess.run(['ps', '-axo', 'pid=,ppid=,etime=,stat=,rss=,comm='], capture_output=True, text=True, timeout=10)
-                  print(listing.stdout, flush=True)
-                  for line in listing.stdout.splitlines():
-                      fields = line.split()
-                      if fields and (fields[-1].endswith('.test') or fields[-1].split('/')[-1] in ['go', 'codesign']):
-                          output = pathlib.Path(os.environ['RUNNER_TEMP']) / ('sample-' + fields[0] + '-' + str(sample_at) + '.txt')
-                          try:
-                              subprocess.run(['sample', fields[0], '1', '1', '-file', str(output)], timeout=15, check=False)
-                          except subprocess.TimeoutExpired:
-                              print('DIAGNOSTIC sample timed out for ' + fields[0], flush=True)
-                          if output.exists():
-                              sample = output.read_text()
-                              print(sample, flush=True)
-                              binary = fields[-1]
-                              if binary == 'go':
-                                  binary = shutil.which('go')
-                              if binary.endswith('.test') or pathlib.Path(binary).name == 'go':
-                                  try:
-                                      load = subprocess.check_output(['otool', '-l', binary], text=True, timeout=10)
-                                      text_segment = re.search(r'segname __TEXT\s+vmaddr (0x[0-9a-fA-F]+)', load)
-                                      offsets = sorted({int(m.group(1), 16) for line in sample.splitlines() if '(in ' + pathlib.Path(binary).name + ')' in line for m in [re.search(r'\+ (0x[0-9a-fA-F]+)', line)] if m})
-                                      if text_segment and offsets:
-                                          addresses = [hex(int(text_segment.group(1), 16) + offset) for offset in offsets]
-                                          symbols = subprocess.run(['go', 'tool', 'addr2line', binary], input='\n'.join(addresses) + '\n', capture_output=True, text=True, timeout=15)
-                                          print('SYMBOLS ' + binary + '\n' + '\n'.join(addresses) + '\n' + symbols.stdout, flush=True)
-                                  except (subprocess.SubprocessError, OSError):
-                                      print('DIAGNOSTIC symbolication unavailable', flush=True)
-                  sample_at += 90
-              if elapsed >= 360:
-                  print('DIAGNOSTIC test command exceeded six minutes', flush=True)
-                  os.killpg(process.pid, signal.SIGQUIT)
-                  try:
-                      process.wait(timeout=10)
-                  except subprocess.TimeoutExpired:
-                      os.killpg(process.pid, signal.SIGKILL)
-                      process.wait()
-                  sys.exit(124)
-              time.sleep(1)
-          sys.exit(process.returncode)
+      - name: Record socket lifecycle outside the runner
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TRACE_NAME: ci306-intel-go126-progress
+        run: python3 .github/scripts/probe-ci306.py

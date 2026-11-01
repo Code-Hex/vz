@@ -1,0 +1,21 @@
+name: Verify forkless root heartbeat without virtual machines
+on:
+  push:
+    branches: [codex/diagnose-ci306-intel]
+    paths: ['.github/workflows/diagnose-ci306-forkless-hb-preflight.yml']
+permissions:
+  contents: read
+  checks: write
+jobs:
+  preflight:
+    runs-on: macos-15-intel
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - name: Hold controlled helper while heartbeat runs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          CI306_OBSERVER_RECEIVER: ${{ secrets.CI306_OBSERVER_RECEIVER }}
+        run: python3 .github/scripts/forkless-hb-preflight-ci306.py

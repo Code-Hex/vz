@@ -60,5 +60,13 @@ jobs:
           python3 internal/ci312diag/observe.py \
             --case "$CI312_CASE" --go "$CI312_GO" --target "$CI312_TARGET" \
             --count "$CI312_COUNT" --processes "$CI312_PROCESSES" \
+            --output-dir "$RUNNER_TEMP/ci312-diagnostics" \
             -- "$RUNNER_TEMP/vz-ci312.test" -test.v -test.run "^${CI312_TARGET}$" \
             -test.count "$CI312_COUNT" -test.timeout 3m
+      - name: Collect diagnostic files
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ci312-${{ matrix.case }}
+          path: ${{ runner.temp }}/ci312-diagnostics
+          if-no-files-found: error

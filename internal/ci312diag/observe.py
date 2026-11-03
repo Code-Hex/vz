@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+from pathlib import Path
 import signal
 import subprocess
 import time
@@ -16,6 +17,7 @@ def main():
     parser.add_argument("--interval", type=float, default=10)
     parser.add_argument("--quit-after", type=float, default=240)
     parser.add_argument("--kill-delay", type=float, default=30)
+    parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("command", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = args.command
@@ -27,67 +29,73 @@ def main():
         parser.error("observer durations must be positive")
     started = time.monotonic()
 
-    def emit(phase, process_number, pid, exit_code=None):
-        print(json.dumps({
-            "case": args.case,
-            "go": args.go,
-            "target": args.target,
-            "count": args.count,
-            "processNumber": process_number,
-            "phase": phase,
-            "monotonicDuration": round(time.monotonic() - started, 6),
-            "pid": pid,
-            "exitCode": exit_code,
-        }), flush=True)
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    with (args.output_dir / "observer.jsonl").open("x", encoding="utf-8") as journal:
+        def emit(phase, process_number, pid, exit_code=None):
+            journal.write(json.dumps({
+                "case": args.case,
+                "go": args.go,
+                "target": args.target,
+                "count": args.count,
+                "processNumber": process_number,
+                "phase": phase,
+                "monotonicDuration": round(time.monotonic() - started, 6),
+                "pid": pid,
+                "exitCode": exit_code,
+            }) + "\n")
+            journal.flush()
 
-    for number in range(1, args.processes + 1):
-        env = os.environ.copy()
-        env.update({
-            "CI312_CASE": args.case,
-            "CI312_GO": args.go,
-            "CI312_TARGET": args.target,
-            "CI312_COUNT": str(args.count),
-            "CI312_PROCESS_NUMBER": str(number),
-        })
-        child = subprocess.Popen(command, env=env, start_new_session=True)
-        emit("start", number, child.pid)
-        child_started = time.monotonic()
-        heartbeat = child_started + args.interval
-        quit_at = child_started + args.quit_after
-        kill_at = quit_at + args.kill_delay
-        expired = False
-        killed = False
-        while child.poll() is None:
-            now = time.monotonic()
-            if not expired and now >= quit_at:
-                emit("quit", number, child.pid)
-                expired = True
-                try:
-                    os.killpg(child.pid, signal.SIGQUIT)
-                except ProcessLookupError:
-                    pass
-            if expired and not killed and now >= kill_at:
-                emit("kill", number, child.pid)
-                killed = True
-                try:
-                    os.killpg(child.pid, signal.SIGKILL)
-                except ProcessLookupError:
-                    pass
-            if now >= heartbeat:
-                emit("heartbeat", number, child.pid)
-                heartbeat = now + args.interval
-            next_signal = kill_at if expired else quit_at
-            timeout = max(0.001, min(0.1, heartbeat - now, next_signal - now))
-            try:
-                child.wait(timeout=timeout)
-            except subprocess.TimeoutExpired:
-                pass
-        exit_code = child.wait()
-        emit("exit", number, child.pid, exit_code)
-        if expired:
-            return 124
-        if exit_code:
-            return exit_code if exit_code > 0 else 128 - exit_code
+        for number in range(1, args.processes + 1):
+            env = os.environ.copy()
+            env.update({
+                "CI312_CASE": args.case,
+                "CI312_GO": args.go,
+                "CI312_TARGET": args.target,
+                "CI312_COUNT": str(args.count),
+                "CI312_PROCESS_NUMBER": str(number),
+            })
+            stdout_path = args.output_dir / f"process-{number}.stdout.log"
+            stderr_path = args.output_dir / f"process-{number}.stderr.log"
+            with stdout_path.open("xb") as stdout, stderr_path.open("xb") as stderr:
+                child = subprocess.Popen(command, env=env, stdout=stdout, stderr=stderr, start_new_session=True)
+                child_started = time.monotonic()
+                heartbeat = child_started + args.interval
+                quit_at = child_started + args.quit_after
+                kill_at = quit_at + args.kill_delay
+                expired = False
+                killed = False
+                emit("start", number, child.pid)
+                while child.poll() is None:
+                    now = time.monotonic()
+                    if not expired and now >= quit_at:
+                        expired = True
+                        try:
+                            os.killpg(child.pid, signal.SIGQUIT)
+                        except ProcessLookupError:
+                            pass
+                        emit("quit", number, child.pid)
+                    if expired and not killed and now >= kill_at:
+                        killed = True
+                        try:
+                            os.killpg(child.pid, signal.SIGKILL)
+                        except ProcessLookupError:
+                            pass
+                        emit("kill", number, child.pid)
+                    if now >= heartbeat:
+                        emit("heartbeat", number, child.pid)
+                        heartbeat = now + args.interval
+                    next_signal = kill_at if expired else quit_at
+                    timeout = max(0.001, min(0.1, heartbeat - now, next_signal - now))
+                    try:
+                        child.wait(timeout=timeout)
+                    except subprocess.TimeoutExpired:
+                        pass
+                exit_code = child.wait()
+                emit("exit", number, child.pid, exit_code)
+                if expired:
+                    return 124
+                if exit_code:
+                    return exit_code if exit_code > 0 else 128 - exit_code
     return 0
 
 

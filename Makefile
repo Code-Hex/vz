@@ -21,7 +21,7 @@ test/graphics:
 	@binary=$$(mktemp -t vz-graphics-test) || exit 1; \
 	trap 'rm -f "$$binary"' EXIT; \
 	xcrun clang -fblocks -I internal/vzbridge internal/graphicstest/main.m \
-		internal/vzbridge/native.m internal/vzbridge/virtualization_view.m \
+		internal/vzbridge/native.m internal/vzbridge/virtual_machine_view.m internal/vzbridge/virtualization_view.m \
 		-framework Cocoa -framework Virtualization -framework QuartzCore -o "$$binary" && "$$binary"
 
 .PHONY: test/graphics/multiple
@@ -29,7 +29,7 @@ test/graphics/multiple:
 	@binary=$$(mktemp -t vz-multiple-windows-test) || exit 1; \
 	trap 'rm -f "$$binary"' EXIT; \
 	xcrun clang -fblocks -I internal/vzbridge internal/multiwindowtest/main.m \
-		internal/vzbridge/native.m internal/vzbridge/virtualization_view.m \
+		internal/vzbridge/native.m internal/vzbridge/virtual_machine_view.m internal/vzbridge/virtualization_view.m \
 		-framework Cocoa -framework Virtualization -framework QuartzCore -o "$$binary" && \
 		go run ./cmd/codesign "$$binary"
 

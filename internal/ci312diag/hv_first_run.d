@@ -2,6 +2,12 @@
 #pragma D option bufsize=1m
 #pragma D option switchrate=10hz
 
+uint64_t began;
+uint64_t first;
+uint64_t target_pid;
+uint64_t target_tid;
+int baseline;
+
 dtrace:::BEGIN
 {
     began = timestamp;

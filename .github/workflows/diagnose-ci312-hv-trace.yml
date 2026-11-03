@@ -1,0 +1,54 @@
+name: Trace initial Intel Hypervisor run
+
+on:
+  push:
+    branches:
+      - codex/diagnose-ci312-intel
+    paths:
+      - .github/workflows/diagnose-ci312-hv-trace.yml
+      - internal/ci312diag/hv_first_run.d
+      - internal/ci312diag/hv_first_run.py
+
+permissions:
+  contents: read
+
+jobs:
+  trace:
+    runs-on: macos-26-intel
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Build and sign Hypervisor control
+        run: |
+          set -euo pipefail
+          source_file=internal/ci312diag/hv_control.c
+          source_digest=$(shasum -a 256 "$source_file" | cut -d ' ' -f 1)
+          test "$source_digest" = 4f902126f230f11190bf855705984908eebd438420ae9b6891bbd4b30d1d35e9
+          xcrun clang -target x86_64-apple-macos12 -std=c11 -Wall -Wextra -Werror \
+            "-DHV_CONTROL_SOURCE_SHA=\"$source_digest\"" "$source_file" \
+            -framework Hypervisor -o "$RUNNER_TEMP/hv-control"
+          cat > "$RUNNER_TEMP/hypervisor.entitlements" <<'PLIST'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>com.apple.security.hypervisor</key>
+            <true/>
+          </dict>
+          </plist>
+          PLIST
+          codesign --force --sign - --entitlements "$RUNNER_TEMP/hypervisor.entitlements" "$RUNNER_TEMP/hv-control"
+          codesign --verify --strict --verbose=2 "$RUNNER_TEMP/hv-control"
+          codesign --display --entitlements - "$RUNNER_TEMP/hv-control"
+      - name: Trace initial park run
+        run: |
+          python3 internal/ci312diag/hv_first_run.py \
+            --binary "$RUNNER_TEMP/hv-control" \
+            --output-dir "$RUNNER_TEMP/ci312-hv-trace"
+      - name: Collect trace files
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ci312-hv-first-run
+          path: ${{ runner.temp }}/ci312-hv-trace
+          if-no-files-found: error

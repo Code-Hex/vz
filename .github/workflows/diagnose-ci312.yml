@@ -6,7 +6,8 @@ on:
       - codex/diagnose-ci312-intel
     paths:
       - '**/*.go'
-      - internal/ci312diag/*.py
+      - internal/ci312diag/observe.py
+      - internal/ci312diag/test_observe.py
 
 permissions:
   contents: read

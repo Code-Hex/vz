@@ -43,6 +43,48 @@ func TestNewLinuxRosettaUnixSocketCachingOptions(t *testing.T) {
 	if vz.Available(14) {
 		t.Skip("NewLinuxRosettaUnixSocketCachingOptions is supported from macOS 14")
 	}
+	for _, tt := range []struct {
+		name    string
+		path    string
+		wantErr bool
+	}{
+		{
+			name: "ASCII",
+			path: "/run/rosettad/rosetta.sock",
+		},
+		{
+			name: "non-ASCII UTF-8",
+			path: "/tmp/ロゼッタ.sock",
+		},
+		{
+			name:    "invalid UTF-8",
+			path:    "/tmp/rosetta\xff.sock",
+			wantErr: true,
+		},
+		{
+			name:    "embedded NUL",
+			path:    "/tmp/rosetta\x00.sock",
+			wantErr: true,
+		},
+		{
+			name:    "leading NUL",
+			path:    "\x00/tmp/rosetta.sock",
+			wantErr: true,
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			options, err := vz.NewLinuxRosettaUnixSocketCachingOptions(tt.path)
+			if tt.wantErr {
+				if err == nil || options != nil {
+					t.Fatalf("got (%v, %v), want (nil, error)", options, err)
+				}
+				return
+			}
+			if err != nil || options == nil {
+				t.Fatalf("got (%v, %v), want options without an error", options, err)
+			}
+		})
+	}
 	dir := t.TempDir()
 	t.Run("invalid filename length", func(t *testing.T) {
 		filename := filepath.Join(dir, strings.Repeat("a", 150)) + ".txt"
@@ -65,6 +107,48 @@ func TestNewLinuxRosettaUnixSocketCachingOptions(t *testing.T) {
 func TestNewLinuxRosettaAbstractSocketCachingOptions(t *testing.T) {
 	if vz.Available(14) {
 		t.Skip("NewLinuxRosettaAbstractSocketCachingOptions is supported from macOS 14")
+	}
+	for _, tt := range []struct {
+		name    string
+		value   string
+		wantErr bool
+	}{
+		{
+			name:  "ASCII",
+			value: "rosetta",
+		},
+		{
+			name:  "non-ASCII UTF-8",
+			value: "ロゼッタ",
+		},
+		{
+			name:    "invalid UTF-8",
+			value:   "rosetta\xff",
+			wantErr: true,
+		},
+		{
+			name:    "embedded NUL",
+			value:   "rosetta\x00.sock",
+			wantErr: true,
+		},
+		{
+			name:    "leading NUL",
+			value:   "\x00rosetta",
+			wantErr: true,
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			options, err := vz.NewLinuxRosettaAbstractSocketCachingOptions(tt.value)
+			if tt.wantErr {
+				if err == nil || options != nil {
+					t.Fatalf("got (%v, %v), want (nil, error)", options, err)
+				}
+				return
+			}
+			if err != nil || options == nil {
+				t.Fatalf("got (%v, %v), want options without an error", options, err)
+			}
+		})
 	}
 	t.Run("invalid name length", func(t *testing.T) {
 		name := strings.Repeat("a", 350)

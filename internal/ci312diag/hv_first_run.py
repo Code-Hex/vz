@@ -121,7 +121,9 @@ def run(binary, directory, script):
                     text = capture(["sudo", "-n", "/usr/sbin/dtrace", "-xmangled", "-l", "-n", spec],
                         directory / f"probe-{function}-{kind}.log", cleanup, record)
                     expected = ["fbt", "com.apple.driver.AppleHV", function, kind]
-                    if not any(line.split()[1:] == expected for line in text.splitlines()):
+                    rows = [line.split() for line in text.splitlines()]
+                    if not any(len(row) >= 5 and row[0].isdigit()
+                            and row[1:4] == expected[:3] and row[-1] == kind for row in rows):
                         raise RuntimeError(f"exact probe missing: {spec}")
             capture(["sudo", "-n", "/usr/sbin/dtrace", "-xmangled", "-e", "-s", str(script), str(uid)],
                 directory / "trace-compile.log", cleanup, record)

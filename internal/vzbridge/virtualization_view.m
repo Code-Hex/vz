@@ -5,10 +5,9 @@
 //
 
 #import "virtualization_view.h"
-#import "native.h"
+#import "virtual_machine_view.h"
 
 #import <QuartzCore/QuartzCore.h>
-#import <objc/runtime.h>
 
 static const CGFloat VZGraphicsHeaderHeight = 40.0;
 
@@ -515,22 +514,6 @@ static NSSize VZGraphicsSizeToFit(NSSize availableSize, NSSize displayAspectRati
 
 @end
 
-static char viewMachineLifetimeKey;
-
-@interface VZGraphicViewMachineLifetime : NSObject {
-@public
-    void *machine;
-}
-@end
-
-@implementation VZGraphicViewMachineLifetime
-- (void)dealloc
-{
-    vz_releaseObject(machine);
-    [super dealloc];
-}
-@end
-
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 120000
 @implementation VZGraphicWindowController {
     VZVirtualMachine *_virtualMachine;
@@ -565,23 +548,15 @@ static char viewMachineLifetimeKey;
         [_virtualMachine setDelegate:self];
     });
 
-    // Setup virtual machine view configs
-    VZVirtualMachineView *view = [[[VZVirtualMachineView alloc] init] autorelease];
+    VZVirtualMachineView *view = vz_viewNew(_virtualMachine);
     view.capturesSystemKeys = YES;
-    view.virtualMachine = _virtualMachine;
-    VZGraphicViewMachineLifetime *lifetime = [[VZGraphicViewMachineLifetime alloc] init];
-    lifetime->machine = [_virtualMachine retain];
-    objc_setAssociatedObject(view, &viewMachineLifetimeKey, lifetime, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    [lifetime release];
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
     if (@available(macOS 14.0, *)) {
-        // Configure the app to automatically respond to changes in the display size.
         view.automaticallyReconfiguresDisplay = YES;
     }
 #endif
-    _virtualMachineView = [view retain];
+    _virtualMachineView = view;
 
-    // Setup some window configs
     _window = [[self createMainWindowWithTitle:windowTitle width:windowWidth height:windowHeight] retain];
     if (![_window isKindOfClass:[VZGraphicsWindow class]]) {
         _toolbar = [[self createCustomToolbar] retain];

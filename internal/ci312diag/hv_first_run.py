@@ -50,12 +50,20 @@ def publish(directory, seconds):
             time.sleep(min(1, max(0, deadline - time.monotonic())))
 
 
-def capture(command, path):
+def capture(command, path, cleanup, record, timeout=60):
     with path.open("xb") as output:
-        result = subprocess.run(command, stdin=subprocess.DEVNULL, stdout=output,
-            stderr=subprocess.STDOUT, timeout=10)
-    if result.returncode:
-        raise RuntimeError(f"preflight failed: {path.name}, exit={result.returncode}")
+        process = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=output,
+            stderr=subprocess.STDOUT, start_new_session=True)
+        record("preflight.start", file=path.name, pid=process.pid)
+        try:
+            process.wait(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            record("preflight.timeout", file=path.name, pid=process.pid, timeout=timeout)
+            stop(process, command[0] == "sudo", cleanup, record)
+            raise
+    record("preflight.exit", file=path.name, pid=process.pid, exitCode=process.returncode)
+    if process.returncode:
+        raise RuntimeError(f"preflight failed: {path.name}, exit={process.returncode}")
     return path.read_text(errors="replace")
 
 
@@ -103,37 +111,40 @@ def run(binary, directory, script):
             record("runner", pid=os.getpid(), uid=uid, gid=os.getgid())
             if uid == 0 or binary.name != "hv-control":
                 raise RuntimeError("VM must run as the original non-root runner with execname hv-control")
-            root_id = capture(["sudo", "-n", "id"], directory / "sudo-id.log")
+            root_id = capture(["sudo", "-n", "id"], directory / "sudo-id.log", cleanup, record)
             if "uid=0(" not in root_id:
                 raise RuntimeError("sudo did not establish root")
-            capture(["csrutil", "status"], directory / "csrutil.log")
+            capture(["csrutil", "status"], directory / "csrutil.log", cleanup, record)
             for function in (RUN_UNTIL, ENTER_GUEST):
                 for kind in ("entry", "return"):
                     spec = f"fbt:com.apple.driver.AppleHV:{function}:{kind}"
                     text = capture(["sudo", "-n", "/usr/sbin/dtrace", "-xmangled", "-l", "-n", spec],
-                        directory / f"probe-{function}-{kind}.log")
+                        directory / f"probe-{function}-{kind}.log", cleanup, record)
                     expected = ["fbt", "com.apple.driver.AppleHV", function, kind]
                     if not any(line.split()[1:] == expected for line in text.splitlines()):
                         raise RuntimeError(f"exact probe missing: {spec}")
             capture(["sudo", "-n", "/usr/sbin/dtrace", "-xmangled", "-e", "-s", str(script), str(uid)],
-                directory / "trace-compile.log")
-            publisher = subprocess.Popen([sys.executable, str(Path(__file__).resolve()), "--publish",
-                "--output-dir", str(directory), "--publish-seconds", "35"],
-                stdin=subprocess.DEVNULL, stderr=cleanup, start_new_session=True)
-            record("publisher.start", pid=publisher.pid)
+                directory / "trace-compile.log", cleanup, record)
             trace = subprocess.Popen(["sudo", "-n", "/usr/sbin/dtrace", "-xmangled", "-q", "-s", str(script), str(uid)],
                 stdin=subprocess.DEVNULL, stdout=outputs["trace.log"], stderr=outputs["trace.stderr.log"],
                 start_new_session=True)
             record("trace.start", pid=trace.pid)
-            ready_deadline = time.monotonic() + 10
+            ready_deadline = time.monotonic() + 60
             while True:
                 text = (directory / "trace.log").read_text(errors="replace")
+                if trace.poll() is not None:
+                    record("trace.exit.before.vm", exitCode=trace.returncode)
+                    raise RuntimeError("DTrace exited before VM start")
+                if time.monotonic() >= ready_deadline:
+                    raise RuntimeError("DTrace READY and baseline not received")
                 if "HVTRACE READY " in text and "HVTRACE BASELINE " in text:
                     break
-                if trace.poll() is not None or time.monotonic() >= ready_deadline:
-                    raise RuntimeError("DTrace READY and baseline not received")
                 time.sleep(0.05)
             record("trace.baseline.received")
+            publisher = subprocess.Popen([sys.executable, str(Path(__file__).resolve()), "--publish",
+                "--output-dir", str(directory), "--publish-seconds", "35"],
+                stdin=subprocess.DEVNULL, stderr=cleanup, start_new_session=True)
+            record("publisher.start", pid=publisher.pid)
             vm = subprocess.Popen([str(binary), "park", "1"], stdin=subprocess.DEVNULL,
                 stdout=outputs["vm.log"], stderr=outputs["vm.stderr.log"], start_new_session=True)
             record("vm.start", pid=vm.pid, uid=uid, mode="park", iterations=1)

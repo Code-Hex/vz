@@ -6,12 +6,21 @@ uint64_t began;
 uint64_t first;
 uint64_t target_pid;
 uint64_t target_tid;
+uint64_t last_heartbeat;
 int baseline;
 
 dtrace:::BEGIN
 {
     began = timestamp;
-    printf("HVTRACE READY timestamp=%llu uid=%d\n", timestamp, uid);
+    last_heartbeat = began;
+    printf("HVTRACE READY timestamp=%llu uid=%d expected_uid=%d\n", timestamp, uid, $1);
+}
+
+profile:::tick-100ms
+/timestamp - last_heartbeat >= 1000000000/
+{
+    last_heartbeat = timestamp;
+    printf("HVTRACE HEARTBEAT timestamp=%llu\n", timestamp);
 }
 
 profile:::tick-100ms
@@ -22,14 +31,13 @@ profile:::tick-100ms
 }
 
 fbt:com.apple.driver.AppleHV:_ZN13hv_vmx_vcpu_t26THREAD_TRAP_vcpu_run_untilEPS_y:entry
-/execname == "hv-control" && uid == $1 &&
-    (!target_pid || (pid == target_pid && tid == target_tid)) &&
+/(!target_pid || (pid == target_pid && tid == target_tid)) &&
     (!first || timestamp - first < 3000000000)/
 {
     target_pid = target_pid ? target_pid : pid;
     target_tid = target_tid ? target_tid : tid;
     first = first ? first : timestamp;
-    printf("HVTRACE run_until.entry timestamp=%llu pid=%d tid=%d uid=%d\n", timestamp, pid, tid, uid);
+    printf("HVTRACE run_until.entry timestamp=%llu pid=%d tid=%d uid=%d execname=%s\n", timestamp, pid, tid, uid, execname);
     stack(8);
 }
 

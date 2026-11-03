@@ -65,15 +65,23 @@ func TestPeerVirtioTCPHandshakeAndGSO(t *testing.T) {
 		v6             bool
 		ifaceInitiated bool
 	}{
-		{name: "IPv4 iface SYN", ifaceInitiated: true},
-		{name: "IPv6 socket SYN", v6: true},
+		{
+			name:           "IPv4 iface SYN",
+			ifaceInitiated: true,
+		},
+		{
+			name: "IPv6 socket SYN",
+			v6:   true,
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			iface, socket := netip.MustParseAddrPort("192.0.2.2:1000"), netip.MustParseAddrPort("192.0.2.1:80")
 			if test.v6 {
 				iface, socket = netip.MustParseAddrPort("[2001:db8::2]:1000"), netip.MustParseAddrPort("[2001:db8::1]:80")
 			}
-			state := &adapterState{tcp: newTCPSegmentation(1500)}
+			state := &adapterState{
+				tcp: newTCPSegmentation(1500),
+			}
 			buffers := [][]byte{make([]byte, 1526), make([]byte, 1526)}
 			flags, ack := byte(2), uint32(0)
 			if !test.ifaceInitiated {

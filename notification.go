@@ -31,7 +31,9 @@ func (n *notifications[T]) subscribe(channel chan<- T) (func(), error) {
 	}
 	registration := n.channels[channel]
 	if registration == nil {
-		registration = &notificationRegistration[T]{channel: channel}
+		registration = &notificationRegistration[T]{
+			channel: channel,
+		}
 		n.channels[channel] = registration
 	}
 	return func() {

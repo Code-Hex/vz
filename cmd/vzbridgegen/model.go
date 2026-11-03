@@ -116,7 +116,10 @@ func resolveAlias(value string, aliases map[string]string) string {
 	return value
 }
 func classifyType(t clangType, aliases map[string]string, classes map[string]bool, enums map[string]string, result bool) (sdkType, string) {
-	typ := sdkType{Spelling: t.QualType, Canonical: resolveAlias(canonicalType(t), aliases)}
+	typ := sdkType{
+		Spelling:  t.QualType,
+		Canonical: resolveAlias(canonicalType(t), aliases),
+	}
 	for _, qualifier := range qualifierPattern.FindAllString(t.QualType, -1) {
 		if strings.HasPrefix(qualifier, "_N") {
 			typ.Nullability = append(typ.Nullability, qualifier)

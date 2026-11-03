@@ -10,8 +10,10 @@ import (
 
 func TestNSError(t *testing.T) {
 	native := &objcutil.NSError{
-		Domain: "com.apple.vmnet", Code: 1001,
-		LocalizedDescription: "vmnet_network_create failed", UserInfo: "{key = value;}",
+		Domain:               "com.apple.vmnet",
+		Code:                 1001,
+		LocalizedDescription: "vmnet_network_create failed",
+		UserInfo:             "{key = value;}",
 	}
 	want := `Error Domain=com.apple.vmnet Code=1001 Description="vmnet_network_create failed" UserInfo={key = value;}`
 	if got := native.Error(); got != want {

@@ -73,7 +73,10 @@ func discoverBindings(path string) ([]binding, error) {
 		if role != "" && role != "object" && role != "owned" && role != "errorout" {
 			return nil, fmt.Errorf("%s: unknown annotation %q for typedef", node.Name, role)
 		}
-		aliases[node.Name] = alias{underlying: node.Type.QualType, role: role}
+		aliases[node.Name] = alias{
+			underlying: node.Type.QualType,
+			role:       role,
+		}
 	}
 	for name, a := range aliases {
 		if a.role == "" {
@@ -159,7 +162,10 @@ func discoverBindings(path string) ([]binding, error) {
 			if err != nil {
 				return nil, fmt.Errorf("%s parameter %s: %w", node.Name, child.Name, err)
 			}
-			b.Parameters = append(b.Parameters, parameter{Name: child.Name, Type: typ})
+			b.Parameters = append(b.Parameters, parameter{
+				Name: child.Name,
+				Type: typ,
+			})
 		}
 		if b.ObjectQueue && (len(b.Parameters) == 0 || b.Parameters[0].Type != "objc.NSObject") {
 			return nil, fmt.Errorf("%s: objectqueue requires an object as its first parameter", node.Name)

@@ -23,10 +23,20 @@ func TestAdapterBackpressureCleanup(t *testing.T) {
 		transport Transport
 		normalize bool
 	}{
-		{transport: Stream},
-		{transport: Datagram},
-		{transport: Stream, normalize: true},
-		{transport: Datagram, normalize: true},
+		{
+			transport: Stream,
+		},
+		{
+			transport: Datagram,
+		},
+		{
+			transport: Stream,
+			normalize: true,
+		},
+		{
+			transport: Datagram,
+			normalize: true,
+		},
 	} {
 		transport := test.transport
 		for _, cancelContext := range []bool{false, true} {

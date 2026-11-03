@@ -124,7 +124,9 @@ func (v *VirtualMachineConfiguration) SocketDevices() []SocketDeviceConfiguratio
 	ptrs := nativeArray(vzbridge.VZVirtualMachineConfiguration_SocketDevices(v))
 	socketDevices := make([]SocketDeviceConfiguration, len(ptrs))
 	for i, ptr := range ptrs {
-		socketDevices[i] = &VirtioSocketDeviceConfiguration{pointer: ptr}
+		socketDevices[i] = &VirtioSocketDeviceConfiguration{
+			pointer: ptr,
+		}
 	}
 	return socketDevices
 }

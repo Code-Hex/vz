@@ -61,7 +61,11 @@ func TestRuntimeNotificationsRelease(t *testing.T) {
 	for i := range 40 {
 		select {
 		case event := <-console:
-			want := ConsolePortEvent{DeviceIndex: 0, PortIndex: 3, Open: i%2 == 0}
+			want := ConsolePortEvent{
+				DeviceIndex: 0,
+				PortIndex:   3,
+				Open:        i%2 == 0,
+			}
 			if event != want {
 				t.Fatalf("console event = %+v, want %+v", event, want)
 			}

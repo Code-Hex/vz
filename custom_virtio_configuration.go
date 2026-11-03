@@ -275,7 +275,9 @@ func (c *CustomVirtioDeviceConfiguration) DeviceSpecificConfiguration() *VirtioD
 	if native == nil {
 		return nil
 	}
-	return &VirtioDeviceSpecificConfiguration{pointer: native}
+	return &VirtioDeviceSpecificConfiguration{
+		pointer: native,
+	}
 }
 
 // SharedMemoryRegions returns the configured shared memory regions.
@@ -285,7 +287,9 @@ func (c *CustomVirtioDeviceConfiguration) SharedMemoryRegions() []*VirtioSharedM
 	objects := nativeArray(vzbridge.VZCustomVirtioDeviceConfiguration_SharedMemoryRegions(c))
 	regions := make([]*VirtioSharedMemoryRegionConfiguration, len(objects))
 	for i, object := range objects {
-		regions[i] = &VirtioSharedMemoryRegionConfiguration{pointer: object}
+		regions[i] = &VirtioSharedMemoryRegionConfiguration{
+			pointer: object,
+		}
 	}
 	return regions
 }
@@ -307,7 +311,9 @@ func (v *VirtualMachineConfiguration) CustomVirtioDevices() ([]*CustomVirtioDevi
 	objects := nativeArray(vzbridge.VZVirtualMachineConfiguration_CustomVirtioDevices(v))
 	devices := make([]*CustomVirtioDeviceConfiguration, len(objects))
 	for i, object := range objects {
-		devices[i] = &CustomVirtioDeviceConfiguration{pointer: object}
+		devices[i] = &CustomVirtioDeviceConfiguration{
+			pointer: object,
+		}
 	}
 	return devices, nil
 }

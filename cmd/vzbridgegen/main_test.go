@@ -157,10 +157,23 @@ func TestSDKUnknownABIAndProtocolAdoption(t *testing.T) {
 }
 
 func TestSDKTargetValidation(t *testing.T) {
-	if _, err := generateSDK(sdkTarget{Architecture: "mips"}); err == nil {
+	if _, err := generateSDK(sdkTarget{
+		Architecture: "mips",
+	}); err == nil {
 		t.Fatal("unsupported target accepted")
 	}
-	target := sdkTarget{Architecture: "arm64", Methods: []sdkMethod{{ID: "broken", GoName: "Broken", Owner: "VZFixture", Selector: "broken", Result: sdkType{Kind: "mystery"}}}}
+	target := sdkTarget{
+		Architecture: "arm64",
+		Methods: []sdkMethod{{
+			ID:       "broken",
+			GoName:   "Broken",
+			Owner:    "VZFixture",
+			Selector: "broken",
+			Result: sdkType{
+				Kind: "mystery",
+			},
+		}},
+	}
 	if _, err := generateSDK(target); err == nil {
 		t.Fatal("unknown result kind accepted")
 	}
@@ -175,7 +188,10 @@ func TestSDKInstallerUsesMachineQueue(t *testing.T) {
 @end
 `)
 	method := findMethod(t, target, "VZMacOSInstaller_InitWithVirtualMachine_RestoreImageURL")
-	code, err := generateSDK(sdkTarget{Architecture: "arm64", Methods: []sdkMethod{method}})
+	code, err := generateSDK(sdkTarget{
+		Architecture: "arm64",
+		Methods:      []sdkMethod{method},
+	})
 	if err != nil {
 		t.Fatal(err)
 	}

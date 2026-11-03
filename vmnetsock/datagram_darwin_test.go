@@ -216,7 +216,10 @@ func TestDatagramPacketsPartialSend(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	writer := writeWaitNotifier{RawConn: raw, waiting: make(chan struct{}, 1)}
+	writer := writeWaitNotifier{
+		RawConn: raw,
+		waiting: make(chan struct{}, 1),
+	}
 	packets := [][]byte{
 		bytes.Repeat([]byte{1}, 1500),
 		bytes.Repeat([]byte{2}, 1500),
@@ -302,7 +305,10 @@ func TestDatagramPacketsWriteInterrupted(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			writer := writeWaitNotifier{RawConn: raw, waiting: make(chan struct{}, 1)}
+			writer := writeWaitNotifier{
+				RawConn: raw,
+				waiting: make(chan struct{}, 1),
+			}
 			done := make(chan error, 1)
 			go func() { done <- writeDatagramPackets(writer, [][]byte{make([]byte, 1500)}) }()
 			select {

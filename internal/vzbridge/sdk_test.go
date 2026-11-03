@@ -119,7 +119,32 @@ func TestSDKAvailability(t *testing.T) {
 	for _, test := range []struct {
 		version, min, max string
 		want              bool
-	}{{"12.2", "12.3", "", false}, {"12.3", "12.3", "", true}, {"14.0", "12.3", "14.0", false}, {"13.0", "12.3", "14.0", true}, {"11.0", "", "", true}} {
+	}{{
+		"12.2",
+		"12.3",
+		"",
+		false,
+	}, {
+		"12.3",
+		"12.3",
+		"",
+		true,
+	}, {
+		"14.0",
+		"12.3",
+		"14.0",
+		false,
+	}, {
+		"13.0",
+		"12.3",
+		"14.0",
+		true,
+	}, {
+		"11.0",
+		"",
+		"",
+		true,
+	}} {
 		if got := sdkVersionAvailable(test.version, test.min, test.max); got != test.want {
 			t.Errorf("%+v: got %v", test, got)
 		}
@@ -132,9 +157,30 @@ func TestSDKRequireRejectsUnavailableBeforeDispatch(t *testing.T) {
 		instance                       bool
 		panicWant                      bool
 	}{
-		{"available", "NSObject", "description", "", true, false},
-		{"missing selector", "NSObject", "vz_missingSDKSelector", "", true, true},
-		{"future version", "NSObject", "hash", "999.0", true, true},
+		{
+			"available",
+			"NSObject",
+			"description",
+			"",
+			true,
+			false,
+		},
+		{
+			"missing selector",
+			"NSObject",
+			"vz_missingSDKSelector",
+			"",
+			true,
+			true,
+		},
+		{
+			"future version",
+			"NSObject",
+			"hash",
+			"999.0",
+			true,
+			true,
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			panicked := false

@@ -58,7 +58,9 @@ func NewGDBDebugStubConfiguration(port uint32) (*GDBDebugStubConfiguration, erro
 	if object == nil {
 		return nil, fmt.Errorf("private GDB debug configuration is unavailable")
 	}
-	return &GDBDebugStubConfiguration{pointer: object}, nil
+	return &GDBDebugStubConfiguration{
+		pointer: object,
+	}, nil
 }
 
 // SetDebugStubVirtualMachineConfiguration sets debug stub configuration. Empty by default.

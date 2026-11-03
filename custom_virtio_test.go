@@ -30,8 +30,12 @@ func TestCustomVirtioConfiguration(t *testing.T) {
 		t.Fatal(err)
 	}
 	config, err := vz.NewCustomVirtioDeviceConfiguration(4, 0xff, 0, 1,
-		vz.WithCustomVirtioMandatoryFeatures(vz.VirtioFeatureSet{Subset0: 1}),
-		vz.WithCustomVirtioOptionalFeatures(vz.VirtioFeatureSet{Subset0: 2}),
+		vz.WithCustomVirtioMandatoryFeatures(vz.VirtioFeatureSet{
+			Subset0: 1,
+		}),
+		vz.WithCustomVirtioOptionalFeatures(vz.VirtioFeatureSet{
+			Subset0: 2,
+		}),
 		vz.WithCustomVirtioDeviceSpecificConfiguration(specific),
 		vz.WithCustomVirtioSharedMemoryRegions(region),
 	)

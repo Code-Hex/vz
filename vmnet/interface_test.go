@@ -159,7 +159,10 @@ func TestVMNetInterfaceFunctionalOptions(t *testing.T) {
 		options  []vmnet.InterfaceOption
 		checkMAC bool
 	}{
-		{name: "defaults", checkMAC: true},
+		{
+			name:     "defaults",
+			checkMAC: true,
+		},
 		{
 			name: "disable MAC allocation",
 			options: []vmnet.InterfaceOption{

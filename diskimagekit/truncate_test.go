@@ -18,15 +18,96 @@ func TestASIFTruncateMappings(t *testing.T) {
 		ownOffset  int64
 		want       []byte
 	}{
-		{"missing table", 2049, 2048, 2050, false, 0, 0, []byte{'B', 'B'}},
-		{"inherited short tail", 2049, 2048, 2050, true, 0, 0, []byte{'B', 'B'}},
-		{"inherited collapse", 2050, 2049, 2051, false, 512, 512, []byte{'B', 'B', 'B'}},
-		{"retained sparse tail", 2050, 2049, 2051, false, 1024, 0, []byte{'W', 0, 'B'}},
-		{"inherited full chunk", 4096, 2048, 4096, true, 0, 0, []byte{0, 0}},
-		{"inherited partial chunk", 4096, 2049, 4096, true, 0, 0, []byte{'B', 'B'}},
-		{"sparse partial chunk", 4096, 2049, 4096, false, 1024, 0, []byte{'W', 0}},
-		{"sparse short tail", 2049, 2048, 2050, false, 512, 0, []byte{0, 0}},
-		{"allocated partial chunk", 4096, 2049, 4096, false, 1 << 20, 0, []byte{'W', 0}},
+		{
+			"missing table",
+			2049,
+			2048,
+			2050,
+			false,
+			0,
+			0,
+			[]byte{'B', 'B'},
+		},
+		{
+			"inherited short tail",
+			2049,
+			2048,
+			2050,
+			true,
+			0,
+			0,
+			[]byte{'B', 'B'},
+		},
+		{
+			"inherited collapse",
+			2050,
+			2049,
+			2051,
+			false,
+			512,
+			512,
+			[]byte{'B', 'B', 'B'},
+		},
+		{
+			"retained sparse tail",
+			2050,
+			2049,
+			2051,
+			false,
+			1024,
+			0,
+			[]byte{'W', 0, 'B'},
+		},
+		{
+			"inherited full chunk",
+			4096,
+			2048,
+			4096,
+			true,
+			0,
+			0,
+			[]byte{0, 0},
+		},
+		{
+			"inherited partial chunk",
+			4096,
+			2049,
+			4096,
+			true,
+			0,
+			0,
+			[]byte{'B', 'B'},
+		},
+		{
+			"sparse partial chunk",
+			4096,
+			2049,
+			4096,
+			false,
+			1024,
+			0,
+			[]byte{'W', 0},
+		},
+		{
+			"sparse short tail",
+			2049,
+			2048,
+			2050,
+			false,
+			512,
+			0,
+			[]byte{0, 0},
+		},
+		{
+			"allocated partial chunk",
+			4096,
+			2049,
+			4096,
+			false,
+			1 << 20,
+			0,
+			[]byte{'W', 0},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			dir := t.TempDir()
@@ -123,7 +204,13 @@ func TestASIFTruncateSkipsMissingTables(t *testing.T) {
 	for _, test := range []struct {
 		off  int64
 		want byte
-	}{{1 << 20, 0}, {tableBoundary, 'B'}} {
+	}{{
+		1 << 20,
+		0,
+	}, {
+		tableBoundary,
+		'B',
+	}} {
 		got := make([]byte, 512)
 		if _, err := d.ReadAt(got, test.off); err != nil {
 			t.Fatal(err)

@@ -30,7 +30,12 @@ func extractMetadata(path, header string) error {
 	if err != nil {
 		return err
 	}
-	metadata := generationMetadata{Schema: 1, ExtractorSHA256: extractorSHA256(), HeaderSHA256: fmt.Sprintf("%x", sha256.Sum256(source)), Bindings: bindings}
+	metadata := generationMetadata{
+		Schema:          1,
+		ExtractorSHA256: extractorSHA256(),
+		HeaderSHA256:    fmt.Sprintf("%x", sha256.Sum256(source)),
+		Bindings:        bindings,
+	}
 	data, err := json.Marshal(metadata)
 	if err != nil {
 		return err

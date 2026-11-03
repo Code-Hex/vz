@@ -3,5 +3,7 @@
 package vz
 
 func wrapLinuxRosettaDirectoryShare(ptr *pointer) DirectoryShare {
-	return &LinuxRosettaDirectoryShare{pointer: ptr}
+	return &LinuxRosettaDirectoryShare{
+		pointer: ptr,
+	}
 }

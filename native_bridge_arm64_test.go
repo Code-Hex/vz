@@ -31,7 +31,10 @@ func TestNativeBridgeInvalidRestoreImageCompletes(t *testing.T) {
 	completed := make(chan result, 1)
 	go func() {
 		image, err := LoadMacOSRestoreImageFromPath(path)
-		completed <- result{image, err}
+		completed <- result{
+			image,
+			err,
+		}
 	}()
 	select {
 	case got := <-completed:

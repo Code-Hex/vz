@@ -213,7 +213,9 @@ func NewEFIVariableStore(path string, opts ...NewEFIVariableStoreOption) (*EFIVa
 	if err := macOSAvailable(13); err != nil {
 		return nil, err
 	}
-	variableStore := &EFIVariableStore{path: path}
+	variableStore := &EFIVariableStore{
+		path: path,
+	}
 	for _, optFunc := range opts {
 		if err := optFunc(variableStore); err != nil {
 			return nil, err

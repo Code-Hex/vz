@@ -45,7 +45,9 @@ func networkSerialization(ptr, errorPtr unsafe.Pointer) (*NetworkSerialization, 
 	if ptr == nil {
 		return nil, fmt.Errorf("vmnet returned no network serialization")
 	}
-	return &NetworkSerialization{object: *objc.NewManagedPointer(ptr, vzbridge.ReleaseXPCObject)}, nil
+	return &NetworkSerialization{
+		object: *objc.NewManagedPointer(ptr, vzbridge.ReleaseXPCObject),
+	}, nil
 }
 
 // NewNetworkWithSerialization creates another reference to the same logical

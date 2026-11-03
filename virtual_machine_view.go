@@ -59,7 +59,12 @@ func NewVirtualMachineView(machine *VirtualMachine) (*VirtualMachineView, error)
 	if native == nil {
 		return nil, errors.New("failed to create virtual machine view")
 	}
-	return &VirtualMachineView{owner: &virtualMachineViewOwner{native: objc.NewManagedPointer(native, vzbridge.ViewRelease), machine: machine}}, nil
+	return &VirtualMachineView{
+		owner: &virtualMachineViewOwner{
+			native:  objc.NewManagedPointer(native, vzbridge.ViewRelease),
+			machine: machine,
+		},
+	}, nil
 }
 
 func (v *VirtualMachineView) active() (*virtualMachineViewOwner, error) {

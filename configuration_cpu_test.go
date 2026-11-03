@@ -25,8 +25,16 @@ func TestVirtualMachineConfigurationCPUCount(t *testing.T) {
 		cpu   uint
 		valid bool
 	}{
-		{name: "minimum", cpu: minimumCPUCount, valid: true},
-		{name: "exceeds 32 bits", cpu: 1<<32 + minimumCPUCount, valid: false},
+		{
+			name:  "minimum",
+			cpu:   minimumCPUCount,
+			valid: true,
+		},
+		{
+			name:  "exceeds 32 bits",
+			cpu:   1<<32 + minimumCPUCount,
+			valid: false,
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			config, err := vz.NewVirtualMachineConfiguration(boot, tc.cpu, vz.VirtualMachineConfigurationMinimumAllowedMemorySize())

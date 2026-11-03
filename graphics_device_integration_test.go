@@ -49,7 +49,11 @@ func TestRunningGraphicsDisplay(t *testing.T) {
 	for _, reconfiguring := range []bool{true, false} {
 		select {
 		case event := <-events:
-			want := vz.GraphicsDisplayEvent{DeviceIndex: 0, DisplayIndex: 0, Reconfiguring: reconfiguring}
+			want := vz.GraphicsDisplayEvent{
+				DeviceIndex:   0,
+				DisplayIndex:  0,
+				Reconfiguring: reconfiguring,
+			}
 			if event != want {
 				t.Fatalf("display event = %+v, want %+v", event, want)
 			}

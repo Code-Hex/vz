@@ -93,11 +93,17 @@ func (p *VirtioConsolePort) Attachment() SerialPortAttachment {
 	}
 	switch objcutil.String(vzbridge.NSObject_ClassName(ptr)) {
 	case "VZFileHandleSerialPortAttachment":
-		return &FileHandleSerialPortAttachment{pointer: ptr}
+		return &FileHandleSerialPortAttachment{
+			pointer: ptr,
+		}
 	case "VZFileSerialPortAttachment":
-		return &FileSerialPortAttachment{pointer: ptr}
+		return &FileSerialPortAttachment{
+			pointer: ptr,
+		}
 	case "VZSpiceAgentPortAttachment":
-		return &SpiceAgentPortAttachment{pointer: ptr}
+		return &SpiceAgentPortAttachment{
+			pointer: ptr,
+		}
 	default:
 		return nil
 	}

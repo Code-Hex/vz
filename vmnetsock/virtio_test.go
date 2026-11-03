@@ -50,13 +50,39 @@ func TestVirtioEthernetPacketRejectsInvalidMetadata(t *testing.T) {
 		header []byte
 		size   int
 	}{
-		{name: "short header", size: 11},
-		{name: "short Ethernet frame", size: 25},
-		{name: "RSC with incomplete checksum", header: []byte{5}, size: 26},
-		{name: "GSO", header: []byte{1, 1}, size: 26},
-		{name: "checksum start past frame", header: []byte{1, 0, 0, 0, 0, 0, 14}, size: 26},
-		{name: "checksum field past frame", header: []byte{1, 0, 0, 0, 0, 0, 12, 0, 1}, size: 26},
-		{name: "large checksum offset", header: []byte{1, 0, 0, 0, 0, 0, 0xff, 0xff, 0xff, 0xff}, size: 26},
+		{
+			name: "short header",
+			size: 11,
+		},
+		{
+			name: "short Ethernet frame",
+			size: 25,
+		},
+		{
+			name:   "RSC with incomplete checksum",
+			header: []byte{5},
+			size:   26,
+		},
+		{
+			name:   "GSO",
+			header: []byte{1, 1},
+			size:   26,
+		},
+		{
+			name:   "checksum start past frame",
+			header: []byte{1, 0, 0, 0, 0, 0, 14},
+			size:   26,
+		},
+		{
+			name:   "checksum field past frame",
+			header: []byte{1, 0, 0, 0, 0, 0, 12, 0, 1},
+			size:   26,
+		},
+		{
+			name:   "large checksum offset",
+			header: []byte{1, 0, 0, 0, 0, 0, 0xff, 0xff, 0xff, 0xff},
+			size:   26,
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			packet := make([]byte, test.size)

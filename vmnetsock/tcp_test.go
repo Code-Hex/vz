@@ -433,9 +433,18 @@ func TestTCPPacketBoundaries(t *testing.T) {
 		name   string
 		packet []byte
 	}{
-		{"short", []byte{1}},
-		{"short IP", valid[:30]},
-		{"short TCP", valid[:len(valid)-1]},
+		{
+			"short",
+			[]byte{1},
+		},
+		{
+			"short IP",
+			valid[:30],
+		},
+		{
+			"short TCP",
+			valid[:len(valid)-1],
+		},
 	} {
 		t.Run(bad.name, func(t *testing.T) {
 			if _, err := parseTCPPacket(bad.packet); err == nil {

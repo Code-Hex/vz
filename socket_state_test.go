@@ -10,13 +10,20 @@ import (
 )
 
 func TestSocketAcceptQueuePreservesConnections(t *testing.T) {
-	state := &socketAcceptState{wake: make(chan struct{}, 1)}
+	state := &socketAcceptState{
+		wake: make(chan struct{}, 1),
+	}
 	defer state.close()
 	for index := range 32 {
 		server, client := net.Pipe()
 		defer client.Close()
-		connection := &VirtioSocketConnection{rawConn: server, sourcePort: uint32(index)}
-		if !state.enqueue(connResults{conn: connection}) {
+		connection := &VirtioSocketConnection{
+			rawConn:    server,
+			sourcePort: uint32(index),
+		}
+		if !state.enqueue(connResults{
+			conn: connection,
+		}) {
 			t.Fatal("open listener rejected a connection")
 		}
 	}
@@ -30,7 +37,9 @@ func TestSocketAcceptQueuePreservesConnections(t *testing.T) {
 }
 
 func TestSocketAcceptCloseWakesWaiters(t *testing.T) {
-	state := &socketAcceptState{wake: make(chan struct{}, 1)}
+	state := &socketAcceptState{
+		wake: make(chan struct{}, 1),
+	}
 	results := make(chan error, 16)
 	for range cap(results) {
 		go func() {
@@ -53,7 +62,9 @@ func TestSocketAcceptCloseWakesWaiters(t *testing.T) {
 }
 
 func TestSocketAcceptCloseRacesWithConnections(t *testing.T) {
-	state := &socketAcceptState{wake: make(chan struct{}, 1)}
+	state := &socketAcceptState{
+		wake: make(chan struct{}, 1),
+	}
 	var wait sync.WaitGroup
 	clients := make([]net.Conn, 64)
 	for index := range clients {
@@ -63,7 +74,11 @@ func TestSocketAcceptCloseRacesWithConnections(t *testing.T) {
 		wait.Add(1)
 		go func() {
 			defer wait.Done()
-			state.enqueue(connResults{conn: &VirtioSocketConnection{rawConn: server}})
+			state.enqueue(connResults{
+				conn: &VirtioSocketConnection{
+					rawConn: server,
+				},
+			})
 		}()
 	}
 	state.close()

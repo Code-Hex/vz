@@ -29,7 +29,10 @@ func (q *VirtioQueue) NextElement() *VirtioQueueElement {
 	if native == nil {
 		return nil
 	}
-	return &VirtioQueueElement{pointer: native, returned: new(bool)}
+	return &VirtioQueueElement{
+		pointer:  native,
+		returned: new(bool),
+	}
 }
 
 // Elements returns an iterator over the queue's available descriptor chains.

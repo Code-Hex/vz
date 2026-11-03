@@ -91,7 +91,9 @@ func onQueue(body func()) {
 }
 
 func onObjectQueue(object unsafe.Pointer, body func()) {
-	call := &queueCall{body: body}
+	call := &queueCall{
+		body: body,
+	}
 	handle := cgo.NewHandle(call)
 	defer handle.Delete()
 	dispatchSyncOnObject(object, queueCallback, uintptr(handle))

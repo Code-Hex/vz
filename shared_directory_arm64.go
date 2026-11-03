@@ -124,16 +124,20 @@ type LinuxRosettaUnixSocketCachingOptions struct {
 
 var _ LinuxRosettaCachingOptions = (*LinuxRosettaUnixSocketCachingOptions)(nil)
 
-// NewLinuxRosettaUnixSocketCachingOptions creates a new Rosetta caching options object for
-// a UNIX domain socket with the path you specify.
+// NewLinuxRosettaUnixSocketCachingOptions creates caching options for the Rosetta
+// translation daemon's Unix domain socket at path.
 //
-// The path of the Unix Domain Socket to be used to communicate with the Rosetta translation daemon.
+// The path must be valid UTF-8 and contain no NUL bytes.
 //
-// This is only supported on macOS 14 and newer, error will
-// be returned on older versions.
+// This function requires macOS 14 or later. It returns an error on earlier versions.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzlinuxrosettaunixsocketcachingoptions?language=objc
 func NewLinuxRosettaUnixSocketCachingOptions(path string) (*LinuxRosettaUnixSocketCachingOptions, error) {
 	if err := macOSAvailable(14); err != nil {
 		return nil, err
+	}
+	if !validUTF8CString(path) {
+		return nil, fmt.Errorf("path must be valid UTF-8 without NUL bytes")
 	}
 	maxPathLen := vzbridge.VZLinuxRosettaUnixSocketCachingOptions_MaximumPathLength()
 	if int(maxPathLen) < len(path) {
@@ -161,15 +165,20 @@ type LinuxRosettaAbstractSocketCachingOptions struct {
 
 var _ LinuxRosettaCachingOptions = (*LinuxRosettaAbstractSocketCachingOptions)(nil)
 
-// NewLinuxRosettaAbstractSocketCachingOptions creates a new LinuxRosettaAbstractSocketCachingOptions.
+// NewLinuxRosettaAbstractSocketCachingOptions creates caching options for the
+// Rosetta translation daemon's abstract socket with the given name.
 //
-// The name of the Abstract Socket to be used to communicate with the Rosetta translation daemon.
+// The name must be valid UTF-8 and contain no NUL bytes.
 //
-// This is only supported on macOS 14 and newer, error will
-// be returned on older versions.
+// This function requires macOS 14 or later. It returns an error on earlier versions.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzlinuxrosettaabstractsocketcachingoptions?language=objc
 func NewLinuxRosettaAbstractSocketCachingOptions(name string) (*LinuxRosettaAbstractSocketCachingOptions, error) {
 	if err := macOSAvailable(14); err != nil {
 		return nil, err
+	}
+	if !validUTF8CString(name) {
+		return nil, fmt.Errorf("name must be valid UTF-8 without NUL bytes")
 	}
 	maxNameLen := vzbridge.VZLinuxRosettaAbstractSocketCachingOptions_MaximumNameLength()
 	if int(maxNameLen) < len(name) {

@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - codex/diagnose-ci312-intel
+    paths:
+      - '**/*.go'
+      - internal/ci312diag/*.py
 
 permissions:
   contents: read

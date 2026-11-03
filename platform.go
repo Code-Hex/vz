@@ -45,6 +45,20 @@ func IsNestedVirtualizationSupported() bool {
 	return vzbridge.VZGenericPlatformConfiguration_IsNestedVirtualizationSupported()
 }
 
+// IsNestedVirtualizationEnabled reports whether nested virtualization is enabled
+// in this platform configuration. Use [IsNestedVirtualizationSupported] to check
+// host support.
+//
+// This requires macOS 15 or later and returns an error on earlier versions.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzgenericplatformconfiguration/isnestedvirtualizationenabled?language=objc
+func (m *GenericPlatformConfiguration) IsNestedVirtualizationEnabled() (bool, error) {
+	if err := macOSAvailable(15); err != nil {
+		return false, err
+	}
+	return vzbridge.VZGenericPlatformConfiguration_IsNestedVirtualizationEnabled(m), nil
+}
+
 // SetNestedVirtualizationEnabled toggles nested virtualization.
 func (m *GenericPlatformConfiguration) SetNestedVirtualizationEnabled(enable bool) error {
 	if err := macOSAvailable(15); err != nil {

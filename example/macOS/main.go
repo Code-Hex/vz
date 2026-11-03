@@ -86,7 +86,22 @@ func runVM(ctx context.Context) error {
 		}()
 	}
 
-	if err := vm.Start(); err != nil {
+	options, err := vz.NewMacGuestProvisioningOptions(
+		"Guest User",
+		"vzuser",
+		"guest-password",
+		vz.WithGuestAutomaticLogin(true),
+		vz.WithGuestRemoteLogin(true))
+
+	switch {
+	case err == nil:
+		err = vm.Start(vz.WithGuestProvisioningOptions(options))
+	case errors.Is(err, vz.ErrUnsupportedOSVersion),
+		errors.Is(err, vz.ErrBuildTargetOSVersion):
+		err = vm.Start()
+	}
+
+	if err != nil {
 		return err
 	}
 

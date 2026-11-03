@@ -22,8 +22,18 @@ func TestInterfaceVirtioHeaderPackets(t *testing.T) {
 		sender, receiver *Interface
 		writeHeader      bool
 	}{
-		{"plain to header", plain, header, false},
-		{"header to plain", header, plain, true},
+		{
+			"plain to header",
+			plain,
+			header,
+			false,
+		},
+		{
+			"header to plain",
+			header,
+			plain,
+			true,
+		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			frames := [][]byte{

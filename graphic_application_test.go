@@ -18,12 +18,41 @@ func TestNewGraphicWindowRejectsInvalidConfiguration(t *testing.T) {
 		height  float64
 		options []StartGraphicApplicationOption
 	}{
-		{name: "missing VM", width: 640, height: 480},
-		{name: "zero width", machine: machine, height: 480},
-		{name: "negative height", machine: machine, width: 640, height: -1},
-		{name: "NaN width", machine: machine, width: math.NaN(), height: 480},
-		{name: "infinite height", machine: machine, width: 640, height: math.Inf(1)},
-		{name: "nil option", machine: machine, width: 640, height: 480, options: []StartGraphicApplicationOption{nil}},
+		{
+			name:   "missing VM",
+			width:  640,
+			height: 480,
+		},
+		{
+			name:    "zero width",
+			machine: machine,
+			height:  480,
+		},
+		{
+			name:    "negative height",
+			machine: machine,
+			width:   640,
+			height:  -1,
+		},
+		{
+			name:    "NaN width",
+			machine: machine,
+			width:   math.NaN(),
+			height:  480,
+		},
+		{
+			name:    "infinite height",
+			machine: machine,
+			width:   640,
+			height:  math.Inf(1),
+		},
+		{
+			name:    "nil option",
+			machine: machine,
+			width:   640,
+			height:  480,
+			options: []StartGraphicApplicationOption{nil},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			window, err := NewGraphicWindow(test.machine, test.width, test.height, test.options...)
@@ -59,9 +88,21 @@ func TestStartGraphicApplicationRejectsInvalidWindows(t *testing.T) {
 		windows []*GraphicWindow
 		message string
 	}{
-		{name: "nil", windows: []*GraphicWindow{nil}, message: "valid windows"},
-		{name: "zero value", windows: []*GraphicWindow{{}}, message: "valid windows"},
-		{name: "duplicate VM", windows: []*GraphicWindow{first, second}, message: "same virtual machine twice"},
+		{
+			name:    "nil",
+			windows: []*GraphicWindow{nil},
+			message: "valid windows",
+		},
+		{
+			name:    "zero value",
+			windows: []*GraphicWindow{{}},
+			message: "valid windows",
+		},
+		{
+			name:    "duplicate VM",
+			windows: []*GraphicWindow{first, second},
+			message: "same virtual machine twice",
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			err := StartGraphicApplication(test.windows[0], test.windows[1:]...)

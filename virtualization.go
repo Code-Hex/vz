@@ -203,7 +203,10 @@ func (v *VirtualMachine) SocketDevices() []*VirtioSocketDevice {
 	pointers := nativeArray(vzbridge.VZVirtualMachine_SocketDevices(v))
 	values := make([]*VirtioSocketDevice, len(pointers))
 	for i, ptr := range pointers {
-		values[i] = &VirtioSocketDevice{vm: v, pointer: ptr}
+		values[i] = &VirtioSocketDevice{
+			vm:      v,
+			pointer: ptr,
+		}
 	}
 	return values
 }
@@ -219,7 +222,10 @@ func (v *VirtualMachine) USBControllers() []*USBController {
 	pointers := nativeArray(vzbridge.VZVirtualMachine_UsbControllers(v))
 	values := make([]*USBController, len(pointers))
 	for i, ptr := range pointers {
-		values[i] = &USBController{vm: v, pointer: ptr}
+		values[i] = &USBController{
+			vm:      v,
+			pointer: ptr,
+		}
 	}
 	return values
 }

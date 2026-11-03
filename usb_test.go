@@ -61,10 +61,21 @@ func TestUSBDeviceUUID(t *testing.T) {
 		name string
 		uuid string
 	}{
-		{name: "empty"},
-		{name: "malformed", uuid: "not-a-uuid"},
-		{name: "NUL", uuid: "DFA9B5EE-FF88-48D9-A66D-86B22062D816\x00ignored"},
-		{name: "invalid UTF-8", uuid: "\xff"},
+		{
+			name: "empty",
+		},
+		{
+			name: "malformed",
+			uuid: "not-a-uuid",
+		},
+		{
+			name: "NUL",
+			uuid: "DFA9B5EE-FF88-48D9-A66D-86B22062D816\x00ignored",
+		},
+		{
+			name: "invalid UTF-8",
+			uuid: "\xff",
+		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			config, err := NewUSBMassStorageDeviceConfiguration(attachment, WithUSBDeviceUUID(tt.uuid))

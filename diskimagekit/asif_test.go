@@ -292,13 +292,41 @@ func TestInvalidInput(t *testing.T) {
 		mutate   func([]byte)
 		deferred bool
 	}{
-		{"version", func(b []byte) { bigEndian.PutUint32(b[4:], 2) }, false},
-		{"block", func(b []byte) { bigEndian.PutUint16(b[0x44:], 1024) }, false},
-		{"chunk", func(b []byte) { bigEndian.PutUint32(b[0x40:], 4096) }, true},
-		{"size", func(b []byte) { bigEndian.PutUint64(b[0x30:], ^uint64(0)) }, false},
-		{"metadata overlap", func(b []byte) { bigEndian.PutUint64(b[0x48:], 1) }, true},
-		{"directory overlap", func(b []byte) { copy(b[0x18:0x20], b[0x10:0x18]) }, true},
-		{"directory pointer", func(b []byte) { off := bigEndian.Uint64(b[0x18:]); bigEndian.PutUint64(b[off+8:], ^uint64(0)) }, true},
+		{
+			"version",
+			func(b []byte) { bigEndian.PutUint32(b[4:], 2) },
+			false,
+		},
+		{
+			"block",
+			func(b []byte) { bigEndian.PutUint16(b[0x44:], 1024) },
+			false,
+		},
+		{
+			"chunk",
+			func(b []byte) { bigEndian.PutUint32(b[0x40:], 4096) },
+			true,
+		},
+		{
+			"size",
+			func(b []byte) { bigEndian.PutUint64(b[0x30:], ^uint64(0)) },
+			false,
+		},
+		{
+			"metadata overlap",
+			func(b []byte) { bigEndian.PutUint64(b[0x48:], 1) },
+			true,
+		},
+		{
+			"directory overlap",
+			func(b []byte) { copy(b[0x18:0x20], b[0x10:0x18]) },
+			true,
+		},
+		{
+			"directory pointer",
+			func(b []byte) { off := bigEndian.Uint64(b[0x18:]); bigEndian.PutUint64(b[off+8:], ^uint64(0)) },
+			true,
+		},
 	}
 	for _, test := range mutations {
 		t.Run(test.name, func(t *testing.T) {

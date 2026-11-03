@@ -91,7 +91,9 @@ func USBAccessoryChangedNotify(channel chan<- USBAccessoryEvent) (accessories []
 					accessories = append(accessories, accessory)
 				}
 			}
-			result := registrationResult{accessories: accessories}
+			result := registrationResult{
+				accessories: accessories,
+			}
 			if err := objcutil.NewNSError(second); err != nil {
 				result.err = err
 			}

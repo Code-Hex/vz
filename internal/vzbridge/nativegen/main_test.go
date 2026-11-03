@@ -24,7 +24,19 @@ func fixtureBindings(t *testing.T, source string) ([]binding, error) {
 
 func TestHeaderChangesBindingTypes(t *testing.T) {
 	for _, test := range []struct{ ctype, gotype string }{
-		{"unsigned int", "uint32"}, {"unsigned long long", "uint64"}, {"float", "float32"}, {"double", "float64"},
+		{
+			"unsigned int",
+			"uint32",
+		}, {
+			"unsigned long long",
+			"uint64",
+		}, {
+			"float",
+			"float32",
+		}, {
+			"double",
+			"float64",
+		},
 	} {
 		t.Run(test.gotype, func(t *testing.T) {
 			bindings, err := fixtureBindings(t, "typedef "+test.ctype+" Sample; Sample vz_sample(Sample value);")
@@ -70,22 +82,86 @@ void vz_dispatch(unsigned long callback) __attribute__((annotate("vzbridge:manua
 
 func TestHeaderRejectsInvalidContracts(t *testing.T) {
 	for _, test := range []struct{ name, source, message string }{
-		{"metadata typo", `void vz_call(void) __attribute__((annotate("vzbridge:noqeue")));`, "unknown annotation"},
-		{"owned scalar", `typedef int Owned __attribute__((annotate("vzbridge:owned"))); Owned vz_call(void);`, "requires void *"},
-		{"errorout scalar", `typedef int ErrorOut __attribute__((annotate("vzbridge:errorout"))); void vz_call(ErrorOut error);`, "requires void * *"},
-		{"errorout result", fixtureTypes + `ErrorOut vz_call(void);`, "errorout type is only valid as a parameter"},
-		{"owned input", fixtureTypes + `void vz_call(Owned value);`, "owned type is only valid as a result"},
-		{"borrowed output", fixtureTypes + `Object vz_call(void);`, "object type is only valid as a parameter"},
-		{"unknown pointer", `struct Unknown; void vz_call(struct Unknown *value);`, "unsupported native ABI type"},
-		{"calling convention", `void vz_call(void) __attribute__((ms_abi));`, "unsupported function type"},
-		{"function pointer", `void vz_call(void (*callback)(void));`, "unsupported native ABI type"},
-		{"variadic", `void vz_call(int value, ...);`, "variadic"},
-		{"duplicate symbol", `void vz_call(void); void vz_call(void);`, "duplicate native symbol"},
-		{"duplicate name", `void vz_call(void); void vz_Call(void);`, "duplicate Go name"},
-		{"parameter annotation", `void vz_call(void *value __attribute__((annotate("vzbridge:noqueue"))));`, "parameter annotation"},
-		{"conflicting queue", `void vz_call(void) __attribute__((annotate("vzbridge:noqueue"), annotate("vzbridge:manual")));`, "multiple annotations"},
-		{"missing argument name", `void vz_call(int);`, "invalid parameter"},
-		{"syntax error", `void vz_call( ;`, "clang"},
+		{
+			"metadata typo",
+			`void vz_call(void) __attribute__((annotate("vzbridge:noqeue")));`,
+			"unknown annotation",
+		},
+		{
+			"owned scalar",
+			`typedef int Owned __attribute__((annotate("vzbridge:owned"))); Owned vz_call(void);`,
+			"requires void *",
+		},
+		{
+			"errorout scalar",
+			`typedef int ErrorOut __attribute__((annotate("vzbridge:errorout"))); void vz_call(ErrorOut error);`,
+			"requires void * *",
+		},
+		{
+			"errorout result",
+			fixtureTypes + `ErrorOut vz_call(void);`,
+			"errorout type is only valid as a parameter",
+		},
+		{
+			"owned input",
+			fixtureTypes + `void vz_call(Owned value);`,
+			"owned type is only valid as a result",
+		},
+		{
+			"borrowed output",
+			fixtureTypes + `Object vz_call(void);`,
+			"object type is only valid as a parameter",
+		},
+		{
+			"unknown pointer",
+			`struct Unknown; void vz_call(struct Unknown *value);`,
+			"unsupported native ABI type",
+		},
+		{
+			"calling convention",
+			`void vz_call(void) __attribute__((ms_abi));`,
+			"unsupported function type",
+		},
+		{
+			"function pointer",
+			`void vz_call(void (*callback)(void));`,
+			"unsupported native ABI type",
+		},
+		{
+			"variadic",
+			`void vz_call(int value, ...);`,
+			"variadic",
+		},
+		{
+			"duplicate symbol",
+			`void vz_call(void); void vz_call(void);`,
+			"duplicate native symbol",
+		},
+		{
+			"duplicate name",
+			`void vz_call(void); void vz_Call(void);`,
+			"duplicate Go name",
+		},
+		{
+			"parameter annotation",
+			`void vz_call(void *value __attribute__((annotate("vzbridge:noqueue"))));`,
+			"parameter annotation",
+		},
+		{
+			"conflicting queue",
+			`void vz_call(void) __attribute__((annotate("vzbridge:noqueue"), annotate("vzbridge:manual")));`,
+			"multiple annotations",
+		},
+		{
+			"missing argument name",
+			`void vz_call(int);`,
+			"invalid parameter",
+		},
+		{
+			"syntax error",
+			`void vz_call( ;`,
+			"clang",
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			_, err := fixtureBindings(t, test.source)

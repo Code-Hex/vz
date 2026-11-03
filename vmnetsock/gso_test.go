@@ -70,12 +70,60 @@ func TestVirtioTCPGSO(t *testing.T) {
 		mss      uint16
 		segments []int
 	}{
-		{"IPv4 ECN", false, true, 701, 250, 1460, []int{250, 250, 201}},
-		{"IPv6 ECN", true, true, 701, 250, 1460, []int{250, 250, 201}},
-		{"single segment", false, false, 37, 250, 1460, []int{37}},
-		{"peer MSS", true, false, 701, 250, 200, []int{188, 188, 188, 137}},
-		{"MTU", false, false, 3001, 2000, 9000, []int{1448, 1448, 105}},
-		{"many batches", true, false, 2101, 60, 1460, append(slices.Repeat([]int{60}, 35), 1)},
+		{
+			"IPv4 ECN",
+			false,
+			true,
+			701,
+			250,
+			1460,
+			[]int{250, 250, 201},
+		},
+		{
+			"IPv6 ECN",
+			true,
+			true,
+			701,
+			250,
+			1460,
+			[]int{250, 250, 201},
+		},
+		{
+			"single segment",
+			false,
+			false,
+			37,
+			250,
+			1460,
+			[]int{37},
+		},
+		{
+			"peer MSS",
+			true,
+			false,
+			701,
+			250,
+			200,
+			[]int{188, 188, 188, 137},
+		},
+		{
+			"MTU",
+			false,
+			false,
+			3001,
+			2000,
+			9000,
+			[]int{1448, 1448, 105},
+		},
+		{
+			"many batches",
+			true,
+			false,
+			2101,
+			60,
+			1460,
+			append(slices.Repeat([]int{60}, 35), 1),
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			state := gsoTestState(t, test.v6, test.mss)
@@ -161,16 +209,46 @@ func TestVirtioTCPGSOInvalidMetadata(t *testing.T) {
 		name string
 		edit func([]byte)
 	}{
-		{"zero segment size", func(p []byte) { clear(p[4:6]) }},
-		{"missing checksum flag", func(p []byte) { p[0] = 0 }},
-		{"RSC duplicate ACKs", func(p []byte) { p[0] = virtioRSCInfo | virtioNeedsChecksum }},
-		{"wrong IP version", func(p []byte) { p[1] = 4 }},
-		{"wrong checksum start", func(p []byte) { p[6]++ }},
-		{"wrong checksum offset", func(p []byte) { p[8]++ }},
-		{"UFO", func(p []byte) { p[1] = 3 }},
-		{"UDP L4 with TCP payload", func(p []byte) { p[1] = virtioGSOUDPL4 }},
-		{"ECN alone", func(p []byte) { p[1] = 0x80 }},
-		{"unknown GSO", func(p []byte) { p[1] = 0x41 }},
+		{
+			"zero segment size",
+			func(p []byte) { clear(p[4:6]) },
+		},
+		{
+			"missing checksum flag",
+			func(p []byte) { p[0] = 0 },
+		},
+		{
+			"RSC duplicate ACKs",
+			func(p []byte) { p[0] = virtioRSCInfo | virtioNeedsChecksum },
+		},
+		{
+			"wrong IP version",
+			func(p []byte) { p[1] = 4 },
+		},
+		{
+			"wrong checksum start",
+			func(p []byte) { p[6]++ },
+		},
+		{
+			"wrong checksum offset",
+			func(p []byte) { p[8]++ },
+		},
+		{
+			"UFO",
+			func(p []byte) { p[1] = 3 },
+		},
+		{
+			"UDP L4 with TCP payload",
+			func(p []byte) { p[1] = virtioGSOUDPL4 },
+		},
+		{
+			"ECN alone",
+			func(p []byte) { p[1] = 0x80 },
+		},
+		{
+			"unknown GSO",
+			func(p []byte) { p[1] = 0x41 },
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			state := gsoTestState(t, false, 1460)
@@ -225,8 +303,14 @@ func TestVirtioTCPGSOFrameLength(t *testing.T) {
 		name string
 		v6   bool
 	}{
-		{"IPv4", false},
-		{"IPv6", true},
+		{
+			"IPv4",
+			false,
+		},
+		{
+			"IPv6",
+			true,
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			state := gsoTestState(t, test.v6, 1460)

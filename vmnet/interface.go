@@ -237,9 +237,13 @@ func completeInterfaceStart(r *interfaceResource, size uint64, startErr error) (
 		return nil, errors.Join(startErr, r.stop())
 	}
 	r.maxSize = int(size)
-	owner := &interfaceOwner{resource: r}
+	owner := &interfaceOwner{
+		resource: r,
+	}
 	runtime.AddCleanup(owner, func(resource *interfaceResource) { _ = resource.stop() }, r)
-	return &Interface{owner: owner}, nil
+	return &Interface{
+		owner: owner,
+	}, nil
 }
 
 // MACAddress returns a copy of the address reported by vmnet, or nil if none was reported.

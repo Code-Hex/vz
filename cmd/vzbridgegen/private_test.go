@@ -9,14 +9,49 @@ import (
 )
 
 func TestPrivateGenerationPreservesRuntimeContract(t *testing.T) {
-	metadata := privateMetadata{Architecture: "arm64", OSVersion: "fixture", Methods: []privateMethod{
-		{Class: "Example", Selector: "initWithPort:", Result: "@", Arguments: []string{"@", ":", "S"}},
-		{Class: "Example", ClassMethod: true, Selector: "version", Result: "Q", Arguments: []string{"@", ":"}},
-		{Class: "Example", Selector: "setPointer:", Result: "v", Arguments: []string{"@", ":", "^{Record=ii}"}},
-		{Class: "Example", Selector: "setCompletion:", Result: "v", Arguments: []string{"@", ":", "@?"}},
-		{Class: "Example", Selector: "record", Result: "{Record=ii}", Arguments: []string{"@", ":"}},
-		{Class: "Example", Selector: "broken:", Result: "v", Arguments: []string{"@", ":"}},
-	}}
+	metadata := privateMetadata{
+		Architecture: "arm64",
+		OSVersion:    "fixture",
+		Methods: []privateMethod{
+			{
+				Class:     "Example",
+				Selector:  "initWithPort:",
+				Result:    "@",
+				Arguments: []string{"@", ":", "S"},
+			},
+			{
+				Class:       "Example",
+				ClassMethod: true,
+				Selector:    "version",
+				Result:      "Q",
+				Arguments:   []string{"@", ":"},
+			},
+			{
+				Class:     "Example",
+				Selector:  "setPointer:",
+				Result:    "v",
+				Arguments: []string{"@", ":", "^{Record=ii}"},
+			},
+			{
+				Class:     "Example",
+				Selector:  "setCompletion:",
+				Result:    "v",
+				Arguments: []string{"@", ":", "@?"},
+			},
+			{
+				Class:     "Example",
+				Selector:  "record",
+				Result:    "{Record=ii}",
+				Arguments: []string{"@", ":"},
+			},
+			{
+				Class:     "Example",
+				Selector:  "broken:",
+				Result:    "v",
+				Arguments: []string{"@", ":"},
+			},
+		},
+	}
 	for _, arch := range []string{"arm64", "amd64"} {
 		code, report, err := generatePrivate(metadata, arch)
 		if err != nil {
@@ -60,9 +95,16 @@ func TestPrivateRuntimeDiscovery(t *testing.T) {
 }
 
 func TestPrivateInstallerUsesMachineQueue(t *testing.T) {
-	metadata := privateMetadata{Methods: []privateMethod{
-		{Class: "VZMacOSInstaller", Selector: "initWithVirtualMachine:restoreImageURL:", Result: "@", Arguments: []string{"@", ":", "@", "@"}},
-	}}
+	metadata := privateMetadata{
+		Methods: []privateMethod{
+			{
+				Class:     "VZMacOSInstaller",
+				Selector:  "initWithVirtualMachine:restoreImageURL:",
+				Result:    "@",
+				Arguments: []string{"@", ":", "@", "@"},
+			},
+		},
+	}
 	code, _, err := generatePrivate(metadata, "arm64")
 	if err != nil {
 		t.Fatal(err)

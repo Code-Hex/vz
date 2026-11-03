@@ -50,10 +50,26 @@ func TestMetadataRejectsStaleInputs(t *testing.T) {
 		name, want string
 		change     func(*generationMetadata)
 	}{
-		{"schema", "unsupported metadata schema", func(m *generationMetadata) { m.SDK.Schema = 2 }},
-		{"extractor", "extractor changed", func(m *generationMetadata) { m.ExtractorSHA256 = "outdated" }},
-		{"missing target", "arm64 and amd64", func(m *generationMetadata) { m.SDK.Targets = m.SDK.Targets[:1] }},
-		{"duplicate target", "invalid metadata target", func(m *generationMetadata) { m.SDK.Targets[1].Architecture = m.SDK.Targets[0].Architecture }},
+		{
+			"schema",
+			"unsupported metadata schema",
+			func(m *generationMetadata) { m.SDK.Schema = 2 },
+		},
+		{
+			"extractor",
+			"extractor changed",
+			func(m *generationMetadata) { m.ExtractorSHA256 = "outdated" },
+		},
+		{
+			"missing target",
+			"arm64 and amd64",
+			func(m *generationMetadata) { m.SDK.Targets = m.SDK.Targets[:1] },
+		},
+		{
+			"duplicate target",
+			"invalid metadata target",
+			func(m *generationMetadata) { m.SDK.Targets[1].Architecture = m.SDK.Targets[0].Architecture },
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			var metadata generationMetadata

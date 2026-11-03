@@ -55,7 +55,11 @@ func runFyne(opts guiexample.Options) (result error) {
 	if err != nil {
 		return err
 	}
-	d := &fyneDemo{opts: opts, guest: guest, done: make(chan struct{})}
+	d := &fyneDemo{
+		opts:  opts,
+		guest: guest,
+		done:  make(chan struct{}),
+	}
 	defer d.closeGuest(&result)
 	application := app.NewWithID("dev.codehex.vz.go-native-gui.fyne")
 	d.window = application.NewWindow("Fyne Virtualization")
@@ -123,7 +127,11 @@ func (d *fyneDemo) action(name string, operation func() error) {
 	}
 	d.busy = true
 	d.status.SetText(name + "...")
-	job := &fyneOperation{demo: d, name: name, action: operation}
+	job := &fyneOperation{
+		demo:   d,
+		name:   name,
+		action: operation,
+	}
 	d.workers.Add(1)
 	go job.execute()
 }
@@ -197,7 +205,9 @@ func (d *fyneDemo) mountNative(context any) {
 			return
 		}
 	}
-	mount := fyneMount{host: context.(driver.MacWindowContext).NSWindow}
+	mount := fyneMount{
+		host: context.(driver.MacWindowContext).NSWindow,
+	}
 	d.nativeErr = d.view.WithNativeView(mount.attach)
 }
 

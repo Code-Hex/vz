@@ -372,7 +372,9 @@ func (d *CustomVirtioDevice) QueueAtIndex(index uint16) *VirtioQueue {
 	if native == nil {
 		return nil
 	}
-	return &VirtioQueue{pointer: native}
+	return &VirtioQueue{
+		pointer: native,
+	}
 }
 
 // RequestDeviceReset asks the guest to reset this device. The guest may ignore it.
@@ -391,7 +393,9 @@ func (d *CustomVirtioDevice) GuestMemoryMapping(physicalAddress, length uint64) 
 	if native == nil {
 		return nil
 	}
-	return &GuestMemoryMapping{pointer: native}
+	return &GuestMemoryMapping{
+		pointer: native,
+	}
 }
 
 // SharedMemoryRegions returns the regions configured for the device.
@@ -402,7 +406,9 @@ func (d *CustomVirtioDevice) SharedMemoryRegions() []*VirtioSharedMemoryRegion {
 	objects := nativeArray(array)
 	regions := make([]*VirtioSharedMemoryRegion, len(objects))
 	for i, object := range objects {
-		regions[i] = &VirtioSharedMemoryRegion{pointer: object}
+		regions[i] = &VirtioSharedMemoryRegion{
+			pointer: object,
+		}
 	}
 	return regions
 }

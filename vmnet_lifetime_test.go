@@ -18,7 +18,13 @@ func TestVMNetNetworkDeviceAttachmentLifetime(t *testing.T) {
 	for _, mode := range []struct {
 		name string
 		mode vmnet.Mode
-	}{{"Host", vmnet.ModeHost}, {"Shared", vmnet.ModeShared}} {
+	}{{
+		"Host",
+		vmnet.ModeHost,
+	}, {
+		"Shared",
+		vmnet.ModeShared,
+	}} {
 		t.Run(mode.name, func(t *testing.T) {
 			config := func() *VirtualMachineConfiguration {
 				networkConfig, err := vmnet.NewNetworkConfiguration(mode.mode)

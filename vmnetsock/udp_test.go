@@ -109,18 +109,68 @@ func TestVirtioUDPGSO(t *testing.T) {
 		size     int
 		segments []int
 	}{
-		{"IPv4 exact boundary", false, 500, 250, []int{250, 250}},
-		{"IPv6 exact boundary", true, 500, 250, []int{250, 250}},
-		{"IPv4 odd and short last", false, 503, 251, []int{251, 251, 1}},
-		{"IPv6 odd and short last", true, 503, 251, []int{251, 251, 1}},
-		{"IPv4 single", false, 37, 250, []int{37}},
-		{"IPv6 single", true, 37, 250, []int{37}},
-		{"IPv4 MTU boundary", false, 2945, 1472, []int{1472, 1472, 1}},
-		{"IPv6 MTU boundary", true, 2905, 1452, []int{1452, 1452, 1}},
+		{
+			"IPv4 exact boundary",
+			false,
+			500,
+			250,
+			[]int{250, 250},
+		},
+		{
+			"IPv6 exact boundary",
+			true,
+			500,
+			250,
+			[]int{250, 250},
+		},
+		{
+			"IPv4 odd and short last",
+			false,
+			503,
+			251,
+			[]int{251, 251, 1},
+		},
+		{
+			"IPv6 odd and short last",
+			true,
+			503,
+			251,
+			[]int{251, 251, 1},
+		},
+		{
+			"IPv4 single",
+			false,
+			37,
+			250,
+			[]int{37},
+		},
+		{
+			"IPv6 single",
+			true,
+			37,
+			250,
+			[]int{37},
+		},
+		{
+			"IPv4 MTU boundary",
+			false,
+			2945,
+			1472,
+			[]int{1472, 1472, 1},
+		},
+		{
+			"IPv6 MTU boundary",
+			true,
+			2905,
+			1452,
+			[]int{1452, 1452, 1},
+		},
 	} {
 		for _, peer := range []bool{false, true} {
 			t.Run(fmt.Sprintf("%s/peer=%v", test.name, peer), func(t *testing.T) {
-				state := &adapterState{tcp: newTCPSegmentation(1500)}
+				state := &adapterState{
+					tcp: newTCPSegmentation(1500),
+				}
 				packet := udpGSOPacket(test.v6, test.payload, test.size)
 				original := bytes.Clone(packet)
 				ipSize := 20
@@ -173,59 +223,189 @@ func TestVirtioUDPGSORejectsInvalidInput(t *testing.T) {
 		v6   bool
 		edit func([]byte) []byte
 	}{
-		{"missing checksum flag", false, func(p []byte) []byte { p[0] = 0; return p }},
-		{"RSC", false, func(p []byte) []byte { p[0] |= 4; return p }},
-		{"ECN modifier", false, func(p []byte) []byte { p[1] = 0x85; return p }},
-		{"UFO is not UDP L4", false, func(p []byte) []byte { p[1] = 3; return p }},
-		{"wrong checksum start", false, func(p []byte) []byte { p[virtioChecksumStartOffset]++; return p }},
-		{"wrong checksum offset", false, func(p []byte) []byte { p[virtioChecksumFieldOffset]++; return p }},
-		{"zero segment size", false, func(p []byte) []byte { binary.LittleEndian.PutUint16(p[virtioGSOSizeOffset:], 0); return p }},
-		{"IPv4 size exceeds MTU", false, func(p []byte) []byte { binary.LittleEndian.PutUint16(p[virtioGSOSizeOffset:], 1473); return p }},
-		{"IPv6 size exceeds MTU", true, func(p []byte) []byte { binary.LittleEndian.PutUint16(p[virtioGSOSizeOffset:], 1453); return p }},
-		{"IPv4 UDP length too short", false, func(p []byte) []byte {
-			binary.BigEndian.PutUint16(p[udpTestIPv4UDPStart+udpLengthOffset:], 258)
-			return p
-		}},
-		{"IPv6 UDP length too long", true, func(p []byte) []byte {
-			binary.BigEndian.PutUint16(p[udpTestIPv6UDPStart+udpLengthOffset:], 260)
-			return p
-		}},
-		{"IPv4 empty payload", false, func([]byte) []byte { return udpGSOPacket(false, 0, 100) }},
-		{"IPv6 empty payload", true, func([]byte) []byte { return udpGSOPacket(true, 0, 100) }},
-		{"IPv4 length exceeds frame", false, func(p []byte) []byte { p[udpTestIPStart+ipv4TotalLengthOffset+1]++; return p }},
-		{"IPv6 length exceeds frame", true, func(p []byte) []byte { p[udpTestIPStart+ipv6PayloadLengthOffset+1]++; return p }},
-		{"IPv4 trailing bytes", false, func(p []byte) []byte { return append(p, 0) }},
-		{"IPv6 trailing bytes", true, func(p []byte) []byte { return append(p, 0) }},
-		{"IPv4 zero length", false, func(p []byte) []byte {
-			binary.BigEndian.PutUint16(p[udpTestIPStart+ipv4TotalLengthOffset:], 0)
-			return p
-		}},
-		{"IPv6 zero length", true, func(p []byte) []byte {
-			binary.BigEndian.PutUint16(p[udpTestIPStart+ipv6PayloadLengthOffset:], 0)
-			return p
-		}},
-		{"IPv4 options", false, func(p []byte) []byte { p[udpTestIPStart] = 0x46; return p }},
-		{"IPv4 more fragments", false, func(p []byte) []byte { p[udpTestIPStart+ipv4FragmentFlagsOffset] |= 0x20; return p }},
-		{"IPv4 fragment offset", false, func(p []byte) []byte { p[udpTestIPStart+ipv4FragmentFlagsOffset+1] = 1; return p }},
-		{"IPv6 hop by hop", true, func(p []byte) []byte { p[udpTestIPStart+ipv6NextHeaderOffset] = 0; return p }},
-		{"IPv6 routing", true, func(p []byte) []byte { p[udpTestIPStart+ipv6NextHeaderOffset] = 43; return p }},
-		{"IPv6 fragment", true, func(p []byte) []byte { p[udpTestIPStart+ipv6NextHeaderOffset] = 44; return p }},
-		{"IPv6 authentication", true, func(p []byte) []byte { p[udpTestIPStart+ipv6NextHeaderOffset] = 51; return p }},
-		{"IPv6 destination options", true, func(p []byte) []byte { p[udpTestIPStart+ipv6NextHeaderOffset] = 60; return p }},
-		{"VLAN", false, func(p []byte) []byte {
-			binary.BigEndian.PutUint16(p[virtioHeaderSize+etherTypeOffset:], 0x8100)
-			return p
-		}},
-		{"QinQ", false, func(p []byte) []byte {
-			binary.BigEndian.PutUint16(p[virtioHeaderSize+etherTypeOffset:], 0x88a8)
-			return p
-		}},
-		{"TCP payload", false, func(p []byte) []byte { p[udpTestIPStart+ipv4ProtocolOffset] = 6; return p }},
-		{"short Virtio header", false, func(p []byte) []byte { return p[:11] }},
-		{"short UDP header", false, func(p []byte) []byte { return p[:udpTestIPv4UDPStart+udpHeaderSize-1] }},
+		{
+			"missing checksum flag",
+			false,
+			func(p []byte) []byte { p[0] = 0; return p },
+		},
+		{
+			"RSC",
+			false,
+			func(p []byte) []byte { p[0] |= 4; return p },
+		},
+		{
+			"ECN modifier",
+			false,
+			func(p []byte) []byte { p[1] = 0x85; return p },
+		},
+		{
+			"UFO is not UDP L4",
+			false,
+			func(p []byte) []byte { p[1] = 3; return p },
+		},
+		{
+			"wrong checksum start",
+			false,
+			func(p []byte) []byte { p[virtioChecksumStartOffset]++; return p },
+		},
+		{
+			"wrong checksum offset",
+			false,
+			func(p []byte) []byte { p[virtioChecksumFieldOffset]++; return p },
+		},
+		{
+			"zero segment size",
+			false,
+			func(p []byte) []byte { binary.LittleEndian.PutUint16(p[virtioGSOSizeOffset:], 0); return p },
+		},
+		{
+			"IPv4 size exceeds MTU",
+			false,
+			func(p []byte) []byte { binary.LittleEndian.PutUint16(p[virtioGSOSizeOffset:], 1473); return p },
+		},
+		{
+			"IPv6 size exceeds MTU",
+			true,
+			func(p []byte) []byte { binary.LittleEndian.PutUint16(p[virtioGSOSizeOffset:], 1453); return p },
+		},
+		{
+			"IPv4 UDP length too short",
+			false,
+			func(p []byte) []byte {
+				binary.BigEndian.PutUint16(p[udpTestIPv4UDPStart+udpLengthOffset:], 258)
+				return p
+			},
+		},
+		{
+			"IPv6 UDP length too long",
+			true,
+			func(p []byte) []byte {
+				binary.BigEndian.PutUint16(p[udpTestIPv6UDPStart+udpLengthOffset:], 260)
+				return p
+			},
+		},
+		{
+			"IPv4 empty payload",
+			false,
+			func([]byte) []byte { return udpGSOPacket(false, 0, 100) },
+		},
+		{
+			"IPv6 empty payload",
+			true,
+			func([]byte) []byte { return udpGSOPacket(true, 0, 100) },
+		},
+		{
+			"IPv4 length exceeds frame",
+			false,
+			func(p []byte) []byte { p[udpTestIPStart+ipv4TotalLengthOffset+1]++; return p },
+		},
+		{
+			"IPv6 length exceeds frame",
+			true,
+			func(p []byte) []byte { p[udpTestIPStart+ipv6PayloadLengthOffset+1]++; return p },
+		},
+		{
+			"IPv4 trailing bytes",
+			false,
+			func(p []byte) []byte { return append(p, 0) },
+		},
+		{
+			"IPv6 trailing bytes",
+			true,
+			func(p []byte) []byte { return append(p, 0) },
+		},
+		{
+			"IPv4 zero length",
+			false,
+			func(p []byte) []byte {
+				binary.BigEndian.PutUint16(p[udpTestIPStart+ipv4TotalLengthOffset:], 0)
+				return p
+			},
+		},
+		{
+			"IPv6 zero length",
+			true,
+			func(p []byte) []byte {
+				binary.BigEndian.PutUint16(p[udpTestIPStart+ipv6PayloadLengthOffset:], 0)
+				return p
+			},
+		},
+		{
+			"IPv4 options",
+			false,
+			func(p []byte) []byte { p[udpTestIPStart] = 0x46; return p },
+		},
+		{
+			"IPv4 more fragments",
+			false,
+			func(p []byte) []byte { p[udpTestIPStart+ipv4FragmentFlagsOffset] |= 0x20; return p },
+		},
+		{
+			"IPv4 fragment offset",
+			false,
+			func(p []byte) []byte { p[udpTestIPStart+ipv4FragmentFlagsOffset+1] = 1; return p },
+		},
+		{
+			"IPv6 hop by hop",
+			true,
+			func(p []byte) []byte { p[udpTestIPStart+ipv6NextHeaderOffset] = 0; return p },
+		},
+		{
+			"IPv6 routing",
+			true,
+			func(p []byte) []byte { p[udpTestIPStart+ipv6NextHeaderOffset] = 43; return p },
+		},
+		{
+			"IPv6 fragment",
+			true,
+			func(p []byte) []byte { p[udpTestIPStart+ipv6NextHeaderOffset] = 44; return p },
+		},
+		{
+			"IPv6 authentication",
+			true,
+			func(p []byte) []byte { p[udpTestIPStart+ipv6NextHeaderOffset] = 51; return p },
+		},
+		{
+			"IPv6 destination options",
+			true,
+			func(p []byte) []byte { p[udpTestIPStart+ipv6NextHeaderOffset] = 60; return p },
+		},
+		{
+			"VLAN",
+			false,
+			func(p []byte) []byte {
+				binary.BigEndian.PutUint16(p[virtioHeaderSize+etherTypeOffset:], 0x8100)
+				return p
+			},
+		},
+		{
+			"QinQ",
+			false,
+			func(p []byte) []byte {
+				binary.BigEndian.PutUint16(p[virtioHeaderSize+etherTypeOffset:], 0x88a8)
+				return p
+			},
+		},
+		{
+			"TCP payload",
+			false,
+			func(p []byte) []byte { p[udpTestIPStart+ipv4ProtocolOffset] = 6; return p },
+		},
+		{
+			"short Virtio header",
+			false,
+			func(p []byte) []byte { return p[:11] },
+		},
+		{
+			"short UDP header",
+			false,
+			func(p []byte) []byte { return p[:udpTestIPv4UDPStart+udpHeaderSize-1] },
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			state := &adapterState{tcp: newTCPSegmentation(1500)}
+			state := &adapterState{
+				tcp: newTCPSegmentation(1500),
+			}
 			packet := test.edit(udpGSOPacket(test.v6, 251, 100))
 			written := 0
 			err := state.forwardVirtioPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func(frames [][]byte) error {
@@ -260,7 +440,9 @@ func TestVirtioUDPGSOZeroChecksum(t *testing.T) {
 			if wireSum(append(udpWirePseudo(v6, ip, 10), udp...)) != 65535 {
 				t.Fatal("test packet does not require a zero checksum")
 			}
-			state := &adapterState{tcp: newTCPSegmentation(1500)}
+			state := &adapterState{
+				tcp: newTCPSegmentation(1500),
+			}
 			written := 0
 			err := state.forwardVirtioPackets([][]byte{p}, [][]byte{make([]byte, 1514)}, false, func(frames [][]byte) error {
 				for _, frame := range frames {
@@ -282,7 +464,9 @@ func TestVirtioUDPGSOZeroChecksum(t *testing.T) {
 func TestVirtioUDPGSOPadding(t *testing.T) {
 	p := udpGSOPacket(false, 1, 1)
 	p = append(p, bytes.Repeat([]byte{0xa5}, 17)...)
-	state := &adapterState{tcp: newTCPSegmentation(1500)}
+	state := &adapterState{
+		tcp: newTCPSegmentation(1500),
+	}
 	written := 0
 	err := state.forwardVirtioPackets([][]byte{p}, [][]byte{make([]byte, 1514)}, false, func(frames [][]byte) error {
 		for _, frame := range frames {
@@ -308,7 +492,9 @@ func TestVirtioUDPGSOPadding(t *testing.T) {
 func TestVirtioUDPGSOBatchesAndWriteError(t *testing.T) {
 	packet := udpGSOPacket(false, 2177, 64)
 	want := bytes.Clone(packet[udpTestIPv4PayloadStart:])
-	state := &adapterState{tcp: newTCPSegmentation(1500)}
+	state := &adapterState{
+		tcp: newTCPSegmentation(1500),
+	}
 	buffers := make([][]byte, 32)
 	for i := range buffers {
 		buffers[i] = bytes.Repeat([]byte{0xa5}, 1526)

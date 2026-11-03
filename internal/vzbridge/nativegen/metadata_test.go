@@ -50,10 +50,26 @@ func TestMetadataRejectsStaleInputs(t *testing.T) {
 		name, want string
 		change     func(*generationMetadata)
 	}{
-		{"schema", "unsupported metadata schema", func(m *generationMetadata) { m.Schema = 2 }},
-		{"extractor", "extractor changed", func(m *generationMetadata) { m.ExtractorSHA256 = "outdated" }},
-		{"header", "native header changed", func(m *generationMetadata) { m.HeaderSHA256 = "outdated" }},
-		{"empty", "no native bindings", func(m *generationMetadata) { m.Bindings = nil }},
+		{
+			"schema",
+			"unsupported metadata schema",
+			func(m *generationMetadata) { m.Schema = 2 },
+		},
+		{
+			"extractor",
+			"extractor changed",
+			func(m *generationMetadata) { m.ExtractorSHA256 = "outdated" },
+		},
+		{
+			"header",
+			"native header changed",
+			func(m *generationMetadata) { m.HeaderSHA256 = "outdated" },
+		},
+		{
+			"empty",
+			"no native bindings",
+			func(m *generationMetadata) { m.Bindings = nil },
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			var metadata generationMetadata

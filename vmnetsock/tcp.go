@@ -173,7 +173,10 @@ func (s *tcpSegmentation) forwardNative(frame []byte, now time.Time, emit func([
 }
 
 func (s *tcpSegmentation) observe(p *tcpPacket, peer bool, now time.Time) (int, error) {
-	key := tcpFlowKey{peer: p.src, remote: p.dst}
+	key := tcpFlowKey{
+		peer:   p.src,
+		remote: p.dst,
+	}
 	direction := peerDirection
 	if !peer {
 		key.peer, key.remote = key.remote, key.peer
@@ -270,7 +273,10 @@ func (f tcpFlow) observeSYN(p *tcpPacket, peer, known bool) (tcpFlow, bool, erro
 			sameDirection = f.phase != tcpPeerSYN
 		}
 		if !known || !f.closedAt.IsZero() || !sameDirection || expectedISN != seq {
-			f = tcpFlow{phase: tcpNativeSYN, nativeISN: seq}
+			f = tcpFlow{
+				phase:     tcpNativeSYN,
+				nativeISN: seq,
+			}
 			if peer {
 				f.phase = tcpPeerSYN
 				f.peerISN = seq
@@ -319,7 +325,10 @@ func parseTCPPacket(frame []byte) (tcpPacket, error) {
 	if len(frame) < ethernetHeaderSize {
 		return tcpPacket{}, fmt.Errorf("short Ethernet frame")
 	}
-	p := tcpPacket{frame: frame, ip: frame[ethernetHeaderSize:]}
+	p := tcpPacket{
+		frame: frame,
+		ip:    frame[ethernetHeaderSize:],
+	}
 	var src, dst netip.Addr
 	switch binary.BigEndian.Uint16(frame[etherTypeOffset:]) {
 	case etherTypeVLAN, etherTypeQinQ:

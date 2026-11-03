@@ -196,7 +196,9 @@ func WithBlockCount(count int64) LayerOption {
 }
 
 func parseOpenOptions(options []OpenOption) (OpenMode, error) {
-	o := openOptions{mode: Automatic}
+	o := openOptions{
+		mode: Automatic,
+	}
 	for _, option := range options {
 		if option == nil {
 			return 0, errors.New("diskimagekit: nil open option")
@@ -224,7 +226,9 @@ func Open(path string, options ...OpenOption) (*DiskImage, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &DiskImage{layers: []*layer{l}}, nil
+	return &DiskImage{
+		layers: []*layer{l},
+	}, nil
 }
 
 func openLayer(path string, mode OpenMode) (*layer, error) {
@@ -308,7 +312,9 @@ func CreateRAW(path string, blockCount int64) (*DiskImage, error) {
 			OpenMode:   ReadWrite,
 		},
 	}
-	return &DiskImage{layers: []*layer{l}}, nil
+	return &DiskImage{
+		layers: []*layer{l},
+	}, nil
 }
 
 // CreateASIF creates a writable ASIF v1 image. blockCount is in
@@ -317,7 +323,9 @@ func CreateRAW(path string, blockCount int64) (*DiskImage, error) {
 // or link target. A dangling symbolic link is kept and its target is created
 // instead. Failed creation leaves an existing file unchanged.
 func CreateASIF(path string, blockCount int64, options ...CreateOption) (*DiskImage, error) {
-	o := createOptions{block: BlockSize512}
+	o := createOptions{
+		block: BlockSize512,
+	}
 	for _, option := range options {
 		if option == nil {
 			return nil, errors.New("diskimagekit: nil create option")
@@ -330,7 +338,9 @@ func CreateASIF(path string, blockCount int64, options ...CreateOption) (*DiskIm
 	if err != nil {
 		return nil, err
 	}
-	return &DiskImage{layers: []*layer{l}}, nil
+	return &DiskImage{
+		layers: []*layer{l},
+	}, nil
 }
 
 func createFile(path string, initialize func(*os.File) error) (*os.File, error) {

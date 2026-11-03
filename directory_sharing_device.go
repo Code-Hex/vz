@@ -55,9 +55,13 @@ func (d *VirtioFileSystemDevice) DirectoryShare() DirectoryShare {
 	}
 	switch objcutil.String(vzbridge.NSObject_ClassName(ptr)) {
 	case "VZSingleDirectoryShare":
-		return &SingleDirectoryShare{pointer: ptr}
+		return &SingleDirectoryShare{
+			pointer: ptr,
+		}
 	case "VZMultipleDirectoryShare":
-		return &MultipleDirectoryShare{pointer: ptr}
+		return &MultipleDirectoryShare{
+			pointer: ptr,
+		}
 	case "VZLinuxRosettaDirectoryShare":
 		return wrapLinuxRosettaDirectoryShare(ptr)
 	default:

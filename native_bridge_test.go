@@ -21,9 +21,18 @@ import (
 
 func TestNativeBridgeStringOwnership(t *testing.T) {
 	for _, test := range []struct{ name, value string }{
-		{"unicode", strings.Repeat("\u65e5\u672c\u8a9e\U0001f600", 500)},
-		{"embedded NUL", "before\x00after"},
-		{"empty", ""},
+		{
+			"unicode",
+			strings.Repeat("\u65e5\u672c\u8a9e\U0001f600", 500),
+		},
+		{
+			"embedded NUL",
+			"before\x00after",
+		},
+		{
+			"empty",
+			"",
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			characters := utf16.Encode([]rune(test.value))

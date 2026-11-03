@@ -18,7 +18,9 @@ func NewUSBMassStorageDevice(config *USBMassStorageDeviceConfiguration) (USBDevi
 		return nil, err
 	}
 	ptr := vzbridge.VZUSBMassStorageDevice_InitWithConfiguration(config)
-	return &usbDevice{pointer: ptr}, nil
+	return &usbDevice{
+		pointer: ptr,
+	}, nil
 }
 
 // USBControllerConfiguration for a usb controller configuration.
@@ -224,7 +226,9 @@ func (u *USBController) USBDevices() []USBDevice {
 	pointers := nativeArray(vzbridge.VZUSBController_UsbDevices(u))
 	usbDevices := make([]USBDevice, len(pointers))
 	for i, ptr := range pointers {
-		usbDevices[i] = &usbDevice{pointer: ptr}
+		usbDevices[i] = &usbDevice{
+			pointer: ptr,
+		}
 	}
 
 	return usbDevices
@@ -268,5 +272,7 @@ func (u *usbDevice) USBController() *USBController {
 	if ptr == nil {
 		return nil
 	}
-	return &USBController{pointer: ptr}
+	return &USBController{
+		pointer: ptr,
+	}
 }

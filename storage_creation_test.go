@@ -42,10 +42,24 @@ func testStorageCreation(t *testing.T, create func(string, *bool) error) {
 		existing       bool
 		allowOverwrite *bool
 	}{
-		{name: "default overwrites", existing: true},
-		{name: "allow overwrites", existing: true, allowOverwrite: &allow},
-		{name: "deny preserves", existing: true, allowOverwrite: &deny},
-		{name: "deny creates new", allowOverwrite: &deny},
+		{
+			name:     "default overwrites",
+			existing: true,
+		},
+		{
+			name:           "allow overwrites",
+			existing:       true,
+			allowOverwrite: &allow,
+		},
+		{
+			name:           "deny preserves",
+			existing:       true,
+			allowOverwrite: &deny,
+		},
+		{
+			name:           "deny creates new",
+			allowOverwrite: &deny,
+		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			path := filepath.Join(t.TempDir(), "store")

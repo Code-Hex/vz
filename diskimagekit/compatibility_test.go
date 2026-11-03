@@ -235,12 +235,30 @@ func TestASIFGeometry(t *testing.T) {
 		block BlockSize
 		chunk int64
 	}{
-		{BlockSize512, 65536},
-		{BlockSize512, 98304},
-		{BlockSize512, 2 << 20},
-		{BlockSize4096, 262144},
-		{BlockSize4096, 393216},
-		{BlockSize4096, 2 << 20},
+		{
+			BlockSize512,
+			65536,
+		},
+		{
+			BlockSize512,
+			98304,
+		},
+		{
+			BlockSize512,
+			2 << 20,
+		},
+		{
+			BlockSize4096,
+			262144,
+		},
+		{
+			BlockSize4096,
+			393216,
+		},
+		{
+			BlockSize4096,
+			2 << 20,
+		},
 	} {
 		t.Run(fmt.Sprintf("%d/%d", test.block, test.chunk), func(t *testing.T) {
 			path := compressedFixture(t, fmt.Sprintf("testdata/geometry-%d-%d.gz", test.block, test.chunk))

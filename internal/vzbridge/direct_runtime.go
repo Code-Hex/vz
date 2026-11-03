@@ -51,7 +51,10 @@ func bindDirect[T any](selector string) directBinding[T] {
 	})
 	var call T
 	purego.RegisterFunc(&call, address)
-	return directBinding[T]{call: call, selector: runtimeobjc.RegisterName(selector)}
+	return directBinding[T]{
+		call:     call,
+		selector: runtimeobjc.RegisterName(selector),
+	}
 }
 
 func directSymbol[T any](name string) T {

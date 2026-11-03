@@ -44,12 +44,36 @@ func TestAdapterFramesAndLifetime(t *testing.T) {
 		convert   bool
 		tso       bool
 	}{
-		{name: "stream", transport: vmnetsock.Stream},
-		{name: "datagram", transport: vmnetsock.Datagram},
-		{name: "stream Virtio conversion", transport: vmnetsock.Stream, convert: true},
-		{name: "datagram Virtio conversion", transport: vmnetsock.Datagram, convert: true},
-		{name: "stream TSO conversion", transport: vmnetsock.Stream, convert: true, tso: true},
-		{name: "datagram TSO conversion", transport: vmnetsock.Datagram, convert: true, tso: true},
+		{
+			name:      "stream",
+			transport: vmnetsock.Stream,
+		},
+		{
+			name:      "datagram",
+			transport: vmnetsock.Datagram,
+		},
+		{
+			name:      "stream Virtio conversion",
+			transport: vmnetsock.Stream,
+			convert:   true,
+		},
+		{
+			name:      "datagram Virtio conversion",
+			transport: vmnetsock.Datagram,
+			convert:   true,
+		},
+		{
+			name:      "stream TSO conversion",
+			transport: vmnetsock.Stream,
+			convert:   true,
+			tso:       true,
+		},
+		{
+			name:      "datagram TSO conversion",
+			transport: vmnetsock.Datagram,
+			convert:   true,
+			tso:       true,
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			transport := test.transport

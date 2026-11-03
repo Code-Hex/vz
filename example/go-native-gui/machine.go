@@ -21,7 +21,9 @@ type Guest struct {
 
 // OpenGuest creates a bootable guest or an unstarted display preview.
 func OpenGuest(opts Options) (*Guest, error) {
-	g := &Guest{Bootable: opts.iso != ""}
+	g := &Guest{
+		Bootable: opts.iso != "",
+	}
 	var err error
 	g.directory, err = os.MkdirTemp("", "vz-native-gui-*")
 	if err != nil {

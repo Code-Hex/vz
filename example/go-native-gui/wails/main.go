@@ -285,18 +285,30 @@ func run(opts guiexample.Options, finish func(error)) {
 		finish(err)
 		return
 	}
-	d := &wailsDemo{opts: opts, finish: finish, guest: guest, status: "Ready. Stop forces power off."}
+	d := &wailsDemo{
+		opts:   opts,
+		finish: finish,
+		guest:  guest,
+		status: "Ready. Stop forces power off.",
+	}
 	if !guest.Bootable {
 		d.status = "Display preview. Supply -iso to start."
 	}
 	d.app = application.New(application.Options{
-		Name:       "VZGoNativeWails",
-		Assets:     application.AssetOptions{Handler: http.HandlerFunc(d.serve)},
+		Name: "VZGoNativeWails",
+		Assets: application.AssetOptions{
+			Handler: http.HandlerFunc(d.serve),
+		},
 		ShouldQuit: d.shouldQuit,
 		// AppKit termination may never return from Run.
 		PostShutdown: d.complete,
 	})
-	d.window = d.app.Window.NewWithOptions(application.WebviewWindowOptions{Title: "Wails Virtualization", Width: 1024, Height: 878, URL: "/"})
+	d.window = d.app.Window.NewWithOptions(application.WebviewWindowOptions{
+		Title:  "Wails Virtualization",
+		Width:  1024,
+		Height: 878,
+		URL:    "/",
+	})
 	d.window.RegisterHook(events.Common.WindowClosing, d.windowClosing)
 	d.app.OnShutdown(d.shutdown)
 	d.window.OnWindowEvent(events.Common.WindowRuntimeReady, d.runtimeReady)

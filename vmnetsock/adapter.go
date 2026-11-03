@@ -196,7 +196,9 @@ func New(ctx context.Context, iface *vmnet.Interface, transport Transport, opts 
 		close(s.done)
 	}()
 
-	return &Adapter{state: s}, nil
+	return &Adapter{
+		state: s,
+	}, nil
 }
 
 // Dup returns a new, caller-owned file descriptor for the peer socket.

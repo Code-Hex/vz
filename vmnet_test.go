@@ -20,10 +20,30 @@ func TestVMNetNetworkDeviceAttachment(t *testing.T) {
 		prefix netip.Prefix
 		ipv6   netip.Prefix
 	}{
-		{"Host default", vmnet.ModeHost, netip.Prefix{}, netip.Prefix{}},
-		{"Shared default", vmnet.ModeShared, netip.Prefix{}, netip.Prefix{}},
-		{"Host explicit", vmnet.ModeHost, netip.MustParsePrefix("192.168.245.0/24"), netip.MustParsePrefix("fd42:1234:245::99/64")},
-		{"Shared explicit", vmnet.ModeShared, netip.MustParsePrefix("192.168.246.0/24"), netip.MustParsePrefix("fd42:1234:246::99/64")},
+		{
+			"Host default",
+			vmnet.ModeHost,
+			netip.Prefix{},
+			netip.Prefix{},
+		},
+		{
+			"Shared default",
+			vmnet.ModeShared,
+			netip.Prefix{},
+			netip.Prefix{},
+		},
+		{
+			"Host explicit",
+			vmnet.ModeHost,
+			netip.MustParsePrefix("192.168.245.0/24"),
+			netip.MustParsePrefix("fd42:1234:245::99/64"),
+		},
+		{
+			"Shared explicit",
+			vmnet.ModeShared,
+			netip.MustParsePrefix("192.168.246.0/24"),
+			netip.MustParsePrefix("fd42:1234:246::99/64"),
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			var options []vmnet.NetworkConfigurationOption

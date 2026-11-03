@@ -135,7 +135,9 @@ func TestRuntimeConsoleAttachmentGuest(t *testing.T) {
 	defer session.Close()
 	command := struct {
 		Command string
-	}{Command: "poweroff"}
+	}{
+		Command: "poweroff",
+	}
 	// Shutdown can close SSH before its reply arrives. Wait for the VM notification instead.
 	if _, err := session.SendRequest("exec", false, ssh.Marshal(command)); err != nil {
 		t.Fatal(err)
@@ -151,7 +153,11 @@ func waitConsolePortState(t *testing.T, events <-chan vz.ConsolePortEvent, open 
 	t.Helper()
 	select {
 	case event := <-events:
-		want := vz.ConsolePortEvent{DeviceIndex: 0, PortIndex: 1, Open: open}
+		want := vz.ConsolePortEvent{
+			DeviceIndex: 0,
+			PortIndex:   1,
+			Open:        open,
+		}
 		if event != want {
 			t.Fatalf("console event = %+v, want %+v", event, want)
 		}

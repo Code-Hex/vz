@@ -187,9 +187,18 @@ func TestDiskImageServerInvalidInputs(t *testing.T) {
 		name   string
 		option DiskImageServerOption
 	}{
-		{"nil option", nil},
-		{"nil listener", WithDiskImageServerListener(nil, "nbd://127.0.0.1/")},
-		{"empty URL", WithDiskImageServerListener(listener, "")},
+		{
+			"nil option",
+			nil,
+		},
+		{
+			"nil listener",
+			WithDiskImageServerListener(nil, "nbd://127.0.0.1/"),
+		},
+		{
+			"empty URL",
+			WithDiskImageServerListener(listener, ""),
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			if server, err := NewDiskImageServer(image, test.option); err == nil {

@@ -111,7 +111,10 @@ func clangRun(output string, args ...string) error {
 	return nil
 }
 func extractTarget(input, architecture, triple, directory string) (sdkTarget, error) {
-	target := sdkTarget{Architecture: architecture, Triple: triple}
+	target := sdkTarget{
+		Architecture: architecture,
+		Triple:       triple,
+	}
 	sourcePath := filepath.Join(directory, architecture+".m")
 	astPath := filepath.Join(directory, architecture+".json")
 	args := []string{"-target", triple, "-x", "objective-c", "-fblocks", "-fobjc-arc"}
@@ -188,16 +191,29 @@ func extractTarget(input, architecture, triple, directory string) (sdkTarget, er
 				if !strings.HasPrefix(n.Name, "VZ") && v.Name != "NSUTF8StringEncoding" {
 					continue
 				}
-				values = append(values, sdkEnumValue{v.Name, value})
+				values = append(values, sdkEnumValue{
+					v.Name,
+					value,
+				})
 			}
 			if len(values) > 0 {
-				target.Enums = append(target.Enums, sdkEnum{Name: n.Name, ABI: enums[n.Name], Values: values})
+				target.Enums = append(target.Enums, sdkEnum{
+					Name:   n.Name,
+					ABI:    enums[n.Name],
+					Values: values,
+				})
 			}
 			continue
 		}
 		if n.Kind != "ObjCInterfaceDecl" && n.Kind != "ObjCCategoryDecl" && n.Kind != "ObjCProtocolDecl" {
 			if strings.HasPrefix(n.Name, "VZ") || n.Kind == "VarDecl" && strings.HasPrefix(n.Name, "NS") {
-				target.Declarations = append(target.Declarations, sdkDeclaration{n.Kind, n.Name, n.Type.QualType, "unsupported", "non-method declaration requires a native adapter"})
+				target.Declarations = append(target.Declarations, sdkDeclaration{
+					n.Kind,
+					n.Name,
+					n.Type.QualType,
+					"unsupported",
+					"non-method declaration requires a native adapter",
+				})
 			}
 			continue
 		}
@@ -221,7 +237,12 @@ func extractTarget(input, architecture, triple, directory string) (sdkTarget, er
 			}
 		}
 		if n.Kind == "ObjCInterfaceDecl" && len(n.Inner) == len(interfaces[owner].Inner) {
-			target.Classes = append(target.Classes, sdkClass{owner, n.Super.Name, classAttr.Introduced, classAttr.Unavailable})
+			target.Classes = append(target.Classes, sdkClass{
+				owner,
+				n.Super.Name,
+				classAttr.Introduced,
+				classAttr.Unavailable,
+			})
 		}
 		for _, child := range n.Inner {
 			if child.Kind != "ObjCMethodDecl" {
@@ -335,7 +356,10 @@ func extractTarget(input, architecture, triple, directory string) (sdkTarget, er
 		if !ok || owner == c.Name {
 			continue
 		}
-		a := sdkAttributes{Introduced: c.Introduced, Unavailable: c.Unavailable}
+		a := sdkAttributes{
+			Introduced:  c.Introduced,
+			Unavailable: c.Unavailable,
+		}
 		m, err := extractMethod(c.Name, n, a, source, aliases, classes, enums)
 		if err != nil {
 			return target, err
@@ -425,7 +449,20 @@ func extractMethod(owner string, n clangNode, parent sdkAttributes, source []byt
 	if n.Instance {
 		kind = "-"
 	}
-	m := sdkMethod{ID: owner + kind + n.Name, Owner: owner, Selector: n.Name, GoName: methodName(owner, n.Name), Instance: n.Instance, Implicit: n.IsImplicit, Family: methodFamily(n.Name, a.Family), ConsumesSelf: a.ConsumesSelf, Introduced: later(parent.Introduced, a.Introduced), Deprecated: earlier(parent.Deprecated, a.Deprecated), Obsoleted: earlier(parent.Obsoleted, a.Obsoleted), Unavailable: parent.Unavailable || a.Unavailable}
+	m := sdkMethod{
+		ID:           owner + kind + n.Name,
+		Owner:        owner,
+		Selector:     n.Name,
+		GoName:       methodName(owner, n.Name),
+		Instance:     n.Instance,
+		Implicit:     n.IsImplicit,
+		Family:       methodFamily(n.Name, a.Family),
+		ConsumesSelf: a.ConsumesSelf,
+		Introduced:   later(parent.Introduced, a.Introduced),
+		Deprecated:   earlier(parent.Deprecated, a.Deprecated),
+		Obsoleted:    earlier(parent.Obsoleted, a.Obsoleted),
+		Unavailable:  parent.Unavailable || a.Unavailable,
+	}
 	m.Factory = n.Instance && m.Family == "init"
 	typ := n.ReturnType
 	if strings.Contains(typ.QualType, "instancetype") {
@@ -481,7 +518,11 @@ func extractMethod(owner string, n clangNode, parent sdkAttributes, source []byt
 			m.Unsupported = append(m.Unsupported, "consumed parameter "+p.Name)
 		}
 		m.Unsupported = append(m.Unsupported, pa.Unknown...)
-		m.Parameters = append(m.Parameters, sdkParameter{p.Name, typ, pa.Consumed})
+		m.Parameters = append(m.Parameters, sdkParameter{
+			p.Name,
+			typ,
+			pa.Consumed,
+		})
 	}
 	return m, nil
 }
@@ -525,7 +566,11 @@ func extractMetadata() (generationMetadata, error) {
 	if err != nil {
 		return result, err
 	}
-	result.SDK = sdkReport{Schema: 1, SDKVersion: strings.TrimSpace(string(version)), Compiler: strings.Split(string(compiler), "\n")[0]}
+	result.SDK = sdkReport{
+		Schema:     1,
+		SDKVersion: strings.TrimSpace(string(version)),
+		Compiler:   strings.Split(string(compiler), "\n")[0],
+	}
 	result.Private, err = discoverPrivate(directory)
 	if err != nil {
 		return result, err

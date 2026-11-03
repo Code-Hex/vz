@@ -75,7 +75,12 @@ func privateBindingName(method privateMethod) string {
 }
 
 func generatePrivate(metadata privateMetadata, arch string) ([]byte, privateReport, error) {
-	report := privateReport{HostArchitecture: metadata.Architecture, HostOSVersion: metadata.OSVersion, TargetArchitecture: arch, Discovered: len(metadata.Methods)}
+	report := privateReport{
+		HostArchitecture:   metadata.Architecture,
+		HostOSVersion:      metadata.OSVersion,
+		TargetArchitecture: arch,
+		Discovered:         len(metadata.Methods),
+	}
 	if arch != "arm64" && arch != "amd64" {
 		return nil, report, fmt.Errorf("unsupported architecture %q", arch)
 	}

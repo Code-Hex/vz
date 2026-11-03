@@ -27,8 +27,15 @@ func NewManagedPointer(pointer unsafe.Pointer, release func(unsafe.Pointer)) *Po
 	if pointer == nil {
 		return nil
 	}
-	state := &managedReference{pointer: pointer, release: release}
-	owner := &managedOwner{reference: state}
+	state := &managedReference{
+		pointer: pointer,
+		release: release,
+	}
+	owner := &managedOwner{
+		reference: state,
+	}
 	runtime.AddCleanup(owner, (*managedReference).close, state)
-	return &Pointer{managed: owner}
+	return &Pointer{
+		managed: owner,
+	}
 }

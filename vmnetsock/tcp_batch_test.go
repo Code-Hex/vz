@@ -13,7 +13,9 @@ func TestTCPBatchCopiesSegments(t *testing.T) {
 	peer := netip.MustParseAddrPort("192.0.2.2:1000")
 	remote := netip.MustParseAddrPort("192.0.2.1:80")
 	now := time.Now()
-	state := &adapterState{tcp: newTCPSegmentation(1500)}
+	state := &adapterState{
+		tcp: newTCPSegmentation(1500),
+	}
 	if err := state.tcp.observePeer(flowPacket(peer, remote, 2, 10, 0, 256, 0), now); err != nil {
 		t.Fatal(err)
 	}

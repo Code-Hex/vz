@@ -80,7 +80,11 @@ func (d *mygoDemo) launch(name string, action func() error) {
 	}
 	d.busy, d.status = true, name+"..."
 	d.workers.Add(1)
-	job := &mygoOperation{demo: d, name: name, action: action}
+	job := &mygoOperation{
+		demo:   d,
+		name:   name,
+		action: action,
+	}
 	go job.execute()
 }
 
@@ -146,7 +150,10 @@ func (d *mygoDemo) ready() {
 }
 
 func (d *mygoDemo) content(c *ui.Context) {
-	layout := mygoLayout{demo: d, context: c}
+	layout := mygoLayout{
+		demo:    d,
+		context: c,
+	}
 	ui.Column(c).Padding(12).Gap(8).Children(layout.body)
 }
 
@@ -162,11 +169,31 @@ func (l mygoLayout) controls() {
 		enabled bool
 		run     func() error
 	}{
-		{"Start", d.guest.Bootable && vm.CanStart(), d.startVM},
-		{"Pause", vm.CanPause(), vm.Pause},
-		{"Resume", vm.CanResume(), vm.Resume},
-		{"RequestStop", vm.CanRequestStop(), d.requestStopVM},
-		{"Stop", vm.CanStop(), vm.Stop},
+		{
+			"Start",
+			d.guest.Bootable && vm.CanStart(),
+			d.startVM,
+		},
+		{
+			"Pause",
+			vm.CanPause(),
+			vm.Pause,
+		},
+		{
+			"Resume",
+			vm.CanResume(),
+			vm.Resume,
+		},
+		{
+			"RequestStop",
+			vm.CanRequestStop(),
+			d.requestStopVM,
+		},
+		{
+			"Stop",
+			vm.CanStop(),
+			vm.Stop,
+		},
 	} {
 		if ui.Button(l.context, command.name).Disabled(d.busy || d.closing || d.closed || !command.enabled).Clicked() {
 			d.launch(command.name, command.run)

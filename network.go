@@ -301,7 +301,9 @@ func (v *VirtioNetworkDeviceConfiguration) GetMACAddress() *MACAddress {
 	if ptr == nil {
 		return nil
 	}
-	return &MACAddress{pointer: ptr}
+	return &MACAddress{
+		pointer: ptr,
+	}
 }
 
 func (v *VirtioNetworkDeviceConfiguration) Attachment() NetworkDeviceAttachment {
@@ -334,7 +336,9 @@ func NewMACAddress(macAddr net.HardwareAddr) (*MACAddress, error) {
 	if ptr == nil {
 		return nil, fmt.Errorf("invalid MAC address %q", macAddr)
 	}
-	return &MACAddress{pointer: ptr}, nil
+	return &MACAddress{
+		pointer: ptr,
+	}, nil
 }
 
 // NewRandomLocallyAdministeredMACAddress creates a valid, random, unicast, locally administered address.
@@ -385,7 +389,9 @@ func NewVMNetNetworkDeviceAttachment(network *vmnet.Network) (*VMNetNetworkDevic
 	if ptr == nil {
 		return nil, fmt.Errorf("vmnet returned no network device attachment")
 	}
-	return &VMNetNetworkDeviceAttachment{pointer: ptr}, nil
+	return &VMNetNetworkDeviceAttachment{
+		pointer: ptr,
+	}, nil
 }
 
 // Network returns the logical network used by this attachment. The returned

@@ -20,7 +20,9 @@ func TestSessionKeepAliveAfterClientClose(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	config := &ssh.ServerConfig{NoClientAuth: true}
+	config := &ssh.ServerConfig{
+		NoClientAuth: true,
+	}
 	config.AddHostKey(signer)
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {

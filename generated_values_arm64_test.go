@@ -22,8 +22,16 @@ func TestGeneratedRosettaValueMigration(t *testing.T) {
 			class, selector string
 			call            func() uint64
 		}{
-			{"VZLinuxRosettaAbstractSocketCachingOptions", "maximumNameLength", vzbridge.VZLinuxRosettaAbstractSocketCachingOptions_MaximumNameLength},
-			{"VZLinuxRosettaUnixSocketCachingOptions", "maximumPathLength", vzbridge.VZLinuxRosettaUnixSocketCachingOptions_MaximumPathLength},
+			{
+				"VZLinuxRosettaAbstractSocketCachingOptions",
+				"maximumNameLength",
+				vzbridge.VZLinuxRosettaAbstractSocketCachingOptions_MaximumNameLength,
+			},
+			{
+				"VZLinuxRosettaUnixSocketCachingOptions",
+				"maximumPathLength",
+				vzbridge.VZLinuxRosettaUnixSocketCachingOptions_MaximumPathLength,
+			},
 		} {
 			got := tt.call()
 			want := pureobjc.Send[uint64](pureobjc.ID(pureobjc.GetClass(tt.class)), pureobjc.RegisterName(tt.selector))

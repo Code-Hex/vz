@@ -36,7 +36,9 @@ func run(inputPath, output, reportPath string, extract bool) error {
 	report := struct {
 		SDK     sdkReport
 		Private []privateReport
-	}{SDK: metadata.SDK}
+	}{
+		SDK: metadata.SDK,
+	}
 	files := map[string][]byte{}
 	for _, target := range metadata.SDK.Targets {
 		arch := target.Architecture

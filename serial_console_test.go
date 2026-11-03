@@ -33,10 +33,26 @@ func TestNewFileHandleSerialPortAttachment(t *testing.T) {
 		read  *os.File
 		write *os.File
 	}{
-		{"both", os.Stdin, os.Stderr},
-		{"read only", os.Stdin, nil},
-		{"write only", nil, os.Stderr},
-		{"neither", nil, nil},
+		{
+			"both",
+			os.Stdin,
+			os.Stderr,
+		},
+		{
+			"read only",
+			os.Stdin,
+			nil,
+		},
+		{
+			"write only",
+			nil,
+			os.Stderr,
+		},
+		{
+			"neither",
+			nil,
+			nil,
+		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			attachment, err := vz.NewFileHandleSerialPortAttachment(tt.read, tt.write)
@@ -143,10 +159,24 @@ func TestNewFileHandleSerialPortAttachmentClosedFile(t *testing.T) {
 		read  *os.File
 		write *os.File
 	}{
-		{name: "read", read: file, write: os.Stderr},
-		{name: "write", read: os.Stdin, write: file},
-		{name: "read only", read: file},
-		{name: "write only", write: file},
+		{
+			name:  "read",
+			read:  file,
+			write: os.Stderr,
+		},
+		{
+			name:  "write",
+			read:  os.Stdin,
+			write: file,
+		},
+		{
+			name: "read only",
+			read: file,
+		},
+		{
+			name:  "write only",
+			write: file,
+		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			before := openFileDescriptorCount(t)

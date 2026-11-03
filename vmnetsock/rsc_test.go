@@ -33,11 +33,51 @@ func TestVirtioTCPRSC(t *testing.T) {
 		mss      uint16
 		segments []int
 	}{
-		{"IPv4 without GSO size", false, 0, 3001, 0, 1460, []int{1448, 1448, 105}},
-		{"IPv6 receiver MSS", true, 0, 701, 0, 200, []int{188, 188, 188, 137}},
-		{"TCPv4 GSO", false, virtioGSOTCPv4, 701, 250, 1460, []int{250, 250, 201}},
-		{"TCPv6 ECN GSO", true, virtioGSOTCPv6 | virtioGSOECN, 701, 250, 1460, []int{250, 250, 201}},
-		{"single segment checksum", false, 0, 37, 0, 1460, []int{37}},
+		{
+			"IPv4 without GSO size",
+			false,
+			0,
+			3001,
+			0,
+			1460,
+			[]int{1448, 1448, 105},
+		},
+		{
+			"IPv6 receiver MSS",
+			true,
+			0,
+			701,
+			0,
+			200,
+			[]int{188, 188, 188, 137},
+		},
+		{
+			"TCPv4 GSO",
+			false,
+			virtioGSOTCPv4,
+			701,
+			250,
+			1460,
+			[]int{250, 250, 201},
+		},
+		{
+			"TCPv6 ECN GSO",
+			true,
+			virtioGSOTCPv6 | virtioGSOECN,
+			701,
+			250,
+			1460,
+			[]int{250, 250, 201},
+		},
+		{
+			"single segment checksum",
+			false,
+			0,
+			37,
+			0,
+			1460,
+			[]int{37},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			state := gsoTestState(t, test.v6, test.mss)
@@ -97,11 +137,26 @@ func TestVirtioTCPRSCRejectsUnsupportedMetadata(t *testing.T) {
 		name string
 		edit func([]byte)
 	}{
-		{"missing checksum validation", func(p []byte) { p[0] = virtioRSCInfo }},
-		{"duplicate ACKs", func(p []byte) { p[virtioRSCDuplicateACKsOffset] = 1 }},
-		{"wrong IP version", func(p []byte) { p[1] = virtioGSOTCPv6 }},
-		{"zero GSO size", func(p []byte) { p[1] = virtioGSOTCPv4 }},
-		{"UFO", func(p []byte) { p[1] = 3 }},
+		{
+			"missing checksum validation",
+			func(p []byte) { p[0] = virtioRSCInfo },
+		},
+		{
+			"duplicate ACKs",
+			func(p []byte) { p[virtioRSCDuplicateACKsOffset] = 1 },
+		},
+		{
+			"wrong IP version",
+			func(p []byte) { p[1] = virtioGSOTCPv6 },
+		},
+		{
+			"zero GSO size",
+			func(p []byte) { p[1] = virtioGSOTCPv4 },
+		},
+		{
+			"UFO",
+			func(p []byte) { p[1] = 3 },
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			state := gsoTestState(t, false, 1460)
@@ -139,7 +194,9 @@ func TestVirtioTCPRSCAcknowledgmentAndErrors(t *testing.T) {
 		t.Fatalf("ACK-only RSC = %v, writes = %d", err, calls)
 	}
 	packet = rscTestPacket(false, 0, 3001, 0)
-	state = &adapterState{tcp: newTCPSegmentation(1500)}
+	state = &adapterState{
+		tcp: newTCPSegmentation(1500),
+	}
 	if err := state.forwardVirtioPackets([][]byte{packet}, [][]byte{make([]byte, 1514)}, false, func([][]byte) error {
 		t.Fatal("unknown connection emitted RSC data")
 		return nil

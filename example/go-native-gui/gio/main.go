@@ -82,7 +82,11 @@ func vzGUIGioApplicationShouldTerminate(value C.uintptr_t) {
 }
 
 func run(opts guiexample.Options, finish func(error)) {
-	d := &gioDemo{opts: opts, finish: finish, window: new(app.Window)}
+	d := &gioDemo{
+		opts:   opts,
+		finish: finish,
+		window: new(app.Window),
+	}
 	go d.run()
 	app.Main()
 }
@@ -146,13 +150,20 @@ func (d *gioDemo) launch(name string, action func() error) {
 	d.busy = true
 	d.status = name + "..."
 	d.workers.Add(1)
-	job := &gioOperation{demo: d, name: name, action: action}
+	job := &gioOperation{
+		demo:   d,
+		name:   name,
+		action: action,
+	}
 	go job.execute()
 }
 
 func (job *gioOperation) execute() {
 	defer job.demo.workers.Done()
-	job.demo.completions <- operationResult{job.name, job.action()}
+	job.demo.completions <- operationResult{
+		job.name,
+		job.action(),
+	}
 }
 
 func (d *gioDemo) closeView() {
@@ -378,12 +389,17 @@ func (d *gioDemo) handleClosing(e *app.ClosingEvent) {
 func (d *gioDemo) frame(e app.FrameEvent) {
 	gtx := app.NewContext(&d.ops, e)
 	gtx.Constraints.Max.Y = gtx.Dp(unit.Dp(60))
-	layout.Inset{Left: unit.Dp(8), Top: unit.Dp(3)}.Layout(gtx, d.layoutHeader)
+	layout.Inset{
+		Left: unit.Dp(8),
+		Top:  unit.Dp(3),
+	}.Layout(gtx, d.layoutHeader)
 	e.Frame(&d.ops)
 }
 
 func (d *gioDemo) layoutHeader(gtx layout.Context) layout.Dimensions {
-	return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
+	return layout.Flex{
+		Axis: layout.Vertical,
+	}.Layout(gtx,
 		layout.Rigid(d.layoutControls),
 		layout.Rigid(d.layoutStatus))
 }
@@ -398,7 +414,12 @@ func (d *gioDemo) layoutControls(gtx layout.Context) layout.Dimensions {
 		if d.buttons[i].Clicked(gtx) && !d.busy && !d.closing && enabled[i] {
 			d.launch(label, actions[i])
 		}
-		button := gioButton{demo: d, clickable: &d.buttons[i], label: label, enabled: enabled[i]}
+		button := gioButton{
+			demo:      d,
+			clickable: &d.buttons[i],
+			label:     label,
+			enabled:   enabled[i],
+		}
 		children = append(children, layout.Rigid(button.layout))
 	}
 	children = append(children, layout.Rigid(d.layoutFocus))

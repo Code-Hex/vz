@@ -36,7 +36,9 @@ func TestRuntimeNetworkDevice(t *testing.T) {
 		t.Fatalf("initial attachment = %T, want NAT", initial)
 	}
 	objc.Release(initial)
-	socket, err := net.ListenUDP("udp4", &net.UDPAddr{IP: net.IPv4(127, 0, 0, 1)})
+	socket, err := net.ListenUDP("udp4", &net.UDPAddr{
+		IP: net.IPv4(127, 0, 0, 1),
+	})
 	if err != nil {
 		t.Fatal(err)
 	}

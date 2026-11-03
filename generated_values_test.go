@@ -14,10 +14,22 @@ func TestGeneratedValueMigration(t *testing.T) {
 		selector string
 		got      uint64
 	}{
-		{"minimumAllowedMemorySize", VirtualMachineConfigurationMinimumAllowedMemorySize()},
-		{"maximumAllowedMemorySize", VirtualMachineConfigurationMaximumAllowedMemorySize()},
-		{"minimumAllowedCPUCount", uint64(VirtualMachineConfigurationMinimumAllowedCPUCount())},
-		{"maximumAllowedCPUCount", uint64(VirtualMachineConfigurationMaximumAllowedCPUCount())},
+		{
+			"minimumAllowedMemorySize",
+			VirtualMachineConfigurationMinimumAllowedMemorySize(),
+		},
+		{
+			"maximumAllowedMemorySize",
+			VirtualMachineConfigurationMaximumAllowedMemorySize(),
+		},
+		{
+			"minimumAllowedCPUCount",
+			uint64(VirtualMachineConfigurationMinimumAllowedCPUCount()),
+		},
+		{
+			"maximumAllowedCPUCount",
+			uint64(VirtualMachineConfigurationMaximumAllowedCPUCount()),
+		},
 	} {
 		want := pureobjc.Send[uint64](pureobjc.ID(pureobjc.GetClass("VZVirtualMachineConfiguration")), pureobjc.RegisterName(tt.selector))
 		if tt.got != want {
@@ -29,8 +41,18 @@ func TestGeneratedValueMigration(t *testing.T) {
 			name, class, selector string
 			call                  func() (string, error)
 		}{
-			{"automount", "VZVirtioFileSystemDeviceConfiguration", "macOSGuestAutomountTag", MacOSGuestAutomountTag},
-			{"clipboard", "VZSpiceAgentPortAttachment", "spiceAgentPortName", SpiceAgentPortAttachmentName},
+			{
+				"automount",
+				"VZVirtioFileSystemDeviceConfiguration",
+				"macOSGuestAutomountTag",
+				MacOSGuestAutomountTag,
+			},
+			{
+				"clipboard",
+				"VZSpiceAgentPortAttachment",
+				"spiceAgentPortName",
+				SpiceAgentPortAttachmentName,
+			},
 		} {
 			got, err := tt.call()
 			if err != nil {

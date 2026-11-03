@@ -239,7 +239,9 @@ func NewMacAuxiliaryStorage(storagePath string, opts ...NewMacAuxiliaryStorageOp
 		return nil, err
 	}
 
-	storage := &MacAuxiliaryStorage{storagePath: storagePath}
+	storage := &MacAuxiliaryStorage{
+		storagePath: storagePath,
+	}
 	for _, opt := range opts {
 		if err := opt(storage); err != nil {
 			return nil, err

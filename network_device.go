@@ -39,13 +39,21 @@ func (d *NetworkDevice) Attachment() NetworkDeviceAttachment {
 	}
 	switch objcutil.String(vzbridge.NSObject_ClassName(ptr)) {
 	case "VZNATNetworkDeviceAttachment":
-		return &NATNetworkDeviceAttachment{pointer: ptr}
+		return &NATNetworkDeviceAttachment{
+			pointer: ptr,
+		}
 	case "VZBridgedNetworkDeviceAttachment":
-		return &BridgedNetworkDeviceAttachment{pointer: ptr}
+		return &BridgedNetworkDeviceAttachment{
+			pointer: ptr,
+		}
 	case "VZFileHandleNetworkDeviceAttachment":
-		return &FileHandleNetworkDeviceAttachment{pointer: ptr}
+		return &FileHandleNetworkDeviceAttachment{
+			pointer: ptr,
+		}
 	case "VZVmnetNetworkDeviceAttachment":
-		return &VMNetNetworkDeviceAttachment{pointer: ptr}
+		return &VMNetNetworkDeviceAttachment{
+			pointer: ptr,
+		}
 	default:
 		return nil
 	}

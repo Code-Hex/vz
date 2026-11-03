@@ -35,7 +35,10 @@ func (r *nativeCallbackRegistry) add(callback nativeCallback, once bool) uint64 
 	if r.entries == nil {
 		r.entries = make(map[uint64]nativeCallbackEntry)
 	}
-	r.entries[id] = nativeCallbackEntry{callback: callback, once: once}
+	r.entries[id] = nativeCallbackEntry{
+		callback: callback,
+		once:     once,
+	}
 	return id
 }
 

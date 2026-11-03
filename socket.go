@@ -73,22 +73,39 @@ func (v *VirtioSocketDevice) Listen(port uint32) (*VirtioSocketListener, error) 
 	if err := macOSAvailable(11); err != nil {
 		return nil, err
 	}
-	state := &socketAcceptState{wake: make(chan struct{}, 1)}
+	state := &socketAcceptState{
+		wake: make(chan struct{}, 1),
+	}
 	handle := registerNativeCallback(func(kind uint32, first, second unsafe.Pointer, value uint64) uint64 {
 		if kind == vzbridge.CallbackContextReleased {
 			state.close()
 			return 0
 		}
 		connection, err := newVirtioSocketConnection(objc.NewManagedPointer(first, vzbridge.ReleaseObject))
-		if state.enqueue(connResults{connection, err}) && err == nil {
+		if state.enqueue(connResults{
+			connection,
+			err,
+		}) && err == nil {
 			return 1
 		}
 		return 0
 	})
 	pointer := vzbridge.NewVZVirtioSocketListener(v, handle)
-	cleanup := &socketListenerCleanup{listener: pointer, device: v, port: port, accepts: state, handle: handle}
-	owner := &socketListenerOwner{cleanup: cleanup}
-	listener := &VirtioSocketListener{pointer: pointer, port: port, owner: owner}
+	cleanup := &socketListenerCleanup{
+		listener: pointer,
+		device:   v,
+		port:     port,
+		accepts:  state,
+		handle:   handle,
+	}
+	owner := &socketListenerOwner{
+		cleanup: cleanup,
+	}
+	listener := &VirtioSocketListener{
+		pointer: pointer,
+		port:    port,
+		owner:   owner,
+	}
 	runtime.AddCleanup(owner, (*socketListenerCleanup).close, cleanup)
 	socketListenerPorts.Lock()
 	socketListenerPorts.current[cleanup.key()] = handle
@@ -112,11 +129,16 @@ func (v *VirtioSocketDevice) Connect(port uint32) (*VirtioSocketConnection, erro
 			if first != nil {
 				vzbridge.ReleaseObject(first)
 			}
-			ch <- connResults{err: objcutil.NewNSError(second)}
+			ch <- connResults{
+				err: objcutil.NewNSError(second),
+			}
 			return 0
 		}
 		connection, err := newVirtioSocketConnection(objc.NewManagedPointer(first, vzbridge.ReleaseObject))
-		ch <- connResults{connection, err}
+		ch <- connResults{
+			connection,
+			err,
+		}
 		return 0
 	})
 	vzbridge.VZVirtioSocketDevice_connectToPort(v, port, request)
@@ -149,7 +171,9 @@ type socketListenerKey struct {
 var socketListenerPorts = struct {
 	sync.Mutex
 	current map[socketListenerKey]uint64
-}{current: make(map[socketListenerKey]uint64)}
+}{
+	current: make(map[socketListenerKey]uint64),
+}
 
 type socketListenerCleanup struct {
 	handle   uint64
@@ -161,7 +185,10 @@ type socketListenerCleanup struct {
 }
 
 func (s *socketListenerCleanup) key() socketListenerKey {
-	return socketListenerKey{device: uintptr(objc.Ptr(s.device)), port: s.port}
+	return socketListenerKey{
+		device: uintptr(objc.Ptr(s.device)),
+		port:   s.port,
+	}
 }
 
 func (s *socketListenerCleanup) close() {

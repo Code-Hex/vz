@@ -13,11 +13,29 @@ func TestInterfaceOptionNativeFlags(t *testing.T) {
 		options []InterfaceOption
 		want    uint32
 	}{
-		{name: "defaults"},
-		{name: "disable MAC", options: []InterfaceOption{WithInterfaceMACAllocation(false)}, want: 1},
-		{name: "checksum offload", options: []InterfaceOption{WithInterfaceChecksumOffload(true)}, want: 2},
-		{name: "TSO", options: []InterfaceOption{WithInterfaceTSO(true)}, want: 4},
-		{name: "virtio header", options: []InterfaceOption{WithInterfaceVirtioHeader(true)}, want: 16},
+		{
+			name: "defaults",
+		},
+		{
+			name:    "disable MAC",
+			options: []InterfaceOption{WithInterfaceMACAllocation(false)},
+			want:    1,
+		},
+		{
+			name:    "checksum offload",
+			options: []InterfaceOption{WithInterfaceChecksumOffload(true)},
+			want:    2,
+		},
+		{
+			name:    "TSO",
+			options: []InterfaceOption{WithInterfaceTSO(true)},
+			want:    4,
+		},
+		{
+			name:    "virtio header",
+			options: []InterfaceOption{WithInterfaceVirtioHeader(true)},
+			want:    16,
+		},
 		{
 			name: "disable header after checksum",
 			options: []InterfaceOption{
@@ -27,7 +45,11 @@ func TestInterfaceOptionNativeFlags(t *testing.T) {
 			},
 			want: 2,
 		},
-		{name: "isolation", options: []InterfaceOption{WithInterfaceIsolation(true)}, want: 8},
+		{
+			name:    "isolation",
+			options: []InterfaceOption{WithInterfaceIsolation(true)},
+			want:    8,
+		},
 		{
 			name: "all capabilities",
 			options: []InterfaceOption{
@@ -68,11 +90,20 @@ func TestInterfaceStartupWithoutSession(t *testing.T) {
 		err  error
 		want string
 	}{
-		{name: "native error", err: nativeErr, want: "native start failed"},
-		{name: "missing error", want: "vmnet returned no interface"},
+		{
+			name: "native error",
+			err:  nativeErr,
+			want: "native start failed",
+		},
+		{
+			name: "missing error",
+			want: "vmnet returned no interface",
+		},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
-			r := &interfaceResource{handle: cgo.NewHandle(make(chan struct{}, 1))}
+			r := &interfaceResource{
+				handle: cgo.NewHandle(make(chan struct{}, 1)),
+			}
 			iface, err := completeInterfaceStart(r, 0, tt.err)
 			if iface != nil || err == nil || err.Error() != tt.want {
 				t.Fatalf("startup without session = %v, %v, want nil, %q", iface, err, tt.want)
@@ -141,11 +172,15 @@ func TestInterfaceStopRetainsFailure(t *testing.T) {
 	stopErr := errors.New("native stop failed")
 	done := make(chan struct{})
 	close(done)
-	i := &Interface{owner: &interfaceOwner{resource: &interfaceResource{
-		stopping: true,
-		stopErr:  stopErr,
-		done:     done,
-	}}}
+	i := &Interface{
+		owner: &interfaceOwner{
+			resource: &interfaceResource{
+				stopping: true,
+				stopErr:  stopErr,
+				done:     done,
+			},
+		},
+	}
 	copied := *i
 	for _, iface := range []*Interface{i, &copied} {
 		if err := iface.Stop(); !errors.Is(err, stopErr) {

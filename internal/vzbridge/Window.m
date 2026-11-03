@@ -21,6 +21,7 @@
 }
 @end
 
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 120000
 API_AVAILABLE(macos(12.0))
 @interface VZGraphicApplicationController : NSObject <NSApplicationDelegate> {
 @public
@@ -119,6 +120,8 @@ static VZGraphicApplicationController *activeApplication API_AVAILABLE(macos(12.
 }
 @end
 
+#endif
+
 void *vz_newGraphicApplication(void)
 {
     return [[NSMutableArray alloc] init];
@@ -141,6 +144,7 @@ void vz_addGraphicWindow(void *application, void *machine, double width, double 
 
 VZGraphicApplicationResult vz_runGraphicApplication(void *application)
 {
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 120000
     if (@available(macOS 12, *)) {
         pthread_mutex_lock(&applicationLock);
         VZGraphicApplicationController *controller = activeApplication;
@@ -198,6 +202,7 @@ VZGraphicApplicationResult vz_runGraphicApplication(void *application)
             return result;
         }
     }
+#endif
     return VZGraphicApplicationSuccess;
 }
 

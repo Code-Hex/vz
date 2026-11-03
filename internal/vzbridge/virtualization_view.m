@@ -531,6 +531,7 @@ static char viewMachineLifetimeKey;
 }
 @end
 
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 120000
 @implementation VZGraphicWindowController {
     VZVirtualMachine *_virtualMachine;
     dispatch_queue_t _queue;
@@ -1450,3 +1451,4 @@ static NSString *const Space2ToolbarIdentifier = @"Space2";
     [aboutPanel makeKeyAndOrderFront:nil];
 }
 @end
+#endif

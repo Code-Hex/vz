@@ -42,8 +42,10 @@ static void sharingError(NSInteger code, NSString *message, void **errorOut)
 
 static int setPeerRequirement(xpc_connection_t connection, const char *requirement)
 {
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 120000
     if (@available(macOS 12, *))
         return xpc_connection_set_peer_code_signing_requirement(connection, requirement);
+#endif
     return ENOTSUP;
 }
 

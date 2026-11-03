@@ -112,22 +112,33 @@ func (c *Container) NewSession(t *testing.T) *ssh.Session {
 }
 
 func (c *Container) Shutdown() error {
+	ci312Log("shutdown.begin")
 	defer func() {
 		log.Println("shutdown done")
+		ci312Log("shutdown.client.close.begin")
 		c.Client.Close()
+		ci312Log("shutdown.client.close.end")
 	}()
 
 	vm := c.VirtualMachine
 
-	if got := vm.State(); vz.VirtualMachineStateStopped == got {
+	ci312Log("shutdown.state.begin")
+	state := vm.State()
+	ci312Log("shutdown.state.end state=%v", state)
+	if got := state; vz.VirtualMachineStateStopped == got {
 		return nil
 	}
 
+	ci312Log("shutdown.canStop.begin")
+	canStop := vm.CanStop()
+	ci312Log("shutdown.canStop.end value=%t", canStop)
 	switch {
-	case vm.CanStop():
+	case canStop:
+		ci312Log("shutdown.stop.begin")
 		if err := vm.Stop(); err != nil {
 			return fmt.Errorf("failed to call stop: %w", err)
 		}
+		ci312Log("shutdown.stop.end")
 	case vm.CanRequestStop():
 		if _, err := vm.RequestStop(); err != nil {
 			return fmt.Errorf("failed to send request stop: %w", err)
@@ -142,7 +153,10 @@ func (c *Container) Shutdown() error {
 		}
 	}
 
-	return waitUntilState(3*time.Second, vm, vz.VirtualMachineStateStopped)
+	ci312Log("shutdown.wait.begin")
+	err := waitUntilState(3*time.Second, vm, vz.VirtualMachineStateStopped)
+	ci312Log("shutdown.wait.end error=%v", err)
+	return err
 }
 
 func getFreePort() (int, error) {
@@ -204,9 +218,11 @@ func newVirtualizationMachine(
 		t.Fatal("want CanStart is true")
 	}
 
+	ci312Phase(t, "vm.start.begin port=%d", port)
 	if err := vm.Start(); err != nil {
 		t.Fatal(err)
 	}
+	ci312Phase(t, "vm.start.end port=%d", port)
 
 	// Starting -> Running
 	if err := waitUntilState(5*time.Second, vm, vz.VirtualMachineStateRunning); err != nil {
@@ -229,7 +245,9 @@ func newVirtualizationMachine(
 
 	const max = 5
 	for i := 1; ; i++ {
+		ci312Phase(t, "vsock.connect.begin port=%d attempt=%d", port, i)
 		conn, err := socketDevice.Connect(uint32(port))
+		ci312Phase(t, "vsock.connect.end port=%d attempt=%d error=%v", port, i, err)
 		if err != nil {
 			var nserr *vz.NSError
 			if !errors.As(err, &nserr) || i >= max {
@@ -250,7 +268,9 @@ func newVirtualizationMachine(
 			t.Fatal(err)
 		}
 
+		ci312Phase(t, "ssh.handshake.begin port=%d", port)
 		sshClient, err := testhelper.NewSshClient(conn, ":22", sshConfig)
+		ci312Phase(t, "ssh.handshake.end port=%d error=%v", port, err)
 		if err != nil {
 			conn.Close()
 			if errors.Is(err, os.ErrDeadlineExceeded) && i < max {

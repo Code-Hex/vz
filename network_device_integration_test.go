@@ -36,6 +36,7 @@ func TestRuntimeNetworkConnection(t *testing.T) {
 	}
 	start := func(attachments ...vz.NetworkDeviceAttachment) *Container {
 		t.Helper()
+		ci312Phase(t, "network.guest.start.begin attachments=%d", len(attachments))
 		vm := newVirtualizationMachine(t, func(config *vz.VirtualMachineConfiguration) error {
 			nat, err := vz.NewNATNetworkDeviceAttachment()
 			if err != nil {
@@ -58,22 +59,31 @@ func TestRuntimeNetworkConnection(t *testing.T) {
 			config.SetNetworkDevicesVirtualMachineConfiguration(devices)
 			return nil
 		})
+		ci312Phase(t, "network.guest.start.end")
 		t.Cleanup(func() {
+			ci312Phase(t, "network.guest.shutdown.begin")
 			if err := vm.Shutdown(); err != nil {
 				t.Error(err)
 			}
+			ci312Phase(t, "network.guest.shutdown.end")
 		})
 		return vm
 	}
 	run := func(vm *Container, command string) {
 		t.Helper()
+		ci312Phase(t, "network.deadline.begin command=%s", command)
 		if err := vm.conn.SetDeadline(time.Now().Add(15 * time.Second)); err != nil {
 			t.Fatal(err)
 		}
+		ci312Phase(t, "network.deadline.end")
 		defer vm.conn.SetDeadline(time.Time{})
+		ci312Phase(t, "network.session.begin")
 		session := vm.NewSession(t)
+		ci312Phase(t, "network.session.end")
 		defer session.Close()
+		ci312Phase(t, "network.command.begin command=%s", command)
 		output, err := session.CombinedOutput(command)
+		ci312Phase(t, "network.command.end error=%v", err)
 		if err != nil {
 			t.Fatalf("%s: %v\n%s", command, err, output)
 		}

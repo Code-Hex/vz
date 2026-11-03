@@ -122,12 +122,15 @@ func TestVMNetDHCPReservationAndGuestCommunication(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	ci312Phase(t, "dhcp.network.create.begin")
 	network, err := vmnet.NewNetwork(config)
+	ci312Phase(t, "dhcp.network.create.end error=%v", err)
 	if err != nil {
 		t.Fatal(err)
 	}
 	guests := make([]*Container, 2)
 	for i := range guests {
+		ci312Phase(t, "dhcp.guest.start.begin index=%d", i)
 		guests[i] = newVirtualizationMachine(t, func(config *vz.VirtualMachineConfiguration) error {
 			attachment, err := vz.NewVMNetNetworkDeviceAttachment(network)
 			if err != nil {
@@ -145,14 +148,21 @@ func TestVMNetDHCPReservationAndGuestCommunication(t *testing.T) {
 			config.SetNetworkDevicesVirtualMachineConfiguration([]*vz.VirtioNetworkDeviceConfiguration{device})
 			return nil
 		})
+		ci312Phase(t, "dhcp.guest.start.end index=%d", i)
 		guest := guests[i]
 		t.Cleanup(func() {
+			ci312Phase(t, "dhcp.guest.shutdown.begin index=%d", i)
 			if err := guest.Shutdown(); err != nil {
 				t.Error(err)
 			}
+			ci312Phase(t, "dhcp.guest.shutdown.end index=%d", i)
 		})
+		ci312Phase(t, "dhcp.ip.session.begin index=%d", i)
 		session := guest.NewSession(t)
+		ci312Phase(t, "dhcp.ip.session.end index=%d", i)
+		ci312Phase(t, "dhcp.ip.command.begin index=%d", i)
 		output, err := session.CombinedOutput("ip -4 -o addr show dev eth0")
+		ci312Phase(t, "dhcp.ip.command.end index=%d error=%v", i, err)
 		session.Close()
 		if err != nil {
 			t.Fatalf("guest IP query: %v, %s", err, output)
@@ -162,8 +172,12 @@ func TestVMNetDHCPReservationAndGuestCommunication(t *testing.T) {
 		}
 	}
 	for i, guest := range guests {
+		ci312Phase(t, "dhcp.ping.session.begin index=%d", i)
 		session := guest.NewSession(t)
+		ci312Phase(t, "dhcp.ping.session.end index=%d", i)
+		ci312Phase(t, "dhcp.ping.command.begin index=%d", i)
 		output, err := session.CombinedOutput("ping " + addresses[1-i])
+		ci312Phase(t, "dhcp.ping.command.end index=%d error=%v", i, err)
 		session.Close()
 		if err != nil {
 			t.Fatalf("guest %d ping: %v, %s", i, err, output)

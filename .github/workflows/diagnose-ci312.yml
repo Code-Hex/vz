@@ -1,0 +1,61 @@
+name: Diagnose Intel CI 312
+
+on:
+  push:
+    branches:
+      - codex/diagnose-ci312-intel
+
+permissions:
+  contents: read
+
+jobs:
+  reproduce:
+    runs-on: macos-26-intel
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - case: network-count-go126
+            go: 1.26.x
+            target: TestRuntimeNetworkConnection
+            count: 3
+            processes: 1
+          - case: dhcp-count-go127
+            go: 1.27.x
+            target: TestVMNetDHCPReservationAndGuestCommunication
+            count: 3
+            processes: 1
+          - case: dhcp-process-go127
+            go: 1.27.x
+            target: TestVMNetDHCPReservationAndGuestCommunication
+            count: 1
+            processes: 5
+    name: ${{ matrix.case }}
+    env:
+      CI312_CASE: ${{ matrix.case }}
+      CI312_GO: ${{ matrix.go }}
+      CI312_TARGET: ${{ matrix.target }}
+      CI312_COUNT: ${{ matrix.count }}
+      CI312_PROCESSES: ${{ matrix.processes }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-go@v7.0.0
+        with:
+          go-version: ${{ matrix.go }}
+          check-latest: true
+      - name: Verify observer
+        run: python3 -m unittest discover -s internal/ci312diag -p 'test_*.py' -v
+      - name: Download Linux kernel
+        run: make download_kernel
+      - name: Build and sign test binary
+        run: |
+          go test -c -o "$RUNNER_TEMP/vz-ci312.test" .
+          go run ./cmd/codesign "$RUNNER_TEMP/vz-ci312.test" -test.run '^$'
+      - name: Reproduce targeted test
+        run: |
+          python3 internal/ci312diag/observe.py \
+            --case "$CI312_CASE" --go "$CI312_GO" --target "$CI312_TARGET" \
+            --count "$CI312_COUNT" --processes "$CI312_PROCESSES" \
+            -- "$RUNNER_TEMP/vz-ci312.test" -test.v -test.run "^${CI312_TARGET}$" \
+            -test.count "$CI312_COUNT" -test.timeout 3m

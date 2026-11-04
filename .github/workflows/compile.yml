@@ -153,3 +153,38 @@ jobs:
           path: ${{ runner.temp }}/vz-diagnostics
           if-no-files-found: warn
           retention-days: 1
+  vmnet-diagnostics:
+    name: VMNet repetition (Go ${{ matrix.go }}, GOGC ${{ matrix.gc }})
+    needs: formatting-check
+    runs-on: macos-26-intel
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.26.x', '1.27.x']
+        gc: ['100', '1']
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-go@v7.0.0
+        with:
+          go-version: ${{ matrix.go }}
+          check-latest: true
+      - name: Download Linux kernel
+        run: make download_kernel
+      - name: Repeat VMNet lifecycle
+        timeout-minutes: 7
+        env:
+          GOTRACEBACK: system
+        run: |
+          diagnostics="$RUNNER_TEMP/vz-repetition"
+          mkdir -p "$diagnostics"
+          set -o pipefail
+          go test -exec "env GOGC=${{ matrix.gc }} go run \"$PWD/cmd/codesign\" -diagnostics \"$diagnostics\"" . -run '^(TestVMNetNetworkDeviceAttachment|TestVMNetDHCPReservationAndGuestCommunication)$' -count 10 -timeout 5m -v -failfast 2>&1 | tee "$diagnostics/tests.log"
+      - name: Save VMNet repetition diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: vmnet-repetition-${{ matrix.go }}-gc${{ matrix.gc }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/vz-repetition
+          if-no-files-found: warn
+          retention-days: 1

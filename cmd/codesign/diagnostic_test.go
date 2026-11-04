@@ -127,6 +127,11 @@ func TestRunTestCapturesActualBlockedChild(t *testing.T) {
 	if !strings.Contains(string(status), fmt.Sprintf("child_pid=%d", childPID)) || !strings.Contains(string(status), "exit=") {
 		t.Fatalf("sample status lacks target or exit: %s", status)
 	}
+	sampleStderr, err := os.ReadFile(strings.TrimSuffix(statuses[0], ".status") + ".stderr")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("native sample status: %s; stderr: %s", status, sampleStderr)
 }
 
 func TestRunTestCollectsWithUnreadChildStderr(t *testing.T) {

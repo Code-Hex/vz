@@ -12,6 +12,8 @@ import (
 // A fixed buffer keeps the observer from allocating a large Go heap object.
 var diagnosticStackBuffer [1 << 20]byte
 
+const capturePeriodicStacks = false
+
 func diagnosticStackControl(format string, args ...any) {
 	file, err := os.OpenFile("/tmp/vz-316-stack-control.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0o600)
 	if err != nil {
@@ -48,7 +50,9 @@ func TestMain(m *testing.M) {
 			case <-ctx.Done():
 				return
 			case <-ticker.C:
-				capture(sequence)
+				if capturePeriodicStacks {
+					capture(sequence)
+				}
 			}
 		}
 	}()

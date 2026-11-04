@@ -1,4 +1,4 @@
-name: VMNet host resource diagnosis
+name: VMNet proactive stack diagnosis
 on:
   push:
     branches:
@@ -17,24 +17,27 @@ jobs:
           check-latest: true
       - name: Download Linux kernel
         run: make download_kernel
-      - name: Capture VMNet host resources
+      - name: Capture VMNet proactive stacks
         timeout-minutes: 5
         env:
           GOTRACEBACK: system
         run: |
           diagnostics="$RUNNER_TEMP/vz-lifetime-diagnostics"
           mkdir -p "$diagnostics"
-          touch "$diagnostics/host-health.log" "$diagnostics/host-stats.log"
+          touch "$diagnostics/host-health.log" "$diagnostics/host-stats.log" "$diagnostics/goroutines.log" "$diagnostics/stack-control.log"
+          ln -s "$diagnostics/goroutines.log" /tmp/vz-316-goroutines.log
+          ln -s "$diagnostics/stack-control.log" /tmp/vz-316-stack-control.log
           python3 .github/scripts/watch-vmnet.py "$diagnostics" &
           witness=$!
           python3 .github/scripts/vmnet-host-stats.py "$diagnostics" &
           stats=$!
-          tail -n +1 -F "$diagnostics/host-health.log" "$diagnostics/host-stats.log" &
+          tail -n +1 -F "$diagnostics/host-health.log" "$diagnostics/host-stats.log" "$diagnostics/goroutines.log" "$diagnostics/stack-control.log" &
           reader=$!
           cleanup() {
             kill -KILL -- "$stats" "-$stats" 2>/dev/null || true
             kill "$witness" "$reader" 2>/dev/null || true
             wait "$stats" "$witness" "$reader" 2>/dev/null || true
+            rm -f /tmp/vz-316-goroutines.log /tmp/vz-316-stack-control.log
           }
           trap cleanup EXIT
           sw_vers

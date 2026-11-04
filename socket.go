@@ -1,6 +1,7 @@
 package vz
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"os"
@@ -123,33 +124,92 @@ func (v *VirtioSocketDevice) Listen(port uint32) (*VirtioSocketListener, error) 
 // For a successful connection, this method sets the sourcePort property of the resulting VZVirtioSocketConnection object to a random port number.
 // see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdevice/3656677-connecttoport?language=objc
 func (v *VirtioSocketDevice) Connect(port uint32) (*VirtioSocketConnection, error) {
-	ch := make(chan connResults, 1)
+	return v.ConnectContext(context.Background(), port)
+}
+
+// ConnectContext connects to the guest port and waits for a result or for ctx to
+// be canceled. Cancellation stops waiting; it does not cancel Apple's connection
+// request. If the wait returns a context error, any connection from that request
+// is closed.
+//
+// Submitting the request requires the virtual machine's serial queue to make
+// progress. The context bounds the subsequent wait for its completion callback.
+//
+// see: https://developer.apple.com/documentation/virtualization/vzvirtiosocketdevice/3656677-connecttoport?language=objc
+func (v *VirtioSocketDevice) ConnectContext(ctx context.Context, port uint32) (*VirtioSocketConnection, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	defer runtime.KeepAlive(v)
+	pending := socketConnectRequest{
+		result: make(chan connResults, 1),
+	}
 	request := registerNativeRequest(func(kind uint32, first, second unsafe.Pointer, value uint64) uint64 {
 		if second != nil {
 			if first != nil {
 				vzbridge.ReleaseObject(first)
 			}
-			ch <- connResults{
+			pending.complete(connResults{
 				err: objcutil.NewNSError(second),
-			}
+			})
 			return 0
 		}
 		connection, err := newVirtioSocketConnection(objc.NewManagedPointer(first, vzbridge.ReleaseObject))
-		ch <- connResults{
+		pending.complete(connResults{
 			connection,
 			err,
-		}
+		})
 		return 0
 	})
+	defer unregisterNativeCallback(request)
 	vzbridge.VZVirtioSocketDevice_connectToPort(v, port, request)
-	result := <-ch
-	runtime.KeepAlive(v)
-	return result.conn, result.err
+	select {
+	case result := <-pending.result:
+		return result.conn, result.err
+	case <-ctx.Done():
+		pending.cancel()
+		return nil, ctx.Err()
+	}
 }
 
 type connResults struct {
 	conn *VirtioSocketConnection
 	err  error
+}
+
+// Cancellation can race with a callback already claimed from the registry.
+type socketConnectRequest struct {
+	mu       sync.Mutex
+	result   chan connResults
+	canceled bool
+}
+
+func (r *socketConnectRequest) complete(result connResults) {
+	r.mu.Lock()
+	if r.canceled {
+		r.mu.Unlock()
+		if result.conn != nil {
+			result.conn.Close()
+		}
+		return
+	}
+	r.result <- result
+	r.mu.Unlock()
+}
+
+func (r *socketConnectRequest) cancel() {
+	r.mu.Lock()
+	r.canceled = true
+	var connection *VirtioSocketConnection
+	select {
+	case result := <-r.result:
+		connection = result.conn
+	default:
+	}
+	r.mu.Unlock()
+	if connection != nil {
+		connection.Close()
+	}
 }
 
 // VirtioSocketListener a struct that listens for port-based connection requests from the guest operating system.

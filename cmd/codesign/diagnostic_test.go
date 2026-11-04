@@ -64,14 +64,12 @@ func TestRunTestNormalExitStopsDiagnostics(t *testing.T) {
 					t.Fatalf("exit = %v, want code %d", err, test.code)
 				}
 			}
-			entries, err := os.ReadDir(dir)
+			log, err := os.ReadFile(diagnostics.Name())
 			if err != nil {
 				t.Fatal(err)
 			}
-			for _, entry := range entries {
-				if strings.Contains(entry.Name(), "sample") {
-					t.Fatalf("normal child triggered capture: %s", entry.Name())
-				}
+			if strings.Contains(string(log), "SIGQUIT") || strings.Contains(string(log), "killing child") {
+				t.Fatalf("normal child triggered stack capture: %s", log)
 			}
 		})
 	}
@@ -116,22 +114,7 @@ func TestRunTestCapturesActualBlockedChild(t *testing.T) {
 	if !strings.Contains(string(log), fmt.Sprintf("child_pid=%d", childPID)) || !strings.Contains(string(log), "sending SIGQUIT") {
 		t.Fatalf("diagnostic log lacks actual child PID or SIGQUIT: %s", log)
 	}
-	statuses, err := filepath.Glob(filepath.Join(dir, fmt.Sprintf("*-%d-sample.status", childPID)))
-	if err != nil || len(statuses) != 1 {
-		t.Fatalf("sample statuses = %q, %v", statuses, err)
-	}
-	status, err := os.ReadFile(statuses[0])
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !strings.Contains(string(status), fmt.Sprintf("child_pid=%d", childPID)) || !strings.Contains(string(status), "exit=") {
-		t.Fatalf("sample status lacks target or exit: %s", status)
-	}
-	sampleStderr, err := os.ReadFile(strings.TrimSuffix(statuses[0], ".status") + ".stderr")
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Logf("native sample status: %s; stderr: %s", status, sampleStderr)
+
 }
 
 func TestRunTestCollectsWithUnreadChildStderr(t *testing.T) {
@@ -161,10 +144,7 @@ func TestRunTestCollectsWithUnreadChildStderr(t *testing.T) {
 			t.Errorf("diagnostic log missing %q: %s", want, log)
 		}
 	}
-	statuses, err := filepath.Glob(filepath.Join(options.dir, fmt.Sprintf("*-%d-sample.status", cmd.Process.Pid)))
-	if err != nil || len(statuses) != 1 {
-		t.Fatalf("sample statuses = %q, %v", statuses, err)
-	}
+
 }
 
 func diagnosticChild(args ...string) *exec.Cmd {

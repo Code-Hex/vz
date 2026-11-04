@@ -59,12 +59,11 @@ func runTest(cmd *exec.Cmd, options diagnosticOptions, diagnostics io.Writer) er
 		return err
 	}
 	diagnosticLog(diagnostics, cmd.Path, cmd.Process.Pid, "test started diagnostic_after=%s", options.after)
-	base := filepath.Join(options.dir, fmt.Sprintf("%s-%d", filepath.Base(cmd.Path), cmd.Process.Pid))
 	ctx, cancel := context.WithCancel(context.Background())
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
-		watchTest(ctx, cmd, options.after, base, diagnostics)
+		watchTest(ctx, cmd, options.after, diagnostics)
 	}()
 	err := cmd.Wait()
 	cancel()
@@ -73,7 +72,7 @@ func runTest(cmd *exec.Cmd, options diagnosticOptions, diagnostics io.Writer) er
 	return err
 }
 
-func watchTest(ctx context.Context, cmd *exec.Cmd, after time.Duration, base string, output io.Writer) {
+func watchTest(ctx context.Context, cmd *exec.Cmd, after time.Duration, output io.Writer) {
 	timer := time.NewTimer(after)
 	defer timer.Stop()
 	heartbeat := time.NewTicker(15 * time.Second)
@@ -90,13 +89,6 @@ func watchTest(ctx context.Context, cmd *exec.Cmd, after time.Duration, base str
 				return
 			}
 			diagnosticLog(output, cmd.Path, cmd.Process.Pid, "collecting stacks elapsed=%s", time.Since(started).Round(time.Second))
-			captureDiagnosticCommand(ctx, cmd, base+"-ps", output, 3*time.Second,
-				"/bin/ps", "-p", fmt.Sprint(cmd.Process.Pid), "-o", "pid,ppid,stat,etime,time,command")
-			captureDiagnosticCommand(ctx, cmd, base+"-sample", output, 10*time.Second,
-				"/usr/bin/sample", fmt.Sprint(cmd.Process.Pid), "3", "1", "-mayDie", "-file", base+"-sample.txt")
-			if ctx.Err() != nil {
-				return
-			}
 			diagnosticLog(output, cmd.Path, cmd.Process.Pid, "sending SIGQUIT")
 			if err := cmd.Process.Signal(syscall.SIGQUIT); err != nil {
 				diagnosticLog(output, cmd.Path, cmd.Process.Pid, "SIGQUIT result=%v", err)
@@ -114,38 +106,4 @@ func watchTest(ctx context.Context, cmd *exec.Cmd, after time.Duration, base str
 			return
 		}
 	}
-}
-
-func captureDiagnosticCommand(parent context.Context, child *exec.Cmd, base string, output io.Writer, timeout time.Duration, name string, args ...string) {
-	if parent.Err() != nil {
-		return
-	}
-	status, err := os.Create(base + ".status")
-	if err != nil {
-		diagnosticLog(output, child.Path, child.Process.Pid, "create diagnostic status: %v", err)
-		return
-	}
-	defer status.Close()
-	fmt.Fprintf(status, "utc=%s child_pid=%d binary=%q command=%q args=%q\n",
-		time.Now().UTC().Format(time.RFC3339Nano), child.Process.Pid, child.Path, name, args)
-	defer func() {
-		fmt.Fprintf(status, "exit=%v\n", err)
-		diagnosticLog(output, child.Path, child.Process.Pid, "capture=%q exit=%v", name, err)
-	}()
-	stdout, err := os.Create(base + ".stdout")
-	if err != nil {
-		return
-	}
-	defer stdout.Close()
-	stderr, err := os.Create(base + ".stderr")
-	if err != nil {
-		return
-	}
-	defer stderr.Close()
-	ctx, cancel := context.WithTimeout(parent, timeout)
-	defer cancel()
-	command := exec.CommandContext(ctx, name, args...)
-	command.Stdout, command.Stderr = stdout, stderr
-	command.WaitDelay = time.Second
-	err = command.Run()
 }

@@ -109,6 +109,11 @@ const (
 	guestRetryInterval  = 200 * time.Millisecond
 )
 
+func logTestProgress(t *testing.T, format string, args ...any) {
+	t.Helper()
+	t.Logf("%s %s: %s", time.Now().UTC().Format(time.RFC3339Nano), t.Name(), fmt.Sprintf(format, args...))
+}
+
 func (c *Container) NewSession(t *testing.T) *testhelper.Session {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), guestSessionTimeout)
@@ -212,6 +217,7 @@ func setupVirtualizationMachine(
 	t.Helper()
 	ctx, cancel := context.WithTimeout(t.Context(), guestSetupTimeout)
 	defer cancel()
+	logTestProgress(t, "guest configuration preparation begin")
 	port, err := getFreePort()
 	if err != nil {
 		return nil, fmt.Errorf("resolve vsock port: %w", err)
@@ -233,10 +239,16 @@ func setupVirtualizationMachine(
 			return nil, err
 		}
 	}
+	logTestProgress(t, "guest configuration preparation end")
+	logTestProgress(t, "guest configuration validation begin")
 	if valid, err := config.Validate(); err != nil || !valid {
+		logTestProgress(t, "guest configuration validation end: valid=%v, error=%v", valid, err)
 		return nil, fmt.Errorf("validate guest configuration: valid=%v, error=%v", valid, err)
 	}
+	logTestProgress(t, "guest configuration validation end: valid=true")
+	logTestProgress(t, "guest virtual machine creation begin")
 	vm, err := vz.NewVirtualMachine(config)
+	logTestProgress(t, "guest virtual machine creation end: vm=%p, error=%v", vm, err)
 	if err != nil {
 		return nil, err
 	}
@@ -244,40 +256,64 @@ func setupVirtualizationMachine(
 		VirtualMachine: vm,
 	}
 	t.Cleanup(func() {
-		if err := container.Shutdown(); err != nil {
+		logTestProgress(t, "guest shutdown begin: vm=%p", container.VirtualMachine)
+		err := container.Shutdown()
+		logTestProgress(t, "guest shutdown end: vm=%p, error=%v", container.VirtualMachine, err)
+		if err != nil {
 			t.Error(err)
 		}
 	})
+	logTestProgress(t, "guest socket device lookup begin: vm=%p", vm)
 	sockets := vm.SocketDevices()
+	logTestProgress(t, "guest socket device lookup end: count=%d", len(sockets))
 	if len(sockets) != 1 {
 		return container, fmt.Errorf("got %d socket devices, want 1", len(sockets))
 	}
+	logTestProgress(t, "guest start capability check begin")
 	if !vm.CanStart() {
+		logTestProgress(t, "guest start capability check end: canStart=false")
 		return container, errors.New("guest cannot start")
 	}
+	logTestProgress(t, "guest start capability check end: canStart=true")
+	logTestProgress(t, "guest start call begin")
 	if err := vz.StartVirtualMachineContext(ctx, vm); err != nil {
+		logTestProgress(t, "guest start call end: error=%v", err)
 		return container, err
 	}
+	logTestProgress(t, "guest start call end")
+	logTestProgress(t, "guest running state wait begin")
 	if err := waitUntilStateContext(ctx, vm, vz.VirtualMachineStateRunning); err != nil {
+		logTestProgress(t, "guest running state wait end: error=%v", err)
 		return container, err
 	}
+	logTestProgress(t, "guest running state wait end")
 	if vz.Available(12) {
 		// macOS 11 can leave an early vsock request pending instead of rejecting it.
 		if err := waitGuestRetry(ctx, 5*time.Second); err != nil {
 			return container, err
 		}
 	}
-	for {
+	for attemptNumber := 1; ; attemptNumber++ {
 		attempt, cancel := context.WithTimeout(ctx, guestConnectTimeout)
+		logTestProgress(t, "guest vsock connection begin: attempt=%d", attemptNumber)
 		conn, err := sockets[0].ConnectContext(attempt, uint32(port))
+		logTestProgress(t, "guest vsock connection end: attempt=%d, error=%v", attemptNumber, err)
 		if err == nil {
 			container.conn = conn
 			deadline, _ := attempt.Deadline()
+			logTestProgress(t, "guest SSH deadline setup begin: attempt=%d", attemptNumber)
 			if err = conn.SetDeadline(deadline); err == nil {
+				logTestProgress(t, "guest SSH deadline setup end: attempt=%d", attemptNumber)
+				logTestProgress(t, "guest SSH handshake begin: attempt=%d", attemptNumber)
 				container.Client, err = testhelper.NewSshClient(conn, ":22", sshConfig)
+				logTestProgress(t, "guest SSH handshake end: attempt=%d, error=%v", attemptNumber, err)
+			} else {
+				logTestProgress(t, "guest SSH deadline setup end: attempt=%d, error=%v", attemptNumber, err)
 			}
 			if err == nil {
+				logTestProgress(t, "guest SSH deadline clear begin: attempt=%d", attemptNumber)
 				err = conn.SetDeadline(time.Time{})
+				logTestProgress(t, "guest SSH deadline clear end: attempt=%d, error=%v", attemptNumber, err)
 				cancel()
 				return container, err
 			}

@@ -24,6 +24,17 @@ func main() {
 }
 
 func run() error {
+	options, args, err := parseArguments(os.Args[1:])
+	if err != nil {
+		return err
+	}
+	diagnostics, err := openDiagnosticLog(options, args[0])
+	if err != nil {
+		return err
+	}
+	if diagnostics != nil {
+		defer diagnostics.Close()
+	}
 	f, err := os.CreateTemp("", "*.entitlements")
 	if err != nil {
 		return fmt.Errorf("failed to create temp file: %w", err)
@@ -39,24 +50,30 @@ func run() error {
 		return fmt.Errorf("failed to close temp file: %w", err)
 	}
 
-	cmd := exec.Command("codesign", "--entitlements", f.Name(), "-s", "-", os.Args[1])
+	cmd := exec.Command("codesign", "--entitlements", f.Name(), "-s", "-", args[0])
 	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
+	if options.dir != "" {
+		diagnosticLog(diagnostics, args[0], 0, "signing begin")
+	}
+	err = cmd.Run()
+	if options.dir != "" {
+		diagnosticLog(diagnostics, args[0], 0, "signing end exit=%v", err)
+	}
+	if err != nil {
 		return fmt.Errorf("failed to do codesign(%q): %w",
 			strings.Join(
 				[]string{
-					"codesign", "--entitlements", f.Name(), "-s", "-", os.Args[1],
+					"codesign", "--entitlements", f.Name(), "-s", "-", args[0],
 				},
 				" ",
 			),
 			err,
 		)
 	}
-
-	testcmd := exec.Command(os.Args[1], os.Args[2:]...)
+	testcmd := exec.Command(args[0], args[1:]...)
 	testcmd.Stdout = os.Stdout
 	testcmd.Stderr = os.Stderr
 	testcmd.Stdin = os.Stdin
 
-	return testcmd.Run()
+	return runTest(testcmd, options, diagnostics)
 }

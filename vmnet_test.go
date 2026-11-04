@@ -110,6 +110,7 @@ func TestVMNetDHCPReservationAndGuestCommunication(t *testing.T) {
 	if vz.Available(26) {
 		t.Skip("vmnet networks require macOS 26 and its SDK")
 	}
+	logTestProgress(t, "VMNet configuration begin")
 	addresses := []string{"192.168.247.10", "192.168.247.11"}
 	macs := []net.HardwareAddr{{2, 0, 0, 0, 0, 10}, {2, 0, 0, 0, 0, 11}}
 	options := []vmnet.NetworkConfigurationOption{
@@ -119,16 +120,21 @@ func TestVMNetDHCPReservationAndGuestCommunication(t *testing.T) {
 		options = append(options, vmnet.WithDHCPReservation(mac, netip.MustParseAddr(addresses[i])))
 	}
 	config, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost, options...)
+	logTestProgress(t, "VMNet configuration end: error=%v", err)
 	if err != nil {
 		t.Fatal(err)
 	}
+	logTestProgress(t, "VMNet network creation begin")
 	network, err := vmnet.NewNetwork(config)
+	logTestProgress(t, "VMNet network creation end: error=%v", err)
 	if err != nil {
 		t.Fatal(err)
 	}
 	guests := make([]*Container, 2)
 	for i := range guests {
+		logTestProgress(t, "guest %d setup begin", i)
 		guests[i] = newVirtualizationMachine(t, func(config *vz.VirtualMachineConfiguration) error {
+			logTestProgress(t, "guest %d VMNet attachment configuration begin", i)
 			attachment, err := vz.NewVMNetNetworkDeviceAttachment(network)
 			if err != nil {
 				return err
@@ -143,12 +149,20 @@ func TestVMNetDHCPReservationAndGuestCommunication(t *testing.T) {
 			}
 			device.SetMACAddress(mac)
 			config.SetNetworkDevicesVirtualMachineConfiguration([]*vz.VirtioNetworkDeviceConfiguration{device})
+			logTestProgress(t, "guest %d VMNet attachment configuration end", i)
 			return nil
 		})
 		guest := guests[i]
+		logTestProgress(t, "guest %d setup end: vm=%p", i, guest.VirtualMachine)
+		logTestProgress(t, "guest %d IP query session open begin", i)
 		session := guest.NewSession(t)
+		logTestProgress(t, "guest %d IP query session open end", i)
+		logTestProgress(t, "guest %d IP query command begin", i)
 		output, err := session.CombinedOutput("ip -4 -o addr show dev eth0")
+		logTestProgress(t, "guest %d IP query command end: error=%v", i, err)
+		logTestProgress(t, "guest %d IP query session close begin", i)
 		session.Close()
+		logTestProgress(t, "guest %d IP query session close end", i)
 		if err != nil {
 			t.Fatalf("guest IP query: %v, %s", err, output)
 		}
@@ -157,9 +171,15 @@ func TestVMNetDHCPReservationAndGuestCommunication(t *testing.T) {
 		}
 	}
 	for i, guest := range guests {
+		logTestProgress(t, "guest %d ping session open begin", i)
 		session := guest.NewSession(t)
+		logTestProgress(t, "guest %d ping session open end", i)
+		logTestProgress(t, "guest %d ping command begin: target=%s", i, addresses[1-i])
 		output, err := session.CombinedOutput("ping " + addresses[1-i])
+		logTestProgress(t, "guest %d ping command end: error=%v", i, err)
+		logTestProgress(t, "guest %d ping session close begin", i)
 		session.Close()
+		logTestProgress(t, "guest %d ping session close end", i)
 		if err != nil {
 			t.Fatalf("guest %d ping: %v, %s", i, err, output)
 		}

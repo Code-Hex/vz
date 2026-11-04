@@ -29,14 +29,6 @@ func TestRuntimeConsoleAttachmentGuest(t *testing.T) {
 		config.SetConsoleDevicesVirtualMachineConfiguration([]vz.ConsoleDeviceConfiguration{console})
 		return nil
 	})
-	defer func() {
-		if err := container.Shutdown(); err != nil {
-			t.Error(err)
-		}
-	}()
-	if err := container.conn.SetDeadline(time.Now().Add(15 * time.Second)); err != nil {
-		t.Fatal(err)
-	}
 	session := container.NewSession(t)
 	output, err := session.Output(`for p in /sys/class/virtio-ports/*; do if [ "$(cat "$p/name")" = control ]; then echo /dev/$(basename "$p"); fi; done`)
 	session.Close()

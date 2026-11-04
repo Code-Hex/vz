@@ -1,10 +1,9 @@
 package testhelper
 
 import (
-	"io"
+	"context"
 	"net"
-	"testing"
-	"time"
+	"sync"
 
 	"golang.org/x/crypto/ssh"
 )
@@ -25,24 +24,50 @@ func NewSshClient(conn net.Conn, addr string, config *ssh.ClientConfig) (*ssh.Cl
 	return ssh.NewClient(c, chans, reqs), nil
 }
 
-func SetKeepAlive(t *testing.T, session *ssh.Session) {
-	t.Helper()
-	go func() {
-		ticker := time.NewTicker(5 * time.Second)
-		defer ticker.Stop()
-		for {
-			select {
-			case <-t.Context().Done():
-				return
-			case <-ticker.C:
-				_, err := session.SendRequest("keepalive@codehex.vz", true, nil)
-				if err != nil {
-					if err != io.EOF {
-						t.Logf("failed to send keep-alive request: %v", err)
-					}
-					return
-				}
-			}
+// Session closes its SSH transport if the session context ends.
+type Session struct {
+	*ssh.Session
+	stop      func()
+	closeOnce sync.Once
+	closeErr  error
+}
+
+// NewSshSession opens a session and closes conn if ctx ends before Close.
+func NewSshSession(ctx context.Context, client *ssh.Client, conn net.Conn) (*Session, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	done := make(chan struct{})
+	stopCallback := context.AfterFunc(ctx, func() {
+		conn.Close()
+		close(done)
+	})
+	stop := func() {
+		if stopCallback() {
+			close(done)
 		}
-	}()
+		<-done
+	}
+	session, err := client.NewSession()
+	if err != nil {
+		contextErr := ctx.Err()
+		stop()
+		if contextErr != nil {
+			return nil, contextErr
+		}
+		return nil, err
+	}
+	return &Session{
+		Session: session,
+		stop:    stop,
+	}, nil
+}
+
+// Close closes the session and joins any active cancellation callback.
+func (s *Session) Close() error {
+	s.closeOnce.Do(func() {
+		s.closeErr = s.Session.Close()
+		s.stop()
+	})
+	return s.closeErr
 }

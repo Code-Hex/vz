@@ -25,11 +25,6 @@ func TestRunningGraphicsDisplay(t *testing.T) {
 		config.SetGraphicsDevicesVirtualMachineConfiguration([]vz.GraphicsDeviceConfiguration{graphics})
 		return nil
 	})
-	t.Cleanup(func() {
-		if err := vm.Shutdown(); err != nil {
-			t.Error(err)
-		}
-	})
 	displays := vm.GraphicsDevices()[0].Displays()
 	if len(displays) != 1 {
 		t.Fatalf("got %d displays, want 1", len(displays))
@@ -80,10 +75,6 @@ func TestRunningGraphicsDisplay(t *testing.T) {
 	if !errors.As(err, &nativeError) {
 		t.Fatalf("invalid size error = %v, want NSError", err)
 	}
-	if err := vm.conn.SetDeadline(time.Now().Add(15 * time.Second)); err != nil {
-		t.Fatal(err)
-	}
-	defer vm.conn.SetDeadline(time.Time{})
 	session := vm.NewSession(t)
 	defer session.Close()
 	if output, err := session.CombinedOutput("echo display-alive"); err != nil || string(output) != "display-alive\n" {

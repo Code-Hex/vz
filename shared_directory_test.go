@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -79,11 +78,6 @@ func TestSingleDirectoryShare(t *testing.T) {
 					return nil
 				},
 			)
-			t.Cleanup(func() {
-				if err := container.Shutdown(); err != nil {
-					log.Println(err)
-				}
-			})
 
 			file := "hello.txt"
 			for _, v := range []struct {
@@ -182,11 +176,6 @@ func TestMultipleDirectoryShare(t *testing.T) {
 			return nil
 		},
 	)
-	t.Cleanup(func() {
-		if err := container.Shutdown(); err != nil {
-			log.Println(err)
-		}
-	})
 
 	// Create a file in mount directories.
 	tmpFile := "tmp.txt"

@@ -2,9 +2,9 @@ package vz_test
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
-	"log"
 	"testing"
 	"time"
 
@@ -13,67 +13,58 @@ import (
 
 func TestVirtioSocketListener(t *testing.T) {
 	container := newVirtualizationMachine(t)
-	t.Cleanup(func() {
-		if err := container.Shutdown(); err != nil {
-			log.Println(err)
-		}
-	})
-
-	vm := container.VirtualMachine
-
-	socketDevice := vm.SocketDevices()[0] // already tested in newVirtualizationMachine
-
+	socketDevice := container.SocketDevices()[0]
 	port := 43218
-	wantData := "hello"
-	done := make(chan struct{})
+	wantData := "hello\n"
 
 	listener, err := socketDevice.Listen(uint32(port))
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer listener.Close()
-
-	go func() {
-		defer close(done)
-
-		conn, err := listener.Accept()
-		if err != nil {
-			t.Errorf("failed to accept connection: %v", err)
-			return
+	const readTimeout = 10 * time.Second
+	ctx, cancel := context.WithTimeout(t.Context(), readTimeout)
+	defer cancel()
+	closed := make(chan struct{})
+	stopClose := context.AfterFunc(ctx, func() {
+		listener.Close()
+		close(closed)
+	})
+	defer func() {
+		if stopClose() {
+			close(closed)
 		}
-		defer conn.Close()
-
-		destPort := conn.(*vz.VirtioSocketConnection).DestinationPort()
-		if port != int(destPort) {
-			t.Errorf("want destination port %d but got %d", destPort, port)
-			return
-		}
-
-		buf := make([]byte, len(wantData))
-		n, err := conn.Read(buf)
-		if err != nil && err != io.EOF {
-			t.Errorf("failed to read data: %v", err)
-			return
-		}
-		got := string(buf[:n])
-
-		if wantData != got {
-			t.Errorf("want %q but got %q", wantData, got)
-		}
+		<-closed
 	}()
 
 	session := container.NewSession(t)
-	var buf bytes.Buffer
-	session.Stderr = &buf
-	cmd := fmt.Sprintf("echo %s | socat - VSOCK-CONNECT:2:%d", wantData, port)
-	if err := session.Run(cmd); err != nil {
-		t.Fatalf("failed to write data to vsock: %v\nstderr: %q", err, buf.String())
+	defer session.Close()
+	var stderr bytes.Buffer
+	session.Stderr = &stderr
+	cmd := fmt.Sprintf("{ printf he; sleep 0.2; printf 'llo\\n'; } | socat - VSOCK-CONNECT:2:%d", port)
+	if err := session.Start(cmd); err != nil {
+		t.Fatal(err)
 	}
-	session.Close()
-
-	select {
-	case <-done:
-	case <-time.After(3 * time.Second):
-		t.Fatalf("timeout connection handling after accepted")
+	conn, err := listener.Accept()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+	if got := conn.(*vz.VirtioSocketConnection).DestinationPort(); got != uint32(port) {
+		t.Fatalf("destination port = %d, want %d", got, port)
+	}
+	if err := conn.SetReadDeadline(time.Now().Add(readTimeout)); err != nil {
+		t.Fatal(err)
+	}
+	buf := make([]byte, len(wantData))
+	if _, err := io.ReadFull(conn, buf); err != nil {
+		t.Fatal(err)
+	}
+	if got := string(buf); got != wantData {
+		t.Fatalf("received %q, want %q", got, wantData)
+	}
+	conn.Close()
+	if err := session.Wait(); err != nil {
+		t.Fatalf("guest write: %v\nstderr: %q", err, stderr.String())
 	}
 }

@@ -48,11 +48,6 @@ func TestUSBDeviceController(t *testing.T) {
 		config.SetUSBControllersVirtualMachineConfiguration([]vz.USBControllerConfiguration{controller})
 		return nil
 	})
-	t.Cleanup(func() {
-		if err := vm.Shutdown(); err != nil {
-			t.Error(err)
-		}
-	})
 	controllers := vm.USBControllers()
 	if len(controllers) != 1 {
 		t.Fatalf("got %d controllers, want 1", len(controllers))

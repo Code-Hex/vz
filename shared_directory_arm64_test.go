@@ -267,7 +267,6 @@ const rosettadDefaultUnixSocket = "~/.cache/rosettad/uds/rosetta.sock"
 
 func TestRosettaWithoutCachingOptions(t *testing.T) {
 	container := newVirtualizationMachine(t, rosettaConfiguration(t, nil))
-	defer container.Shutdown()
 
 	// Mount rosetta and hello directories
 	container.exec(t, "mkdir -p /mnt/rosetta && mount -t virtiofs "+rosettaMountTag+" /mnt/rosetta")
@@ -290,7 +289,6 @@ func TestRosettaWithAbstractSocketCachingOptions(t *testing.T) {
 		t.Fatal(err)
 	}
 	container := newVirtualizationMachine(t, rosettaConfiguration(t, o))
-	defer container.Shutdown()
 
 	// Mount rosetta and hello directories
 	container.exec(t, "mkdir -p /mnt/rosetta && mount -t virtiofs "+rosettaMountTag+" /mnt/rosetta")
@@ -316,7 +314,6 @@ func TestRosettaWithUnixSocketCachingOptions(t *testing.T) {
 		t.Fatal(err)
 	}
 	container := newVirtualizationMachine(t, rosettaConfiguration(t, o))
-	defer container.Shutdown()
 
 	// Mount rosetta and hello directories
 	container.exec(t, "mkdir -p /mnt/rosetta && mount -t virtiofs "+rosettaMountTag+" /mnt/rosetta")
@@ -355,7 +352,6 @@ func TestRosettaWithUnixSocketCachingOptions(t *testing.T) {
 
 func TestRosettaBehaviorsWithoutCachingOptions(t *testing.T) {
 	container := newVirtualizationMachine(t, rosettaConfiguration(t, nil))
-	defer container.Shutdown()
 
 	// Mount rosetta and hello directories
 	container.exec(t, "mkdir -p /mnt/rosetta && mount -t virtiofs "+rosettaMountTag+" /mnt/rosetta")
@@ -388,7 +384,6 @@ func TestRosettaBehaviorsWithAbstractSocketCachingOptions(t *testing.T) {
 		t.Fatal(err)
 	}
 	container := newVirtualizationMachine(t, rosettaConfiguration(t, o))
-	defer container.Shutdown()
 
 	// Mount rosetta and hello directories
 	container.exec(t, "mkdir -p /mnt/rosetta && mount -t virtiofs "+rosettaMountTag+" /mnt/rosetta")
@@ -431,7 +426,6 @@ func TestRosettaBehaviorsWithUnixSocketCachingOptions(t *testing.T) {
 		t.Fatal(err)
 	}
 	container := newVirtualizationMachine(t, rosettaConfiguration(t, o))
-	defer container.Shutdown()
 
 	// Mount rosetta and hello directories
 	container.exec(t, "mkdir -p /mnt/rosetta && mount -t virtiofs "+rosettaMountTag+" /mnt/rosetta")

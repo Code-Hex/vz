@@ -1,10 +1,9 @@
 package vz_test
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"log"
-	"math"
 	"net"
 	"os"
 	"runtime"
@@ -102,47 +101,86 @@ type Container struct {
 	conn net.Conn
 }
 
-func (c *Container) NewSession(t *testing.T) *ssh.Session {
-	sshSession, err := c.Client.NewSession()
+const (
+	guestSetupTimeout   = 30 * time.Second
+	guestSessionTimeout = 30 * time.Second
+	guestStopTimeout    = 10 * time.Second
+	guestConnectTimeout = 2 * time.Second
+	guestRetryInterval  = 200 * time.Millisecond
+)
+
+func (c *Container) NewSession(t *testing.T) *testhelper.Session {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(context.Background(), guestSessionTimeout)
+	session, err := testhelper.NewSshSession(ctx, c.Client, c.conn)
 	if err != nil {
+		cancel()
 		t.Fatal(err)
 	}
-	testhelper.SetKeepAlive(t, sshSession)
-	return sshSession
+	t.Cleanup(func() {
+		session.Close()
+		cancel()
+	})
+	return session
 }
 
 func (c *Container) Shutdown() error {
-	defer func() {
-		log.Println("shutdown done")
-		c.Client.Close()
-	}()
-
-	vm := c.VirtualMachine
-
-	if got := vm.State(); vz.VirtualMachineStateStopped == got {
-		return nil
+	if c.Client != nil {
+		defer c.Client.Close()
 	}
-
-	switch {
-	case vm.CanStop():
-		if err := vm.Stop(); err != nil {
-			return fmt.Errorf("failed to call stop: %w", err)
+	if c.conn != nil {
+		defer c.conn.Close()
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), guestStopTimeout)
+	defer cancel()
+	changed := make(chan vz.VirtualMachineState, 1)
+	stopStateChanged, err := c.StateChangedNotify(changed)
+	if err != nil {
+		return err
+	}
+	defer stopStateChanged()
+	requested := false
+	for {
+		state := c.State()
+		if state == vz.VirtualMachineStateStopped || state == vz.VirtualMachineStateError {
+			return nil
 		}
-	case vm.CanRequestStop():
-		if _, err := vm.RequestStop(); err != nil {
-			return fmt.Errorf("failed to send request stop: %w", err)
+		if !requested {
+			switch {
+			case !vz.Available(12) && c.CanStop():
+				if err := vz.StopVirtualMachineContext(ctx, c.VirtualMachine); err != nil {
+					return fmt.Errorf("stop virtual machine: %w", err)
+				}
+				requested = true
+			case c.CanRequestStop():
+				ok, err := c.RequestStop()
+				if err != nil || !ok {
+					return fmt.Errorf("request guest shutdown: accepted=%v, error=%v", ok, err)
+				}
+				requested = true
+			case state == vz.VirtualMachineStateRunning && c.Client != nil:
+				session, err := testhelper.NewSshSession(ctx, c.Client, c.conn)
+				if err != nil {
+					return err
+				}
+				defer session.Close()
+				command := struct {
+					Command string
+				}{
+					Command: "poweroff",
+				}
+				if _, err := session.SendRequest("exec", false, ssh.Marshal(command)); err != nil {
+					return fmt.Errorf("request guest poweroff: %w", err)
+				}
+				requested = true
+			}
 		}
-	default:
-		sshSession, err := c.Client.NewSession()
-		if err != nil {
-			return fmt.Errorf("failed to create a new session: %w", err)
-		}
-		if err := sshSession.Run("poweroff"); err != nil {
-			return fmt.Errorf("failed to run poweroff command: %w", err)
+		select {
+		case <-changed:
+		case <-ctx.Done():
+			return fmt.Errorf("wait for guest shutdown: %w", ctx.Err())
 		}
 	}
-
-	return waitUntilState(3*time.Second, vm, vz.VirtualMachineStateStopped)
 }
 
 func getFreePort() (int, error) {
@@ -158,129 +196,122 @@ func newVirtualizationMachine(
 	t *testing.T,
 	configs ...func(*vz.VirtualMachineConfiguration) error,
 ) *Container {
+	t.Helper()
+	container, err := setupVirtualizationMachine(t, testhelper.NewSshConfig("root", "passwd"), configs...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return container
+}
+
+func setupVirtualizationMachine(
+	t *testing.T,
+	sshConfig *ssh.ClientConfig,
+	configs ...func(*vz.VirtualMachineConfiguration) error,
+) (*Container, error) {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(t.Context(), guestSetupTimeout)
+	defer cancel()
 	port, err := getFreePort()
 	if err != nil {
-		t.Fatalf("failed to resolve free tcp addr: %v", err)
+		return nil, fmt.Errorf("resolve vsock port: %w", err)
 	}
-
-	vmlinuz := "./testdata/Image"
-	initramfs := "./testdata/initramfs.cpio.gz"
-	cmdline := fmt.Sprintf("console=hvc0 vsock_port=%d", port)
 	bootLoader, err := vz.NewLinuxBootLoader(
-		vmlinuz,
-		vz.WithCommandLine(cmdline),
-		vz.WithInitrd(initramfs),
+		"./testdata/Image",
+		vz.WithCommandLine(fmt.Sprintf("console=hvc0 vsock_port=%d", port)),
+		vz.WithInitrd("./testdata/initramfs.cpio.gz"),
 	)
 	if err != nil {
-		t.Fatal(err)
+		return nil, err
 	}
-
 	config, err := setupConfiguration(bootLoader)
 	if err != nil {
-		t.Fatal(err)
+		return nil, err
 	}
 	for _, setConfig := range configs {
 		if err := setConfig(config); err != nil {
-			t.Fatal(err)
+			return nil, err
 		}
 	}
-
-	validated, err := config.Validate()
-	if !validated || err != nil {
-		t.Fatal(validated, err)
+	if valid, err := config.Validate(); err != nil || !valid {
+		return nil, fmt.Errorf("validate guest configuration: valid=%v, error=%v", valid, err)
 	}
-
 	vm, err := vz.NewVirtualMachine(config)
 	if err != nil {
-		t.Fatal(err)
+		return nil, err
 	}
-	socketDevices := vm.SocketDevices()
-	if len(socketDevices) != 1 {
-		t.Fatalf("want the number of socket devices is 1 but got %d", len(socketDevices))
+	container := &Container{
+		VirtualMachine: vm,
 	}
-	socketDevice := socketDevices[0]
-
-	if canStart := vm.CanStart(); !canStart {
-		t.Fatal("want CanStart is true")
+	t.Cleanup(func() {
+		if err := container.Shutdown(); err != nil {
+			t.Error(err)
+		}
+	})
+	sockets := vm.SocketDevices()
+	if len(sockets) != 1 {
+		return container, fmt.Errorf("got %d socket devices, want 1", len(sockets))
 	}
-
-	if err := vm.Start(); err != nil {
-		t.Fatal(err)
+	if !vm.CanStart() {
+		return container, errors.New("guest cannot start")
 	}
-
-	// Starting -> Running
-	if err := waitUntilState(5*time.Second, vm, vz.VirtualMachineStateRunning); err != nil {
-		t.Fatal(err)
+	if err := vz.StartVirtualMachineContext(ctx, vm); err != nil {
+		return container, err
 	}
-
-	sshConfig := testhelper.NewSshConfig("root", "passwd")
-
-	// Workaround for macOS 11
-	//
-	// This is a workaround. This version of the API does not immediately return an error and
-	// does not seem to have a connection timeout set.
+	if err := waitUntilStateContext(ctx, vm, vz.VirtualMachineStateRunning); err != nil {
+		return container, err
+	}
 	if vz.Available(12) {
-		time.Sleep(5 * time.Second)
-	} else {
-		// Not immediately available in the x86_64 environment
-		// so wait a little longer for the orbit before testing.
-		time.Sleep(3 * time.Second)
+		// macOS 11 can leave an early vsock request pending instead of rejecting it.
+		if err := waitGuestRetry(ctx, 5*time.Second); err != nil {
+			return container, err
+		}
 	}
-
-	const max = 5
-	for i := 1; ; i++ {
-		conn, err := socketDevice.Connect(uint32(port))
-		if err != nil {
-			var nserr *vz.NSError
-			if !errors.As(err, &nserr) || i >= max {
-				t.Fatal(err)
+	for {
+		attempt, cancel := context.WithTimeout(ctx, guestConnectTimeout)
+		conn, err := sockets[0].ConnectContext(attempt, uint32(port))
+		if err == nil {
+			container.conn = conn
+			deadline, _ := attempt.Deadline()
+			if err = conn.SetDeadline(deadline); err == nil {
+				container.Client, err = testhelper.NewSshClient(conn, ":22", sshConfig)
 			}
-			if nserr.Code == int(syscall.ECONNRESET) {
-				t.Logf("retry vsock connect: %d", i)
-				time.Sleep(backOffDelay(i))
-				continue
+			if err == nil {
+				err = conn.SetDeadline(time.Time{})
+				cancel()
+				return container, err
 			}
-			t.Fatalf("failed to connect vsock: %v", err)
-		}
-
-		log.Println("setup ssh client in container")
-
-		if err := conn.SetDeadline(time.Now().Add(5 * time.Second)); err != nil {
 			conn.Close()
-			t.Fatal(err)
+			container.conn = nil
 		}
-
-		sshClient, err := testhelper.NewSshClient(conn, ":22", sshConfig)
-		if err != nil {
-			conn.Close()
-			if errors.Is(err, os.ErrDeadlineExceeded) && i < max {
-				t.Logf("retry SSH handshake: %d", i)
-				continue
-			}
-			t.Fatalf("failed to create a new ssh client: %v", err)
+		attemptErr := attempt.Err()
+		cancel()
+		if err := ctx.Err(); err != nil {
+			return container, fmt.Errorf("set up guest SSH: %w", err)
 		}
-
-		t.Cleanup(func() {
-			sshClient.Close()
-		})
-		if err := conn.SetDeadline(time.Time{}); err != nil {
-			t.Fatal(err)
+		var nativeError *vz.NSError
+		retry := errors.Is(attemptErr, context.DeadlineExceeded) || errors.Is(err, os.ErrDeadlineExceeded)
+		if errors.As(err, &nativeError) && nativeError.Code == int(syscall.ECONNRESET) {
+			retry = true
 		}
-
-		log.Println("container setup done")
-
-		return &Container{
-			VirtualMachine: vm,
-			Client:         sshClient,
-			conn:           conn,
+		if !retry {
+			return container, err
+		}
+		if err := waitGuestRetry(ctx, guestRetryInterval); err != nil {
+			return container, err
 		}
 	}
 }
 
-func backOffDelay(retryAttempts int) time.Duration {
-	factor := 0.5
-	delay := math.Exp2(float64(retryAttempts)) * factor
-	return time.Duration(math.Min(delay, 10)) * time.Second
+func waitGuestRetry(ctx context.Context, delay time.Duration) error {
+	timer := time.NewTimer(delay)
+	defer timer.Stop()
+	select {
+	case <-timer.C:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 }
 
 func waitState(t *testing.T, wait time.Duration, vm *vz.VirtualMachine, want vz.VirtualMachineState) {
@@ -293,8 +324,12 @@ func waitState(t *testing.T, wait time.Duration, vm *vz.VirtualMachine, want vz.
 var ErrErrorState = fmt.Errorf("error state")
 
 func waitUntilState(wait time.Duration, vm *vz.VirtualMachine, want vz.VirtualMachineState) error {
-	timer := time.NewTimer(wait)
-	defer timer.Stop()
+	ctx, cancel := context.WithTimeout(context.Background(), wait)
+	defer cancel()
+	return waitUntilStateContext(ctx, vm, want)
+}
+
+func waitUntilStateContext(ctx context.Context, vm *vz.VirtualMachine, want vz.VirtualMachineState) error {
 	changed := make(chan vz.VirtualMachineState, 1)
 	stopStateChanged, err := vm.StateChangedNotify(changed)
 	if err != nil {
@@ -311,8 +346,8 @@ func waitUntilState(wait time.Duration, vm *vz.VirtualMachine, want vz.VirtualMa
 		}
 		select {
 		case <-changed:
-		case <-timer.C:
-			return fmt.Errorf("timedout waiting expected state: %s", want)
+		case <-ctx.Done():
+			return fmt.Errorf("wait for state %s: %w", want, ctx.Err())
 		}
 	}
 }
@@ -323,14 +358,6 @@ func TestRun(t *testing.T) {
 			return setupConsoleConfig(vmc)
 		},
 	)
-	t.Cleanup(func() {
-		if err := container.Shutdown(); err != nil {
-			log.Println(err)
-		}
-	})
-
-	sshSession := container.NewSession(t)
-	defer sshSession.Close()
 
 	vm := container.VirtualMachine
 
@@ -399,11 +426,6 @@ func TestStop(t *testing.T) {
 	}
 
 	container := newVirtualizationMachine(t)
-	t.Cleanup(func() {
-		if err := container.Shutdown(); err != nil {
-			log.Println(err)
-		}
-	})
 
 	vm := container.VirtualMachine
 
@@ -494,14 +516,6 @@ func TestRunIssue124(t *testing.T) {
 			return setupConsoleConfig(vmc)
 		},
 	)
-	t.Cleanup(func() {
-		if err := container.Shutdown(); err != nil {
-			log.Println(err)
-		}
-	})
-
-	sshSession := container.NewSession(t)
-	defer sshSession.Close()
 
 	vm := container.VirtualMachine
 
@@ -551,6 +565,8 @@ func TestRunIssue124(t *testing.T) {
 	}
 
 	runtime.GC()
+	sshSession := container.NewSession(t)
+	defer sshSession.Close()
 	sshSession.Run("poweroff")
 	waitState(t, timeout, vm, vz.VirtualMachineStateStopped)
 

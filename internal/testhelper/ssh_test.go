@@ -1,9 +1,10 @@
 package testhelper
 
 import (
+	"context"
 	"crypto/ed25519"
 	"crypto/rand"
-	"io"
+	"errors"
 	"net"
 	"testing"
 	"time"
@@ -11,7 +12,82 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-func TestSessionKeepAliveAfterClientClose(t *testing.T) {
+func TestSshSessionCommandDeadline(t *testing.T) {
+	client, conn := newSessionTestClient(t, true)
+	ctx, cancel := context.WithTimeout(t.Context(), time.Second)
+	defer cancel()
+	session, err := NewSshSession(ctx, client, conn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer session.Close()
+
+	if err := session.Run("hold"); err == nil {
+		t.Fatal("command without an exit status completed successfully")
+	}
+	if !errors.Is(ctx.Err(), context.DeadlineExceeded) {
+		t.Fatalf("command returned before its deadline: %v", ctx.Err())
+	}
+}
+
+func TestSshSessionOpenDeadline(t *testing.T) {
+	client, conn := newSessionTestClient(t, false)
+	ctx, cancel := context.WithTimeout(t.Context(), time.Second)
+	defer cancel()
+
+	session, err := NewSshSession(ctx, client, conn)
+	if session != nil || !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("got (%v, %v), want (nil, deadline exceeded)", session, err)
+	}
+}
+
+func TestSshSessionCloseStopsItsDeadline(t *testing.T) {
+	client, conn := newSessionTestClient(t, true)
+	ctx, cancel := context.WithCancel(t.Context())
+	defer cancel()
+	first, err := NewSshSession(ctx, client, conn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := first.Close(); err != nil {
+		t.Fatal(err)
+	}
+	cancel()
+
+	second, err := NewSshSession(t.Context(), client, conn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer second.Close()
+	if err := first.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err := second.Run("true"); err != nil {
+		t.Fatalf("closing the previous session affected the next one: %v", err)
+	}
+}
+
+func TestSshSessionCanceledContext(t *testing.T) {
+	client, conn := newSessionTestClient(t, true)
+	ctx, cancel := context.WithCancel(t.Context())
+	cancel()
+	session, err := NewSshSession(ctx, client, conn)
+	if session != nil || !errors.Is(err, context.Canceled) {
+		t.Fatalf("got (%v, %v), want (nil, context canceled)", session, err)
+	}
+
+	next, err := NewSshSession(t.Context(), client, conn)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer next.Close()
+	if err := next.Run("true"); err != nil {
+		t.Fatalf("a canceled session open closed the transport: %v", err)
+	}
+}
+
+func newSessionTestClient(t *testing.T, acceptSession bool) (*ssh.Client, net.Conn) {
+	t.Helper()
 	_, privateKey, err := ed25519.GenerateKey(rand.Reader)
 	if err != nil {
 		t.Fatal(err)
@@ -28,46 +104,72 @@ func TestSessionKeepAliveAfterClientClose(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer listener.Close()
-	serverDone := make(chan error, 1)
+	t.Cleanup(func() { listener.Close() })
+	serverDone := make(chan struct{})
 	go func() {
+		defer close(serverDone)
 		conn, err := listener.Accept()
 		if err != nil {
-			serverDone <- err
 			return
 		}
 		defer conn.Close()
-		if err := conn.SetDeadline(time.Now().Add(5 * time.Second)); err != nil {
-			serverDone <- err
-			return
-		}
-		server, channels, requests, err := ssh.NewServerConn(conn, config)
+		conn.SetDeadline(time.Now().Add(10 * time.Second))
+		server, channels, _, err := ssh.NewServerConn(conn, config)
 		if err != nil {
-			serverDone <- err
 			return
 		}
 		defer server.Close()
-		go ssh.DiscardRequests(requests)
+		if err := conn.SetDeadline(time.Time{}); err != nil {
+			return
+		}
 		for incoming := range channels {
-			channel, requests, err := incoming.Accept()
-			if err != nil {
-				serverDone <- err
+			if !acceptSession {
+				server.Wait()
 				return
 			}
-			defer channel.Close()
-			go ssh.DiscardRequests(requests)
+			channel, requests, err := incoming.Accept()
+			if err != nil {
+				return
+			}
+			for request := range requests {
+				if request.Type != "exec" {
+					request.Reply(false, nil)
+					continue
+				}
+				var command struct {
+					Command string
+				}
+				if err := ssh.Unmarshal(request.Payload, &command); err != nil {
+					return
+				}
+				request.Reply(true, nil)
+				if command.Command == "true" {
+					status := struct {
+						Status uint32
+					}{
+						Status: 0,
+					}
+					channel.SendRequest("exit-status", false, ssh.Marshal(status))
+					channel.Close()
+				}
+			}
+			channel.Close()
 		}
-		serverDone <- nil
 	}()
 
-	conn, err := net.DialTimeout("tcp", listener.Addr().String(), 5*time.Second)
+	conn, err := net.DialTimeout("tcp", listener.Addr().String(), 3*time.Second)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer conn.Close()
-	if err := conn.SetDeadline(time.Now().Add(5 * time.Second)); err != nil {
-		t.Fatal(err)
-	}
+	t.Cleanup(func() {
+		conn.Close()
+		select {
+		case <-serverDone:
+		case <-time.After(3 * time.Second):
+			t.Error("SSH test server did not stop")
+		}
+	})
+	conn.SetDeadline(time.Now().Add(3 * time.Second))
 	client, err := NewSshClient(conn, listener.Addr().String(), &ssh.ClientConfig{
 		User:            "test",
 		HostKeyCallback: ssh.FixedHostKey(signer.PublicKey()),
@@ -75,30 +177,7 @@ func TestSessionKeepAliveAfterClientClose(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer client.Close()
-	session, err := client.NewSession()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := client.Close(); err != nil {
-		t.Fatal(err)
-	}
-	_ = client.Wait()
-	if err := <-serverDone; err != nil {
-		t.Fatal(err)
-	}
-
-	result := make(chan error, 1)
-	go func() {
-		_, err := session.SendRequest("keepalive@codehex.vz", true, nil)
-		result <- err
-	}()
-	select {
-	case err := <-result:
-		if err != io.EOF {
-			t.Fatalf("keep-alive after client close returned %v, want io.EOF", err)
-		}
-	case <-time.After(time.Second):
-		t.Fatal("keep-alive request did not return after client close")
-	}
+	conn.SetDeadline(time.Time{})
+	t.Cleanup(func() { client.Close() })
+	return client, conn
 }

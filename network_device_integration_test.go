@@ -3,7 +3,6 @@ package vz_test
 import (
 	"os"
 	"testing"
-	"time"
 
 	"github.com/Code-Hex/vz/v4"
 	"golang.org/x/sys/unix"
@@ -58,19 +57,10 @@ func TestRuntimeNetworkConnection(t *testing.T) {
 			config.SetNetworkDevicesVirtualMachineConfiguration(devices)
 			return nil
 		})
-		t.Cleanup(func() {
-			if err := vm.Shutdown(); err != nil {
-				t.Error(err)
-			}
-		})
 		return vm
 	}
 	run := func(vm *Container, command string) {
 		t.Helper()
-		if err := vm.conn.SetDeadline(time.Now().Add(15 * time.Second)); err != nil {
-			t.Fatal(err)
-		}
-		defer vm.conn.SetDeadline(time.Time{})
 		session := vm.NewSession(t)
 		defer session.Close()
 		output, err := session.CombinedOutput(command)

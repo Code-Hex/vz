@@ -89,14 +89,16 @@ func TestVirtioQueueElementsGuest(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer func() {
-				provider.Close()
+			t.Cleanup(func() {
+				if err := provider.Close(); err != nil {
+					t.Error(err)
+				}
 				select {
 				case err := <-delegate.errors:
 					t.Error(err)
 				default:
 				}
-			}()
+			})
 			custom, err := vz.NewCustomVirtioDeviceConfiguration(4, 0xff, 0, 1, vz.WithCustomVirtioProvider(provider))
 			if err != nil {
 				t.Fatal(err)
@@ -105,10 +107,6 @@ func TestVirtioQueueElementsGuest(t *testing.T) {
 				config.SetEntropyDevicesVirtualMachineConfiguration(nil)
 				return vz.WithCustomVirtioDevices(custom)(config)
 			})
-			defer container.Shutdown()
-			if err := container.conn.SetDeadline(time.Now().Add(10 * time.Second)); err != nil {
-				t.Fatal(err)
-			}
 			session := container.NewSession(t)
 			defer session.Close()
 			output, err := session.Output("timeout 5 dd if=/dev/hwrng bs=64 count=8 iflag=fullblock status=none")
@@ -148,12 +146,20 @@ func TestCustomVirtioGuestLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer provider.Close()
+	t.Cleanup(func() {
+		if err := provider.Close(); err != nil {
+			t.Error(err)
+		}
+	})
 	otherProvider, err := vz.NewCustomVirtioDeviceDelegateProvider(delegate)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer otherProvider.Close()
+	t.Cleanup(func() {
+		if err := otherProvider.Close(); err != nil {
+			t.Error(err)
+		}
+	})
 	var devices []*vz.CustomVirtioDeviceConfiguration
 	for _, provider := range []*vz.CustomVirtioDeviceDelegateProvider{provider, otherProvider} {
 		custom, err := vz.NewCustomVirtioDeviceConfiguration(0xff, 0xff, 0, 1, vz.WithCustomVirtioProvider(provider))
@@ -165,7 +171,6 @@ func TestCustomVirtioGuestLifecycle(t *testing.T) {
 	container := newVirtualizationMachine(t, func(config *vz.VirtualMachineConfiguration) error {
 		return vz.WithCustomVirtioDevices(devices...)(config)
 	})
-	defer container.Shutdown()
 	created := make(map[uint64]*vz.CustomVirtioDevice)
 	for range devices {
 		select {

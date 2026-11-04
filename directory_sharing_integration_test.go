@@ -37,11 +37,6 @@ func TestRuntimeDirectorySharingGuest(t *testing.T) {
 		c.SetDirectorySharingDevicesVirtualMachineConfiguration([]vz.DirectorySharingDeviceConfiguration{fs})
 		return nil
 	})
-	t.Cleanup(func() {
-		if err := vm.Shutdown(); err != nil {
-			t.Error(err)
-		}
-	})
 	run := func(command string) string {
 		t.Helper()
 		session := vm.NewSession(t)

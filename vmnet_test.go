@@ -146,11 +146,6 @@ func TestVMNetDHCPReservationAndGuestCommunication(t *testing.T) {
 			return nil
 		})
 		guest := guests[i]
-		t.Cleanup(func() {
-			if err := guest.Shutdown(); err != nil {
-				t.Error(err)
-			}
-		})
 		session := guest.NewSession(t)
 		output, err := session.CombinedOutput("ip -4 -o addr show dev eth0")
 		session.Close()

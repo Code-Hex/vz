@@ -1,6 +1,7 @@
 package vz
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"runtime"
@@ -314,6 +315,13 @@ type VirtualMachineStartOption func(*virtualMachineStartOptions) error
 // If options are specified, also checks whether these options are
 // available in use your macOS version available.
 func (v *VirtualMachine) Start(opts ...VirtualMachineStartOption) error {
+	return v.start(context.Background(), opts...)
+}
+
+func (v *VirtualMachine) start(ctx context.Context, opts ...VirtualMachineStartOption) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	o := &virtualMachineStartOptions{}
 	for _, optFunc := range opts {
 		if err := optFunc(o); err != nil {
@@ -332,7 +340,7 @@ func (v *VirtualMachine) Start(opts ...VirtualMachineStartOption) error {
 	} else {
 		vzbridge.StartWithCompletionHandler(v, handle)
 	}
-	return <-errCh
+	return waitNativeCompletion(ctx, handle, errCh)
 }
 
 // Pause a virtual machine that is in Running state.
@@ -378,12 +386,19 @@ func (v *VirtualMachine) RequestStop() (bool, error) {
 //
 // This is only supported on macOS 12 and newer, error will be returned on older versions.
 func (v *VirtualMachine) Stop() error {
+	return v.stop(context.Background())
+}
+
+func (v *VirtualMachine) stop(ctx context.Context) error {
+	if err := ctx.Err(); err != nil {
+		return err
+	}
 	if err := macOSAvailable(12); err != nil {
 		return err
 	}
 	handle, errCh := nativeCompletion()
 	vzbridge.StopWithCompletionHandler(v, handle)
-	return <-errCh
+	return waitNativeCompletion(ctx, handle, errCh)
 }
 
 type startGraphicApplicationOptions struct {
@@ -548,4 +563,14 @@ func nativeCompletion() (uint64, <-chan error) {
 		return 0
 	})
 	return handle, channel
+}
+
+func waitNativeCompletion(ctx context.Context, handle uint64, completed <-chan error) error {
+	defer unregisterNativeCallback(handle)
+	select {
+	case err := <-completed:
+		return err
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 }

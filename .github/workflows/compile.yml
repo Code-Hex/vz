@@ -1,4 +1,4 @@
-name: VMNet lifetime diagnosis
+name: VMNet host resource diagnosis
 on:
   push:
     branches:
@@ -17,30 +17,34 @@ jobs:
           check-latest: true
       - name: Download Linux kernel
         run: make download_kernel
-      - name: Capture VMNet stacks and native releases
+      - name: Capture VMNet host resources
         timeout-minutes: 5
         env:
           GOTRACEBACK: system
         run: |
           diagnostics="$RUNNER_TEMP/vz-lifetime-diagnostics"
           mkdir -p "$diagnostics"
-          touch "$diagnostics/host-health.log" "$diagnostics/native-lifetime.log" "$diagnostics/goroutines.log" "$diagnostics/stack-control.log"
-          ln -s "$diagnostics/native-lifetime.log" /tmp/vz-316-native-lifetime.log
-          ln -s "$diagnostics/goroutines.log" /tmp/vz-316-goroutines.log
-          ln -s "$diagnostics/stack-control.log" /tmp/vz-316-stack-control.log
+          touch "$diagnostics/host-health.log" "$diagnostics/host-stats.log"
           python3 .github/scripts/watch-vmnet.py "$diagnostics" &
           witness=$!
-          tail -n +1 -F "$diagnostics/host-health.log" "$diagnostics/native-lifetime.log" "$diagnostics/goroutines.log" "$diagnostics/stack-control.log" &
+          python3 .github/scripts/vmnet-host-stats.py "$diagnostics" &
+          stats=$!
+          tail -n +1 -F "$diagnostics/host-health.log" "$diagnostics/host-stats.log" &
           reader=$!
           cleanup() {
+            kill -KILL -- "$stats" "-$stats" 2>/dev/null || true
             kill "$witness" "$reader" 2>/dev/null || true
-            wait "$witness" "$reader" 2>/dev/null || true
-            rm -f /tmp/vz-316-native-lifetime.log /tmp/vz-316-goroutines.log /tmp/vz-316-stack-control.log
+            wait "$stats" "$witness" "$reader" 2>/dev/null || true
           }
           trap cleanup EXIT
           sw_vers
+          # Record the host baseline before starting the VM process.
+          sleep 10
           set -o pipefail
-          go test -exec "go run \"$PWD/cmd/codesign\" -diagnostics \"$diagnostics\" -diagnostic-after 30s" . -run '^(TestVMNetNetworkDeviceAttachment|TestVMNetDHCPReservationAndGuestCommunication)$' -count 1 -timeout 1m -v -failfast 2>&1 | tee "$diagnostics/tests.log"
+          for iteration in {1..3}; do
+            echo "VMNet process iteration=$iteration"
+            go test -exec "go run \"$PWD/cmd/codesign\" -diagnostics \"$diagnostics\" -diagnostic-after 30s" . -run '^(TestVMNetNetworkDeviceAttachment|TestVMNetDHCPReservationAndGuestCommunication)$' -count 1 -timeout 1m -v -failfast 2>&1 | tee "$diagnostics/tests-$iteration.log"
+          done
       - name: Save lifetime diagnostics
         if: always()
         uses: actions/upload-artifact@v7.0.2

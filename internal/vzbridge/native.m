@@ -1,5 +1,4 @@
 #import "native.h"
-#import "diagnostic_lifetime.h"
 #import <Foundation/Foundation.h>
 #import <Virtualization/Virtualization.h>
 #import <errno.h>
@@ -147,19 +146,15 @@ void vz_releaseObject(void *object)
 {
     if (!object)
         return;
-    vzDiagnosticLifetime("object.release.request", object);
     @autoreleasepool {
         dispatch_queue_t target = vz_objectQueue(object);
         dispatch_retain(target);
         // A void pointer keeps the block from taking an extra Objective-C reference.
         dispatch_group_async(pendingReleases(), target, ^{
             @autoreleasepool {
-                vzDiagnosticLifetime("object.release.begin", object);
                 [(id)object release];
-                vzDiagnosticLifetime("object.release.end", object);
             }
             dispatch_release(target);
-            vzDiagnosticLifetime("object.release.body.end", object);
         });
     }
 }

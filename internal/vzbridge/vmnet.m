@@ -1,5 +1,4 @@
 #import "native.h"
-#import "diagnostic_lifetime.h"
 #import <Foundation/Foundation.h>
 #import <Virtualization/Virtualization.h>
 #import <arpa/inet.h>
@@ -23,7 +22,6 @@ void *vz_newVmnetNetworkConfiguration(int32_t mode, void **errorOut)
     if (@available(macOS 26, *)) {
         vmnet_return_t status;
         void *configuration = vmnet_network_configuration_create((vmnet_mode_t)mode, &status);
-        vzDiagnosticLifetime("vmnet.configuration.created", configuration);
         vmnetError(status, @"vmnet_network_configuration_create", errorOut);
         return configuration;
     }
@@ -36,9 +34,7 @@ void *vz_newVmnetNetwork(void *configuration, void **errorOut)
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 260000
     if (@available(macOS 26, *)) {
         vmnet_return_t status;
-        vzDiagnosticLifetime("vmnet.network.create.begin", configuration);
         void *network = vmnet_network_create(configuration, &status);
-        vzDiagnosticLifetime("vmnet.network.created", network);
         vmnetError(status, @"vmnet_network_create", errorOut);
         return network;
     }
@@ -206,11 +202,8 @@ void *vz_vmnetNetworkDeviceAttachmentNetwork(void *attachment)
 
 void vz_releaseCFObject(void *object)
 {
-    if (object) {
-        vzDiagnosticLifetime("cf.release.begin", object);
+    if (object)
         CFRelease(object);
-        vzDiagnosticLifetime("cf.release.end", object);
-    }
 }
 
 void *vz_copyVmnetNetworkSerialization(void *network, void **errorOut)

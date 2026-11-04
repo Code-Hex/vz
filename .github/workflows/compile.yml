@@ -41,6 +41,7 @@ jobs:
           ifconfig
           netstat -rn
           python3 .github/scripts/run-native-vmnet.py "$diagnostics" "$RUNNER_TEMP/native-vmnet" "$PWD/testdata/Image" "$PWD/testdata/initramfs.cpio.gz"
+          python3 .github/scripts/run-native-vmnet.py "$diagnostics" "$RUNNER_TEMP/native-vmnet" "$PWD/testdata/Image" "$PWD/testdata/initramfs.cpio.gz" --release-configuration
       - name: Save native diagnostics
         if: always()
         uses: actions/upload-artifact@v7.0.2

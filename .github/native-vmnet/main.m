@@ -260,8 +260,8 @@ static BOOL stopGuest(Guest *guest)
 int main(int argc, const char *argv[])
 {
     @autoreleasepool {
-        if (argc != 3) {
-            fprintf(stderr, "usage: %s /path/to/Image /path/to/initramfs.cpio.gz\n", argv[0]);
+        if (argc != 3 && !(argc == 4 && strcmp(argv[3], "--release-configuration") == 0)) {
+            fprintf(stderr, "usage: %s /path/to/Image /path/to/initramfs.cpio.gz [--release-configuration]\n", argv[0]);
             return 64;
         }
         if (@available(macOS 26.0, *)) {
@@ -296,6 +296,14 @@ int main(int argc, const char *argv[])
             char actualSubnet[INET_ADDRSTRLEN], actualMask[INET_ADDRSTRLEN];
             stage("network subnet query exit subnet=%s mask=%s", inet_ntop(AF_INET, &subnet, actualSubnet, sizeof(actualSubnet)),
                 inet_ntop(AF_INET, &mask, actualMask, sizeof(actualMask)));
+            if (argc == 4) {
+                stage("caller configuration reference release enter");
+                CFRelease(config);
+                config = NULL;
+                stage("caller configuration reference release exit");
+            } else {
+                stage("caller configuration reference held through stop");
+            }
             Guest *guests[2] = {[Guest new], [Guest new]};
             for (int i = 0; i < 2; i++) {
                 guests[i]->index = i;
@@ -318,7 +326,8 @@ int main(int argc, const char *argv[])
             }
             stage("network release enter");
             CFRelease(network);
-            CFRelease(config);
+            if (config)
+                CFRelease(config);
             stage("network release exit");
             stage("native probe exit success=%d", success);
             return success ? 0 : 1;

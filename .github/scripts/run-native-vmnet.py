@@ -17,21 +17,20 @@ with (directory / "native-tests.log").open("a", buffering=1) as output:
         now = datetime.datetime.now(datetime.timezone.utc).isoformat()
         print(f"[native-control] utc={now} {message}", file=output)
 
-    for iteration in range(1, 4):
-        child = None
+    child = None
+    try:
+        child = subprocess.Popen(sys.argv[2:], stdout=output, stderr=subprocess.STDOUT)
+        record(f"child_pid={child.pid} started")
         try:
-            child = subprocess.Popen(sys.argv[2:], stdout=output, stderr=subprocess.STDOUT)
-            record(f"iteration={iteration} child_pid={child.pid} started")
-            try:
-                # main.m allows 30 seconds per guest and 10 seconds per stop.
-                status = child.wait(timeout=90)
-            except subprocess.TimeoutExpired:
-                record(f"iteration={iteration} child_pid={child.pid} deadline; killing child")
-                raise SystemExit(1)
-            record(f"iteration={iteration} child_pid={child.pid} exit={status}")
-            if status:
-                raise SystemExit(1)
-        finally:
-            if child is not None and child.poll() is None:
-                child.kill()
-                child.wait()
+            # main.m allows 30 seconds per guest and 10 seconds per stop.
+            status = child.wait(timeout=90)
+        except subprocess.TimeoutExpired:
+            record(f"child_pid={child.pid} deadline; killing child")
+            raise SystemExit(1)
+        record(f"child_pid={child.pid} exit={status}")
+        if status:
+            raise SystemExit(1)
+    finally:
+        if child is not None and child.poll() is None:
+            child.kill()
+            child.wait()

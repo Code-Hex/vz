@@ -3,6 +3,7 @@ package vz
 import (
 	"unsafe"
 
+	"github.com/Code-Hex/vz/v4/internal/objc"
 	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
@@ -134,6 +135,7 @@ func (v *VirtualMachineConfiguration) SocketDevices() []SocketDeviceConfiguratio
 // SetStorageDevicesVirtualMachineConfiguration sets list of disk devices. Empty by default.
 func (v *VirtualMachineConfiguration) SetStorageDevicesVirtualMachineConfiguration(cs []StorageDeviceConfiguration) {
 	array := nativeObjectArray(cs)
+	defer objc.Release(array)
 	vzbridge.VZVirtualMachineConfiguration_SetStorageDevices(v, array)
 	v.storageDeviceConfiguration = cs
 }

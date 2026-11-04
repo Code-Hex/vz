@@ -1,14 +1,19 @@
 package vz_test
 
 import (
-	"log"
+	"bytes"
+	"context"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/Code-Hex/vz/v4"
+	"github.com/Code-Hex/vz/v4/internal/objc"
+	"github.com/Code-Hex/vz/v4/internal/testhelper"
+	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 )
 
 func TestBlockDeviceIdentifier(t *testing.T) {
@@ -93,11 +98,6 @@ func TestBlockDeviceWithCacheAndSyncMode(t *testing.T) {
 			return nil
 		},
 	)
-	t.Cleanup(func() {
-		if err := container.Shutdown(); err != nil {
-			log.Println(err)
-		}
-	})
 
 	vm := container.VirtualMachine
 
@@ -123,70 +123,82 @@ func TestBlockDeviceStorageDeviceAttachmentError(t *testing.T) {
 }
 
 func TestBlockDeviceWithDeviceAttachment(t *testing.T) {
-	if vz.Available(12) {
-		t.Skip("vz.NewDiskImageStorageDeviceAttachmentWithCacheAndSync is supported from macOS 12")
+	if vz.Available(14) {
+		t.Skip("vz.NewDiskBlockDeviceStorageDeviceAttachment is supported from macOS 14")
 	}
 
-	devPath := ""
-	container := newVirtualizationMachine(t,
+	const diskOperationTimeout = 10 * time.Second
+	path := filepath.Join(t.TempDir(), "disk.img")
+	if err := vz.CreateDiskImage(path, 512); err != nil {
+		t.Fatal(err)
+	}
+
+	ctx, cancel := context.WithTimeout(t.Context(), diskOperationTimeout)
+	cmd := exec.CommandContext(ctx, "hdiutil", "attach", "-imagekey", "diskimage-class=CRawDiskImage", "-nomount", path)
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	output, attachErr := cmd.Output()
+	cancel()
+	fields := strings.Fields(string(output))
+	if len(fields) == 0 || !strings.HasPrefix(fields[0], "/dev/") {
+		t.Fatalf("hdiutil attach: %v, output: %s, stderr: %s", attachErr, output, stderr.String())
+	}
+	devPath := fields[0]
+	t.Cleanup(func() {
+		ctx, cancel := context.WithTimeout(context.Background(), diskOperationTimeout)
+		defer cancel()
+		cmd := exec.CommandContext(ctx, "hdiutil", "detach", devPath)
+		if output, err := cmd.CombinedOutput(); err != nil {
+			t.Errorf("hdiutil detach %s: %v, output: %s", devPath, err, output)
+		}
+	})
+	if attachErr != nil {
+		t.Fatalf("hdiutil attach: %v, output: %s, stderr: %s", attachErr, output, stderr.String())
+	}
+	t.Cleanup(vzbridge.Drain)
+
+	dev, err := os.Open(devPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	attachment, err := vz.NewDiskBlockDeviceStorageDeviceAttachment(dev, false, vz.DiskSynchronizationModeNone)
+	closeErr := dev.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { objc.Release(attachment) })
+	if closeErr != nil {
+		t.Fatal(closeErr)
+	}
+	config, err := vz.NewVirtioBlockDeviceConfiguration(attachment)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { objc.Release(config) })
+
+	var container *Container
+	container, err = setupVirtualizationMachine(t, testhelper.NewSshConfig("root", "passwd"),
 		func(vmc *vz.VirtualMachineConfiguration) error {
-			dir := t.TempDir()
-			path := filepath.Join(dir, "disk.img")
-			if err := vz.CreateDiskImage(path, 512); err != nil {
-				t.Fatal(err)
-			}
-			cmd := exec.Command("hdiutil", "attach", "-imagekey", "diskimage-class=CRawDiskImage", "-nomount", path)
-			output, err := cmd.Output()
-			if err != nil {
-				t.Fatalf("failed to attach disk image: %v", err)
-			}
-
-			outputStr := string(output)
-			lines := strings.Split(outputStr, "\n")
-			if len(lines) == 0 || !strings.HasPrefix(lines[0], "/dev/") {
-				log.Printf("[%s]\n", lines)
-				t.Fatalf("unexpected output from `hdiutil attach`")
-			}
-			if len(lines) != 0 && strings.HasPrefix(lines[0], "/dev/") {
-				devPath = strings.TrimSpace(lines[0])
-			}
-
-			var attachment *vz.DiskBlockDeviceStorageDeviceAttachment
-			{
-				dev, err := os.Open(devPath)
-				if err != nil {
-					t.Fatal(err)
+			t.Cleanup(func() { objc.Release(vmc) })
+			// Stopping the VM does not release the device's duplicated file descriptor.
+			t.Cleanup(func() {
+				if container == nil {
+					return
 				}
-
-				attachment, err = vz.NewDiskBlockDeviceStorageDeviceAttachment(dev, false, vz.DiskSynchronizationModeNone)
-				if err != nil {
-					t.Fatal(err)
+				state := container.State()
+				if state == vz.VirtualMachineStateStopped || state == vz.VirtualMachineStateError {
+					objc.Release(container.VirtualMachine)
 				}
-				if err := dev.Close(); err != nil {
-					log.Printf("failed to close %s: %s\n", devPath, err)
-				}
-
-			}
-
-			config, err := vz.NewVirtioBlockDeviceConfiguration(attachment)
-			if err != nil {
-				t.Fatal(err)
-			}
+			})
 			vmc.SetStorageDevicesVirtualMachineConfiguration([]vz.StorageDeviceConfiguration{
 				config,
 			})
 			return nil
 		},
 	)
-	t.Cleanup(func() {
-		if err := container.Shutdown(); err != nil {
-			log.Println(err)
-		}
-		cmd := exec.Command("hdiutil", "detach", devPath)
-		if err := cmd.Run(); err != nil {
-			log.Printf("hdiutil detach %s failed: %s\n", devPath, err)
-		}
-	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	vm := container.VirtualMachine
 

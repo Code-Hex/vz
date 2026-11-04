@@ -179,7 +179,22 @@ jobs:
           diagnostics="$RUNNER_TEMP/vz-repetition"
           mkdir -p "$diagnostics"
           set -o pipefail
-          go test -exec "env GOGC=${{ matrix.gc }} go run \"$PWD/cmd/codesign\" -diagnostics \"$diagnostics\"" . -run '^(TestVMNetNetworkDeviceAttachment|TestVMNetDHCPReservationAndGuestCommunication)$' -count 10 -timeout 5m -v -failfast 2>&1 | tee "$diagnostics/tests.log"
+          go build -o "$RUNNER_TEMP/vz-codesign" ./cmd/codesign
+          touch "$diagnostics/host-health.log"
+          python3 .github/scripts/watch-vmnet.py "$diagnostics" &
+          witness=$!
+          tail -n +1 -F "$diagnostics/host-health.log" &
+          reader=$!
+          cleanup() {
+            kill "$witness" "$reader" 2>/dev/null || true
+            wait "$witness" "$reader" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          sw_vers
+          for iteration in {1..10}; do
+            echo "VMNet fresh process iteration=$iteration"
+            go test -exec "env GOGC=${{ matrix.gc }} \"$RUNNER_TEMP/vz-codesign\" -diagnostics \"$diagnostics\" -diagnostic-after 30s" . -run '^(TestVMNetNetworkDeviceAttachment|TestVMNetDHCPReservationAndGuestCommunication)$' -count 1 -timeout 1m -v -failfast 2>&1 | tee "$diagnostics/tests-$iteration.log"
+          done
       - name: Save VMNet repetition diagnostics
         if: always()
         uses: actions/upload-artifact@v7.0.2

@@ -274,7 +274,8 @@ int main(int argc, const char *argv[])
             if (!config)
                 _Exit(1);
             struct in_addr subnet, mask;
-            inet_pton(AF_INET, "192.168.247.0", &subnet);
+            // vmnet needs the host address to start DHCP-backed attachments.
+            inet_pton(AF_INET, "192.168.247.1", &subnet);
             inet_pton(AF_INET, "255.255.255.0", &mask);
             stage("network subnet/MTU/reservations enter");
             status("network subnet", vmnet_network_configuration_set_ipv4_subnet(config, &subnet, &mask));

@@ -86,6 +86,10 @@ static BOOL startGuest(Guest *guest, NSURL *kernel, NSURL *initrd,
             guest->configuration.entropyDevices = @[[[VZVirtioEntropyDeviceConfiguration alloc] init]];
             guest->configuration.memoryBalloonDevices = @[[[VZVirtioTraditionalMemoryBalloonDeviceConfiguration alloc] init]];
             guest->configuration.socketDevices = @[[[VZVirtioSocketDeviceConfiguration alloc] init]];
+            VZVirtioConsoleDeviceSerialPortConfiguration *console = [[VZVirtioConsoleDeviceSerialPortConfiguration alloc] init];
+            console.attachment = [[VZFileHandleSerialPortAttachment alloc]
+                initWithFileHandleForReading:nil fileHandleForWriting:NSFileHandle.fileHandleWithStandardError];
+            guest->configuration.serialPorts = @[console];
             VZVirtioNetworkDeviceConfiguration *device = [[VZVirtioNetworkDeviceConfiguration alloc] init];
             device.attachment = [[VZVmnetNetworkDeviceAttachment alloc] initWithNetwork:network];
             device.MACAddress = [[VZMACAddress alloc] initWithString:

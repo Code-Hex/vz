@@ -6,7 +6,7 @@ require (
 	fyne.io/fyne/v2 v2.8.2
 	gioui.org v0.10.3
 	github.com/Code-Hex/vz/v4 v4.0.0
-	github.com/ebitengine/purego v0.11.2
+	github.com/ebitengine/purego v0.11.3
 	github.com/egoist/mygo v0.7.3
 	github.com/wailsapp/wails/v3 v3.0.0
 )

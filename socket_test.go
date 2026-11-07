@@ -23,6 +23,7 @@ func TestVirtioSocketListener(t *testing.T) {
 
 	socketDevice := vm.SocketDevices()[0] // already tested in newVirtualizationMachine
 
+	const readTimeout = 3 * time.Second
 	port := 43218
 	wantData := "hello"
 	done := make(chan struct{})
@@ -49,13 +50,17 @@ func TestVirtioSocketListener(t *testing.T) {
 			return
 		}
 
+		if err := conn.SetReadDeadline(time.Now().Add(readTimeout)); err != nil {
+			t.Errorf("failed to set read deadline: %v", err)
+			return
+		}
+
 		buf := make([]byte, len(wantData))
-		n, err := conn.Read(buf)
-		if err != nil && err != io.EOF {
+		if _, err := io.ReadFull(conn, buf); err != nil {
 			t.Errorf("failed to read data: %v", err)
 			return
 		}
-		got := string(buf[:n])
+		got := string(buf)
 
 		if wantData != got {
 			t.Errorf("want %q but got %q", wantData, got)
@@ -65,7 +70,7 @@ func TestVirtioSocketListener(t *testing.T) {
 	session := container.NewSession(t)
 	var buf bytes.Buffer
 	session.Stderr = &buf
-	cmd := fmt.Sprintf("echo %s | socat - VSOCK-CONNECT:2:%d", wantData, port)
+	cmd := fmt.Sprintf("{ printf he; sleep 0.2; printf llo; } | socat - VSOCK-CONNECT:2:%d", port)
 	if err := session.Run(cmd); err != nil {
 		t.Fatalf("failed to write data to vsock: %v\nstderr: %q", err, buf.String())
 	}
@@ -73,7 +78,7 @@ func TestVirtioSocketListener(t *testing.T) {
 
 	select {
 	case <-done:
-	case <-time.After(3 * time.Second):
+	case <-time.After(readTimeout):
 		t.Fatalf("timeout connection handling after accepted")
 	}
 }

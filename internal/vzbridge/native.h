@@ -3,6 +3,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define VZBridgeIdentifierPrefix "dev.codehex.vz"
+#define VZBridgeSerialAttachmentErrorDomain VZBridgeIdentifierPrefix ".serial-attachment"
+
 enum {
     VZBridgeCallbackCompletion = 1,
     VZBridgeCallbackMachineStateChanged = 2,

@@ -112,7 +112,7 @@ func serialAttachmentError(errorPointer unsafe.Pointer) error {
 	if err == nil {
 		return nil
 	}
-	if err.Domain == "dev.codehex.vz.serial-attachment" {
+	if err.Domain == vzbridge.SerialAttachmentErrorDomain {
 		switch err.Code {
 		case vzbridge.ErrorSerialAttachmentClosed:
 			return ErrSerialPortAttachmentClosed

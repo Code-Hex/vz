@@ -16,7 +16,7 @@ static dispatch_queue_t commonQueue(void)
 {
     static dispatch_once_t once;
     dispatch_once(&once, ^{
-        bridgeQueue = dispatch_queue_create("com.codehex.vz.native", DISPATCH_QUEUE_SERIAL);
+        bridgeQueue = dispatch_queue_create(VZBridgeIdentifierPrefix ".native", DISPATCH_QUEUE_SERIAL);
         dispatch_queue_set_specific(bridgeQueue, &bridgeQueueKey, bridgeQueue, NULL);
     });
     return bridgeQueue;
@@ -34,7 +34,7 @@ static dispatch_queue_t commonQueue(void)
 {
     self = [super init];
     if (self) {
-        queue = dispatch_queue_create("com.codehex.vz.machine", DISPATCH_QUEUE_SERIAL);
+        queue = dispatch_queue_create(VZBridgeIdentifierPrefix ".machine", DISPATCH_QUEUE_SERIAL);
         dispatch_queue_set_specific(queue, &bridgeQueueKey, queue, NULL);
     }
     return self;
@@ -299,7 +299,7 @@ static VZSerialAttachmentUse *serialAttachmentUseLocked(VZFileHandleSerialPortAt
 static NSError *serialAttachmentError(NSInteger code)
 {
     NSString *description = code == VZBridgeErrorSerialAttachmentClosed ? @"Serial port attachment is closed" : @"Serial port attachment is in use";
-    return [NSError errorWithDomain:@"dev.codehex.vz.serial-attachment" code:code userInfo:@ { NSLocalizedDescriptionKey : description }];
+    return [NSError errorWithDomain:@VZBridgeSerialAttachmentErrorDomain code:code userInfo:@ { NSLocalizedDescriptionKey : description }];
 }
 
 static VZFileHandleSerialPortAttachment *fileHandleSerialAttachment(VZSerialPortAttachment *attachment)

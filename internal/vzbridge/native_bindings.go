@@ -85,6 +85,23 @@ func CancelInstallVZMacOSInstaller(p0 objc.NSObject) {
 	runtime.KeepAlive(p0)
 }
 
+var callCloseVZFileHandleSerialPortAttachment lazyBinding[func(unsafe.Pointer, *unsafe.Pointer) bool]
+
+func CloseVZFileHandleSerialPortAttachment(attachment objc.NSObject, errorOut *unsafe.Pointer) bool {
+	call := callCloseVZFileHandleSerialPortAttachment.get(func() func(unsafe.Pointer, *unsafe.Pointer) bool {
+		var call func(unsafe.Pointer, *unsafe.Pointer) bool
+		purego.RegisterFunc(&call, uintptr(C.vz_closeVZFileHandleSerialPortAttachment))
+		return call
+	})
+	var result bool
+	onObjectQueue(objc.Ptr(attachment), func() {
+		result = call(objc.Ptr(attachment), errorOut)
+	})
+	runtime.KeepAlive(attachment)
+	runtime.KeepAlive(errorOut)
+	return result
+}
+
 var callDetachDeviceVZUSBController lazyBinding[func(unsafe.Pointer, unsafe.Pointer, uint64)]
 
 func DetachDeviceVZUSBController(p0 objc.NSObject, p1 objc.NSObject, p2 uint64) {
@@ -459,6 +476,23 @@ func SetCallback(p0 uint64) {
 	onQueue(func() {
 		call(p0)
 	})
+}
+
+var callSetVirtioConsolePortAttachment lazyBinding[func(unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer)]
+
+func SetVirtioConsolePortAttachment(machine objc.NSObject, port objc.NSObject, attachment objc.NSObject, errorOut *unsafe.Pointer) {
+	call := callSetVirtioConsolePortAttachment.get(func() func(unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer) {
+		var call func(unsafe.Pointer, unsafe.Pointer, unsafe.Pointer, *unsafe.Pointer)
+		purego.RegisterFunc(&call, uintptr(C.vz_setVirtioConsolePortAttachment))
+		return call
+	})
+	onObjectQueue(objc.Ptr(machine), func() {
+		call(objc.Ptr(machine), objc.Ptr(port), objc.Ptr(attachment), errorOut)
+	})
+	runtime.KeepAlive(machine)
+	runtime.KeepAlive(port)
+	runtime.KeepAlive(attachment)
+	runtime.KeepAlive(errorOut)
 }
 
 var callSocketConnectionDuplicatedFileDescriptor lazyBinding[func(unsafe.Pointer, *unsafe.Pointer) int32]

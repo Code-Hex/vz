@@ -12,5 +12,5 @@ require (
 
 require (
 	github.com/ebitengine/purego v0.11.3 // indirect
-	golang.org/x/mod v0.42.0 // indirect
+	golang.org/x/mod v0.43.0 // indirect
 )

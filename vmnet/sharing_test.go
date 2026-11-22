@@ -19,9 +19,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
 	"github.com/Code-Hex/vz/v4/vmnet"
 )
+
+const testNetworkServiceName = vzbridge.IdentifierPrefix + ".test"
 
 func TestNetworkSharingInvalidInputs(t *testing.T) {
 	if vmnet.Available(26) {
@@ -54,7 +57,7 @@ func TestNetworkSharingInvalidInputs(t *testing.T) {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	if _, err := vmnet.ReceiveNetwork(ctx, "com.codehex.vz.test.absent", "true"); !errors.Is(err, context.Canceled) {
+	if _, err := vmnet.ReceiveNetwork(ctx, testNetworkServiceName+".absent", "true"); !errors.Is(err, context.Canceled) {
 		t.Fatalf("error = %v, want canceled", err)
 	}
 }
@@ -219,7 +222,7 @@ func (p *networkServiceProcess) kill(t *testing.T) {
 func startNetworkService(t *testing.T, requirement string) *networkServiceProcess {
 	t.Helper()
 	dir := t.TempDir()
-	name := fmt.Sprintf("com.codehex.vz.test.network.%d.%d", os.Getpid(), time.Now().UnixNano())
+	name := fmt.Sprintf("%s.network.%d.%d", testNetworkServiceName, os.Getpid(), time.Now().UnixNano())
 	executable, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)
@@ -305,8 +308,11 @@ func TestNetworkSharingInvalidRequirement(t *testing.T) {
 	if vmnet.Available(26) {
 		t.Skip("vmnet networks require macOS 26 and its SDK")
 	}
-	if _, err := vmnet.ReceiveNetwork(context.Background(), "com.codehex.vz.test", "not a valid requirement ("); err == nil {
-		t.Fatal("invalid requirement accepted")
+	const errorDomain = "dev.codehex.vz.vmnet.xpc"
+	const invalidRequirement = "not a valid requirement ("
+	var nativeErr *objcutil.NSError
+	if _, err := vmnet.ReceiveNetwork(context.Background(), testNetworkServiceName, invalidRequirement); !errors.As(err, &nativeErr) || nativeErr.Domain != errorDomain {
+		t.Fatalf("ReceiveNetwork error = %v, want %s", err, errorDomain)
 	}
 	config, err := vmnet.NewNetworkConfiguration(vmnet.ModeHost)
 	if err != nil {
@@ -316,8 +322,8 @@ func TestNetworkSharingInvalidRequirement(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := vmnet.ShareNetwork("com.codehex.vz.test", network, "not a valid requirement ("); err == nil {
-		t.Fatal("invalid requirement accepted")
+	if _, err := vmnet.ShareNetwork(testNetworkServiceName, network, invalidRequirement); !errors.As(err, &nativeErr) || nativeErr.Domain != errorDomain {
+		t.Fatalf("ShareNetwork error = %v, want %s", err, errorDomain)
 	}
 }
 

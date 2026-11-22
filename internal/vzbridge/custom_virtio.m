@@ -99,7 +99,7 @@ void *vz_newCustomVirtioProvider(uintptr_t callback, uint64_t context)
 {
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 270000
     if (@available(macOS 27.0, *)) {
-        dispatch_queue_t queue = dispatch_queue_create("com.codehex.vz.custom-virtio", DISPATCH_QUEUE_SERIAL);
+        dispatch_queue_t queue = dispatch_queue_create(VZBridgeIdentifierPrefix ".custom-virtio", DISPATCH_QUEUE_SERIAL);
         VZBridgeCustomVirtioDelegate *delegate = [VZBridgeCustomVirtioDelegate new];
         delegate->callback = (VirtioCallback)callback;
         delegate->context = context;

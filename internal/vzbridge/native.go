@@ -22,6 +22,8 @@ import (
 const SDKVersion = C.__MAC_OS_X_VERSION_MAX_ALLOWED
 
 const (
+	IdentifierPrefix            = C.VZBridgeIdentifierPrefix
+	SerialAttachmentErrorDomain = C.VZBridgeSerialAttachmentErrorDomain
 	ErrorSerialAttachmentClosed = C.VZBridgeErrorSerialAttachmentClosed
 	ErrorSerialAttachmentInUse  = C.VZBridgeErrorSerialAttachmentInUse
 )

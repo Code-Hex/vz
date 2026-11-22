@@ -449,6 +449,73 @@ func TestFileHandleSerialPortAttachmentCloseAfterAllVMsStop(t *testing.T) {
 	}
 }
 
+func TestFileHandleSerialPortAttachmentCloseAfterGuestStop(t *testing.T) {
+	null, err := os.OpenFile(os.DevNull, os.O_WRONLY, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer null.Close()
+	attachment, err := vz.NewFileHandleSerialPortAttachment(nil, null)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer objc.Release(attachment)
+	loader, err := vz.NewLinuxBootLoader(
+		"testdata/Image",
+		vz.WithInitrd("testdata/initramfs.cpio.gz"),
+		vz.WithCommandLine("console=hvc0 rdinit=/bin/busybox -- poweroff -f"),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	config, err := vz.NewVirtualMachineConfiguration(loader, 1, 256*1024*1024)
+	if err != nil {
+		t.Fatal(err)
+	}
+	port, err := vz.NewVirtioConsoleDeviceSerialPortConfiguration(attachment)
+	if err != nil {
+		t.Fatal(err)
+	}
+	config.SetSerialPortsVirtualMachineConfiguration([]*vz.VirtioConsoleDeviceSerialPortConfiguration{port})
+	vm, err := vz.NewVirtualMachine(config)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer objc.Release(vm)
+	defer func() {
+		if vm.CanStop() {
+			if err := vm.Stop(); err != nil {
+				t.Error(err)
+			}
+		}
+	}()
+	states := make(chan vz.VirtualMachineState, 1)
+	stopStates, err := vm.StateChangedNotify(states)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer stopStates()
+
+	if err := vm.Start(); err != nil {
+		t.Fatal(err)
+	}
+	timeout := time.After(30 * time.Second)
+	for vm.State() != vz.VirtualMachineStateStopped {
+		if vm.State() == vz.VirtualMachineStateError {
+			t.Fatal("VM entered the error state instead of stopping")
+		}
+		select {
+		case <-states:
+		case <-timeout:
+			t.Fatalf("guest did not stop the VM: state %v", vm.State())
+		}
+	}
+	// No retry: State reporting Stopped is enough for Close to succeed.
+	if err := attachment.Close(); err != nil {
+		t.Fatalf("close after the guest stopped the VM: %v", err)
+	}
+}
+
 func serialFileHandleDescriptor(handle *objc.Pointer) int {
 	fd := pureobjc.Send[int32](pureobjc.ID(uintptr(objc.Ptr(handle))), pureobjc.RegisterName("fileDescriptor"))
 	runtime.KeepAlive(handle)

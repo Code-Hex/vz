@@ -36,7 +36,7 @@ static void sharingError(NSInteger code, NSString *message, void **errorOut)
 {
     @autoreleasepool {
         if (errorOut)
-            *errorOut = [[NSError errorWithDomain:@"com.codehex.vz.vmnet.xpc" code:code userInfo:@{NSLocalizedDescriptionKey: message}] retain];
+            *errorOut = [[NSError errorWithDomain:@VZBridgeIdentifierPrefix ".vmnet.xpc" code:code userInfo:@ { NSLocalizedDescriptionKey : message }] retain];
     }
 }
 
@@ -64,7 +64,7 @@ void *vz_listenVmnetNetwork(const char *name, void *serialization, const char *r
         sharingError(ENOMEM, @"Cannot allocate network service", errorOut);
         return NULL;
     }
-    service->queue = dispatch_queue_create("com.codehex.vz.vmnet.service", DISPATCH_QUEUE_SERIAL);
+    service->queue = dispatch_queue_create(VZBridgeIdentifierPrefix ".vmnet.service", DISPATCH_QUEUE_SERIAL);
     service->listener = xpc_connection_create_mach_service(name, service->queue, XPC_CONNECTION_MACH_SERVICE_LISTENER);
     int error = setPeerRequirement(service->listener, requirement);
     if (error) {
@@ -138,7 +138,7 @@ void *vz_requestVmnetNetwork(const char *name, const char *requirement, void **e
         sharingError(ENOMEM, @"Cannot allocate network request", errorOut);
         return NULL;
     }
-    request->queue = dispatch_queue_create("com.codehex.vz.vmnet.request", DISPATCH_QUEUE_SERIAL);
+    request->queue = dispatch_queue_create(VZBridgeIdentifierPrefix ".vmnet.request", DISPATCH_QUEUE_SERIAL);
     request->done = dispatch_semaphore_create(0);
     request->connection = xpc_connection_create_mach_service(name, request->queue, 0);
     int error = setPeerRequirement(request->connection, requirement);

@@ -12,7 +12,7 @@ require (
 require (
 	github.com/ebitengine/purego v0.11.3 // indirect
 	github.com/mattn/go-isatty v0.0.24 // indirect
-	golang.org/x/mod v0.42.0 // indirect
-	golang.org/x/sys v0.49.0 // indirect
+	golang.org/x/mod v0.43.0 // indirect
+	golang.org/x/sys v0.50.0 // indirect
 	golang.org/x/term v0.47.0 // indirect
 )

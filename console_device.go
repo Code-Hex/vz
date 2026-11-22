@@ -1,6 +1,8 @@
 package vz
 
 import (
+	"unsafe"
+
 	"github.com/Code-Hex/vz/v4/internal/objc"
 	"github.com/Code-Hex/vz/v4/internal/objcutil"
 	"github.com/Code-Hex/vz/v4/internal/vzbridge"
@@ -111,10 +113,13 @@ func (p *VirtioConsolePort) Attachment() SerialPortAttachment {
 
 // SetAttachment changes the port attachment, including while the VM is running.
 // A nil attachment disconnects the port. This requires macOS 13 or newer.
+// SetAttachment returns [ErrSerialPortAttachmentClosed] if the attachment has
+// begun closing.
 func (p *VirtioConsolePort) SetAttachment(attachment SerialPortAttachment) error {
 	if err := macOSAvailable(13); err != nil {
 		return err
 	}
-	vzbridge.VZVirtioConsolePort_SetAttachment(p, attachment)
-	return nil
+	var errorPointer unsafe.Pointer
+	vzbridge.SetVirtioConsolePortAttachment(p.vm, p, attachment, &errorPointer)
+	return serialAttachmentError(errorPointer)
 }

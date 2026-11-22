@@ -269,7 +269,8 @@ func (v *VirtualMachine) StateChangedNotify(c chan<- VirtualMachineState) (func(
 	return v.machineState.stateNotify.subscribe(c)
 }
 
-// CanStart returns true if the machine is in a state that can be started.
+// CanStart reports whether the VM is in a state that allows it to start.
+// See [VirtualMachine.Start] for errors that can prevent startup.
 func (v *VirtualMachine) CanStart() bool {
 	return bool(vzbridge.VZVirtualMachine_CanStart(v))
 }
@@ -308,6 +309,8 @@ type virtualMachineStartOptions struct {
 type VirtualMachineStartOption func(*virtualMachineStartOptions) error
 
 // Start a virtual machine that is in either Stopped or Error state.
+// Start returns [ErrSerialPortAttachmentClosed] if a serial attachment has
+// begun closing.
 //
 // If you want to listen status change events, use the "StateChangedNotify" method.
 //
@@ -539,11 +542,7 @@ func (v *VirtualMachine) NetworkDeviceAttachmentWasDisconnectedNotify(c chan<- *
 func nativeCompletion() (uint64, <-chan error) {
 	channel := make(chan error, 1)
 	handle := registerNativeRequest(func(_ uint32, errorPointer, _ unsafe.Pointer, _ uint64) uint64 {
-		if err := objcutil.NewNSError(errorPointer); err != nil {
-			channel <- err
-		} else {
-			channel <- nil
-		}
+		channel <- serialAttachmentError(errorPointer)
 		close(channel)
 		return 0
 	})

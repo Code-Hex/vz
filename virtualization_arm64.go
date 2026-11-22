@@ -569,9 +569,7 @@ func (m *MacOSInstaller) Install(ctx context.Context) error {
 
 	m.once.Do(func() {
 		completionHandler := registerNativeRequest(func(kind uint32, first, second unsafe.Pointer, value uint64) uint64 {
-			if first != nil {
-				m.err = objcutil.NewNSError(first)
-			}
+			m.err = serialAttachmentError(first)
 			close(m.doneCh)
 			return 0
 		})

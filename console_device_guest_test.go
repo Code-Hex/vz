@@ -1,6 +1,7 @@
 package vz_test
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -79,10 +80,13 @@ func TestRuntimeConsoleAttachmentGuest(t *testing.T) {
 				t.Error(err)
 			}
 		}()
-		if got := port.Attachment(); got == nil {
-			t.Fatal("port remained disconnected")
-		} else if _, ok := got.(*vz.FileHandleSerialPortAttachment); !ok {
-			t.Fatalf("attachment = %T, want file handle attachment", got)
+		current := port.Attachment()
+		alias, ok := current.(*vz.FileHandleSerialPortAttachment)
+		if !ok {
+			t.Fatalf("attachment = %T, want file handle attachment", current)
+		}
+		if err := alias.Close(); !errors.Is(err, vz.ErrSerialPortAttachmentInUse) {
+			t.Fatalf("close while attached: got %v, want ErrSerialPortAttachmentInUse", err)
 		}
 		session := container.NewSession(t)
 		defer session.Close()
@@ -123,6 +127,12 @@ func TestRuntimeConsoleAttachmentGuest(t *testing.T) {
 		}
 		if port.Attachment() != nil {
 			t.Fatal("port remained connected")
+		}
+		if err := alias.Close(); err != nil {
+			t.Fatalf("close after detaching from running VM: %v", err)
+		}
+		if err := port.SetAttachment(attachment); !errors.Is(err, vz.ErrSerialPortAttachmentClosed) {
+			t.Fatalf("attach after close: got %v, want ErrSerialPortAttachmentClosed", err)
 		}
 	}
 	stops := make(chan struct{}, 1)

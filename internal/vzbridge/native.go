@@ -22,6 +22,11 @@ import (
 const SDKVersion = C.__MAC_OS_X_VERSION_MAX_ALLOWED
 
 const (
+	ErrorSerialAttachmentClosed = C.VZBridgeErrorSerialAttachmentClosed
+	ErrorSerialAttachmentInUse  = C.VZBridgeErrorSerialAttachmentInUse
+)
+
+const (
 	CallbackAccessoryConnected         = C.VZBridgeCallbackAccessoryConnected
 	CallbackAccessoryDisconnected      = C.VZBridgeCallbackAccessoryDisconnected
 	CallbackAccessoryRegistered        = C.VZBridgeCallbackAccessoryRegistered

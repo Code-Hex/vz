@@ -34,12 +34,18 @@ typedef void *VZBridgeObject __attribute__((annotate("vzbridge:object")));
 typedef void *VZBridgeOwnedObject __attribute__((annotate("vzbridge:owned")));
 typedef void **VZBridgeErrorOut __attribute__((annotate("vzbridge:errorout")));
 
+enum {
+    VZBridgeErrorSerialAttachmentClosed = 1,
+    VZBridgeErrorSerialAttachmentInUse = 2,
+};
+
 void vz_dispatchSyncOnObject(void *object, uintptr_t callback, uintptr_t context) __attribute__((annotate("vzbridge:manual")));
 void *vz_objectQueue(VZBridgeObject object) __attribute__((annotate("vzbridge:noqueue")));
 void vz_setObjectQueue(void *object, void *queue) __attribute__((annotate("vzbridge:noqueue")));
 void vz_inheritObjectQueue(void *object, void *source) __attribute__((annotate("vzbridge:noqueue")));
 void vz_attachDeviceVZUSBController(VZBridgeObject p0, VZBridgeObject p1, uint64_t p2) __attribute__((annotate("vzbridge:objectqueue")));
 void vz_cancelInstallVZMacOSInstaller(VZBridgeObject p0) __attribute__((annotate("vzbridge:objectqueue")));
+bool vz_closeVZFileHandleSerialPortAttachment(VZBridgeObject attachment, VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:objectqueue")));
 void vz_detachDeviceVZUSBController(VZBridgeObject p0, VZBridgeObject p1, uint64_t p2) __attribute__((annotate("vzbridge:objectqueue")));
 void *vz_dispatchQueuePointer(void) __attribute__((annotate("vzbridge:noqueue")));
 void vz_drain(void) __attribute__((annotate("vzbridge:noqueue")));
@@ -66,6 +72,7 @@ void vz_restoreMachineStateFromURLWithCompletionHandler(VZBridgeObject p0, uint6
 void vz_resumeWithCompletionHandler(VZBridgeObject p0, uint64_t p1) __attribute__((annotate("vzbridge:objectqueue")));
 void vz_saveMachineStateToURLWithCompletionHandler(VZBridgeObject p0, uint64_t p1, const char *p2) __attribute__((annotate("vzbridge:objectqueue")));
 void vz_setCallback(uint64_t p0);
+void vz_setVirtioConsolePortAttachment(VZBridgeObject machine, VZBridgeObject port, VZBridgeObject attachment, VZBridgeErrorOut errorOut) __attribute__((annotate("vzbridge:objectqueue")));
 int32_t vz_socketConnectionDuplicatedFileDescriptor(VZBridgeObject p0, VZBridgeErrorOut p1) __attribute__((annotate("vzbridge:objectqueue")));
 void *vz_newGraphicApplication(void) __attribute__((annotate("vzbridge:noqueue")));
 void vz_addGraphicWindow(void *application, VZBridgeObject machine, double width, double height, const char *title, bool enableController) __attribute__((annotate("vzbridge:noqueue")));

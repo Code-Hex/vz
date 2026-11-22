@@ -1,6 +1,8 @@
 package vz
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"runtime"
 	"unsafe"
@@ -24,6 +26,14 @@ type baseSerialPortAttachment struct{}
 func (*baseSerialPortAttachment) serialPortAttachment() {}
 
 var _ SerialPortAttachment = (*FileHandleSerialPortAttachment)(nil)
+
+// ErrSerialPortAttachmentClosed reports that a serial attachment has begun closing
+// or has already been closed.
+// It wraps [os.ErrClosed].
+var ErrSerialPortAttachmentClosed = fmt.Errorf("serial port attachment: %w", os.ErrClosed)
+
+// ErrSerialPortAttachmentInUse is returned when a virtual machine is using the attachment.
+var ErrSerialPortAttachmentInUse = errors.New("serial port attachment is in use by a virtual machine")
 
 // FileHandleSerialPortAttachment defines a serial port attachment from a file handle.
 //
@@ -67,6 +77,50 @@ func NewFileHandleSerialPortAttachment(read, write *os.File) (*FileHandleSerialP
 		return nil, err
 	}
 	return attachment, nil
+}
+
+// Close closes the file descriptors owned by the attachment. The caller retains
+// ownership of the original files passed to NewFileHandleSerialPortAttachment.
+//
+// Close returns [ErrSerialPortAttachmentInUse] while any connected VM is
+// running, paused, or transitioning between states. Wait for shutdown or
+// disconnect the attachment before closing it. To restart a VM configured
+// with a legacy serial port after Close, create a VM with a fresh attachment.
+// A runtime console port can be given a fresh attachment with
+// [VirtioConsolePort.SetAttachment].
+//
+// For pipe output, close the original writing end after creating the attachment
+// and read the output concurrently while the guest runs. After the VM stops,
+// call Close before waiting for the reader to reach EOF.
+//
+// Close attempts to close both directions and returns the first error, if any.
+// If a file handle fails to close, another call retries the remaining handles.
+// After a successful close, subsequent calls return [ErrSerialPortAttachmentClosed].
+func (a *FileHandleSerialPortAttachment) Close() error {
+	if a == nil || a.pointer == nil {
+		return nil
+	}
+	var errorPointer unsafe.Pointer
+	if alreadyClosed := vzbridge.CloseVZFileHandleSerialPortAttachment(a, &errorPointer); alreadyClosed {
+		return ErrSerialPortAttachmentClosed
+	}
+	return serialAttachmentError(errorPointer)
+}
+
+func serialAttachmentError(errorPointer unsafe.Pointer) error {
+	err := objcutil.NewNSError(errorPointer)
+	if err == nil {
+		return nil
+	}
+	if err.Domain == "com.codehex.vz.serial-attachment" {
+		switch err.Code {
+		case vzbridge.ErrorSerialAttachmentClosed:
+			return ErrSerialPortAttachmentClosed
+		case vzbridge.ErrorSerialAttachmentInUse:
+			return ErrSerialPortAttachmentInUse
+		}
+	}
+	return err
 }
 
 var _ SerialPortAttachment = (*FileSerialPortAttachment)(nil)

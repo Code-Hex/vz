@@ -16,7 +16,7 @@ static dispatch_queue_t commonQueue(void)
 {
     static dispatch_once_t once;
     dispatch_once(&once, ^{
-        bridgeQueue = dispatch_queue_create("com.codehex.vz.native", DISPATCH_QUEUE_SERIAL);
+        bridgeQueue = dispatch_queue_create(VZBridgeIdentifierPrefix ".native", DISPATCH_QUEUE_SERIAL);
         dispatch_queue_set_specific(bridgeQueue, &bridgeQueueKey, bridgeQueue, NULL);
     });
     return bridgeQueue;
@@ -34,7 +34,7 @@ static dispatch_queue_t commonQueue(void)
 {
     self = [super init];
     if (self) {
-        queue = dispatch_queue_create("com.codehex.vz.machine", DISPATCH_QUEUE_SERIAL);
+        queue = dispatch_queue_create(VZBridgeIdentifierPrefix ".machine", DISPATCH_QUEUE_SERIAL);
         dispatch_queue_set_specific(queue, &bridgeQueueKey, queue, NULL);
     }
     return self;
@@ -268,6 +268,71 @@ API_AVAILABLE(macos(14.0))
 @end
 #endif
 
+typedef NS_ENUM(NSUInteger, VZSerialAttachmentPhase) {
+    VZSerialAttachmentOpen,
+    VZSerialAttachmentClosing,
+    VZSerialAttachmentClosed,
+};
+
+@interface VZSerialAttachmentUse : NSObject {
+@public
+    VZSerialAttachmentPhase phase;
+    NSUInteger users;
+}
+@end
+
+@implementation VZSerialAttachmentUse
+@end
+
+static char serialAttachmentUseKey;
+
+static VZSerialAttachmentUse *serialAttachmentUseLocked(VZFileHandleSerialPortAttachment *attachment)
+{
+    VZSerialAttachmentUse *use = objc_getAssociatedObject(attachment, &serialAttachmentUseKey);
+    if (!use) {
+        use = [[[VZSerialAttachmentUse alloc] init] autorelease];
+        objc_setAssociatedObject(attachment, &serialAttachmentUseKey, use, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+    return use;
+}
+
+static NSError *serialAttachmentError(NSInteger code)
+{
+    NSString *description = code == VZBridgeErrorSerialAttachmentClosed ? @"Serial port attachment is closed" : @"Serial port attachment is in use";
+    return [NSError errorWithDomain:@VZBridgeSerialAttachmentErrorDomain code:code userInfo:@ { NSLocalizedDescriptionKey : description }];
+}
+
+static VZFileHandleSerialPortAttachment *fileHandleSerialAttachment(VZSerialPortAttachment *attachment)
+{
+    if ([attachment isKindOfClass:[VZFileHandleSerialPortAttachment class]])
+        return (VZFileHandleSerialPortAttachment *)attachment;
+    return nil;
+}
+
+static bool reserveSerialAttachment(VZFileHandleSerialPortAttachment *attachment)
+{
+    @synchronized(attachment) {
+        VZSerialAttachmentUse *use = serialAttachmentUseLocked(attachment);
+        if (use->phase != VZSerialAttachmentOpen)
+            return false;
+        use->users++;
+        return true;
+    }
+}
+
+static void releaseSerialAttachment(VZFileHandleSerialPortAttachment *attachment)
+{
+    @synchronized(attachment) {
+        VZSerialAttachmentUse *use = objc_getAssociatedObject(attachment, &serialAttachmentUseKey);
+        use->users--;
+    }
+}
+
+static NSHashTable<VZFileHandleSerialPortAttachment *> *serialAttachmentSet(void)
+{
+    return [NSHashTable hashTableWithOptions:NSPointerFunctionsStrongMemory | NSPointerFunctionsObjectPointerPersonality];
+}
+
 @interface VZBridgeMachine : VZVirtualMachine <VZVirtualMachineDelegate> {
     uint64_t _stateContext;
     uint64_t _networkContext;
@@ -275,8 +340,16 @@ API_AVAILABLE(macos(14.0))
     NSMutableArray *_consoleObservers;
     NSMutableArray *_displayObservers;
     NSHashTable<id<VZVirtualMachineDelegate>> *_externalDelegates;
+    NSHashTable<VZFileHandleSerialPortAttachment *> *_legacySerialAttachments;
+    NSHashTable<VZFileHandleSerialPortAttachment *> *_serialAttachmentsInUse;
+    NSUInteger _pendingSerialOperations;
 }
 - (instancetype)initWithConfiguration:(VZVirtualMachineConfiguration *)configuration queueOwner:(VZBridgeQueue *)owner state:(uint64_t)state network:(uint64_t)network;
+- (NSError *)beginSerialOperation;
+- (void)finishSerialOperation;
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 130000
+- (NSError *)setSerialAttachment:(VZSerialPortAttachment *)attachment onPort:(VZVirtioConsolePort *)port API_AVAILABLE(macos(13.0));
+#endif
 @end
 
 @implementation VZBridgeMachine
@@ -284,6 +357,13 @@ API_AVAILABLE(macos(14.0))
 {
     self = [super initWithConfiguration:configuration queue:owner->queue];
     if (self) {
+        _legacySerialAttachments = [serialAttachmentSet() retain];
+        for (VZSerialPortConfiguration *serialPort in configuration.serialPorts) {
+            VZFileHandleSerialPortAttachment *attachment = fileHandleSerialAttachment(serialPort.attachment);
+            if (attachment)
+                [_legacySerialAttachments addObject:attachment];
+        }
+        _serialAttachmentsInUse = [serialAttachmentSet() retain];
         objc_setAssociatedObject(self, &objectQueueKey, owner, OBJC_ASSOCIATION_RETAIN);
         _stateContext = state;
         _networkContext = network;
@@ -325,10 +405,148 @@ API_AVAILABLE(macos(14.0))
     }
     return self;
 }
+
+- (NSHashTable<VZFileHandleSerialPortAttachment *> *)serialAttachments
+{
+    NSHashTable<VZFileHandleSerialPortAttachment *> *attachments = serialAttachmentSet();
+    for (VZFileHandleSerialPortAttachment *attachment in _legacySerialAttachments)
+        [attachments addObject:attachment];
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 130000
+    if (@available(macOS 13.0, *)) {
+        for (VZConsoleDevice *device in self.consoleDevices) {
+            if (![device isKindOfClass:[VZVirtioConsoleDevice class]])
+                continue;
+            VZVirtioConsolePortArray *ports = [(VZVirtioConsoleDevice *)device ports];
+            for (NSUInteger index = 0; index < ports.maximumPortCount; index++) {
+                VZFileHandleSerialPortAttachment *attachment = fileHandleSerialAttachment(ports[index].attachment);
+                if (attachment)
+                    [attachments addObject:attachment];
+            }
+        }
+    }
+#endif
+    return attachments;
+}
+
+- (void)reconcileSerialAttachments
+{
+    if (_pendingSerialOperations || !_serialAttachmentsInUse.count)
+        return;
+    VZVirtualMachineState state = self.state;
+    NSHashTable<VZFileHandleSerialPortAttachment *> *active = nil;
+    if (state != VZVirtualMachineStateStopped && state != VZVirtualMachineStateError)
+        active = [self serialAttachments];
+    for (VZFileHandleSerialPortAttachment *attachment in _serialAttachmentsInUse.allObjects) {
+        if (![active containsObject:attachment]) {
+            [_serialAttachmentsInUse removeObject:attachment];
+            releaseSerialAttachment(attachment);
+        }
+    }
+}
+
+- (NSError *)beginSerialOperation
+{
+    NSMutableArray<VZFileHandleSerialPortAttachment *> *reserved = [NSMutableArray array];
+    for (VZFileHandleSerialPortAttachment *attachment in [self serialAttachments]) {
+        if ([_serialAttachmentsInUse containsObject:attachment])
+            continue;
+        if (!reserveSerialAttachment(attachment)) {
+            for (VZFileHandleSerialPortAttachment *owned in reserved)
+                releaseSerialAttachment(owned);
+            return serialAttachmentError(VZBridgeErrorSerialAttachmentClosed);
+        }
+        [reserved addObject:attachment];
+    }
+    for (VZFileHandleSerialPortAttachment *attachment in reserved)
+        [_serialAttachmentsInUse addObject:attachment];
+    _pendingSerialOperations++;
+    return nil;
+}
+
+- (void)finishSerialOperation
+{
+    _pendingSerialOperations--;
+    [self reconcileSerialAttachments];
+}
+
+- (void)startWithCompletionHandler:(void (^)(NSError *))completionHandler
+{
+    NSError *error = [self beginSerialOperation];
+    if (error) {
+        completionHandler(error);
+        return;
+    }
+    [super startWithCompletionHandler:^(NSError *error) {
+        [self finishSerialOperation];
+        completionHandler(error);
+    }];
+}
+
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 130000
+- (void)startWithOptions:(VZVirtualMachineStartOptions *)options completionHandler:(void (^)(NSError *))completionHandler API_AVAILABLE(macos(13.0))
+{
+    NSError *error = [self beginSerialOperation];
+    if (error) {
+        completionHandler(error);
+        return;
+    }
+    [super startWithOptions:options
+          completionHandler:^(NSError *error) {
+              [self finishSerialOperation];
+              completionHandler(error);
+          }];
+}
+#endif
+
+#if defined(__arm64__) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 140000
+- (void)restoreMachineStateFromURL:(NSURL *)stateURL completionHandler:(void (^)(NSError *))completionHandler API_AVAILABLE(macos(14.0))
+{
+    NSError *error = [self beginSerialOperation];
+    if (error) {
+        completionHandler(error);
+        return;
+    }
+    [super restoreMachineStateFromURL:stateURL
+                    completionHandler:^(NSError *error) {
+                        [self finishSerialOperation];
+                        completionHandler(error);
+                    }];
+}
+#endif
+
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 120000
+- (void)stopWithCompletionHandler:(void (^)(NSError *))completionHandler API_AVAILABLE(macos(12.0))
+{
+    [super stopWithCompletionHandler:^(NSError *error) {
+        [self reconcileSerialAttachments];
+        completionHandler(error);
+    }];
+}
+#endif
+
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 130000
+- (NSError *)setSerialAttachment:(VZSerialPortAttachment *)attachment onPort:(VZVirtioConsolePort *)port API_AVAILABLE(macos(13.0))
+{
+    VZFileHandleSerialPortAttachment *fileAttachment = fileHandleSerialAttachment(attachment);
+    if (fileAttachment && ![_serialAttachmentsInUse containsObject:fileAttachment]) {
+        if (!reserveSerialAttachment(fileAttachment))
+            return serialAttachmentError(VZBridgeErrorSerialAttachmentClosed);
+        [_serialAttachmentsInUse addObject:fileAttachment];
+    }
+    _pendingSerialOperations++;
+    port.attachment = attachment;
+    [self finishSerialOperation];
+    return nil;
+}
+#endif
+
 - (void)observeValueForKeyPath:(NSString *)key ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == &bridgeQueueKey) {
-        emit(VZBridgeCallbackMachineStateChanged, _stateContext, nil, nil, [change[NSKeyValueChangeNewKey] unsignedLongLongValue]);
+        VZVirtualMachineState state = [change[NSKeyValueChangeNewKey] integerValue];
+        if (state == VZVirtualMachineStateStopped || state == VZVirtualMachineStateError)
+            [self reconcileSerialAttachments];
+        emit(VZBridgeCallbackMachineStateChanged, _stateContext, nil, nil, state);
     } else {
         [super observeValueForKeyPath:key ofObject:object change:change context:context];
     }
@@ -398,7 +616,14 @@ API_AVAILABLE(macos(14.0))
         emit(VZBridgeCallbackContextReleased, _stateContext, nil, nil, 0);
     if (_networkContext)
         emit(VZBridgeCallbackContextReleased, _networkContext, nil, nil, 0);
+    NSHashTable<VZFileHandleSerialPortAttachment *> *attachments = _serialAttachmentsInUse;
+    _serialAttachmentsInUse = nil;
+    [_legacySerialAttachments release];
+    _legacySerialAttachments = nil;
     [super dealloc];
+    for (VZFileHandleSerialPortAttachment *attachment in attachments)
+        releaseSerialAttachment(attachment);
+    [attachments release];
 }
 @end
 
@@ -411,6 +636,17 @@ void *vz_newVZVirtualMachineWithDispatchQueue(void *config, uint64_t state, uint
     });
     [owner release];
     return machine;
+}
+
+void vz_setVirtioConsolePortAttachment(void *machine, void *port, void *attachment, void **output)
+{
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 130000
+    if (@available(macOS 13.0, *)) {
+        fail([(VZBridgeMachine *)machine setSerialAttachment:attachment onPort:port], output);
+        return;
+    }
+#endif
+    fail(posixError(ENOTSUP), output);
 }
 
 static void (^completion(id owner, uint64_t context))(NSError *)
@@ -589,6 +825,59 @@ void *vz_newVZFileHandleSerialPortAttachment(int32_t readFD, bool hasRead, int32
     return [[VZFileHandleSerialPortAttachment alloc] initWithFileHandleForReading:readHandle fileHandleForWriting:writeHandle];
 }
 
+static char serialFileHandleClosedKey;
+
+static NSError *closeSerialFileHandle(NSFileHandle *handle)
+{
+    if (!handle)
+        return nil;
+
+    @synchronized(handle) {
+        if (objc_getAssociatedObject(handle, &serialFileHandleClosedKey))
+            return nil;
+
+        NSError *error = nil;
+        if (![handle closeAndReturnError:&error])
+            return error;
+
+        objc_setAssociatedObject(handle, &serialFileHandleClosedKey, @YES, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        return nil;
+    }
+}
+
+bool vz_closeVZFileHandleSerialPortAttachment(void *object, void **output)
+{
+    VZFileHandleSerialPortAttachment *attachment = object;
+    VZSerialAttachmentUse *use;
+    @synchronized(attachment) {
+        use = serialAttachmentUseLocked(attachment);
+    }
+    @synchronized(use) {
+        @synchronized(attachment) {
+            if (use->phase == VZSerialAttachmentClosed) {
+                fail(nil, output);
+                return true;
+            }
+            if (use->users) {
+                fail(serialAttachmentError(VZBridgeErrorSerialAttachmentInUse), output);
+                return false;
+            }
+            use->phase = VZSerialAttachmentClosing;
+        }
+
+        NSError *readError = closeSerialFileHandle(attachment.fileHandleForReading);
+        NSError *writeError = closeSerialFileHandle(attachment.fileHandleForWriting);
+        NSError *error = readError ?: writeError;
+        if (!error) {
+            @synchronized(attachment) {
+                use->phase = VZSerialAttachmentClosed;
+            }
+        }
+        fail(error, output);
+        return false;
+    }
+}
+
 void *vz_newVZFileHandleNetworkDeviceAttachment(int32_t descriptor, void **output)
 {
     if (output)
@@ -762,11 +1051,19 @@ API_AVAILABLE(macos(12.0))
         emit(VZBridgeCallbackMacOSInstallCompleted, completionContext, [posixError(EBUSY) retain], nil, 0);
         return;
     }
+    VZBridgeMachine *machine = (VZBridgeMachine *)_installer.virtualMachine;
+    NSError *serialError = [machine beginSerialOperation];
+    if (serialError) {
+        emit(VZBridgeCallbackContextReleased, progress, nil, nil, 0);
+        emit(VZBridgeCallbackMacOSInstallCompleted, completionContext, [serialError retain], nil, 0);
+        return;
+    }
     _progressContext = progress;
     _observing = YES;
     [_installer.progress addObserver:self forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:&bridgeQueueKey];
     [_installer installWithCompletionHandler:^(NSError *error) {
         syncObject(self, ^{
+            [machine finishSerialOperation];
             [self finishProgress];
             emit(VZBridgeCallbackMacOSInstallCompleted, completionContext, [error retain], nil, 0);
         });

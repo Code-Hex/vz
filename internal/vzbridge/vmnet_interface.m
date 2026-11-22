@@ -27,7 +27,7 @@ void *vz_startVmnetInterface(void *network, const char *name, uint32_t options, 
             interfaceError(VMNET_MEM_FAILURE, @"allocate interface", errorOut);
             return NULL;
         }
-        dispatch_queue_t completion = dispatch_queue_create("com.codehex.vz.vmnet.completion", DISPATCH_QUEUE_SERIAL);
+        dispatch_queue_t completion = dispatch_queue_create(VZBridgeIdentifierPrefix ".vmnet.completion", DISPATCH_QUEUE_SERIAL);
         dispatch_semaphore_t done = dispatch_semaphore_create(0);
         xpc_object_t desc = xpc_dictionary_create(NULL, NULL, 0);
         xpc_dictionary_set_bool(desc, vmnet_allocate_mac_address_key, !(options & 1));
@@ -77,7 +77,7 @@ void *vz_startVmnetInterface(void *network, const char *name, uint32_t options, 
             free(session);
             return NULL;
         }
-        session->events = dispatch_queue_create("com.codehex.vz.vmnet.events", DISPATCH_QUEUE_SERIAL);
+        session->events = dispatch_queue_create(VZBridgeIdentifierPrefix ".vmnet.events", DISPATCH_QUEUE_SERIAL);
         __block bool active = true;
         session->disableCallback = [^{ active = false; } copy];
         if (result != VMNET_SUCCESS) {
@@ -137,7 +137,7 @@ void vz_stopVmnetInterface(void *pointer, void **errorOut)
         // Queued callbacks share this gate without retaining the session or Go handle.
         dispatch_sync(session->events, session->disableCallback);
         vmnet_return_t callbackResult = vmnet_interface_set_event_callback(session->interface, VMNET_INTERFACE_PACKETS_AVAILABLE, NULL, NULL);
-        dispatch_queue_t completion = dispatch_queue_create("com.codehex.vz.vmnet.stop", DISPATCH_QUEUE_SERIAL);
+        dispatch_queue_t completion = dispatch_queue_create(VZBridgeIdentifierPrefix ".vmnet.stop", DISPATCH_QUEUE_SERIAL);
         dispatch_semaphore_t done = dispatch_semaphore_create(0);
         __block vmnet_return_t status = VMNET_FAILURE;
         vmnet_return_t result = vmnet_stop_interface(session->interface, completion, ^(vmnet_return_t value) { status = value; dispatch_semaphore_signal(done); });

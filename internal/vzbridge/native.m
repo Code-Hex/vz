@@ -299,7 +299,7 @@ static VZSerialAttachmentUse *serialAttachmentUseLocked(VZFileHandleSerialPortAt
 static NSError *serialAttachmentError(NSInteger code)
 {
     NSString *description = code == VZBridgeErrorSerialAttachmentClosed ? @"Serial port attachment is closed" : @"Serial port attachment is in use";
-    return [NSError errorWithDomain:@"com.codehex.vz.serial-attachment" code:code userInfo:@ { NSLocalizedDescriptionKey : description }];
+    return [NSError errorWithDomain:@"dev.codehex.vz.serial-attachment" code:code userInfo:@ { NSLocalizedDescriptionKey : description }];
 }
 
 static VZFileHandleSerialPortAttachment *fileHandleSerialAttachment(VZSerialPortAttachment *attachment)

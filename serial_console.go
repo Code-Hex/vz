@@ -84,10 +84,13 @@ func NewFileHandleSerialPortAttachment(read, write *os.File) (*FileHandleSerialP
 //
 // Close returns [ErrSerialPortAttachmentInUse] while any connected VM is
 // running, paused, or transitioning between states. Wait for shutdown or
-// disconnect the attachment before closing it. To restart a VM configured
-// with a legacy serial port after Close, create a VM with a fresh attachment.
-// A runtime console port can be given a fresh attachment with
-// [VirtioConsolePort.SetAttachment].
+// disconnect the attachment before closing it. A VM has shut down once
+// [VirtualMachine.State] reports [VirtualMachineStateStopped] or
+// [VirtualMachineStateError] and no start, restore, or macOS install call on
+// it is still in progress, whether the host or the guest stopped it.
+// To restart a VM configured with a legacy serial port after Close, create a
+// VM with a fresh attachment. A runtime console port can be given a fresh
+// attachment with [VirtioConsolePort.SetAttachment].
 //
 // For pipe output, close the original writing end after creating the attachment
 // and read the output concurrently while the guest runs. After the VM stops,

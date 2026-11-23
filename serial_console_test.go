@@ -450,20 +450,32 @@ func TestFileHandleSerialPortAttachmentCloseAfterAllVMsStop(t *testing.T) {
 }
 
 func TestFileHandleSerialPortAttachmentCloseAfterGuestStop(t *testing.T) {
-	null, err := os.OpenFile(os.DevNull, os.O_WRONLY, 0)
+	guestInput, hostInput, err := os.Pipe()
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer null.Close()
-	attachment, err := vz.NewFileHandleSerialPortAttachment(nil, null)
+	defer guestInput.Close()
+	defer hostInput.Close()
+	hostOutput, guestOutput, err := os.Pipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer hostOutput.Close()
+	defer guestOutput.Close()
+
+	attachment, err := vz.NewFileHandleSerialPortAttachment(guestInput, guestOutput)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer objc.Release(attachment)
+	const guestInit = `console=hvc0 rdinit=/bin/busybox -- sh -c "` +
+		`/bin/busybox mkdir -p /dev; /bin/busybox mount -t devtmpfs devtmpfs /dev; ` +
+		`exec 3<> /dev/hvc0; /bin/busybox stty -echo <&3; printf 'serial ready\n' >&3; ` +
+		`IFS= read -r command <&3 && exec /bin/busybox poweroff -f"`
 	loader, err := vz.NewLinuxBootLoader(
 		"testdata/Image",
 		vz.WithInitrd("testdata/initramfs.cpio.gz"),
-		vz.WithCommandLine("console=hvc0 rdinit=/bin/busybox -- poweroff -f"),
+		vz.WithCommandLine(guestInit),
 	)
 	if err != nil {
 		t.Fatal(err)
@@ -489,28 +501,29 @@ func TestFileHandleSerialPortAttachmentCloseAfterGuestStop(t *testing.T) {
 			}
 		}
 	}()
-	states := make(chan vz.VirtualMachineState, 1)
-	stopStates, err := vm.StateChangedNotify(states)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer stopStates()
 
 	if err := vm.Start(); err != nil {
 		t.Fatal(err)
 	}
-	timeout := time.After(30 * time.Second)
-	for vm.State() != vz.VirtualMachineStateStopped {
-		if vm.State() == vz.VirtualMachineStateError {
-			t.Fatal("VM entered the error state instead of stopping")
+	if err := hostOutput.SetReadDeadline(time.Now().Add(10 * time.Second)); err != nil {
+		t.Fatal(err)
+	}
+	output := bufio.NewReader(hostOutput)
+	for {
+		line, err := output.ReadString('\n')
+		if err != nil {
+			t.Fatalf("wait for guest serial input: %v", err)
 		}
-		select {
-		case <-states:
-		case <-timeout:
-			t.Fatalf("guest did not stop the VM: state %v", vm.State())
+		if strings.TrimSpace(line) == "serial ready" {
+			break
 		}
 	}
-	// No retry: State reporting Stopped is enough for Close to succeed.
+
+	// Wait for Start to return so its completion handler cannot clear the in-use state after shutdown.
+	if _, err := fmt.Fprintln(hostInput, "poweroff"); err != nil {
+		t.Fatalf("request guest shutdown: %v", err)
+	}
+	waitState(t, 30*time.Second, vm, vz.VirtualMachineStateStopped)
 	if err := attachment.Close(); err != nil {
 		t.Fatalf("close after the guest stopped the VM: %v", err)
 	}

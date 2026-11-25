@@ -443,6 +443,22 @@ func (v *VirtioSocketConnection) Close() error {
 	return v.rawConn.Close()
 }
 
+// CloseWrite shuts down the writing side of the connection.
+func (v *VirtioSocketConnection) CloseWrite() error {
+	if cw, ok := v.rawConn.(interface{ CloseWrite() error }); ok {
+		return cw.CloseWrite()
+	}
+	return v.rawConn.Close()
+}
+
+// CloseRead shuts down the reading side of the connection.
+func (v *VirtioSocketConnection) CloseRead() error {
+	if cr, ok := v.rawConn.(interface{ CloseRead() error }); ok {
+		return cr.CloseRead()
+	}
+	return nil
+}
+
 // LocalAddr returns the local network address.
 func (v *VirtioSocketConnection) LocalAddr() net.Addr { return v.rawConn.LocalAddr() }
 
